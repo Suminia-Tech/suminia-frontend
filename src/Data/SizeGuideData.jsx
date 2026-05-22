@@ -1,0 +1,107 @@
+export const SizeColumn = [
+  {
+    selector: (row) => row.heading,
+  },
+  {
+    selector: (row) => row.size1,
+  },
+  {
+    selector: (row) => row.size2,
+  },
+  {
+    selector: (row) => row.size3,
+  },
+  {
+    selector: (row) => row.size4,
+  },
+  {
+    selector: (row) => row.size5,
+  },
+  {
+    selector: (row) => row.size6,
+  },
+  {
+    selector: (row) => row.size7,
+  },
+  {
+    selector: (row) => row.size8,
+  },
+  {
+    selector: (row) => row.size9,
+  },
+  {
+    selector: (row) => row.size10,
+  },
+];
+export const SizeData = [
+  {
+    id: 1,
+    heading: 'US Sizes',
+    size1: 6,
+    size2: 6.5,
+    size3: 7,
+    size4: 7.5,
+    size5: 8,
+    size6: 8.5,
+    size7: 9,
+    size8: 9.5,
+    size9: 10,
+    size10: 10.5,
+  },
+  {
+    id: 2,
+    heading: 'Euro Sizes',
+    size1: 6,
+    size2: 6.5,
+    size3: 7,
+    size4: 7.5,
+    size5: 8,
+    size6: 8.5,
+    size7: 9,
+    size8: 9.5,
+    size9: 10,
+    size10: 10.5,
+  },
+  {
+    id: 3,
+    heading: 'UK Sizes',
+    size1: 6,
+    size2: 6.5,
+    size3: 7,
+    size4: 7.5,
+    size5: 8,
+    size6: 8.5,
+    size7: 9,
+    size8: 9.5,
+    size9: 10,
+    size10: 10.5,
+  },
+  {
+    id: 4,
+    heading: 'Inches',
+    size1: 6,
+    size2: 6.5,
+    size3: 7,
+    size4: 7.5,
+    size5: 8,
+    size6: 8.5,
+    size7: 9,
+    size8: 9.5,
+    size9: 10,
+    size10: 10.5,
+  },
+  {
+    id: 5,
+    heading: 'CM',
+    size1: 6,
+    size2: 6.5,
+    size3: 7,
+    size4: 7.5,
+    size5: 8,
+    size6: 8.5,
+    size7: 9,
+    size8: 9.5,
+    size9: 10,
+    size10: 10.5,
+  },
+];

@@ -1,0 +1,18 @@
+@import "utils/variables";
+@import "utils/mixin/common";
+@import "utils/mixin/breakpoints";
+
+@import "layout/header";
+@include header_2;
+@import "layout/subscribe";
+@import "layout/banner";
+@include banner_common;
+@include timer_banner;
+@include timer_banner_style_2;
+@include banner_2;
+@include banner_3;
+@import "layout/poster";
+
+@import "themes/responsive";
+
+@import "pages/inner_page";

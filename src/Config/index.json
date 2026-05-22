@@ -1,0 +1,10 @@
+{
+    "firebase": {
+        "apiKey": "AIzaSyA1RPD4ZzDoRA1mCKzhvdU1nwOt6ek0S_w",
+        "authDomain": "viho-react.firebaseapp.com",
+        "projectId": "viho-react",
+        "storageBucket": "viho-react.appspot.com",
+        "messagingSenderId": "725210020776",
+        "appId": "1:725210020776:web:ca7a2763663f6cf5d7bb9d"
+    }
+}

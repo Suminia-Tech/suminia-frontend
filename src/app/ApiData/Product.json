@@ -1,0 +1,1957 @@
+[
+    {
+        "id": 1,
+        "type": "fashion",
+        "name": "Slim Fit Plastic Coat",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "Blazers",
+        "brand": "Zara",
+        "discount": 0,
+        "ratingStars": 2,
+        "inStock": 15,
+        "totalReviews": 12,
+        "mrp": 150.0,
+        "feature": "none",
+        "price": 120.0,
+        "available": true,
+        "first_available_date": "28-07-2015",
+        "department": "women",
+        "manufacturer": "PAGE INDUSTRIES LIMITED",
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "colors": [
+            "black",
+            "blue",
+            "green"
+        ],
+        "colorvariants": [
+            {
+                "color": "black",
+                "imageId": 111
+            },
+            {
+                "color": "blue",
+                "imageId": 112
+            },
+            {
+                "color": "green",
+                "imageId": 113
+            }
+        ],
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "fashion/product/front/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "fashion/product/back/1.jpg"
+            },
+            {
+                "imageId": 3,
+                "class": "front",
+                "src": "fashion/product/front/1.jpg"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "type": "fashion",
+        "name": "Military Ball Night Dress",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "T-shirts Solly",
+        "manufacturer": "Shreenath Lifestyle Pvt. Ltd.",
+        "colors": [
+            "blue",
+            "gold",
+            "militaryColor"
+        ],
+        "inStock": 16,
+        "brand": "Louis Solly",
+        "feature": "none",
+        "available": true,
+        "first_available_date": "25-03-2022",
+        "totalReviews": 22,
+        "ratingStars": 2,
+        "discount": 0,
+        "mrp": 95.0,
+        "price": 85.0,
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "department": "men",
+        "colorvariants": [
+            {
+                "color": "blue",
+                "imageId": 111
+            },
+            {
+                "color": "gold",
+                "imageId": 113
+            },
+            {
+                "color": "militaryColor",
+                "imageId": 114
+            }
+        ],
+        "images": [
+            {
+                "imageId": 111,
+                "class": "front",
+                "src": "fashion/product/front/3.jpg"
+            },
+            {
+                "imageId": 112,
+                "class": "back",
+                "src": "fashion/product/back/3.jpg"
+            },
+            {
+                "imageId": 113,
+                "class": "front",
+                "src": "fashion/product/front/2.jpg"
+            },
+            {
+                "imageId": 114,
+                "class": "back",
+                "src": "fashion/product/front/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "type": "fashion",
+        "name": "Full Slive Yellow Jacket",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "Jackets",
+        "brand": "Louis Philippe",
+        "new": true,
+        "manufacturer": "Shreenath Lifestyle Pvt. Ltd.",
+        "colors": [
+            "MilitaryColor"
+        ],
+        "feature": "Fully Comfirtable",
+        "available": false,
+        "first_available_date": "25-02-2017",
+        "department": "men",
+        "discount": 50,
+        "inStock": 19,
+        "totalReviews": 8,
+        "ratingStars": 5,
+        "mrp": 81.0,
+        "price": 69.0,
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "colorvariants": [
+            {
+                "color": "militaryColor",
+                "imageId": 114
+            }
+        ],
+        "images": [
+            {
+                "imageId": 114,
+                "class": "front",
+                "src": "fashion/product/front/4.jpg"
+            },
+            {
+                "imageId": 115,
+                "class": "back",
+                "src": "fashion/product/back/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "type": "fashion",
+        "name": "Blue Leather Jacket",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "Sweatshirts",
+        "brand": "Fila",
+        "new": true,
+        "colors": [
+            "black",
+            "bold",
+            "brown"
+        ],
+        "manufacturer": "PAGE INDUSTRIES LIMITED",
+        "feature": "Fully Comfirtable",
+        "available": false,
+        "first_available_date": "27-04-2022",
+        "department": "men",
+        "discount": 50,
+        "totalReviews": 18,
+        "ratingStars": 5,
+        "mrp": 86.0,
+        "inStock": 0,
+        "price": 60.0,
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "colorvariants": [
+            {
+                "color": "black",
+                "imageId": 111
+            },
+            {
+                "color": "bold",
+                "imageId": 112
+            }
+        ],
+        "images": [
+            {
+                "imageId": 111,
+                "class": "front",
+                "src": "fashion/product/front/2.jpg"
+            },
+            {
+                "imageId": 112,
+                "class": "back",
+                "src": "fashion/product/back/2.jpg"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "type": "fashion",
+        "name": "Blue Leather Jacket",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "Shirts",
+        "brand": "Puma",
+        "new": true,
+        "colors": [
+            "red",
+            "yellow",
+            "blue"
+        ],
+        "inStock": 10,
+        "manufacturer": "Shreenath Lifestyle Pvt. Ltd.",
+        "feature": "Fully Comfirtable",
+        "available": false,
+        "first_available_date": "15-04-2018",
+        "department": "women",
+        "discount": 50,
+        "totalReviews": 16,
+        "ratingStars": 5,
+        "mrp": 79.0,
+        "price": 60.0,
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "colorvariants": [
+            {
+                "color": "red",
+                "imageId": 111
+            },
+            {
+                "color": "yellow",
+                "imageId": 112
+            },
+            {
+                "color": "blue",
+                "imageId": 113
+            }
+        ],
+        "images": [
+            {
+                "imageId": 111,
+                "class": "front",
+                "src": "fashion/product/front/4.jpg"
+            },
+            {
+                "imageId": 112,
+                "class": "back",
+                "src": "fashion/product/back/4.jpg"
+            },
+            {
+                "imageId": 113,
+                "class": "front",
+                "src": "fashion/product/front/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "type": "fashion",
+        "name": "Military Ball Night Dress",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "T-shirts Solly",
+        "manufacturer": "Shreenath Lifestyle Pvt. Ltd.",
+        "colors": [
+            "blue",
+            "gold",
+            "militaryColor",
+            "green"
+        ],
+        "brand": "Louis Solly",
+        "feature": "none",
+        "available": true,
+        "first_available_date": "25-03-2022",
+        "totalReviews": 22,
+        "ratingStars": 2,
+        "discount": 0,
+        "mrp": 95.0,
+        "price": 85.0,
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "department": "men",
+        "colorvariants": [
+            {
+                "color": "blue",
+                "imageId": 111
+            },
+            {
+                "color": "gold",
+                "imageId": 112
+            },
+            {
+                "color": "militaryColor",
+                "imageId": 113
+            },
+            {
+                "color": "green",
+                "imageId": 114
+            }
+        ],
+        "images": [
+            {
+                "imageId": 111,
+                "class": "front",
+                "src": "fashion/product/front/3.jpg"
+            },
+            {
+                "imageId": 112,
+                "class": "back",
+                "src": "fashion/product/back/3.jpg"
+            },
+            {
+                "imageId": 113,
+                "class": "front",
+                "src": "fashion/product/front/2.jpg"
+            },
+            {
+                "imageId": 114,
+                "class": "back",
+                "src": "fashion/product/front/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "type": "fashion",
+        "name": "Blue Leather Jacket",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "Sweatshirts",
+        "brand": "Zara",
+        "new": true,
+        "colors": [
+            "black",
+            "gold"
+        ],
+        "manufacturer": "PAGE INDUSTRIES LIMITED",
+        "feature": "Fully Comfirtable",
+        "available": false,
+        "first_available_date": "27-04-2022",
+        "department": "men",
+        "discount": 50,
+        "totalReviews": 18,
+        "ratingStars": 5,
+        "mrp": 86.0,
+        "price": 60.0,
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "colorvariants": [
+            {
+                "color": "black",
+                "imageId": 111
+            },
+            {
+                "color": "gold",
+                "imageId": 112
+            }
+        ],
+        "images": [
+            {
+                "imageId": 111,
+                "class": "front",
+                "src": "fashion/product/front/2.jpg"
+            },
+            {
+                "imageId": 112,
+                "class": "back",
+                "src": "fashion/product/back/2.jpg"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "type": "fashion",
+        "name": "Slim Fit Plastic Coat",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "B&Y Jacket",
+        "brand": "Zara",
+        "ratingStars": 2,
+        "totalReviews": 12,
+        "feature": "none",
+        "mrp": 85.0,
+        "discount": 0,
+        "price": 78.0,
+        "available": true,
+        "first_available_date": "28-07-2015",
+        "department": "women",
+        "manufacturer": "PAGE INDUSTRIES LIMITED",
+        "size": "Regular Fit",
+        "sizeoption": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "colors": [
+            "black",
+            "blue",
+            "green"
+        ],
+        "colorvariants": [
+            {
+                "color": "blue",
+                "imageId": 111
+            },
+            {
+                "color": "green",
+                "imageId": 112
+            }
+        ],
+        "images": [
+            {
+                "imageId": 111,
+                "class": "front",
+                "src": "fashion/product/front/1.jpg"
+            },
+            {
+                "imageId": 112,
+                "class": "back",
+                "src": "fashion/product/back/1.jpg"
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "type": "flower",
+        "brand": "Flower Brand",
+        "name": "Beautiful and Fresh Bookey",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "feature": "Fully Comfirtable",
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 3,
+        "price": 49.0,
+        "mrp": 52,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "flower/product/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "flower/product/1.jpg"
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "type": "flower",
+        "name": "Beautiful and Fresh Bookey",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 4,
+        "price": 49.0,
+        "mrp": 52,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "flower/product/2.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "flower/product/2.jpg"
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "type": "flower",
+        "name": "Beautiful and Fresh Bookey",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 5,
+        "price": 49.0,
+        "mrp": 52,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "back",
+                "src": "flower/product/3.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "front",
+                "src": "flower/product/3.jpg"
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "type": "flower",
+        "name": "Beautiful and Fresh Bookey",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 3,
+        "price": 49.0,
+        "mrp": 52,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "back",
+                "src": "flower/product/5.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "front",
+                "src": "flower/product/5.jpg"
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "type": "flower",
+        "name": "Beautiful and Fresh Bookey",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 2,
+        "price": 49.0,
+        "mrp": 52,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "flower/product/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "flower/product/1.jpg"
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "type": "flower",
+        "name": "Beautiful and Fresh Bookey",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 5,
+        "price": 49.0,
+        "mrp": 52,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "flower/product/2.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "flower/product/2.jpg"
+            }
+        ]
+    },
+    {
+        "id": 16,
+        "type": "flower",
+        "name": "Beautiful and Fresh Bookey",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 5,
+        "price": 32.87,
+        "mrp": 52,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "back",
+                "src": "flower/product/3.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "front",
+                "src": "flower/product/3.jpg"
+            }
+        ]
+    },
+    {
+        "id": 17,
+        "type": "furniture",
+        "name": "Orange Arm Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "mrp": 150,
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 30,
+        "department": "none",
+        "ratingStars": 2,
+        "price": 32.87,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/1.jpg"
+            }
+        ]
+    },
+    {
+        "id": 18,
+        "type": "furniture",
+        "name": "Fancy Yellow Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "discount": 0,
+        "department": "none",
+        "mrp": 150,
+        "new": true,
+        "ratingStars": 4,
+        "price": 32.87,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/2.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/2.jpg"
+            }
+        ]
+    },
+    {
+        "id": 19,
+        "type": "furniture",
+        "name": "Orange Arm Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 2,
+        "mrp": 150,
+        "price": 32.87,
+        "images": [
+            {
+            
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/3.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/3.jpg"
+            }
+        ]
+    },
+    {
+        "id": 20,
+        "type": "furniture",
+        "name": "Orange Arm Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 2,
+        "mrp": 150,
+        "price": 32.87,
+        "images": [
+            {
+            
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/4.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 21,
+        "type": "furniture",
+        "name": "Orange Arm Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 2,
+        "mrp": 150,
+        "price": 32.87,
+        "images": [
+            {
+            
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/5.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/5.jpg"
+            }
+        ]
+    },
+    {
+        "id": 22,
+        "type": "furniture",
+        "name": "Orange Arm Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 2,
+        "mrp": 150,
+        "price": 32.87,
+        "images": [
+            {
+            
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/7.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/7.jpg"
+            }
+        ]
+    },
+    {
+        "id": 23,
+        "type": "furniture",
+        "name": "Orange Arm Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 2,
+        "mrp": 150,
+        "price": 32.87,
+        "images": [
+            {
+            
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/8.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/8.jpg"
+            }
+        ]
+    },
+    {
+        "id": 24,
+        "type": "furniture",
+        "name": "Orange Arm Chair",
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "feature": "Fully Comfirtable",
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "ratingStars": 2,
+        "mrp": 150,
+        "price": 32.87,
+        "images": [
+            {
+            
+                "imageId": 1,
+                "class": "front",
+                "src": "furniture-images/new-arrival/9.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "furniture-images/new-arrival/9.jpg"
+            }
+        ]
+    },
+    {
+        "id": 25,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Fresh Beat",
+        "mrp": 52.0,
+        "price": 49.0,
+        "quantity_1": "1 KG",
+        "quantity_2": "500 G",
+        "ratingStars": 4,
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/1.jpg"
+            }
+        ]
+    },
+    {
+        "id": 26,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Beautiful Cauliflower",
+        "mrp": 20.0,
+        "discount": 0,
+        "department": "none",
+        "price": 15.0,
+        "quantity_1": "500 G",
+        "ratingStars": 4,
+        "new": true,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/2.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/2.jpg"
+            }
+        ]
+    },
+    {
+        "id": 27,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Eggplant",
+        "mrp": 50.0,
+        "price": 42.0,
+        "quantity_1": "1 KG",
+        "ratingStars": 5,
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/3.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/3.jpg"
+            }
+        ]
+    },
+    {
+        "id": 28,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Red Tomato",
+        "mrp": 52.0,
+        "price": 49.0,
+        "quantity_1": "2 KG",
+        "quantity_2": "800 G",
+        "ratingStars": 3,
+        "discount": 50,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/4.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 29,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Fresh Beat",
+        "discount": 0,
+        "department": "none",
+        "mrp": 60.0,
+        "price": 52.0,
+        "quantity_1": "300 G",
+        "quantity_2": "500 G",
+        "ratingStars": 2,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/5.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/5.jpg"
+            }
+        ]
+    },
+    {
+        "id": 30,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Fresh Organic Ginger Big Size",
+        "mrp": 80.0,
+        "price": 75.0,
+        "quantity_1": "1 KG",
+        "quantity_2": "500 G",
+        "ratingStars": 5,
+        "discount": 20,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/6.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/6.jpg"
+            }
+        ]
+    },
+    {
+        "id": 31,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Fresh Beat",
+        "mrp": 60.0,
+        "discount": 0,
+        "department": "none",
+        "price": 52.0,
+        "quantity_1": "300 G",
+        "quantity_2": "500 G",
+        "ratingStars": 2,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/5.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/5.jpg"
+            }
+        ]
+    },
+    {
+        "id": 32,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "vegetables",
+        "feature": "none",
+        "name": "Eggplant",
+        "mrp": 50.0,
+        "price": 42.0,
+        "quantity_1": "1 KG",
+        "ratingStars": 5,
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "vegetable/fresh/3.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "vegetable/fresh/3.jpg"
+            }
+        ]
+    },
+    {
+        "id": 33,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "electronic",
+        "feature": "none",
+        "name": "New Smart Watch 4 ERT2",
+        "mrp": 52.0,
+        "price": 49.0,
+        "ratingStars": 4,
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/1.jpg"
+            }
+        ]
+    },
+    {
+        "id": 34,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 0,
+        "department": "none",
+        "type": "electronic",
+        "feature": "none",
+        "name": "Harman International Speaker",
+        "mrp": 50.0,
+        "price": 32.0,
+        "ratingStars": 2,
+        "label": "On Discount",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/2.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/2.jpg"
+            }
+        ]
+    },
+    {
+        "id": 35,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "electronic",
+        "feature": "none",
+        "name": "BoAt Rockerz Bluetooth Headset",
+        "discount": 0,
+        "department": "none",
+        "mrp": 150,
+        "price": 25.0,
+        "new": true,
+        "ratingStars": 4,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/3.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/3.jpg"
+            }
+        ]
+    },
+    {
+        "id": 36,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "electronic",
+        "feature": "none",
+        "name": "Dell MS 116 Wired Optical Mouse",
+        "mrp": 30.0,
+        "discount": 0,
+        "department": "none",
+        "price": 28.0,
+        "ratingStars": 3,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/4.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 37,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "electronic",
+        "feature": "none",
+        "name": "Powermatic 900 W Juicer",
+        "mrp": 48.0,
+        "discount": 0,
+        "department": "none",
+        "price": 35.0,
+        "label": "Best Value",
+        "ratingStars": 5,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/4.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 38,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "electronic",
+        "feature": "none",
+        "name": "JBZ JB-113 10 W Bluetooth Speaker",
+        "discount": 0,
+        "department": "none",
+        "mrp": 150,
+        "price": 52.0,
+        "ratingStars": 5,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/6.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/6.jpg"
+            }
+        ]
+    },
+    {
+        "id": 39,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "electronic",
+        "feature": "none",
+        "name": "Dell MS 116 Wired Optical Mouse",
+        "discount": 0,
+        "department": "none",
+        "price": 28.0,
+        "mrp": 30.0,
+        "ratingStars": 3,
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/4.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/4.jpg"
+            }
+        ]
+    },
+    {
+        "id": 40,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 20,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/1.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/1.png"
+            }
+        ],
+        "price": 49.0,
+        "mrp": 52.0,
+        "name": "Portable Charger",
+        "ratingStars": 5
+    },
+    {
+        "id": 41,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 10,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/2.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/2.png"
+            }
+        ],
+        "price": 52.0,
+        "mrp": 60.0,
+        "name": "VR Box - Buy VR Headset",
+        "ratingStars": 3
+    },
+    {
+        "id": 42,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 8,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/3.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/3.png"
+            }
+        ],
+        "price": 52.0,
+        "mrp": 60.0,
+        "name": "Headset Game For IOS",
+        "ratingStars": 2
+    },
+    {
+        "id": 43,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 15,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/4.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/4.png"
+            }
+        ],
+        "price": 45.0,
+        "mrp": 80.0,
+        "name": "Unifree Portable",
+        "ratingStars": 4
+    },
+    {
+        "id": 44,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 20,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/5.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/5.png"
+            }
+        ],
+        "price": 25.0,
+        "mrp": 40.0,
+        "name": "Wireless Bluetooth Sunglasses Headset",
+        "ratingStars": 2
+    },
+    {
+        "id": 45,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 5,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/6.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/6.png"
+            }
+        ],
+        "price": 48.0,
+        "mrp": 62.0,
+        "name": "Dual EQ Bluetooth 5.0 Portable",
+        "ratingStars": 2
+    },
+    {
+        "id": 46,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 12,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/7.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/7.png"
+            }
+        ],
+        "price": 58.0,
+        "mrp": 84.0,
+        "name": "Leapmotion VR",
+        "ratingStars": 2
+    },
+    {
+        "id": 47,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "type": "electronic",
+        "feature": "none",
+        "category": "vr",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "discount": 20,
+        "department": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "electronics/product/png/5.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "electronics/product/png/5.png"
+            }
+        ],
+        "price": 25.0,
+        "mrp": 40.0,
+        "name": "Wireless Bluetooth Sunglasses Headset",
+        "ratingStars": 2
+    },
+    {
+        "id": 48,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "shoes",
+        "feature": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "shoes/product/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "shoes/product/1.jpg"
+            }
+        ],
+        "new": true,
+        "discount": 50,
+        "department": "none",
+        "mrp": 52,
+        "price": 49,
+        "name": "Latest Sports Shoes",
+        "ratingStars": 1
+    },
+    {
+        "id": 49,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "shoes",
+        "feature": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "shoes/product/2.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "shoes/product/2.jpg"
+            }
+        ],
+        "label": "On Discount",
+        "mrp": 52,
+        "price": 49,
+        "discount": 50,
+        "department": "none",
+        "name": "Latest Sports Shoes",
+        "ratingStars": 2
+    },
+    {
+        "id": 50,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "shoes",
+        "feature": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "shoes/product/3.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "shoes/product/3.jpg"
+            }
+        ],
+        "label": "On Discount",
+        "mrp": 52,
+        "discount": 50,
+        "department": "none",
+        "price": 49,
+        "name": "Latest Sports Shoes",
+        "ratingStars": 4
+    },
+    {
+        "id": 51,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "shoes",
+        "feature": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "shoes/product/1.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "shoes/product/1.jpg"
+            }
+        ],
+        "discount": 0,
+        "department": "none",
+        "mrp": 52,
+        "price": 49,
+        "name": "Dell MS 116 Wired Optical Mouse",
+        "ratingStars": 3
+    },
+    {
+        "id": 52,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "shoes",
+        "feature": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "shoes/product/4.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "shoes/product/4.jpg"
+            }
+        ],
+        "label": "Best Value",
+        "discount": 0,
+        "department": "none",
+        "mrp": 52,
+        "price": 49,
+        "name": "Latest Sports Shoes",
+        "ratingStars": 5
+    },
+    {
+        "id": 53,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "shoes",
+        "feature": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "shoes/product/5.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "shoes/product/5.jpg"
+            }
+        ],
+        "discount": 0,
+        "department": "none",
+        "mrp": 52,
+        "price": 49,
+        "name": "Latest Sports Shoes",
+        "ratingStars": 2
+    },
+    {
+        "id": 54,
+        "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, deserunt? Asperiores aliquam voluptatum culpa aliquid ab ducimus eaque illum, quibusdam reiciendis id ad consectetur quis, animi qui, minus quidem eveniet! Dolorum magnam numquam, asperiores accusantium architecto placeat quam officia, tempore repellendus.",
+        "category": "none",
+        "manufacturer": "none",
+        "colors": [],
+        "size": "none",
+        "available": true,
+        "first_available_date": "28-10-2001",
+        "totalReviews": 17,
+        "brand": "none",
+        "type": "shoes",
+        "feature": "none",
+        "images": [
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "shoes/product/6.jpg"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "shoes/product/6.jpg"
+            }
+        ],
+        "discount": 0,
+        "department": "none",
+        "mrp": 52,
+        "price": 49,
+        "name": "Latest Sports Shoes",
+        "ratingStars": 3
+    }
+]

@@ -1,0 +1,22 @@
+@import 'utils/variables';
+
+@import 'utils/mixin/common';
+@import 'utils/mixin/breakpoints';
+
+@import 'layout/nav';
+@import 'layout/footer';
+
+@import 'themes/responsive';
+
+// pages scss files
+@import 'pages/inner_page';
+
+// layout scss files
+@import 'layout/header';
+@include header_1;
+@include header_2;
+@include header_3;
+@import 'layout/subscribe';
+
+// themes scss files
+@import 'themes/responsive';

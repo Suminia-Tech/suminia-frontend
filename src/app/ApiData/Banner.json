@@ -1,0 +1,731 @@
+[
+    {
+        "id": 1,
+        "type": "fashion",
+        "subtype": "fashiontopbanner",
+        "children": [
+            {
+                "bannerId": 1,
+                "image": "fashion/banner/1.jpg",
+                "discount": 26,
+                "heading": "New Hoodie",
+                "subheading": "BUY ONE GET ONE FREE",
+                "link": "/shop",
+                "category": "shirt"
+            },
+            {
+                "bannerId": 2,
+                "image": "fashion/banner/2.jpg",
+                "discount": 50,
+                "heading": "Women Fashion",
+                "subheading": "New offer 50% off",
+                "link": "/shop",
+                "category": "kurta"
+            },
+            {
+                "bannerId": 3,
+                "image": "fashion/banner/3.jpg",
+                "discount": 36,
+                "heading": "New Jacket",
+                "subheading": "BUY ONE GET ONE FREE",
+                "link": "/shop",
+                "category": "jacket",
+                "class": true
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "type": "fashion",
+        "subtype": "fashionnewoffer",
+        "leftbanner": {
+            "image": "fashion/banner/4.jpg",
+            "topheadingleft": "New",
+            "topheadingright": "Collections",
+            "heading": "New Red Jacket From",
+            "price": "$48"
+        },
+        "righttopbanner": {
+            "image": "fashion/banner/5.jpg",
+            "title": "New Hoodies from ",
+            "price": 34,
+            "rightbottom": [
+                {
+                    "heading": "New Jacket",
+                    "discount": "Discount 70%",
+                    "image": "fashion/banner/6.jpg"
+                },
+                {
+                    "heading": "New Jacket",
+                    "discount": "Discount 80%",
+                    "image": "fashion/banner/7.jpg"
+                }
+            ]
+        }
+    },
+    {
+        "type": "fashion",
+        "subtype": "fashiondeal",
+        "topHeading": "Special Discount",
+        "topHeadingColor": "70% OFF",
+        "mainHeading": "Deal Of The Day",
+        "mainHeadin2": "from ",
+        "mainHeading2Color": "$75",
+        "leftHeading": "Latest Jacket",
+        "leftsubheading": "BUY ONE GET ONE FREE",
+        "image": "fashion/banner/8.jpg"
+    },
+    {
+        "id": 3,
+        "type": "fashion",
+        "subtype": "fashioninstashop",
+        "children": [
+            {
+                "id": 1,
+                "image": "fashion/instagram/1.jpg",
+                "Share": "Share",
+                "discount": "New Offer - 46% Discount",
+                "title": "Women T-shirt From $35"
+            },
+            {
+                "id": 2,
+                "image": "fashion/instagram/2.jpg",
+                "Share": "Share",
+                "discount": "New Offer - 49% Discount",
+                "title": "Mens Jacket From $405"
+            },
+            {
+                "id": 3,
+                "image": "fashion/instagram/3.jpg",
+                "Share": "Share",
+                "discount": "New Offer - 45% Discount",
+                "title": "Women T-shirt From $235"
+            },
+            {
+                "id": 4,
+                "image": "fashion/instagram/4.jpg",
+                "Share": "Share",
+                "discount": "New Offer - 25% Discount",
+                "title": "Track Suite From $305"
+            },
+            {
+                "id": 5,
+                "image": "fashion/instagram/5.jpg",
+                "Share": "Share",
+                "discount": "New Offer - 67% Discount",
+                "title": "Women white T-shirt From $55"
+            },
+            {
+                "id": 6,
+                "image": "fashion/instagram/1.jpg",
+                "Share": "Share",
+                "discount": "New Offer - 77% Discount",
+                "title": "Women T-shirt From $36"
+            }
+        ]
+    },
+    {
+        "type": "flower",
+        "subtype": "flowertopbanner",
+        "children": [
+            {
+                "bannerId": 1,
+                "image": "flower/banner/1.jpg",
+                "discount": 26,
+                "heading": "Pink Flower",
+                "subheading": "BUY ONE GET ONE FREE",
+                "link": "/shop"
+            },
+            {
+                "bannerId": 2,
+                "image": "flower/banner/2.jpg",
+                "discount": 50,
+                "heading": "Yellow Flower",
+                "subheading": "New offer 50% off",
+                "link": "/shop"
+            },
+            {
+                "bannerId": 3,
+                "image": "flower/banner/3.jpg",
+                "discount": 36,
+                "heading": "Orange Flower",
+                "subheading": "BUY ONE GET ONE FREE",
+                "link": "/shop",
+                "class": true
+            }
+        ]
+    },
+    {
+        "type": "flower",
+        "subtype": "flowernewoffer",
+        "leftbanner": {
+            "image": "flower/offer/big.jpg",
+            "topheadingleft": "New",
+            "topheadingright": "Collections",
+            "heading": "New Red Flowers From",
+            "price": "$48"
+        },
+        "righttopbanner": {
+            "image": "flower/offer/1.jpg",
+            "title": "New Flowers from ",
+            "price": "$34",
+            "rightbottom": [
+                {
+                    "heading": "New Rose",
+                    "discount": "Discount 70%",
+                    "image": "flower/offer/2.jpg"
+                },
+                {
+                    "heading": "New Lotus",
+                    "discount": "Discount 80%",
+                    "image": "flower/offer/3.jpg"
+                }
+            ]
+        }
+    },
+    {
+        "type": "flower",
+        "subtype": "flowerdeal",
+        "leftimage": "flower/offer-1/2.png",
+        "rightimage": "flower/offer-1/1.png",
+        "lefthead": "Shop Now",
+        "leftsubhead": "BUY ONE GET ONE FREE",
+        "mainhead1": "Special Discount ",
+        "offer": "70% OFF",
+        "mainhead2": "Deal Of The Day ",
+        "mainhead3": "from ",
+        "price": "$75"
+    },
+    {
+        "type": "flower",
+        "subtype": "flowernewsandupdate",
+        "children": [
+            {
+                "id": 1,
+                "image": "flower/new/1.jpg",
+                "date": 16,
+                "month": "MAY",
+                "title": "Flowers",
+                "discount": "New Offer 56% Discount",
+                "fresh": "Fresh",
+                "pricetitle": "Latest Night Lamp From $35",
+                "btn": "Read More"
+            },
+            {
+                "id": 2,
+                "image": "flower/new/2.jpg",
+                "date": 26,
+                "month": "JUNE",
+                "title": "Flowers",
+                "discount": "New Offer 56% Discount",
+                "fresh": "Fresh",
+                "pricetitle": "Latest Night Lamp From $35",
+                "btn": "Read More"
+            },
+            {
+                "id": 3,
+                "image": "flower/new/3.jpg",
+                "date": 6,
+                "month": "JULY",
+                "title": "Flowers",
+                "discount": "New Offer 56% Discount",
+                "fresh": "Fresh",
+                "pricetitle": "Latest Night Lamp From $35",
+                "btn": "Read More"
+            }
+        ]
+    },
+    {
+        "type": "furniture",
+        "subtype": "furnituretopbanner",
+        "children": [
+            {
+                "bannerId": 1,
+                "image": "furniture-images/banner/1.jpg",
+                "discount": 26,
+                "off": "OFF",
+                "price": 59.00,
+                "delprice": 65.00,
+                "heading": "SHOP NOW",
+                "subHeading": "BUY ONE GET ONE FREE",
+                "link": "/shop/shop_canvas_filter"
+            },
+            {
+                "bannerId": 2,
+                "image": "furniture-images/banner/2.jpg",
+                "discount": 66,
+                "off": "OFF",
+                "price": 69.00,
+                "delprice": 95.00,
+                "heading": "SHOP NOW",
+                "subHeading": "BUY ONE GET ONE FREE",
+                "link": "/shop/shop_canvas_filter"
+            },
+            {
+                "bannerId": 3,
+                "image": "furniture-images/banner/3.jpg",
+                "discount": 96,
+                "off": "OFF",
+                "class": true,
+                "price": 89.00,
+                "delprice": 95.00,
+                "heading": "SHOP NOW",
+                "subHeading": "BUY ONE GET ONE FREE",
+                "link": "/shop/shop_canvas_filter"
+            }
+        ]
+    },
+    {
+        "type": "furniture",
+        "subtype": "furnituredeal",
+        "image": "furniture-images/deal/1.png",
+        "lefthead": "Shop Now",
+        "leftsubhead": "BUY ONE GET ONE FREE",
+        "mainhead1": "Special Discount ",
+        "offer": "70% OFF",
+        "mainhead2": "Deal Of The Day ",
+        "mainhead3": "from ",
+        "price": 75
+    },
+    {
+        "type": "furniture",
+        "subtype": "furnitureinstashop",
+        "children": [
+            {
+                "id": 1,
+                "image": "furniture-images/shop/1.png",
+                "heading": "Decoration",
+                "discount": "New Offer 56% Discount",
+                "title": "Latest Night Lamp From $35"
+            },
+            {
+                "id": 2,
+                "image": "furniture-images/shop/2.png",
+                "heading": "Decoration",
+                "discount": "New Offer 86% Discount",
+                "title": "Latest Night Lamp From $35"
+            },
+            {
+                "id": 3,
+                "image": "furniture-images/shop/3.png",
+                "heading": "Decoration",
+                "discount": "New Offer 86% Discount",
+                "title": "Latest Night Lamp From $35"
+            },
+            {
+                "id": 4,
+                "image": "furniture-images/shop/4.png",
+                "heading": "Decoration",
+                "discount": "New Offer 86% Discount",
+                "title": "Latest Night Lamp From $35"
+            },
+            {
+                "id": 5,
+                "image": "furniture-images/shop/1.png",
+                "heading": "Decoration",
+                "discount": "New Offer 56% Discount",
+                "title": "Latest Night Lamp From $35"
+            }
+        ]
+    },
+    {
+        "type": "vegetables",
+        "subtype": "vegetablestopbanner",
+        "banners": [
+            {
+                "heading": "Lemons",
+                "subheading": "BUY ONE GET ONE FREE",
+                "discount": 26,
+                "image": "vegetable/banner/1.jpg"
+            },
+            {
+                "childtype": "middlebanner",
+                "price": "$49",
+                "mrp": "$52",
+                "smallheading": "Get Rewarded",
+                "headingtop": "Earn 10%",
+                "headingbottom": "Back Reward",
+                "subheading": "Valid online & in-store with select styles.",
+                "image": "vegetable/percentage.jpg",
+                "class": true
+            },
+            {
+                "heading": "Kiwi",
+                "subheading": "BUY ONE GET ONE FREE",
+                "discount": 26,
+                "image": "vegetable/banner/2.jpg"
+            }
+        ]
+    },
+    {
+        "type": "vegetables",
+        "subtype": "fruitsbanner",
+        "banners": [
+            {
+                "id": 1,
+                "heading": "Fresh Plum",
+                "ratingStars": 4,
+                "discount": 50,
+                "image": "vegetable/fruit/1.jpg"
+            },
+            {
+                "id": 2,
+                "heading": "Fresh Muskmelon",
+                "ratingStars": 3,
+                "discount": 0,
+                "image": "vegetable/fruit/2.jpg"
+            },
+            {
+                "id": 3,
+                "heading": "Fresh Water Melon",
+                "ratingStars": 5,
+                "discount": 90,
+                "image": "vegetable/fruit/3.jpg"
+            },
+            {
+                "id": 4,
+                "heading": "Fresh Apricote",
+                "ratingStars": 4,
+                "discount": 0,
+                "image": "vegetable/fruit/4.jpg"
+            },
+            {
+                "id": 5,
+                "heading": "Fresh Black Berry",
+                "ratingStars": 5,
+                "discount": 60,
+                "image": "vegetable/fruit/5.jpg"
+            },
+            {
+                "id": 6,
+                "heading": "Fresh Natural Fruits",
+                "ratingStars": 4,
+                "discount": 0,
+                "image": "vegetable/fruit/6.jpg"
+            }
+        ]
+    },
+    {
+        "type": "vegetables",
+        "subtype": "vegetablesdeal",
+        "lefttext": "New Festival Offer",
+        "discount": 70,
+        "couponcode": "DGR548548",
+        "fruitsimage": "vegetable/1234.png",
+        "image": "vegetable/percentage.jpg",
+        "cirleimage": "vegetable/circle.png",
+        "socialmedia": [
+            {
+                "title": "Facebook",
+                "image": "social-icon/1.png"
+            },
+            {
+                "title": "Instagram",
+                "image": "social-icon/2.png"
+            },
+            {
+                "title": "Twitter",
+                "image": "social-icon/3.png"
+            }
+        ],
+        "rightsmallheading": "New Headphone",
+        "rightheadingtop": "50% Cash",
+        "rightheadingbottom": "Back Reward",
+        "bottomsmalltop": "Limited Offer",
+        "bottomsmallbottom": "Buy Now!!",
+        "rightimage": "vegetable/offer/2.jpg"
+    },
+    {
+        "type": "vegetables",
+        "subtype": "vegetablesfreshfruits",
+        "banners": [
+            {
+                "heading": "Citrus",
+                "subheading": "Healthy Fruit",
+                "image": "vegetable/category/1.jpg",
+                "imagefront": "vegetable/category/1.png"
+            },
+            {
+                "heading": "Stone Fruit",
+                "subheading": "Healthy Fruit",
+                "image": "vegetable/category/2.jpg",
+                "imagefront": "vegetable/category/2.png"
+            },
+            {
+                "heading": "Tropical",
+                "subheading": "Healthy Fruit",
+                "image": "vegetable/category/3.jpg",
+                "imagefront": "vegetable/category/3.png"
+            },
+            {
+                "heading": "Berries",
+                "subheading": "Healthy Fruit",
+                "image": "vegetable/category/4.jpg",
+                "imagefront": "vegetable/category/4.png"
+            }
+        ]
+    },
+    {
+        "type": "vegetables",
+        "subtype": "vegetableshurryup",
+        "banners": [
+            {
+                "childtype": "leftbanners",
+                "children": [
+                    {
+                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "image": "vegetable/offer-1/1.png",
+                        "mrp": 57.0,
+                        "price": 54.0,
+                        "ratingStars": 4
+                    },
+                    {
+                        "title": "Red Testy Fresh Tomato",
+                        "image": "vegetable/offer-1/2.png",
+                        "mrp": 42.0,
+                        "price": 39.0,
+                        "ratingStars": 5
+                    },
+                    {
+                        "title": "Standard Come",
+                        "image": "vegetable/offer-1/3.png",
+                        "mrp": 25.0,
+                        "price": 20.0,
+                        "ratingStars": 3
+                    }
+                ]
+            },
+            {
+                "title": "Juicy Lemone",
+                "childtype": "middlebanner",
+                "mrp": 945,
+                "price": 600,
+                "ratingStars": 2,
+                "image1": "vegetable/offer-1/big.png",
+                "image2": "vegetable/circle.png"
+            },
+            {
+                "childtype": "rightbanners",
+                "children": [
+                    {
+                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "image": "vegetable/offer-1/4.png",
+                        "mrp": 70.0,
+                        "price": 68.0,
+                        "ratingStars": 2
+                    },
+                    {
+                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "image": "vegetable/offer-1/5.png",
+                        "mrp": 14.0,
+                        "price": 10.0,
+                        "ratingStars": 4
+                    },
+                    {
+                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "image": "vegetable/offer-1/6.png",
+                        "mrp": 50.0,
+                        "price": 45.0,
+                        "ratingStars": 2
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "vegetables",
+        "subtype": "vegetablesourblog",
+        "banners": [
+            {
+                "day": 16,
+                "month": "MAY",
+                "watermark": "Flowers",
+                "title": "New Offer -56% Discount",
+                "headingtop": "Fresh",
+                "headingbottom": "Latest Night Lamp From $35",
+                "image": "vegetable/update/1.jpg"
+            },
+            {
+                "day": 17,
+                "month": "MAY",
+                "watermark": "Flowers",
+                "title": "New Offer -56% Discount",
+                "headingtop": "Fresh",
+                "headingbottom": "Latest Night Lamp From $35",
+                "image": "vegetable/update/2.jpg"
+            },
+            {
+                "day": 16,
+                "month": "MAY",
+                "watermark": "Flowers",
+                "title": "New Offer -56% Discount",
+                "headingtop": "Fresh",
+                "headingbottom": "Latest Night Lamp From $35",
+                "image": "vegetable/update/3.jpg"
+            }
+        ]
+    },
+    {
+        "type": "shoes",
+        "subtype": "shoestopbanner",
+        "banners": [
+            {
+                "image": "shoes/poster/1.png",
+                "topTitle": "Get 25% Rewarded",
+                "heading": "Latest Sport Shoes",
+                "feature": "Fully Comfortable and Smooth Product",
+                "price": 49.0,
+                "mrp": 58.0
+            },
+            {
+                "image": "shoes/poster/2.png",
+                "topTitle": "Get 38% Rewarded",
+                "heading": "Perfect Mixture Shoes",
+                "feature": "Fully Comfortable and Smooth Product",
+                "price": 56.0,
+                "mrp": 58.0,
+                "class": true
+            }
+        ]
+    },
+    {
+        "type": "shoes",
+        "subtype": "shoesnewoffers",
+        "leftbanner": {
+            "titleleft": "New",
+            "titleright": "Collections",
+            "headingtop": "New Red",
+            "headingbottom": "Shoes",
+            "price": 48,
+            "image": "shoes/poster-2/1.jpg"
+        },
+        "rightbanners": {
+            "heading": "New Hoodie From",
+            "price": 34,
+            "image": "shoes/poster-2/2.jpg",
+            "bottombanners": [
+                {
+                    "overlay": true,
+                    "heading": "New Jacket",
+                    "discount": 70,
+                    "image": "shoes/poster-2/3.jpg"
+                },
+                {
+                    "image": "shoes/poster-2/4.jpg"
+                }
+            ]
+        }
+    },
+    {
+        "type": "shoes",
+        "subtype": "shoesdeal",
+        "title": "Special Discount",
+        "discount": "70% OFF",
+        "headingtop": "Deal Of The Day",
+        "headingbottom": "from",
+        "price": 75,
+        "image": "shoes/deal/1.png"
+    },
+    {
+        "type": "electronic",
+        "subtype": "electronictopbanner",
+        "banners": [
+            {
+                "heading": "Headphone",
+                "subheading": "BUY ONE GET ONE FREE",
+                "image": "electronics/banner/1.jpg"
+            },
+            {
+                "childtype": "middlebanner",
+                "price": 49,
+                "mrp": 52,
+                "smallheading": "Get Rewarded",
+                "headingtop": "Earn 10%",
+                "headingbottom": "Back Reward",
+                "subheading": "Valid online & in-store with select styles.",
+                "class": true
+            },
+            {
+                "heading": "Headphone",
+                "subheading": "BUY ONE GET ONE FREE",
+                "image": "electronics/banner/2.jpg"
+            }
+        ]
+    },
+    {
+        "type": "electronic",
+        "subtype": "electronicdeal",
+        "lefttext": "New Festival Offer",
+        "discount": 70,
+        "couponcode": "DGR548548",
+        "image": "electronics/banner/3.jpg",
+        "socialmedia": [
+            {
+                "title": "Facebook",
+                "image": "social-icon/1.png"
+            },
+            {
+                "title": "Instagram",
+                "image": "social-icon/2.png"
+            },
+            {
+                "title": "Twitter",
+                "image": "social-icon/3.png"
+            }
+        ],
+        "rightsmallheading": "New Headphone",
+        "rightheadingtop": "50% Cash",
+        "rightheadingbottom": "Back Reward",
+        "bottomsmalltop": "Limited Offer",
+        "bottomsmallbottom": "Buy Now!!",
+        "rightimage": "electronics/banner/4.jpg"
+    },
+    {
+        "type": "electronic",
+        "subtype": "electronicinstashop",
+        "children": [
+            {
+                "id": 1,
+                "image": "electronics/instagram/5.jpg",
+                "heading": "Mobile",
+                "discount": "New Offer 56% Discount",
+                "title": "Latest Gallexy mobile From $35"
+            },
+            {
+                "id": 2,
+                "image": "electronics/instagram/4.jpg",
+                "heading": "Mobile",
+                "discount": "New Offer 86% Discount",
+                "title": "Latest Gallexy mobile From $35"
+            },
+            {
+                "id": 3,
+                "image": "electronics/instagram/3.jpg",
+                "heading": "Mobile",
+                "discount": "New Offer 86% Discount",
+                "title": "Latest Gallexy mobile From $35"
+            },
+            {
+                "id": 4,
+                "image": "electronics/instagram/2.jpg",
+                "heading": "Mobile",
+                "discount": "New Offer 86% Discount",
+                "title": "Latest Gallexy mobile From $35"
+            },
+            {
+                "id": 5,
+                "image": "electronics/instagram/1.jpg",
+                "heading": "Mobile",
+                "discount": "New Offer 56% Discount",
+                "title": "Latest Gallexy mobile From $35"
+            },
+            {
+                "id": 6,
+                "image": "electronics/instagram/5.jpg",
+                "heading": "Mobile",
+                "discount": "New Offer 56% Discount",
+                "title": "Latest Gallexy mobile From $35"
+            }
+        ]
+    }
+]

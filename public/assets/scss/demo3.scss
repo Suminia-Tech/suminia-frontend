@@ -1,0 +1,21 @@
+// layout scss files
+@import "layout/header";
+@include header_1;
+@import "layout/home_slider";
+@include home_3;
+@import "layout/slick-slider";
+@import "layout/poster";
+@import "layout/arrivals";
+@include arrival_1;
+@import "layout/subscribe";
+@import "layout/service";
+@import "layout/category";
+@include category_common;
+@include category_1;
+@import "layout/offer";
+@include offer_common;
+@import "layout/banner";
+
+// Mixin scss files
+@include service_style_3;
+@import "utils/mixin/animation";

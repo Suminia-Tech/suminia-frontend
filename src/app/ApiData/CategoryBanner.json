@@ -1,0 +1,109 @@
+[
+    {
+        "type": "fashion",
+        "categories": [
+            {
+                "title": "Shoes",
+                "subtitle": "Fashion",
+                "image": "fashion/category/1.jpg"
+            },
+            {
+                "title": "Men",
+                "subtitle": "Fashion",
+                "image": "fashion/category/2.jpg"
+            },
+            {
+                "title": "Jeans",
+                "subtitle": "Fashion",
+                "image": "fashion/category/3.jpg"
+            },
+            {
+                "title": "Jacket",
+                "subtitle": "Fashion",
+                "image": "fashion/category/4.jpg"
+            },
+            {
+                "title": "Jeans",
+                "subtitle": "Fashion",
+                "image": "fashion/category/3.jpg"
+            }
+        ]
+    },
+    {
+        "type": "flower",
+        "categories": [
+            {
+                "title": "Yellow Rose",
+                "subtitle": "Flowers",
+                "image": "flower/categories/1.jpg"
+            },
+            {
+                "title": "Cranberry",
+                "subtitle": "Flowers",
+                "image": "flower/categories/2.jpg"
+            },
+            {
+                "title": "Yellow Rose",
+                "subtitle": "Flowers",
+                "image": "flower/categories/1.jpg"
+            },
+            {
+                "title": "Astrantia",
+                "subtitle": "Flowers",
+                "image": "flower/categories/3.jpg"
+            },
+            {
+                "title": "Alchemilla",
+                "subtitle": "Flowers",
+                "image": "flower/categories/4.jpg"
+            }
+        ]
+    },
+    {
+        "type": "shoes",
+        "children": [
+            {
+                "image": "shoes/category/1.png",
+                "title": "Canvas",
+                "startingPrice": 45,
+                "endiginPrice": 80
+            },
+            {
+                "image": "shoes/category/2.png",
+                "title": "Canvas",
+                "startingPrice": 45,
+                "endiginPrice": 80
+            },
+            {
+                "image": "shoes/category/3.png",
+                "title": "Canvas",
+                "startingPrice": 45,
+                "endiginPrice": 80
+            },
+            {
+                "image": "shoes/category/4.png",
+                "title": "Canvas",
+                "startingPrice": 45,
+                "endiginPrice": 80
+            },
+            {
+                "image": "shoes/category/5.png",
+                "title": "Canvas",
+                "startingPrice": 45,
+                "endiginPrice": 80
+            },
+            {
+                "image": "shoes/category/6.png",
+                "title": "Canvas",
+                "startingPrice": 45,
+                "endiginPrice": 80
+            },
+            {
+                "image": "shoes/category/7.png",
+                "title": "Canvas",
+                "startingPrice": 45,
+                "endiginPrice": 80
+            }
+        ]
+    }
+]

@@ -1,0 +1,242 @@
+[
+    {
+        "id": 1,
+        "title": "watches",
+        "active": false,
+        "bannerImage": "electronics/banner/4.jpg",
+        "menuOpen": true,
+        "children": [
+            {
+                "id": 1,
+                "heading": "Watch Brands",
+                "subMenuOpen": false,
+                "items": [
+                    {
+                        "title": "Coros",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Titan",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Citizen",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Casio",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Movado",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Tissot",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "heading": "Watch Display",
+                "subMenuOpen": false,
+                "items": [
+                    {
+                        "title": "Analog",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Digital",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Hybrid",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Tactile",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Touchscreen",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "heading": "Watch Style",
+                "subMenuOpen": false,
+                "items": [
+                    {
+                        "title": "Casual",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Dress",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Fashion",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Luxury",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "Footwear",
+        "path": "/shop/shop_left_sidebar",
+        "type": "link"
+    },
+    {
+        "id": 3,
+        "title": "Clothing",
+        "active": false,
+        "menuOpen": true,
+        "bannerImage": "banner/1.jpg",
+        "children": [
+            {
+                "id": 1,
+                "subMenuOpen": false,
+                "heading": "Women's fashion",
+                "items": [
+                    {
+                        "title": "Dress",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Skirts",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Western Wear",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Ethanic Wear",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Sports Wear",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "heading": "Men's fashion",
+                "subMenuOpen": false,
+                "items": [
+                    {
+                        "title": "Sports Wear",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Ethanic Wear",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Western Wear",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "heading": "Accesories",
+                "subMenuOpen": false,
+                "items": [
+                    {
+                        "title": "Earrings",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Fashion Jewellery",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Ties",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Caps And Hats",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Cuffinks",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Precious Jewellery",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    },
+                    {
+                        "title": "Necklace",
+                        "path": "/shop/shop_left_sidebar",
+                        "type": "link"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "title": "Accessories",
+        "path": "/shop/shop_left_sidebar",
+        "type": "link"
+    },
+    {
+        "id": 5,
+        "title": "Home & Decor",
+        "path": "/shop/shop_left_sidebar",
+        "type": "link"
+    },
+    {
+        "id": 6,
+        "title": "Bags",
+        "path": "/shop/shop_left_sidebar",
+        "type": "link"
+    },
+    {
+        "id": 1,
+        "title": "Kitchan",
+        "path": "/shop/shop_left_sidebar",
+        "type": "link"
+    }
+]

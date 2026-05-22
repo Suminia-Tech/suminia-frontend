@@ -1,0 +1,10 @@
+@import 'layout/header';
+@include header_1;
+@import 'layout/subscribe';
+@import 'layout/home_slider';
+@include home_1;
+@import 'layout/service';
+@include service_style_2;
+@import 'layout/banner';
+@include timer_banner;
+@import 'layout/category';

@@ -1,0 +1,58 @@
+/**=====================
+    Subsribe css Start
+==========================**/
+.subscribe-section {
+    background-color: $light-theme-color;
+
+    [class="dark"] & {
+        background-color: #232323;
+    }
+
+    &-light {
+        background-color: $light-demo-6;
+
+        [class="dark"] & {
+            background-color: #232323;
+        }
+    }
+
+    .subscribe-details {
+        height: 100%;
+
+        h2 {
+            font-size: calc(18px + (30 - 18) * ((100vw - 320px) / (1920 - 320)));
+            margin-top: -2px;
+        }
+
+        h6 {
+            font-size: 15px;
+            font-weight: normal;
+            display: block;
+            margin-bottom: -3px;
+            line-height: 1.6;
+        }
+    }
+
+    .subsribe-input {
+        .form-control {
+            border-radius: 0;
+
+            [class="dark"] & {
+                background-color: #2b2b2b;
+                border-color: #383838;
+            }
+
+            &:focus {
+                background-color: $white;
+
+                [class="dark"] & {
+                    background-color: #2b2b2b;
+                    border-color: #383838;
+                }
+            }
+        }
+
+        @include flex_common;
+        height: 100%;
+    }
+}

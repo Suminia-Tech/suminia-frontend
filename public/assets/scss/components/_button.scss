@@ -1,0 +1,298 @@
+/**=====================
+     buttons css start
+==========================**/
+.btn {
+    position: relative;
+    padding: calc(8px + (14 - 8) * ((100vw - 320px) / (1920 - 320))) calc(15px + (30 - 15) * ((100vw - 320px) / (1920 - 320)));
+    font-weight: 500;
+    z-index: 1;
+    transition: all 0.5s;
+    border-radius: 0;
+    font-size: calc(12px + (13 - 12) * ((100vw - 320px) / (1920 - 320)));
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &-submit {
+        font-size: calc(14px + (16 - 14) * ((100vw - 320px) / (1920 - 320)));
+        background-color: var(--theme-color);
+        color: $white;
+        border: none;
+
+        &:hover {
+            background-color: var(--theme-color);
+            color: $white;
+        }
+    }
+
+    &-size {
+        font-size: 12px;
+    }
+
+    &:focus {
+        box-shadow: none;
+    }
+
+    &-spacing {
+        padding: calc(5px + (14 - 5) * ((100vw - 320px) / (1920 - 320))) calc(8px + (30 - 8) * ((100vw - 320px) / (1920 - 320)));
+    }
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-weight: 400;
+}
+
+.default {
+    &-white {
+        background-color: $white;
+        border-radius: 0;
+        color: $black;
+        border: none;
+        font-weight: 500;
+        &:hover{
+            background-color: $white;
+            color: $black;
+        }
+        &:active{
+            background-color: $white!important;
+            color: $black!important;
+            border-color: $white!important;
+        }
+    }
+
+    &-light {
+        color: $lightsilver;
+        position: relative;
+        border: 1px solid transparent;
+        padding: calc(6px + (14 - 6) * ((100vw - 320px) / (1920 - 320))) calc(15px + (30 - 15) * ((100vw - 320px) / (1920 - 320)));
+        background-color: transparent;
+        z-index: 0;
+
+        &::before {
+            z-index: -1;
+            @include pos;
+            @include pseudowh;
+            top: 0;
+            left: 0;
+            background-color: var(--theme-color);
+            opacity: 0.15;
+        }
+
+        &:hover {
+            background-color: transparent;
+            border-color: transparent;
+        }
+    }
+
+    &-light1 {
+        color: var(--theme-color);
+        position: relative;
+        background-color: unset;
+        border: 1px solid transparent;
+
+        &::before {
+            @include pos;
+            @include pseudowh;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: -1;
+            background-color: var(--theme-color);
+            opacity: 0.11;
+            transition: all 0.5s;
+        }
+
+        &::after {
+            @include pos;
+            @include pseudowh;
+            @include center(both);
+            z-index: -1;
+            border: 1px solid var(--theme-color);
+            opacity: 0;
+            transition: all 0.5s;
+        }
+
+        &:hover {
+            color: var(--theme-color);
+
+            &::before {
+                opacity: 0;
+                transform: scale(0.5, 0.5);
+            }
+
+            &::after {
+                opacity: 0.11;
+            }
+        }
+    }
+
+    &-light-theme {
+        color: var(--theme-color);
+        padding: calc(6px + (14 - 6) * ((100vw - 320px) / (1920 - 320))) calc(15px + (30 - 15) * ((100vw - 320px) / (1920 - 320)));
+
+        &:hover {
+            color: var(--theme-color);
+        }
+    }
+
+    &-theme {
+        background-color: var(--theme-color);
+        color: $white;
+        border-color: transparent;
+        font-weight: 500;
+
+        i {
+            margin-left: 5px;
+            font-size: 11px;
+        }
+
+        &:hover {
+            color: $white;
+            background-color: var(--theme-color);
+            border-color: transparent;
+        }
+    }
+
+    &-theme-2 {
+        padding: 12px 25px;
+        font-size: 15px;
+        text-transform: capitalize;
+        font-weight: 400;
+    }
+
+    &-theme-1 {
+        background-color: rgba($light-demo-7, 0.6);
+        transform: scale(100%);
+        border: 1px solid var(--theme-color);
+
+        &:hover {
+            background-color: var(--theme-color);
+            color: $white;
+            transform: scale(100%);
+        }
+    }
+
+    &::before {
+        @include pos;
+        @include pseudowh;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        background-color: var(--theme-color);
+        opacity: 0.11;
+        transition: all 0.5s;
+    }
+
+    &::after {
+        @include pos;
+        @include pseudowh;
+        @include center(both);
+        z-index: -1;
+        border: 1px solid var(--theme-color);
+        opacity: 0;
+        transition: all 0.5s;
+    }
+
+    &:hover {
+        color: var(--theme-color);
+
+        &::before {
+            opacity: 0;
+            transform: scale(0.5, 0.5);
+        }
+
+        &::after {
+            opacity: 0.11;
+        }
+    }
+}
+
+.btn-light-white {
+    padding: 6px 20px;
+    color: $white;
+    background-color: unset;
+    border: 1px solid rgba($white, 0.1);
+
+    i {
+        font-size: 12px;
+    }
+
+    &::before {
+        @include pos;
+        @include pseudowh;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background-color: rgba($white, 0.1);
+        transition: all 0.5s;
+    }
+
+    &:hover {
+        color: $white;
+        background-color: transparent;
+        border: 1px solid rgba($white, 0.1);
+
+        &::before {
+            opacity: 0;
+            transform: scale(0.5, 0.5);
+        }
+    }
+}
+
+.btn-white {
+    padding: 6px 20px;
+    color: $theme-font-color;
+    background-color: unset;
+    border: 1px solid $white;
+
+    i {
+        font-size: 12px;
+    }
+
+    &::before {
+        @include pos;
+        @include pseudowh;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background-color: $white;
+        transition: all 0.5s;
+    }
+
+    &:hover {
+        color: $white;
+
+        &::before {
+            opacity: 0;
+            transform: scale(0.5, 0.5);
+        }
+    }
+}
+
+.btn-full {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    color: $white;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+
+    &:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+}
+
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-outline-info,
+.btn-outline-dark {
+    background-color: transparent;
+}

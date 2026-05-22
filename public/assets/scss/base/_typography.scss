@@ -1,0 +1,286 @@
+/**=====================
+     typography css start
+==========================**/
+body {
+    font-family: $font_0, $font_1;
+    position: relative;
+    font-size: 14px;
+    color: $theme-font-color;
+    margin: 0;
+    background-color: $white;
+
+    [class="dark"] & {
+        color: #efefef;
+        background-color: #2b2b2b;
+    }
+
+    .bg-overlay {
+        @include pseudowh($width: 100vw, $height: 100vh);
+        background-color: rgba($black, 0.2);
+        position: fixed;
+        z-index: 3;
+        top: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.5s;
+
+        &.show {
+            visibility: visible;
+            opacity: 1;
+            inset: 0;
+        }
+    }
+}
+
+ul {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+li {
+    display: inline-block;
+    font-size: 14px;
+}
+
+p {
+    font-size: calc(13px + (14 - 13) * ((100vw - 320px) / (1920 - 320)));
+    line-height: 18px;
+}
+
+a {
+    color: var(--theme-color);
+    transition: 0.5s ease;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: none;
+        transition: 0.5s ease;
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+button {
+    &:focus {
+        outline: none;
+    }
+}
+
+.btn-close {
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+:focus {
+    outline: none;
+}
+
+.form-control {
+    background-color: $white;
+    border-radius: 0.25rem;
+
+    [class="dark"] & {
+        background-color: #2b2b2b;
+    }
+
+
+    &:focus {
+        box-shadow: none;
+
+        [class="dark"] & {
+            background-color: #232323;
+
+        }
+    }
+}
+
+h1 {
+    font-size: calc(40px + (70 - 40) * ((100vw - 320px) / (1920 - 320)));
+    font-weight: 600;
+    line-height: 1.1;
+    text-transform: capitalize;
+    margin: 0;
+}
+
+h2 {
+    font-size: calc(22px + (28 - 22) * ((100vw - 320px) / (1920 - 320)));
+    font-weight: 600;
+    line-height: 1;
+    text-transform: capitalize;
+    margin: 0;
+}
+
+h3 {
+    font-size: calc(16px + (20 - 16) * ((100vw - 320px) / (1920 - 320)));
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0;
+}
+
+h4 {
+    font-size: calc(17px + (18 - 17) * ((100vw - 320px) / (1920 - 320)));
+    line-height: 1.2;
+    margin: 0;
+    font-weight: 400;
+}
+
+h5 {
+    font-size: calc(15px + (16 - 15) * ((100vw - 320px) / (1920 - 320)));
+    line-height: 1.2;
+    margin: 0;
+    font-weight: 400;
+}
+
+h6 {
+    font-size: calc(13px + (14 - 13) * ((100vw - 320px) / (1920 - 320)));
+    line-height: 1.2;
+    margin: 0;
+    font-weight: 400;
+}
+
+span {
+    display: inline-block;
+}
+
+.theme-color {
+    color: var(--theme-color) !important;
+}
+
+.theme-bg-color {
+    background-color: var(--theme-color);
+}
+
+.backgroundstyle {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: block;
+}
+
+// Loader ---------------------------------------------------------
+
+.loader {
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.warp {
+    @include pseudowh($width: 500px, $height: 200px);
+    text-align: center;
+}
+
+.cart,
+.load {
+    font-size: 100px;
+    color: #e22454;
+    animation-name: spaceboots;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.icons {
+    font-size: 21px;
+    position: absolute;
+    margin-top: -51px;
+    margin-left: 249px;
+    animation-name: spaceboots;
+    animation-duration: 0.8s;
+    animation-iteration-count: infinite;
+}
+
+.bino {
+    margin-top: 75px;
+    z-index: -1;
+    margin-left: -30px;
+    transform: rotate(-20deg);
+}
+
+.book {
+    margin-top: 80px;
+    z-index: -1;
+    margin-left: -5px;
+    transform: rotate(-20deg);
+    animation-name: spaceboots;
+    animation-duration: 0.8s;
+    animation-iteration-count: infinite;
+}
+
+.case {
+    margin-top: 80px;
+    z-index: -1;
+    margin-left: -4px;
+    transform: rotate(20deg);
+}
+
+.taxi {
+    margin-top: 80px;
+    z-index: -1;
+    margin-left: -3px;
+    transform: rotate(-40deg);
+    animation-name: spaceboots;
+    animation-duration: 0.8s;
+    animation-iteration-count: infinite;
+}
+
+.cake {
+    margin-top: 0px;
+    z-index: -1;
+    margin-left: -10px;
+    transform: rotate(-100deg);
+}
+
+.load {
+    font-size: 20px;
+    margin-top: -30px;
+    margin-left: 38px;
+}
+
+@keyframes spaceboots {
+    0% {
+        transform: translate(2px, 1px) rotate(0deg);
+    }
+
+    10% {
+        transform: translate(-1px, -2px) rotate(-1deg);
+    }
+
+    20% {
+        transform: translate(-3px, 0px) rotate(1deg);
+    }
+
+    30% {
+        transform: translate(0px, 2px) rotate(0deg);
+    }
+
+    40% {
+        transform: translate(1px, -1px) rotate(1deg);
+    }
+
+    50% {
+        transform: translate(-1px, 2px) rotate(-1deg);
+    }
+
+    60% {
+        transform: translate(-3px, 1px) rotate(0deg);
+    }
+
+    70% {
+        transform: translate(2px, 1px) rotate(-1deg);
+    }
+
+    80% {
+        transform: translate(-1px, -1px) rotate(1deg);
+    }
+
+    90% {
+        transform: translate(2px, 2px) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(1px, -2px) rotate(-1deg);
+    }
+}

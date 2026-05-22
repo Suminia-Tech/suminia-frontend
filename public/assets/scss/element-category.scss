@@ -1,0 +1,31 @@
+@import "utils/variables";
+
+@import "utils/mixin/common";
+@import "utils/mixin/breakpoints";
+
+@import "layout/slick-slider";
+@include slider_common;
+@include slider_3;
+
+// layout scss files
+@import "layout/header";
+@include header_2;
+@import "layout/category";
+@include category_common;
+@include category_1;
+@include category_2;
+@include category_3;
+@import "layout/product";
+@include product_common;
+@include product_style_1;
+@include product_style_2;
+@include product_style_3;
+@include product_style_4;
+@include product_style_5;
+@import "layout/subscribe";
+
+@import "pages/inner_page";
+@import "pages/shop_page";
+
+// themes scss files
+@import "themes/responsive";

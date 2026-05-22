@@ -1,0 +1,504 @@
+[
+    {
+        "type": "fashion",
+        "slides": [
+            {
+                "id": 1,
+                "type": "fashion",
+                "title": "Raw Ham Colorblock T-shirt",
+                "review": "5040 Review",
+                "contain": "The international hoodies with excellent durable fabric, not to heavy but simply PERFECT for Indian summer.",
+                "price": 49.55,
+                "Size": [
+                    "S",
+                    "M",
+                    "L",
+                    "L",
+                    "XL"
+                ],
+                "Color": [
+                    "Black",
+                    "White",
+                    "Blue",
+                    "Gray"
+                ],
+                "Qty": [
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "cart": "Add to cart",
+                "share": "share with",
+                "social": [
+                    {
+                        "link": "https://www.facebook.com/sharer/sharer.php?u=#url",
+                        "src": "/assets/images/social-icon/4.png"
+                    },
+                    {
+                        "link": "https://www.google.co.in/",
+                        "src": "/assets/images/social-icon/5.png"
+                    },
+                    {
+                        "link": "http://www.twitter.com/share",
+                        "src": "/assets/images/social-icon/6.png"
+                    }
+                ],
+                "mainImg": "/assets/images/fashion/slider/1.jpg",
+                "Sale": "Sale",
+                "offer": "70% OFF",
+                "New": "New Trending Fashion",
+                "buy": "BUY ONE GET ONE ",
+                "free": "FREE",
+                "Discover": "Discover",
+                "Collection": "Our Collection",
+                "mrp": 100
+            },
+            {
+                "id": 2,
+                "type": "fashion",
+                "title": "Raw Ham Colorblock T-shirt",
+                "review": "5040 Review",
+                "contain": "The international hoodies with excellent durable fabric, not to heavy but simply PERFECT for Indian summer.",
+                "price": 89.55,
+                "mrp": 100,
+                "Size": [
+                    "S",
+                    "M",
+                    "L",
+                    "L",
+                    "XL"
+                ],
+                "Color": [
+                    "Black",
+                    "White",
+                    "Blue",
+                    "Gray"
+                ],
+                "Qty": [
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "cart": "Add to cart",
+                "share": "share with",
+                "social": [
+                    {
+                        "link": "https://www.facebook.com/sharer/sharer.php?u=#url",
+                        "src": "/assets/images/social-icon/4.png"
+                    },
+                    {
+                        "link": "https://www.google.co.in/",
+                        "src": "/assets/images/social-icon/5.png"
+                    },
+                    {
+                        "link": "http://www.twitter.com/share",
+                        "src": "/assets/images/social-icon/6.png"
+                    }
+                ],
+                "mainImg": "/assets/images/fashion/slider/2.jpg",
+                "Sale": "Sale",
+                "offer": "70% OFF",
+                "New": "New Trending Fashion",
+                "buy": "BUY ONE GET ONE ",
+                "free": "FREE",
+                "Discover": "Discover",
+                "Collection": "Our Collection"
+            },
+            {
+                "id": 3,
+                "type": "fashion",
+                "title": "Raw Ham Colorblock T-shirt",
+                "review": "5040 Review",
+                "contain": "The international hoodies with excellent durable fabric, not to heavy but simply PERFECT for Indian summer.",
+                "price": 49.55,
+                "mrp": 80,
+                "Size": [
+                    "S",
+                    "M",
+                    "L",
+                    "L",
+                    "XL"
+                ],
+                "Color": [
+                    "Black",
+                    "White",
+                    "Blue",
+                    "Gray"
+                ],
+                "Qty": [
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "cart": "Add to cart",
+                "share": "share with",
+                "social": [
+                    {
+                        "link": "https://www.facebook.com/sharer/sharer.php?u=#url",
+                        "src": "/assets/images/social-icon/4.png"
+                    },
+                    {
+                        "link": "https://www.google.co.in/",
+                        "src": "/assets/images/social-icon/5.png"
+                    },
+                    {
+                        "link": "http://www.twitter.com/share",
+                        "src": "/assets/images/social-icon/6.png"
+                    }
+                ],
+                "mainImg": "/assets/images/fashion/slider/1.jpg",
+                "Sale": "Sale",
+                "offer": "70% OFF",
+                "New": "New Trending Fashion",
+                "buy": "BUY ONE GET ONE ",
+                "free": "FREE",
+                "Discover": "Discover",
+                "Collection": "Our Collection"
+            }
+        ]
+    },
+    {
+        "type": "electronic",
+        "slides": [
+            {
+                "image": "electronics/slider/1.jpg",
+                "left": {
+                    "top": "NEW OFFER",
+                    "topdescription": "Buy One Get One Free",
+                    "headingtop": "4K",
+                    "headingbottom": "CAMERA",
+                    "tagline": "Wishing for is right",
+                    "mrp": 480,
+                    "price": 456,
+                    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                    "bottomheadind": "Discover",
+                    "bottomsubheading": "Our Collection"
+                },
+                "right": {
+                    "heading": "Suggestion Product",
+                    "subheading": "Our Collection",
+                    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                    "image1": "electronics/slider/2.jpg",
+                    "image2": "electronics/slider/3.jpg"
+                },
+                "images": [
+                    {
+                        "id": 1,
+                        "src": "electronics/slider/2.jpg"
+                    },
+                    {
+                        "id": 2,
+                        "src": "electronics/slider/3.jpg"
+                    }
+                ],
+                "social": [
+                    {
+                        "image": "social-icon/1.png",
+                        "name": "Facebook",
+                        "link": "https://www.facebook.com/"
+                    },
+                    {
+                        "image": "social-icon/2.png",
+                        "name": "Instagram",
+                        "link": "https://www.instagram.com/"
+                    },
+                    {
+                        "image": "social-icon/3.png",
+                        "name": "Twitter",
+                        "link": "https://twitter.com/"
+                    }
+                ]
+            },
+            {
+                "image": "electronics/slider/1.jpg",
+                "left": {
+                    "top": "NEW OFFER",
+                    "topdescription": "Buy One Get One Free",
+                    "headingtop": "4K",
+                    "headingbottom": "CAMERA",
+                    "tagline": "Wishing for is right",
+                    "mrp": 480,
+                    "price": 456,
+                    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                    "bottomheadind": "Discover",
+                    "bottomsubheading": "Our Collection"
+                },
+                "right": {
+                    "heading": "Suggestion Product",
+                    "subheading": "Our Collection",
+                    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                    "image1": "electronics/slider/2.jpg",
+                    "image2": "electronics/slider/3.jpg"
+                },
+                "images": [
+                    {
+                        "id": 1,
+                        "src": "electronics/slider/2.jpg"
+                    },
+                    {
+                        "id": 2,
+                        "src": "electronics/slider/3.jpg"
+                    }
+                ],
+                "social": [
+                    {
+                        "image": "social-icon/1.png",
+                        "name": "Facebook",
+                        "link": "https://www.facebook.com/"
+                    },
+                    {
+                        "image": "social-icon/2.png",
+                        "name": "Instagram",
+                        "link": "https://www.instagram.com/"
+                    },
+                    {
+                        "image": "social-icon/3.png",
+                        "name": "Twitter",
+                        "link": "https://twitter.com/"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "shoes",
+        "slides": [
+            {
+                "socialIcons": [
+                    {
+                        "name": "Facebook",
+                        "website": "https://www.facebook.com/",
+                        "iconImage": "social-icon/1.png"
+                    },
+                    {
+                        "name": "Instagram",
+                        "website": "https://www.instagram.com/",
+                        "iconImage": "social-icon/2.png"
+                    },
+                    {
+                        "name": "Twitter",
+                        "website": "https://www.twitter.com/",
+                        "iconImage": "social-icon/3.png"
+                    }
+                ],
+                "title": "New Festival Offer",
+                "discount": 56,
+                "product": "Nike Shoes",
+                "bannerImage": "shoes/1-.png",
+                "leftTitle": "Suggestion Product",
+                "leftSubtitle": "Our Collection",
+                "leftImage": "shoes/slider-2.png",
+                "leftProduct": "Nike Shoes",
+                "leftPrice": 49,
+                "leftReviewStars": 3,
+                "bottomMrp": 79,
+                "bottomPrice": 65,
+                "gradient": " gradient-purple",
+                "bottomDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae minima asperiores possimus ad quae."
+            },
+            {
+                "socialIcons": [
+                    {
+                        "name": "Facebook",
+                        "website": "https://www.facebook.com/",
+                        "iconImage": "social-icon/1.png"
+                    },
+                    {
+                        "name": "Instagram",
+                        "website": "https://www.instagram.com/",
+                        "iconImage": "social-icon/2.png"
+                    },
+                    {
+                        "name": "Twitter",
+                        "website": "https://www.twitter.com/",
+                        "iconImage": "social-icon/3.png"
+                    }
+                ],
+                "title": "New Festival Offer",
+                "discount": 65,
+                "product": "Nike Shoes",
+                "bannerImage": "shoes/slider-2.png",
+                "leftTitle": "Suggestion Product",
+                "leftSubtitle": "Our Collection",
+                "leftImage": "shoes/Slider.png",
+                "leftProduct": "Nike Shoes",
+                "leftPrice": 49,
+                "leftReviewStars": 3,
+                "bottomMrp": 79,
+                "bottomPrice": 65,
+                "gradient": " red-gradient",
+                "bottomDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae minima asperiores possimus ad quae."
+            },
+            {
+                "socialIcons": [
+                    {
+                        "name": "Facebook",
+                        "website": "https://www.facebook.com/",
+                        "iconImage": "social-icon/1.png"
+                    },
+                    {
+                        "name": "Instagram",
+                        "website": "https://www.instagram.com/",
+                        "iconImage": "social-icon/2.png"
+                    },
+                    {
+                        "name": "Twitter",
+                        "website": "https://www.twitter.com/",
+                        "iconImage": "social-icon/3.png"
+                    }
+                ],
+                "title": "New Festival Offer",
+                "discount": 65,
+                "product": "Nike Shoes",
+                "bannerImage": "shoes/Slider.png",
+                "leftTitle": "Suggestion Product",
+                "leftSubtitle": "Our Collection",
+                "leftImage": "shoes/1-.png",
+                "leftProduct": "Nike Shoes",
+                "leftPrice": 49,
+                "leftReviewStars": 3,
+                "bottomMrp": 79,
+                "bottomPrice": 65,
+                "gradient": " gradient-blue",
+                "bottomDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae minima asperiores possimus ad quae."
+            }
+        ]
+    },
+    {
+        "type": "flower",
+        "lefttitle": "Sale",
+        "discount": "35% OFF",
+        "heading": "New Fresh ",
+        "headingbottom": "Bookey",
+        "bottomtitletop": "BUY ONE GET ONE ",
+        "bottomtitlebottom": " FREE",
+        "price": 79.00,
+        "delprice": 80.00,
+        "description": "Lorem Ipsum is simply dummy text of typesetting.",
+        "backgroundcircle": "flower/back-cirlce.png",
+        "topbottomimage": [
+            {
+                "image": "flower/poster/a1.png",
+                "class": "flower-1"
+            },
+            {
+                "image": "flower/poster/a1.png",
+                "class": "flower-2"
+            }
+        ],
+        "horizontalimage": [
+            {
+                "image": "flower/poster/1.png"
+            },
+            {
+                "image": "flower/poster/2.png"
+            }
+        ],
+        "verticalimage": [
+            {
+                "number": 1,
+                "image": "flower/poster/t1.jpg"
+            },
+            {
+                "number": 2,
+                "image": "flower/poster/t2.jpg"
+            }
+        ]
+    },
+    {
+        "type": "vegetables",
+        "lefttitle": "Sale",
+        "discount": "35% OFF",
+        "heading": "Fresh & Tasty",
+        "headingbottom": "Corn Cobe",
+        "bottomtitletop": "BUY ONE GET ONE",
+        "bottomtitlebottom": "FREE",
+        "price": 66,
+        "mrp": 77,
+        "description": "Lorem Ipsum is simply dummy text of typesetting.",
+        "socials": [
+            {
+                "name": "Facebook",
+                "link": "https://www.facebook.com/"
+            },
+            {
+                "name": "Instagram",
+                "link": "https://www.instagram.com/"
+            },
+            {
+                "name": "Twitter",
+                "link": "https://twitter.com/"
+            }
+        ],
+        "backgroundimages": [
+            {
+                "image": "vegetable/poster/1.png"
+            },
+            {
+                "image": "vegetable/poster/2.png"
+            },
+            {
+                "image": "vegetable/poster/3.png"
+            }
+        ],
+        "verticalimages": [
+            {
+                "image": "vegetable/poster/t1.png"
+            },
+            {
+                "image": "vegetable/poster/t2.png"
+            },
+            {
+                "image": "vegetable/poster/t3.png"
+            }
+        ]
+    },
+    {
+        "type": "furniture",
+        "lefttitle": "Sale ",
+        "discount": "35% OFF",
+        "heading": "New Latest ",
+        "headingbottom": "Furniture",
+        "bottomtitletop": "BUY ONE GET ONE",
+        "bottomtitlebottom": "FREE",
+        "price": 79.00,
+        "delprice": 80.00,
+        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+        "socials": [
+            {
+                "name": "Facebook"
+            },
+            {
+                "name": "Instagram"
+            },
+            {
+                "name": "Twitter"
+            }
+        ],
+        "horizontalimage": [
+            {
+                "image": "furniture-images/poster/1.png"
+            },
+            {
+                "image": "furniture-images/poster/2.png"
+            },
+            {
+                "image": "furniture-images/poster/3.png"
+            }
+        ],
+        "verticalimage": [
+            {
+                "image": "furniture-images/poster/t2.jpg"
+            },
+            {
+                "image": "furniture-images/poster/t1.jpg"
+            },
+            {
+                "image": "furniture-images/poster/t3.jpg"
+            }
+        ]
+    }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "title": "About us",
+    "subMenu": [
+      {
+        "id": 1,
+        "menu": "Home",
+        "url": "/layout/fashion"
+      },
+      {
+        "id": 2,
+        "menu": "Shop",
+        "url": "/shop/shop_left_sidebar"
+      },
+      {
+        "id": 3,
+        "menu": "About Us",
+        "url": "/page/user_dashboard"
+      },
+      {
+        "id": 4,
+        "menu": "Blog",
+        "url": "/blog/blog_details"
+      },
+      {
+        "id": 5,
+        "menu": "Contact",
+        "url": "/page/contact_us"
+      }
+    ]
+  },
+  {
+    "title": "New Categories",
+    "subMenu": [
+      {
+        "id": 1,
+        "menu": "Latest Shoes",
+        "url": "/shop/shop_left_sidebar"
+      },
+      {
+        "id": 2,
+        "menu": "Branded Jeans",
+        "url": "/shop/shop_left_sidebar"
+      },
+      {
+        "id": 3,
+        "menu": "New Jackets",
+        "url": "/shop/shop_left_sidebar"
+      },
+      {
+        "id": 4,
+        "menu": "Colorfull Hoodies",
+        "url": "/shop/shop_left_sidebar"
+      },
+      {
+        "id": 5,
+        "menu": "Shiner Goggles",
+        "url": "/shop/shop_left_sidebar"
+      }
+    ]
+  },
+  {
+    "title": "Get Help",
+    "subMenu": [
+      {
+        "id": 1,
+        "menu": "Your Orders",
+        "url": "/page/order_success"
+      },
+      {
+        "id": 2,
+        "menu": "Your Account",
+        "url": "/page/user_dashboard"
+      },
+      {
+        "id": 3,
+        "menu": "Track Orders",
+        "url": "/page/order_tracking"
+      },
+      {
+        "id": 4,
+        "menu": "Your Wishlist",
+        "url": "/page/wishlist"
+      },
+      {
+        "id": 5,
+        "menu": "Shopping FAQs",
+        "url": "/page/faq"
+      }
+    ]
+  }
+]

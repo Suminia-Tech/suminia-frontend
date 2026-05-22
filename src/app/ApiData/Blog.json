@@ -1,0 +1,363 @@
+[
+    {
+        "type": "blogDetails",
+        "indexOf": 0,
+        "image": "inner-page/product/10.jpg",
+        "topText": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage.",
+        "middleText": "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of 'de Finibus Bonorum et Malorum'(The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, 'Lorem ipsum dolor sit amet..', comes from a line in section 1.10.32. The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from 'de Finibus Bonorum et Malorum' by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.",
+        "bottomText": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose injected humour and the like.",
+        "social": [
+            {
+                "id": 1,
+                "link": "https://www.facebook.com/",
+                "class": "fab fa-facebook-f"
+            },
+            {
+                "id": 2,
+                "link": "https://twitter.com/",
+                "class": "fab fa-twitter"
+            },
+            {
+                "id": 3,
+                "link": "https://in.pinterest.com/",
+                "class": "fab fa-pinterest-p"
+            }
+        ],
+        "carouselItems": [
+            {
+                "id": 1,
+                "heading": "Perfect watch for any wrist",
+                "author": "Emma Sick",
+                "date": "25 June 2023",
+                "image": "inner-page/product/9.jpg"
+            },
+            {
+                "id": 2,
+                "heading": "Ginger Lemon Tea is good for health.",
+                "author": "John Wick",
+                "date": "19 Aug 2022",
+                "image": "inner-page/product/8.jpg"
+            },
+            {
+                "id": 3,
+                "heading": "Goggles are make different vision",
+                "author": "Joe Greek",
+                "date": "30 Sep 2022",
+                "image": "inner-page/product/4.jpg"
+            },
+            {
+                "id": 4,
+                "heading": "Good Place to live with family is one and only Living Room.",
+                "author": "Sasme Nick",
+                "date": "24 April 2022",
+                "image": "inner-page/product/16.jpg"
+            },
+            {
+                "id": 5,
+                "heading": "How To Make The Perfect Morning Coffee, According To The Science",
+                "author": "Hell Grame",
+                "date": "7 Aug 2022",
+                "image": "inner-page/product/13.jpg"
+            }
+        ]
+    },
+    {
+        "type": "blogcard",
+        "blogs": [
+            {
+                "id": 1,
+                "title": "Product Update",
+                "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+                "heading": "This product gives different level of energy in Morning.",
+                "name": "Drake Jone",
+                "date": "08 May 2022",
+                "profileImage": "inner-page/review-image/1.jpg",
+                "imagePath": "inner-page/product/2.jpg"
+            },
+            {
+                "id": 2,
+                "title": "Product Update",
+                "description": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system",
+                "heading": "To have chat with the right person need peace full place.",
+                "name": "Slam Trick",
+                "date": "19 March 2025",
+                "profileImage": "inner-page/review-image/2.jpg",
+                "imagePath": "inner-page/product/14.jpg"
+            },
+            {
+                "id": 3,
+                "title": "Product Update",
+                "description": "The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures",
+                "heading": "Lemon Ginger Tea good for health.",
+                "name": "Fat Joe",
+                "date": "15 Aug 2022",
+                "profileImage": "inner-page/review-image/3.jpg",
+                "imagePath": "inner-page/product/8.jpg"
+            },
+            {
+                "id": 4,
+                "title": "Product Update",
+                "description": "Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable.",
+                "heading": "How to make the perfect morning coffee, according to the science",
+                "name": "John Wick",
+                "date": "25 Aug 2022",
+                "profileImage": "inner-page/review-image/4.jpg",
+                "imagePath": "inner-page/product/15.jpg"
+            },
+            {
+                "id": 5,
+                "title": "Product Update",
+                "description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout",
+                "heading": "Best Living room in the world.",
+                "name": "John Wick",
+                "date": "05 Aug 2022",
+                "profileImage": "inner-page/review-image/5.jpg",
+                "imagePath": "inner-page/product/16.jpg"
+            },
+            {
+                "id": 6,
+                "title": "Product Update",
+                "description": "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain",
+                "heading": "This lens can zoom each and every things.",
+                "name": "John Wick",
+                "date": "15 Aug 2022",
+                "profileImage": "inner-page/review-image/2.jpg",
+                "imagePath": "inner-page/product/7.jpg"
+            },
+            {
+                "id": 7,
+                "title": "Product Update",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "heading": "Lemon Ginger Tea good for health.",
+                "name": "Ram Singh",
+                "date": "19 july 2023",
+                "profileImage": "inner-page/review-image/6.jpg",
+                "imagePath": "inner-page/product/8.jpg"
+            },
+            {
+                "id": 8,
+                "title": "Product Update",
+                "description": "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain",
+                "heading": "Best wrist watch in the world.",
+                "name": "Sham Ajay",
+                "date": "22 Aug 2022",
+                "profileImage": "inner-page/review-image/3.jpg",
+                "imagePath": "inner-page/product/9.jpg"
+            },
+            {
+                "id": 9,
+                "title": "Product Update",
+                "description": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia",
+                "heading": "This product gives different level of energy in Morning.",
+                "name": "Wick Regh",
+                "date": "01 May 2023",
+                "profileImage": "inner-page/review-image/4.jpg",
+                "imagePath": "inner-page/product/2.jpg"
+            },
+            {
+                "id": 10,
+                "title": "Product Update",
+                "description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout",
+                "heading": "How to make the perfect morning coffee, according to the science",
+                "name": "John Cena",
+                "date": "15 Aug 2022",
+                "profileImage": "inner-page/review-image/1.jpg",
+                "imagePath": "inner-page/product/14.jpg"
+            },
+            {
+                "id": 11,
+                "title": "Product Update",
+                "description": "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain",
+                "heading": "How to make the perfect morning coffee, according to the science",
+                "name": "Divy Sen",
+                "date": "15 Aug 2022",
+                "profileImage": "inner-page/review-image/2.jpg",
+                "imagePath": "inner-page/product/8.jpg"
+            },
+            {
+                "id": 12,
+                "title": "Product Update",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "heading": "How to make the perfect morning coffee, according to the science",
+                "name": "Ashok Dev",
+                "date": "09 Aug 2025",
+                "profileImage": "inner-page/review-image/4.jpg",
+                "imagePath": "inner-page/product/15.jpg"
+            },
+            {
+                "id": 13,
+                "title": "Product Update",
+                "description": " Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
+                "heading": "Best Living room in the world.",
+                "name": "Wicrk Lertter",
+                "date": "02 Aug 2023",
+                "profileImage": "inner-page/review-image/6.jpg",
+                "imagePath": "inner-page/product/16.jpg"
+            },
+            {
+                "id": 14,
+                "title": "Product Update",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "heading": "This product gives different level of energy in Morning.",
+                "name": "Ajay Patel",
+                "date": "10 May 2022",
+                "profileImage": "inner-page/review-image/1.jpg",
+                "imagePath": "inner-page/product/2.jpg"
+            }
+        ]
+    },
+    {
+        "type": "blogMasonary",
+        "blogs": [
+            {
+                "id": 1,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Fat Joe",
+                "date": "15 Aug 2022",
+                "image": "inner-page/product/1.jpg",
+                "profileImage": "inner-page/review-image/1.jpg"
+            },
+            {
+                "id": 2,
+                "type": "quote",
+                "title": " Good design is making something intelligible and memorable. Great design is making something memorable and meaningful.",
+                "author": "Rashid Khan",
+                "date": "03 May 2025",
+                "image": "inner-page/quote.png",
+                "class": "quote-head",
+                "profileImage": "inner-page/review-image/2.jpg"
+            },
+            {
+                "id": 3,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "David Miller",
+                "date": "01 Sep 2022",
+                "image": "inner-page/product/3.jpg",
+                "profileImage": "inner-page/review-image/3.jpg"
+            },
+            {
+                "id": 4,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Maxwell Andrue",
+                "date": "06 Aug 2022",
+                "image": "inner-page/product/4.jpg",
+                "profileImage": "inner-page/review-image/4.jpg"
+            },
+            {
+                "id": 5,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Andrue wike",
+                "date": "25 Aug 2022",
+                "image": "inner-page/product/5.jpg",
+                "profileImage": "inner-page/review-image/5.jpg"
+            },
+            {
+                "id": 6,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "John Rome",
+                "date": "25 April 2022",
+                "image": "inner-page/product/6.jpg",
+                "profileImage": "inner-page/review-image/6.jpg"
+            },
+            {
+                "id": 7,
+                "type": "quote",
+                "title": " Good design is making something intelligible and memorable. Great design is making something memorable and meaningful.",
+                "author": "Agent Shram",
+                "date": "19 March 2022",
+                "image": "inner-page/quote.png",
+                "class": "quote-head",
+                "profileImage": "inner-page/review-image/2.jpg"
+            },
+            {
+                "id": 8,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Piller Gote",
+                "date": "06 Aug 2022",
+                "image": "inner-page/product/8.jpg",
+                "profileImage": "inner-page/review-image/3.jpg"
+            },
+            {
+                "id": 9,
+                "type": "quote",
+                "title": " Good design is making something intelligible and memorable. Great design is making something memorable and meaningful.",
+                "author": "Tersh Guerd",
+                "date": "09 Aug 2022",
+                "image": "inner-page/quote.png",
+                "class": "quote-head",
+                "profileImage": "inner-page/review-image/2.jpg"
+            },
+            {
+                "id": 10,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Wike Hat",
+                "date": "31 May 2022",
+                "image": "inner-page/product/11.jpg",
+                "profileImage": "inner-page/review-image/1.jpg"
+            },
+            {
+                "id": 11,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Randy Orthen",
+                "date": "30 Dec 2022",
+                "image": "inner-page/product/9.jpg",
+                "profileImage": "inner-page/review-image/4.jpg"
+            },
+            {
+                "id": 12,
+                "type": "quote",
+                "title": " Good design is making something intelligible and memorable. Great design is making something memorable and meaningful.",
+                "author": "Coffe Kingstone",
+                "date": "24 Jan 2022",
+                "image": "inner-page/quote.png",
+                "class": "quote-head",
+                "profileImage": "inner-page/review-image/2.jpg"
+            },
+            {
+                "id": 13,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Fet Sheler",
+                "date": "14 Dec 2022",
+                "image": "inner-page/product/12.jpg",
+                "profileImage": "inner-page/review-image/4.jpg"
+            },
+            {
+                "id": 14,
+                "type": "quote",
+                "title": " Good design is making something intelligible and memorable. Great design is making something memorable and meaningful.",
+                "author": "Krish Adam",
+                "date": "30 Nov 2022",
+                "image": "inner-page/quote.png",
+                "class": "quote-head",
+                "profileImage": "inner-page/review-image/2.jpg"
+            },
+            {
+                "id": 15,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "Adam Nick",
+                "date": "25 Feb 2022",
+                "image": "inner-page/product/5.jpg",
+                "profileImage": "inner-page/review-image/4.jpg"
+            },
+            {
+                "id": 16,
+                "title": "Just a Standard Format Post.",
+                "description": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente porro eligendi, delectus, molestias illo exercitationem sequi a, expedita error ea itaque ab. Ullam culpa, fugit magnam recusandae porro labore eligendi?",
+                "author": "John wike",
+                "date": "01 Aug 2022",
+                "image": "inner-page/product/12.jpg",
+                "profileImage": "inner-page/review-image/4.jpg"
+            }
+        ]
+    }
+]

@@ -1,0 +1,71 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'vendors/font-awesome.scss';
+@import 'skeleton_loader.scss';
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
+
+// utils scss files
+@import './utils/variables';
+@import './utils/mixin/common';
+@import './utils/mixin/breakpoints';
+
+@import 'components/button';
+@import 'components/alert';
+@import 'components/label';
+@import 'components/tab';
+@import 'components/dropdown';
+@import 'components/timer';
+@import 'components/tap_to_top';
+@import 'components/modal';
+@import 'components/title';
+@import 'components/ratio';
+@import 'components/form';
+@import 'components/slider';
+@import 'components/touchspin';
+@import 'components/lazyload';
+@import 'components/breadcrumb';
+
+// base scss files
+@import './base/reset';
+@import './base/typography';
+
+@import 'layout/header';
+@include header_common;
+@import 'layout/home_slider';
+@include home_common;
+@import 'layout/service';
+@include service_common;
+@import 'layout/banner';
+@include banner_common;
+@import 'layout/product';
+@include product_common;
+@include product_style_1;
+@include product_style_2;
+@include product_style_3;
+@include product_style_4;
+@include product_style_5;
+@import 'layout/slick-slider';
+@include slider_common;
+@import 'layout/nav';
+@import 'layout/subscribe';
+@import 'layout/footer';
+@import 'layout/cookie_bar';
+
+// pages
+@import 'pages/inner_page';
+@import 'pages/shop_page';
+@import 'pages/product_details';
+
+// Themes
+@import 'themes/responsive';
+@import 'themes/rtl';
+@import 'themes/dark';
+
+@import 'demo1.scss'; //Electronic
+@import 'demo2.scss'; //Fashion
+@import 'demo3.scss'; //shoes
+@import 'demo4.scss'; //furniture
+@import 'demo5.scss'; //flower
+@import 'demo6.scss'; //Vegetable
+
+@import 'react-toastify/dist/ReactToastify.css';
