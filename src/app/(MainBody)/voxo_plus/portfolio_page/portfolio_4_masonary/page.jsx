@@ -6,7 +6,6 @@ import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import PortfolioMasonaryContain from "@/Components/VoxoPlus/PortfolioPage/PortfolioMasonary";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import { GETPORTFOLIODATA } from "@/ReduxToolkit/Reducers/PortfolioReducer";
 import { getAPIData } from "@/Utils";
 
@@ -30,8 +29,7 @@ const Portfolio4Masonary = () => {
       </Head>
       <BreadCrumb parent={"Portfolio Masonary"} title={"Portfolio Masonary"} />
       <PortfolioMasonaryContain portfoliodata={portfoliodata} colclass={colclass} masonaryclass={masonaryclass} />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

@@ -5,7 +5,6 @@ import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
 import Layout1 from "@/Layout/Layout1";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ShopFilterHideContain from "@/Components/Shop/ShopFilterHideContain";
 
@@ -27,8 +26,7 @@ const ShopFilterHide = () => {
       </Head>
       <BreadCrumb parent={"Shop Filter Hide"} title={"Shop Filter Hide"} />
       <ShopFilterHideContain productData={productData} />
-      <FlowerSubscribe />
-      <CanvasOffset productData={productData} />
+<CanvasOffset productData={productData} />
     </Layout1>
   );
 };

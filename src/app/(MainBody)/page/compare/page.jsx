@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import CompareTable from "@/Components/Pages/Compare/CompareTable";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
@@ -15,8 +14,7 @@ const Compare = () => {
       </Head>
       <BreadCrumb parent={"Compare"} title={"Compare"} />
       <CompareTable />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

@@ -1,7 +1,6 @@
 "use client";
 import BlogListinfContain from "@/Components/Blog/BlogListing";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
 import Head from "next/head";
@@ -15,8 +14,7 @@ const BlogListing = () => {
       </Head>
       <BreadCrumb parent={"Blog Listing"} title={"Blog Listing"} />
       <BlogListinfContain />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

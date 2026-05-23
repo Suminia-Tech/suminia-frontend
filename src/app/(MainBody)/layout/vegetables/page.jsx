@@ -1,7 +1,4 @@
 "use client";
-import FashionService from "@/Components/FashionDemo/FashionService";
-import FlowerBrand from "@/Components/FlowerDemo/FlowerBrand";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import FreshFruit from "@/Components/VegetablesDemo/FreshFruit";
 import VegetableDeal from "@/Components/VegetablesDemo/VegetableDeal";
 import VegetableFresh from "@/Components/VegetablesDemo/VegetableFresh";
@@ -21,7 +18,7 @@ const Vegetable = () => {
   const [productData, setProductData] = useState([]);
   const [mainSlider, setMainSlider] = useState([]);
   useEffect(() => {
-    document.documentElement.style.setProperty("--theme-color", "#51983c");
+    document.documentElement.style.setProperty("--theme-color", "#096AC9");
     const types = ["banner", "products", "homeslider"];
     types.map((type) => {
       getAPIData(`/api/${type}`).then((res) => {
@@ -32,12 +29,9 @@ const Vegetable = () => {
     });
   }, []);
   const isCategories = true;
-  const removePadding = true;
-  const addBgColor = true;
   return (
     <Layout6 isCategories={isCategories}>
       <VegetableHomeSlider mainSlider={mainSlider} />
-      <FashionService removePadding={removePadding} />
       <VegetableTopBanner bannerData={bannerData} />
       <VegetableFresh productData={productData} />
       <VegetableOffer bannerData={bannerData} />
@@ -46,8 +40,6 @@ const Vegetable = () => {
       <FreshFruit bannerData={bannerData} />
       <VegetableHurryUp bannerData={bannerData} />
       <VegetableNewsUpdate bannerData={bannerData} />
-      <FlowerSubscribe addBgColor={addBgColor} />
-      <FlowerBrand />
       <StartModel />
     </Layout6>
   );

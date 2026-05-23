@@ -7,7 +7,6 @@ import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ProductVideoThumbnailContain from "@/Components/Products/ProductVideoThumbnailContain";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import RecentNotification from "@/Components/Products/RecentNotification";
 import StickyFooter from "@/Components/Products/StickyFooter";
 
@@ -31,8 +30,7 @@ const ProductVideoThumbnail = () => {
       <BreadCrumb parent={"Product Video Thumbnail"} title={"Product Video Thumbnail"} />
       <ProductVideoThumbnailContain VideoPlay={VideoPlay} productData={productData} />
       <ProductSection productData={productData} />
-      <FlowerSubscribe />
-      <RecentNotification />
+<RecentNotification />
       <StickyFooter productData={productData} />
     </Layout1>
   );

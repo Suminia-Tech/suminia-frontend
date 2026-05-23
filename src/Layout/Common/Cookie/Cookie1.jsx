@@ -4,7 +4,7 @@ import { useState } from "react";
 const Cookie1 = () => {
   const [IsShow, setIsShow] = useState(false);
   return (
-    <div className={`cookie-bar-section-2 flower-cookirbar d-md-flex d-none ${IsShow ? "hide" : ""}`}>
+    <div className={`cookie-bar-section-2 d-md-flex d-none ${IsShow ? "hide" : ""}`}>
       <div className="content">
         <picture>
           <img src={`${CommonPath}/cookie.png`} alt="cookie" />

@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import Layout1 from "@/Layout/Layout1";
 import Head from "next/head";
 import { useEffect } from "react";
@@ -32,8 +31,7 @@ const Blog_details = () => {
       <BreadCrumb parent={"Blog Details"} title={"Blog Details"} />
       <BlogDetails />
       <RelatedBlog />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

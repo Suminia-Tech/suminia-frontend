@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
 import ProductStickyContain from "@/Components/Products/ProductStickyContain";
 import { CommonPath } from "@/Constant";
@@ -28,8 +27,7 @@ const ProductSticky = () => {
       <BreadCrumb parent={"Product Sticky"} title={"Product Sticky"} />
       <ProductStickyContain />
       <ProductSection productData={productData} />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 export default ProductSticky;

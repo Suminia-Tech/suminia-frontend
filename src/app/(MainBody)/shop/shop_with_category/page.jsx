@@ -5,7 +5,6 @@ import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
 import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
 import ShopWithCategoryContain from "@/Components/Shop/ShopWithCategory";
 
@@ -27,8 +26,7 @@ const ShopWithCategory = () => {
       </Head>
       <BreadCrumb parent={"Shop With category"} title={"Shop With category"} />
       <ShopWithCategoryContain productData={productData} />
-      <FlowerSubscribe />
-      <CanvasOffset productData={productData} />
+<CanvasOffset productData={productData} />
     </Layout1>
   );
 };

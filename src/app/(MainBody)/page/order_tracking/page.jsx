@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import OrderTracking from "@/Components/Pages/OrderTracking/OrderTracking";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
@@ -15,8 +14,7 @@ const Order_tracking = () => {
       </Head>
       <BreadCrumb parent={"Order Tracking"} title={"Order Tracking"} />
       <OrderTracking />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

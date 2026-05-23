@@ -7,7 +7,6 @@ import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ProductRightSidebarContain from "@/Components/Products/ProductRightSidebarContain.jsx";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import RecentNotification from "@/Components/Products/RecentNotification";
 import StickyFooter from "@/Components/Products/StickyFooter";
 
@@ -30,8 +29,7 @@ const ProductRightSidebar = () => {
       <BreadCrumb parent={"Product Right Sidebar"} title={"Product Right Sidebar"} />
       <ProductRightSidebarContain productData={productData} />
       <ProductSection productData={productData} />
-      <FlowerSubscribe />
-      <RecentNotification />
+<RecentNotification />
       <StickyFooter productData={productData} />
     </Layout1>
   );

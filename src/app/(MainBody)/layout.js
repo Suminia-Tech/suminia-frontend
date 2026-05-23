@@ -1,5 +1,4 @@
 "use client";
-import YoutubeModal from "@/Components/FashionDemo/YoutubeModal";
 import ConfirmDeleteModal from "@/Components/Pages/UserDashboard/ConfirmDeleteModal";
 import DeleteModal from "@/Components/Pages/UserDashboard/DeleteModal";
 import CopyConfigModal from "@/Layout/Common/Customizer/CopyConfigModal";
@@ -68,7 +67,6 @@ const RootLayout = ({ children }) => {
         <CommonModel />
         <DeleteModal />
         <ConfirmDeleteModal />
-        <YoutubeModal />
         <CopyConfigModal />
       </ErrorBoundary>
     </Provider>

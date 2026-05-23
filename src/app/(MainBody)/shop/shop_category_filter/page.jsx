@@ -8,7 +8,6 @@ import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ShopSlider from "@/Components/Shop/ShopCategoryFilter/ShopSlider";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
 import ShopSection from "@/Components/Shop/ShopCategoryFilter/ShopSection";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 
 
 const ShopCategoryFilter = () => {
@@ -30,8 +29,7 @@ const ShopCategoryFilter = () => {
       <BreadCrumb parent={"Shop Category Filter"} title={"Shop Category Filter"} />
       <ShopSlider />
       <ShopSection productData={productData} />
-      <FlowerSubscribe />
-      <CanvasOffset productData={productData} />
+<CanvasOffset productData={productData} />
     </Layout1>
   );
 };

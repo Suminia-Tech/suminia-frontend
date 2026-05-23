@@ -1,7 +1,6 @@
 "use client";
 import { CommonPath } from "@/Constant";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
 import ShopListInfiniteContain from "@/Components/Shop/ShopListInfinite/ShopListInfinite";
 import Layout1 from "@/Layout/Layout1";
@@ -28,8 +27,7 @@ const ShopListInfinite = () => {
       </Head>
       <BreadCrumb parent={"Shop List Infinite"} title={"Shop List Infinite"} />
       <ShopListInfiniteContain productData={productData} listGrid={listGrid} />
-      <FlowerSubscribe />
-      <CanvasOffset productData={productData} />
+<CanvasOffset productData={productData} />
     </Layout1>
   );
 };

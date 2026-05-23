@@ -1,7 +1,6 @@
 "use client";
 import BlogInfiniteScroll from "@/Components/Blog/BlogInfiniteScroll";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
 import { GETBLOGDATA } from "@/ReduxToolkit/Reducers/BlogReducer";
@@ -28,8 +27,7 @@ const Blog_infinite_scroll = () => {
       </Head>
       <BreadCrumb parent={"Blog Infinite Scroll"} title={"Blog Infinite Scroll"} />
       <BlogInfiniteScroll />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

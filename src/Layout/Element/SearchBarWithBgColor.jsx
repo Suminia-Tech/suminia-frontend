@@ -7,7 +7,7 @@ const SearchBarWithBgColor = ({ customeClass }) => {
   const router = usePathname();
   const isLayout = router;
   var isBgColor = false;
-  if (isLayout && !isLayout.includes("fashion") && !isLayout.includes("flower")) {
+  if (isLayout) {
     isBgColor = true;
   }
   const toggleSearch = () => {

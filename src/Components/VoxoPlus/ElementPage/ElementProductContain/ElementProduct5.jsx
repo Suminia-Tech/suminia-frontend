@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, Row } from 'reactstrap';
-import ProductSlider from '../../../FurnitureDemo/FurnitureProducts/ProductSlider';
 import ElementHeader from '../../../Element/ElementHeader';
 import { Product5 } from '@/Constant';
 const ElementProduct5 = () => {
@@ -12,8 +11,7 @@ const ElementProduct5 = () => {
           <Container fluid={true} className='px-0 p-sm-0'>
             <Row className='m-0'>
               <div className='our-product'>
-                <ProductSlider productData={productData} />
-              </div>
+</div>
             </Row>
           </Container>
         </section>

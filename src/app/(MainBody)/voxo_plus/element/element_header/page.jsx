@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import ElementHeaderContain from "@/Components/VoxoPlus/ElementPage/ElementHeaderContain";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
@@ -15,8 +14,7 @@ const ElementHeader = () => {
       </Head>
       <BreadCrumb parent={"Element Header"} title={"Element Header"} />
       <ElementHeaderContain />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

@@ -7,7 +7,6 @@ import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import StickyFooter from "@/Components/Products/StickyFooter";
 import RecentNotification from "@/Components/Products/RecentNotification";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
 import ProductLeftThumbnailContain from "@/Components/Products/ProductLeftThumbnailContain.jsx";
 
@@ -30,8 +29,7 @@ const ProductLeftThumbnail = () => {
       <BreadCrumb parent={"Product Left Thumbnail"} title={"Product Left Thumbnail"} />
       <ProductLeftThumbnailContain />
       <ProductSection productData={productData} />
-      <FlowerSubscribe />
-      <RecentNotification />
+<RecentNotification />
       <StickyFooter productData={productData} />
     </Layout1>
   );

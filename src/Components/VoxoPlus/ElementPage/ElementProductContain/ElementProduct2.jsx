@@ -1,7 +1,6 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import { Product2 } from '@/Constant';
-import VRSliders from '../../../ElectronicDemo/ElectronicVR/VRSlider';
 import ElementHeader from '../../../Element/ElementHeader';
 const ElementProduct2 = ({ FilterVrProduct }) => {
   return (
@@ -13,8 +12,7 @@ const ElementProduct2 = ({ FilterVrProduct }) => {
             <Row>
               <Col>
                 <div className='product-wrapper slide-7 product-style-1'>
-                  <VRSliders FilterVrProduct={FilterVrProduct} />
-                </div>
+</div>
               </Col>
             </Row>
           </Container>

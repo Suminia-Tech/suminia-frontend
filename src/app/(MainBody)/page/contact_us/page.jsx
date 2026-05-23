@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import ContactContain from "@/Components/Pages/ContactUs/ContactContain";
 import MapSection from "@/Components/Pages/ContactUs/MapSection";
 import { CommonPath } from "@/Constant";
@@ -17,8 +16,7 @@ const ContactUs = () => {
       <BreadCrumb parent={"Contact Us"} title={"Contact Us"} />
       <ContactContain />
       <MapSection />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

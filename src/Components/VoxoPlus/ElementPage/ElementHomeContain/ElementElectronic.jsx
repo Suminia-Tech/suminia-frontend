@@ -1,6 +1,5 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import ElectronicHomeSlider from '../../../ElectronicDemo/ElectronicHomeSlider';
 const ElementElectronic = ({ mainSlider }) => {
   return (
     <section>
@@ -11,8 +10,7 @@ const ElementElectronic = ({ mainSlider }) => {
               <div className='title title1 text-center'>
                 <h2>Home Style 2</h2>
               </div>
-              <ElectronicHomeSlider mainSlider={mainSlider} />
-            </div>
+</div>
           </Col>
         </Row>
       </Container>

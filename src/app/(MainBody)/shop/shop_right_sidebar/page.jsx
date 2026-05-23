@@ -5,7 +5,6 @@ import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
 import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
 import ShopRightSidebarContain from "@/Components/Shop/ShopRightSidebarContain";
 
@@ -27,8 +26,7 @@ const ShopRightSidebar = () => {
       </Head>
       <BreadCrumb parent={"Shop Right Sidebar"} title={"Shop Right Sidebar"} />
       <ShopRightSidebarContain productData={productData} />
-      <FlowerSubscribe />
-      <CanvasOffset productData={productData} />
+<CanvasOffset productData={productData} />
     </Layout1>
   );
 };

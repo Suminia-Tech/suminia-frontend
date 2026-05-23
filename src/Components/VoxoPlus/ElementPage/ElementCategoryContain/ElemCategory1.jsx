@@ -1,7 +1,6 @@
 import { Category1 } from '@/Constant';
 import { Col, Container } from 'reactstrap';
 import ElementHeader from '../../../Element/ElementHeader';
-import RowCategory from '../../../FashionDemo/FashionCategory/RowCategory';
 
 const ElemCategory1 = ({ categoryBanner }) => {
   return (
@@ -11,8 +10,7 @@ const ElemCategory1 = ({ categoryBanner }) => {
         <div className='contain-image-box overflow-hidden'>
           <section className='category-section pt-3 section-b-space ratio_40'>
             <Container fluid={true}>
-              <RowCategory categoryBanner={categoryBanner} />
-            </Container>
+</Container>
           </section>
         </div>
       </div>

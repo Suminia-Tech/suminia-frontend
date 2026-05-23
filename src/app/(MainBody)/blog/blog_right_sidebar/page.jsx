@@ -1,7 +1,6 @@
 "use client";
 import BlogRightSidebarContain from "@/Components/Blog/BlogRightSidebar";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
 import Head from "next/head";
@@ -15,8 +14,7 @@ const BlogRightSidebar = () => {
       </Head>
       <BreadCrumb parent={"Blog Right Sidebar"} title={"Blog Right Sidebar"} />
       <BlogRightSidebarContain />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

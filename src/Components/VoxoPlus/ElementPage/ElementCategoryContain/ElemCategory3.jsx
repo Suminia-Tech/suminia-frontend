@@ -2,7 +2,6 @@ import React from 'react';
 import { Col, Container } from 'reactstrap';
 import { Category3 } from '@/Constant';
 import ElementHeader from '../../../Element/ElementHeader';
-import CategoryCard from '../../../ShoesDemo/ShoesCategory/CategoryCard';
 
 const ElemCategory3 = ({ ShoesFilter }) => {
   return (
@@ -12,8 +11,7 @@ const ElemCategory3 = ({ ShoesFilter }) => {
         <div className='contain-image-box section-b-space'>
           <section className='category-section pt-3'>
             <Container fluid={true}>
-              <CategoryCard ShoesFilter={ShoesFilter} />
-            </Container>
+</Container>
           </section>
         </div>
       </div>

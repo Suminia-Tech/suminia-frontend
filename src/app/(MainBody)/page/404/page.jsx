@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import SectionSvg from "@/Components/Pages/404/SectionSvg";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
@@ -15,8 +14,7 @@ const Error = () => {
       </Head>
       <BreadCrumb parent={"404"} title={"404"} />
       <SectionSvg />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

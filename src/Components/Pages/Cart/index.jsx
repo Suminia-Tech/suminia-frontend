@@ -78,7 +78,7 @@ const ProductCart = () => {
                       </Col>
                       <Col sm="5" xs="7">
                         <div className="left-side-button float-start">
-                          <Link href={`/layout/fashion`} className="btn btn-solid-default btn fw-bold mb-0 ms-0">
+                          <Link href={`/layout/vegetables`} className="btn btn-solid-default btn fw-bold mb-0 ms-0">
                             <i className="fas fa-arrow-left"></i> {ContinueShopping}
                           </Link>
                         </div>

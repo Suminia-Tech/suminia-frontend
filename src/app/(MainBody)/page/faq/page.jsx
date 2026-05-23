@@ -1,5 +1,4 @@
 "use client";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import BreadcrumSection from "@/Components/Pages/Faq/BreadCrumSection";
 import FaqDetail from "@/Components/Pages/Faq/FaqDetail";
 import TopSection from "@/Components/Pages/Faq/TopSection";
@@ -17,8 +16,7 @@ const Faq = () => {
       <BreadcrumSection />
       <TopSection />
       <FaqDetail />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

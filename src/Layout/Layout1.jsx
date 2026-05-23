@@ -11,7 +11,7 @@ const Layout1 = ({ children, isCookie }) => {
       <Header1 />
       {children}
       <ThemeCustomizer />
-      {isCookie === "/layout/fashion" || isCookie === "/" ? <Cookie /> : false}
+      {isCookie === "/layout/vegetables" || isCookie === "/" ? <Cookie /> : false}
       <TapTop />
       <Footers />
       <StarterLoader />

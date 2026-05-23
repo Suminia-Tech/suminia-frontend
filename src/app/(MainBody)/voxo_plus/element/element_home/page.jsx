@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import ElementElectronic from "@/Components/VoxoPlus/ElementPage/ElementHomeContain/ElementElectronic";
 import ElementFashion from "@/Components/VoxoPlus/ElementPage/ElementHomeContain/ElementFashion";
 import ElementFlower from "@/Components/VoxoPlus/ElementPage/ElementHomeContain/ElementFlower";
@@ -34,8 +33,7 @@ const ElementHome = () => {
       <ElementFashion mainSlider={mainSlider} />
       <ElementFurniture mainSlider={mainSlider} />
       <ElementShoes mainSlider={mainSlider} />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

@@ -5,7 +5,6 @@ import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
 import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
 import ProductBundleContain from "@/Components/Products/ProductBundle";
 
@@ -28,8 +27,7 @@ const ProductBundle = () => {
       <BreadCrumb parent={"Product Bundle"} title={"Product Bundle"} />
       <ProductBundleContain />
       <ProductSection productData={productData} />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import Product360ViewContain from "@/Components/Products/Product360Views";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
@@ -25,8 +24,7 @@ const Product360View = () => {
       </Head>
       <BreadCrumb parent={"Product 360 View"} title={"Product 360 View"} />
       <Product360ViewContain />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 export default Product360View;

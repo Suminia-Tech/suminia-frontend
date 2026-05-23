@@ -1,7 +1,6 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import { Product1 } from '@/Constant';
-import ProductCard from '../../../ElectronicDemo/ElectronicCollection/ProductCard';
 import ElementHeader from '../../../Element/ElementHeader';
 const ElementProduct1 = ({ ProductFilter }) => {
   return (
@@ -13,8 +12,7 @@ const ElementProduct1 = ({ ProductFilter }) => {
             <Row className='m-0'>
               <Col sm='12' className='p-0'>
                 <div className='product-wrapper slide-6'>
-                  <ProductCard ProductFilter={ProductFilter} />
-                </div>
+</div>
               </Col>
             </Row>
           </Container>

@@ -1,5 +1,4 @@
 "use client";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import OrderDetails from "@/Components/Pages/OrderSuccess/OrderDetails";
 import TopSection from "@/Components/Pages/OrderSuccess/TopSection";
 import { CommonPath } from "@/Constant";
@@ -15,8 +14,7 @@ const Order_success = () => {
       </Head>
       <TopSection />
       <OrderDetails />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

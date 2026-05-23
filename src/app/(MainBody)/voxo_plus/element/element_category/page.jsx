@@ -3,7 +3,6 @@ import { CommonPath } from "@/Constant";
 import Head from "next/head";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ElementCategoryContain from "@/Components/VoxoPlus/ElementPage/ElementCategoryContain";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import Layout1 from "@/Layout/Layout1";
 
 const ElementCategory = () => {
@@ -15,8 +14,7 @@ const ElementCategory = () => {
       </Head>
       <BreadCrumb parent={"Element Category"} title={"Element Category"} />
       <ElementCategoryContain />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

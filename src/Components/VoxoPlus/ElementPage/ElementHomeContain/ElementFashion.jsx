@@ -1,6 +1,5 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import HomeSlider from '../../../FashionDemo/FashionHomeSlider/HomeSlider';
 const ElementFashion = ({ mainSlider }) => {
   return (
     <section>
@@ -12,8 +11,7 @@ const ElementFashion = ({ mainSlider }) => {
                 <h2>Home Style 3</h2>
               </div>
               <div className='home-section-2 home-section'>
-                <HomeSlider mainSlider={mainSlider} />
-              </div>
+</div>
             </div>
           </Col>
         </Row>

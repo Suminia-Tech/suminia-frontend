@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import BackgroundImage from '../../../FlowerDemo/FlowerHomeSilder/BackgroungImage';
-import LeftContain from '../../../FlowerDemo/FlowerHomeSilder/LeftContain';
-import NavSlider from '../../../FlowerDemo/FlowerHomeSilder/NavSlider';
-import PosterSlider from '../../../FlowerDemo/FlowerHomeSilder/PosterSlider';
 
 const ElementFlower = ({ mainSlider }) => {
   const [state, setState] = useState({ nav1: null, nav2: null });
@@ -28,10 +24,8 @@ const ElementFlower = ({ mainSlider }) => {
               </div>
               <div className='contain-image-box'>
                 <div className='pt-0 home-section-5'>
-                  <PosterSlider nav2={nav2} slider1={slider1} FlowerHomeSlider={FlowerHomeSlider} />
-                  <BackgroundImage FlowerHomeSlider={FlowerHomeSlider} />
-                  <NavSlider nav1={nav1} slider2={slider2} FlowerHomeSlider={FlowerHomeSlider} />
-                  <LeftContain FlowerHomeSlider={FlowerHomeSlider} />
+<BackgroundImage FlowerHomeSlider={FlowerHomeSlider} />
+<LeftContain FlowerHomeSlider={FlowerHomeSlider} />
                 </div>
               </div>
             </div>

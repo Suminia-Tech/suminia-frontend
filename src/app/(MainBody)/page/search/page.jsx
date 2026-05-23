@@ -1,7 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import ArrivalCards from "@/Components/FashionDemo/FashionNewArrival/ArrivalCards";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import SearchContain from "@/Components/Pages/Search/SearchContain";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
@@ -28,11 +26,9 @@ const Search = () => {
       <SearchContain />
       <section className="ratio_asos section-b-space">
         <Container>
-          <ArrivalCards productData={productData} />
-        </Container>
+</Container>
       </section>
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

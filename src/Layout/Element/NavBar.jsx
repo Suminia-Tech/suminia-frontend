@@ -40,8 +40,12 @@ const NavBar = ({ customClass }) => {
           </li>
           {headerData?.map((menu, i) => {
             return (
-              <li className={`${menu.title === "VOXO PLUS" ? "mega-menu ratio_40 " : menu.title === "HOME" ? "mega-menu home-menu " : ""}dropdown`} key={i}>
-                {menu.title === "VOXO PLUS" ? (
+              <li className={`${menu.title === "VOXO PLUS" ? "mega-menu ratio_40 dropdown" : menu.title === "HOME" ? "" : "dropdown"}`} key={i}>
+                {menu.title === "HOME" ? (
+                  <Link href="/layout/vegetables" className="nav-link menu-title">
+                    {t(menu.title)}
+                  </Link>
+                ) : menu.title === "VOXO PLUS" ? (
                   <a href="#javascript" className="nav-link menu-title" onClick={() => setCheck(menu.title !== check && menu.title)}>
                     <div className="gradient-title">{t(VoxoPlus)}</div>
                     {overlay && <span className="according-menu">{menu.title === check ? "-" : "+"}</span>}
@@ -52,48 +56,7 @@ const NavBar = ({ customClass }) => {
                     {overlay && <span className="according-menu">{menu.title === check ? "-" : "+"}</span>}
                   </a>
                 )}
-                {menu.title === "HOME" ? (
-                  <div
-                    className="mega-menu-container menu-content"
-                    style={{
-                      display: overlay ? (menu.title === check ? "block" : "none") : "",
-                    }}
-                  >
-                    <Container fluid={true}>
-                      <Row>
-                        {menu.children.map((child, i) => {
-                          return (
-                            <div className="col mega-box" key={i}>
-                              <div className="link-section">
-                                <div className="opensubmegamenu">
-                                  <ul>
-                                    <li>
-                                      <Link
-                                        href={child?.path}
-                                        className="megamenu-image d-block"
-                                        onClick={() => {
-                                          width < 1200 && dispatch(OVERLAY);
-                                          dispatch(TOPMENUTOGGLE);
-                                        }}
-                                      >
-                                        <picture>
-                                          <img src={`/assets/images/demo-image/${child?.imagePath}`} className="img-fluid" alt="demo-image" />
-                                        </picture>
-                                      </Link>
-                                    </li>
-                                  </ul>
-                                </div>
-                                <div className="megamenu-image-title pb-0">
-                                  <h5 className="mb-0">{child.title}</h5>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </Row>
-                    </Container>
-                  </div>
-                ) : menu.title === "VOXO PLUS" ? (
+                {menu.title === "HOME" ? null : menu.title === "VOXO PLUS" ? (
                   <div
                     className="mega-menu-container poster-bg-image menu-content"
                     style={{

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import PortfolioMasonaryContain from "@/Components/VoxoPlus/PortfolioPage/PortfolioMasonary";
 import { getAPIData } from "@/Utils";
 import { GETPORTFOLIODATA } from "@/ReduxToolkit/Reducers/PortfolioReducer";
@@ -32,8 +31,7 @@ const PortfolioNoSpace = () => {
       </Head>
       <BreadCrumb parent={"Portfolio Masonary"} title={"Portfolio Masonary"} />
       <PortfolioMasonaryContain portfoliodata={portfoliodata} colclass={colclass} masonaryclass={masonaryclass} rowclass={rowclass} noSpace={noSpace} />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

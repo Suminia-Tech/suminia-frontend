@@ -5,7 +5,6 @@ import Layout1 from "@/Layout/Layout1";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import SectionCheckout from "@/Components/Pages/Checkout";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import { firebase_app } from "@/Config/firebase";
 import Logins from "../login/page";
 
@@ -25,8 +24,7 @@ const Checkout = () => {
           </Head>
           <BreadCrumb parent={"Checkout"} title={"Checkout"} />
           <SectionCheckout />
-          <FlowerSubscribe />
-        </Layout1>
+</Layout1>
       ) : (
         <Logins />
       )}

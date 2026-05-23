@@ -1,6 +1,5 @@
 "use client";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import WishlistProducts from "@/Components/Pages/WishList/WishlistProducts";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
@@ -15,8 +14,7 @@ const Wishlist = () => {
       </Head>
       <BreadCrumb parent={"Wishlist"} title={"Wishlist"} />
       <WishlistProducts />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import ShoesHomeSlider from '../../../ShoesDemo/ShoesHomeSlider';
 
 const ElementShoes = ({ mainSlider }) => {
   return (
@@ -14,8 +13,7 @@ const ElementShoes = ({ mainSlider }) => {
               </div>
 
               <div className='contain-image-box'>
-                <ShoesHomeSlider mainSlider={mainSlider} />
-              </div>
+</div>
             </div>
           </Col>
         </Row>

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { CommonPath } from "@/Constant";
 import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import PortFolioGridContain from "@/Components/VoxoPlus/PortfolioPage/PortFolioGrid";
 import { GETPORTFOLIODATA } from "@/ReduxToolkit/Reducers/PortfolioReducer";
 import { getAPIData } from "@/Utils";
@@ -29,8 +28,7 @@ const Portfolio3Grid = () => {
       </Head>
       <BreadCrumb parent={"Portfolio Grid"} title={"Portfolio Grid"} />
       <PortFolioGridContain portfoliodata={portfoliodata} colclass={colclass} />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 

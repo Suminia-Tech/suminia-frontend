@@ -7,7 +7,6 @@ import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ProductNoSideBarContain from "@/Components/Products/ProductNoSidebarContain";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 
 const ProductNoSidebar = () => {
   const [productData, setProductData] = useState([]);
@@ -28,8 +27,7 @@ const ProductNoSidebar = () => {
       <BreadCrumb parent={"Product No Sidebar"} title={"Product No Sidebar"} />
       <ProductNoSideBarContain />
       <ProductSection productData={productData} />
-      <FlowerSubscribe />
-    </Layout1>
+</Layout1>
   );
 };
 export default ProductNoSidebar;

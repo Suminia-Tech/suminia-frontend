@@ -7,7 +7,6 @@ import Layout1 from "@/Layout/Layout1";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import Product4ImageContain from "@/Components/Products/Product4ImageContain";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
-import FlowerSubscribe from "@/Components/FlowerDemo/FlowerSubscribe";
 import RecentNotification from "@/Components/Products/RecentNotification";
 import StickyFooter from "@/Components/Products/StickyFooter";
 
@@ -30,8 +29,7 @@ const Product4Images = () => {
       <BreadCrumb parent={"Product 4 Images"} title={"Product 4 Images"} />
       <Product4ImageContain />
       <ProductSection productData={productData} />
-      <FlowerSubscribe />
-      <RecentNotification />
+<RecentNotification />
       <StickyFooter productData={productData} />
     </Layout1>
   );
