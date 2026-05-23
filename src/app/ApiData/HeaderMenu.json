@@ -5,38 +5,8 @@
     "isHome": true,
     "children": [
       {
-        "path": "/layout/fashion",
-        "title": "Fashion Demo",
-        "type": "link",
-        "imagePath": "fashion.jpg"
-      },
-      {
-        "path": "/layout/flower",
-        "title": "Flowers Demo",
-        "type": "link",
-        "imagePath": "flower.jpg"
-      },
-      {
-        "path": "/layout/furniture",
-        "title": "Furniture Demo",
-        "type": "link",
-        "imagePath": "furniture.jpg"
-      },
-      {
-        "path": "/layout/electronic",
-        "title": "electronic Demo",
-        "type": "link",
-        "imagePath": "electonic.jpg"
-      },
-      {
-        "path": "/layout/shoes",
-        "title": "shoes Demo",
-        "type": "link",
-        "imagePath": "shoes.jpg"
-      },
-      {
         "path": "/layout/vegetables",
-        "title": "vegetables Demo",
+        "title": "Vegetables Demo",
         "type": "link",
         "imagePath": "vagetables.jpg"
       }
@@ -258,18 +228,8 @@
             "active": false,
             "children": [
               {
-                "path": "/layout/furniture",
-                "title": "Bottom",
-                "type": "link"
-              },
-              {
-                "path": "/layout/electronic",
-                "title": "Bottom Left",
-                "type": "link"
-              },
-              {
-                "path": "/layout/fashion",
-                "title": "Bottom Right",
+                "path": "/layout/vegetables",
+                "title": "Cookie Bar",
                 "type": "link"
               }
             ]
