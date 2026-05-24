@@ -8,6 +8,7 @@ import VegetableNewsUpdate from "@/Components/VegetablesDemo/VegetableNewsUpdate
 import VegetableOffer from "@/Components/VegetablesDemo/VegetableOffers";
 import VegetablePromo from "@/Components/VegetablesDemo/VegetablePromo";
 import VegetableTopBanner from "@/Components/VegetablesDemo/VegetableTopBanner";
+import CommonModel from "@/Components/Element/CommonModel";
 import StartModel from "@/Layout/Element/StartModel";
 import Layout6 from "@/Layout/Layout6";
 import { getAPIData } from "@/Utils";
@@ -42,6 +43,7 @@ export default function Home() {
       <VegetableHurryUp bannerData={bannerData} />
       <VegetableNewsUpdate bannerData={bannerData} />
       <StartModel />
+      <CommonModel />
     </Layout6>
   );
 }
