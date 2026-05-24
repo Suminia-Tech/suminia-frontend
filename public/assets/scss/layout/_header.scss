@@ -45,7 +45,7 @@
         transition: all 0.5s ease;
         z-index: 6;
 
-        [class='dark'] & {
+        [class="dark"] & {
           background-color: #2b2b2b;
           box-shadow: 0px 4px 10px rgba(23, 32, 90, 0.15);
         }
@@ -63,7 +63,7 @@
       transition: max-height 1000ms cubic-bezier(0.27, 0.7, 0, 0.99);
       z-index: 1;
 
-      [class='dark'] & {
+      [class="dark"] & {
         background-color: #2b2b2b;
       }
 
@@ -117,7 +117,7 @@
           a {
             color: $theme-font-color;
 
-            [class='dark'] & {
+            [class="dark"] & {
               color: #efefef;
             }
           }
@@ -148,7 +148,7 @@
     .onhover-div {
       right: 0;
 
-      [dir='rtl'] & {
+      [dir="rtl"] & {
         right: unset;
         left: 0;
       }
@@ -175,7 +175,7 @@
         &::before {
           border-bottom: 7px solid $demo1-bg;
 
-          [class='dark'] & {
+          [class="dark"] & {
             border-bottom: 7px solid #2d2d2d;
           }
         }
@@ -210,7 +210,7 @@
         align-items: center;
         justify-content: space-between;
 
-        [class='dark'] & {
+        [class="dark"] & {
           background-color: #383838;
         }
 
@@ -227,7 +227,7 @@
 
         span {
           i {
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               transform: rotate(180deg);
             }
           }
@@ -247,7 +247,7 @@
           font-size: 16px;
           background: none;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             right: unset;
             left: 0;
           }
@@ -260,7 +260,7 @@
         .media-body {
           margin-left: 15px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-left: unset;
             margin-right: 15px;
           }
@@ -304,7 +304,7 @@
           overflow: auto;
           border-bottom: 1px solid $border-color;
 
-          [class='dark'] & {
+          [class="dark"] & {
             border-bottom: 1px solid rgba(143, 131, 151, 0.251);
           }
         }
@@ -364,19 +364,19 @@
       display: flex;
       align-items: center;
 
-      [dir='rtl'] & {
+      [dir="rtl"] & {
         right: unset;
         left: 0;
       }
 
-      [class='dark'] & {
+      [class="dark"] & {
         background-color: #2b2b2b;
       }
 
       .input-group {
         border: 1px solid $demo1-bg;
 
-        [class='dark'] & {
+        [class="dark"] & {
           border: 1px solid #383838;
         }
 
@@ -396,12 +396,12 @@
         input {
           border: none;
 
-          [class='dark'] & {
+          [class="dark"] & {
             background-color: #2b2b2b;
           }
 
           &:focus {
-            [class='dark'] & {
+            [class="dark"] & {
               background-color: #232323;
             }
           }
@@ -423,7 +423,7 @@
           max-height: 350px;
           transition: max-height 1000ms cubic-bezier(0.27, 0.7, 0, 0.99);
 
-          [class='dark'] & {
+          [class="dark"] & {
             border: 1px solid #383838;
           }
         }
@@ -443,7 +443,7 @@
         border-radius: 0;
         background-color: $white;
 
-        [class='dark'] & {
+        [class="dark"] & {
           border-color: #383838;
           color: #efefef;
           background-color: #383838;
@@ -566,7 +566,7 @@
           a {
             color: $black;
 
-            [class='dark'] & {
+            [class="dark"] & {
               color: #efefef;
             }
           }
@@ -577,21 +577,21 @@
 
   .brand-logo {
     img {
-      [class='dark'] & {
+      [class="dark"] & {
         filter: invert(1);
       }
     }
 
     .svg-icon {
-      @include pseudowh($width: 25px, $height: 25px);
-      margin-right: 5px;
+      @include pseudowh($width: 35px, $height: 35px);
+      margin-right: 10px;
       animation-name: spinner;
       animation-timing-function: linear;
       animation-iteration-count: infinite;
       animation-duration: 3s;
       transform-style: preserve-3d;
 
-      [dir='rtl'] & {
+      [dir="rtl"] & {
         margin-right: 0;
         margin-left: 5px;
       }
@@ -627,7 +627,7 @@
             color: $theme-font-color;
             text-transform: capitalize;
 
-            [class='dark'] & {
+            [class="dark"] & {
               color: #efefef;
             }
 
@@ -655,7 +655,7 @@
     align-items: center;
     justify-content: space-between;
 
-    [class='dark'] & {
+    [class="dark"] & {
       color: #efefef;
       border-bottom: 1px solid #383838;
     }
@@ -675,19 +675,19 @@
     z-index: 3;
     box-shadow: 0 2px 7px 3px rgba(168, 168, 168, 0.2);
 
-    [class='dark'] & {
+    [class="dark"] & {
       background-color: #2b2b2b;
       box-shadow: 0 2px 7px 3px rgba(168, 168, 168, 0.2);
     }
 
-    [dir='rtl'] & {
+    [dir="rtl"] & {
       left: 0;
     }
 
     ul {
       display: flex;
 
-      [dir='rtl'] & {
+      [dir="rtl"] & {
         padding: 0;
       }
 
@@ -699,7 +699,7 @@
           display: block;
           color: rgba($font-dark, 0.4);
 
-          [class='dark'] & {
+          [class="dark"] & {
             color: rgba(239, 239, 239, 0.4);
           }
 
@@ -745,7 +745,7 @@
         min-width: 250px;
         box-shadow: 3.346px 3.716px 22.5px rgba($black, 0.07);
 
-        [class='dark'] & {
+        [class="dark"] & {
           background-color: #2b2b2b;
           box-shadow: 3.346px 3.716px 22.5px rgba(239, 239, 239, 0.07);
         }
@@ -759,14 +759,14 @@
 
                 &::after {
                   position: absolute;
-                  font-family: 'Font Awesome 5 Free';
-                  content: '\f054';
+                  font-family: "Font Awesome 5 Free";
+                  content: "\f054";
                   right: 0;
                   font-weight: 600;
                   @include center(vertical);
                   font-size: 11px;
 
-                  [dir='rtl'] & {
+                  [dir="rtl"] & {
                     right: unset;
                     left: 0;
                     transform: translateY(-50%) rotate(180deg);
@@ -787,14 +787,14 @@
                 top: 0;
                 height: 100%;
 
-                [dir='rtl'] & {
+                [dir="rtl"] & {
                   margin-left: unset;
                   margin-right: 15px;
                   left: unset;
                   right: 95%;
                 }
 
-                [class='dark'] & {
+                [class="dark"] & {
                   background-color: #2b2b2b;
                   box-shadow: 3.346px 3.716px 22.5px rgba(239, 239, 239, 0.07);
                 }
@@ -819,7 +819,7 @@
                   visibility: visible;
                   transition: 0.5s;
 
-                  [dir='rtl'] & {
+                  [dir="rtl"] & {
                     left: unset;
                     right: 100%;
                   }
@@ -882,7 +882,7 @@
         overflow: scroll;
         padding: 0 !important;
 
-        [class='dark'] & {
+        [class="dark"] & {
           background-color: #2b2b2b;
           border: 1px solid #383838;
         }
@@ -906,7 +906,7 @@
                 .according-menu {
                   right: 0;
 
-                  [dir='rtl'] & {
+                  [dir="rtl"] & {
                     right: unset;
                     left: 0;
                   }
@@ -974,7 +974,7 @@
       padding: 16px 0;
       background-color: $demo1-bg;
 
-      [class='dark'] & {
+      [class="dark"] & {
         background-color: #383838;
       }
 
@@ -982,7 +982,7 @@
         background-color: transparent;
         border-bottom: 1px solid $gray-90;
 
-        [class='dark'] & {
+        [class="dark"] & {
           border-bottom-color: #777;
         }
       }
@@ -1008,7 +1008,7 @@
       .border-list {
         padding-right: 6px;
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           padding-right: unset;
           padding-left: 6px;
         }
@@ -1017,7 +1017,7 @@
           padding: 0 20px;
           margin-right: -5px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-right: unset;
             margin-left: -5px;
           }
@@ -1029,13 +1029,15 @@
           .dropdown {
             > button {
               color: $theme-font-color;
-              font-size: calc(13px + (15 - 13) * ((100vw - 320px) / (1920 - 320)));
+              font-size: calc(
+                13px + (15 - 13) * ((100vw - 320px) / (1920 - 320))
+              );
               padding: 0;
               font-weight: 400;
               background-color: transparent;
               border: none;
 
-              [class='dark'] & {
+              [class="dark"] & {
                 color: #efefef;
               }
 
@@ -1043,7 +1045,7 @@
                 font-size: 11px;
                 padding-left: 5px;
 
-                [dir='rtl'] & {
+                [dir="rtl"] & {
                   padding-left: unset;
                   padding-right: 5px;
                 }
@@ -1061,7 +1063,7 @@
             display: flex;
             align-items: center;
 
-            [class='dark'] & {
+            [class="dark"] & {
               color: #efefef;
             }
 
@@ -1070,7 +1072,7 @@
               font-size: 11px;
               padding-left: 5px;
 
-              [dir='rtl'] & {
+              [dir="rtl"] & {
                 padding-left: unset;
                 padding-right: 5px;
               }
@@ -1084,7 +1086,7 @@
           &:first-child {
             padding-left: 0;
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               padding-left: 20px;
               padding-right: 0;
             }
@@ -1097,7 +1099,7 @@
           &:last-child {
             padding-right: 0;
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               padding-right: 10px;
               padding-left: 0;
             }
@@ -1106,11 +1108,11 @@
           + li {
             border-left: 1px solid rgba($theme-font-color, 0.15);
 
-            [class='dark'] & {
+            [class="dark"] & {
               border-left: 1px solid rgba(239, 239, 239, 0.15);
             }
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               border-left: unset;
               border-right: 1px solid rgba($theme-font-color, 0.15);
             }
@@ -1137,13 +1139,13 @@
 
         &.top-header-dropdown {
           .dropdown-menu {
-            [class='dark'] & {
+            [class="dark"] & {
               background-color: #2b2b2b;
             }
 
             .dropdown-item {
               &:hover {
-                [class='dark'] & {
+                [class="dark"] & {
                   background-color: #383838;
                 }
               }
@@ -1172,12 +1174,13 @@
           color: $black1;
           cursor: pointer;
 
-          [class='dark'] & {
+          [class="dark"] & {
             color: #efefef;
           }
 
           &-2 {
-            padding: calc(5px + (10 - 5) * ((100vw - 320px) / (1920 - 320))) calc(7px + (12 - 7) * ((100vw - 320px) / (1920 - 320)));
+            padding: calc(5px + (10 - 5) * ((100vw - 320px) / (1920 - 320)))
+              calc(7px + (12 - 7) * ((100vw - 320px) / (1920 - 320)));
             color: $white;
             cursor: pointer;
           }
@@ -1216,7 +1219,7 @@
             + li {
               margin-left: 20px;
 
-              [dir='rtl'] & {
+              [dir="rtl"] & {
                 margin-left: unset !important;
                 margin-right: 20px;
               }
@@ -1224,7 +1227,7 @@
               @include mq-max(sm) {
                 margin-left: 10px;
 
-                [dir='rtl'] & {
+                [dir="rtl"] & {
                   margin-right: 10px;
                 }
               }
@@ -1243,7 +1246,7 @@
               color: $black;
               stroke-width: 1.5px;
 
-              [class='dark'] & {
+              [class="dark"] & {
                 color: #fff;
               }
             }
@@ -1279,7 +1282,7 @@
               font-size: 13px;
             }
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               margin-left: unset;
               margin-right: 20px;
             }
@@ -1292,7 +1295,7 @@
           margin-left: auto;
           margin-right: 0;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-left: 0;
             margin-right: auto !important;
           }
@@ -1301,7 +1304,7 @@
         @include mq-max(sm) {
           margin-right: 15px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-left: 15px;
           }
         }
@@ -1311,7 +1314,7 @@
     .category-menu {
       margin-left: 30px;
 
-      [dir='rtl'] & {
+      [dir="rtl"] & {
         margin-left: unset !important;
         margin-right: 30px;
       }
@@ -1319,7 +1322,7 @@
       @include mq-max(2xl) {
         margin-left: 20px;
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           margin-left: unset;
           margin-right: 20px;
         }
@@ -1328,7 +1331,7 @@
       @include mq-max(sm) {
         margin-left: 10px;
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           margin-right: 10px;
         }
       }
@@ -1346,7 +1349,7 @@
           vertical-align: middle;
           padding-left: 5px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             padding-left: unset;
             padding-right: 5px;
           }
@@ -1374,7 +1377,7 @@
         @include mq-max(xl) {
           margin-left: 15px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-right: 15px !important;
             margin-left: unset;
           }
@@ -1384,15 +1387,17 @@
       .menu-left {
         margin-right: calc(30px + (60 - 30) * ((100vw - 320px) / (1920 - 320)));
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           margin-right: unset !important;
-          margin-left: calc(30px + (60 - 30) * ((100vw - 320px) / (1920 - 320)));
+          margin-left: calc(
+            30px + (60 - 30) * ((100vw - 320px) / (1920 - 320))
+          );
         }
 
         @include mq-max(xl) {
           margin-right: 0;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-left: 0;
           }
         }
@@ -1401,14 +1406,14 @@
       .menu-right {
         margin-left: auto;
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           margin-left: unset;
           margin-right: auto;
 
           @include mq-max(xl) {
             margin-left: 30px;
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               margin-left: unset;
               margin-right: 30px;
             }
@@ -1417,7 +1422,7 @@
           @include mq-max(sm) {
             margin-left: 0;
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               margin-left: unset;
               margin-right: 0;
             }
@@ -1456,7 +1461,7 @@
               + li {
                 margin-left: 30px;
 
-                [dir='rtl'] & {
+                [dir="rtl"] & {
                   margin-left: unset !important;
                   margin-right: 30px;
                 }
@@ -1464,7 +1469,7 @@
                 @include mq-max(lg) {
                   margin-left: 20px;
 
-                  [dir='rtl'] & {
+                  [dir="rtl"] & {
                     margin-right: 20px;
                   }
                 }
@@ -1472,7 +1477,7 @@
                 @include mq-max(sm) {
                   margin-left: 10px;
 
-                  [dir='rtl'] & {
+                  [dir="rtl"] & {
                     margin-right: 10px;
                   }
                 }
@@ -1489,7 +1494,7 @@
             a {
               color: $theme-font-color;
 
-              [class='dark'] & {
+              [class="dark"] & {
                 color: #efefef;
               }
 
@@ -1506,7 +1511,7 @@
             .btn {
               font-size: 14px;
 
-              [class='dark'] & {
+              [class="dark"] & {
                 color: #efefef;
                 opacity: 1;
               }
@@ -1523,7 +1528,7 @@
             + li {
               margin-left: 30px;
 
-              [dir='rtl'] & {
+              [dir="rtl"] & {
                 margin-left: unset !important;
                 margin-right: 30px;
               }
@@ -1531,7 +1536,7 @@
               @include mq-max(lg) {
                 margin-left: 20px;
 
-                [dir='rtl'] & {
+                [dir="rtl"] & {
                   margin-right: 20px;
                 }
               }
@@ -1539,7 +1544,7 @@
               @include mq-max(sm) {
                 margin-left: 10px;
 
-                [dir='rtl'] & {
+                [dir="rtl"] & {
                   margin-right: 10px;
                 }
 
@@ -1555,7 +1560,7 @@
       .wislist-dropdown {
         margin-right: 8px;
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           margin-right: unset;
           margin-left: 8px;
         }
@@ -1621,7 +1626,7 @@
       @include flex_common;
       height: 100%;
 
-      [class='dark'] & {
+      [class="dark"] & {
         background-color: #2b2b2b;
       }
 
@@ -1632,7 +1637,7 @@
           margin-left: 10px;
         }
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           margin-right: 0 !important;
           margin-left: 20px !important;
         }
@@ -1655,7 +1660,7 @@
       .border-list {
         padding-right: 6px;
 
-        [dir='rtl'] & {
+        [dir="rtl"] & {
           padding-right: unset;
           padding-left: 6px;
         }
@@ -1664,7 +1669,7 @@
           padding: 0 20px;
           margin-right: -5px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-right: unset;
             margin-left: -5px;
           }
@@ -1685,7 +1690,7 @@
               font-size: 11px;
               padding-left: 5px;
 
-              [dir='rtl'] & {
+              [dir="rtl"] & {
                 padding-left: unset;
                 padding-right: 5px;
               }
@@ -1711,7 +1716,7 @@
           + li {
             border-left: 1px solid rgba($theme-font-color, 0.15);
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               border-left: unset;
               border-right: 1px solid rgba($theme-font-color, 0.15);
             }
@@ -1763,7 +1768,7 @@
         @include mq-max(md) {
           padding-right: 8px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             padding-right: unset;
             padding-left: 8px;
             margin-right: auto;
@@ -1802,7 +1807,7 @@
             + li {
               margin-left: 20px;
 
-              [dir='rtl'] & {
+              [dir="rtl"] & {
                 margin-left: unset !important;
                 margin-right: 20px;
               }
@@ -1810,7 +1815,7 @@
               @include mq-max(sm) {
                 margin-left: 10px;
 
-                [dir='rtl'] & {
+                [dir="rtl"] & {
                   margin-right: 10px;
                 }
               }
@@ -1852,7 +1857,7 @@
               font-size: 13px;
             }
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               margin-left: unset;
               margin-right: 20px;
             }
@@ -1865,7 +1870,7 @@
           margin-left: auto;
           margin-right: 30px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin: 0 !important;
           }
         }
@@ -1873,7 +1878,7 @@
         @include mq-max(sm) {
           margin-right: 20px;
 
-          [dir='rtl'] & {
+          [dir="rtl"] & {
             margin-left: 20px;
           }
         }
@@ -1915,7 +1920,7 @@
           + li {
             margin-left: 30px;
 
-            [dir='rtl'] & {
+            [dir="rtl"] & {
               margin-left: unset !important;
               margin-right: 30px;
             }
@@ -1923,7 +1928,7 @@
             @include mq-max(lg) {
               margin-left: 20px;
 
-              [dir='rtl'] & {
+              [dir="rtl"] & {
                 margin-right: 20px;
               }
             }
@@ -1931,7 +1936,7 @@
             @include mq-max(sm) {
               margin-left: 10px;
 
-              [dir='rtl'] & {
+              [dir="rtl"] & {
                 margin-right: 10px;
               }
             }
@@ -1943,7 +1948,7 @@
     .wislist-dropdown {
       margin-right: 8px;
 
-      [dir='rtl'] & {
+      [dir="rtl"] & {
         margin-right: unset;
         margin-left: 8px;
       }
@@ -2011,4 +2016,3 @@
     }
   }
 }
-

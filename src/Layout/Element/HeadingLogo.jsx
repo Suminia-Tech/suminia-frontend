@@ -9,10 +9,11 @@ const HeadingLogo = () => {
       <Link href={"/"}>
         <img
           src="/assets/svg/icons.svg"
-          width={40}
-          height={40}
+          width={55}
+          height={55}
           alt="logo-icon"
           className="svg-icon"
+          style={{ marginRight: "10px" }}
         />
         <Image
           width={150}
