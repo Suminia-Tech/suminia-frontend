@@ -519,7 +519,7 @@ export const ShoesNewSlider = {
   ],
 };
 // ----------------*****************----------------******************------------
-export const VegetableMainSlider = {
+export const HomeMainSlider = {
   slidesToShow: 1,
   slidesToScroll: 1,
   arrows: true,
@@ -528,7 +528,7 @@ export const VegetableMainSlider = {
   prevArrow: <CustomeArrowPrev />,
 };
 // ----------------*****************----------------******************------------
-export const VegetableNavSlider = {
+export const HomeNavSlider = {
   slidesToShow: 3,
   slidesToScroll: 1,
   width: '146px',
@@ -536,7 +536,7 @@ export const VegetableNavSlider = {
   focusOnSelect: true,
 };
 // ----------------*****************----------------******************------------
-export const VegetableFreshSlider = {
+export const HomeFreshSlider = {
   dots: true,
   infinite: true,
   speed: 500,

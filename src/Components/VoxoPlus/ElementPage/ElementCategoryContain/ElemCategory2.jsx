@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import { Category2 } from '@/Constant';
 import ElementHeader from '../../../Element/ElementHeader';
-import FruitsSliderCard from '../../../VegetablesDemo/FreshFruit/FruitsSliderCard';
+import FruitsSliderCard from '../../../Home/FreshFruit/FruitsSliderCard';
 
 const ElemCategory2 = ({ FreshFilter }) => {
   return (

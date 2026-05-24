@@ -31,5 +31,5 @@ export const HeadData = [
   { title: "Flower", image: "5" },
   { title: "Furniture", image: "4" },
   { title: "Shoes", image: "3" },
-  { title: "Vegetables", image: "6" },
+  { title: "Inicio", image: "6" },
 ];

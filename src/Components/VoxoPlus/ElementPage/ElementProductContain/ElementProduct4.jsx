@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row } from 'reactstrap';
 import { Product4 } from '@/Constant';
-import OfferCard from '../../../VegetablesDemo/VegetableOffers/OfferCard';
+import OfferCard from '../../../Home/HomeOffers/OfferCard';
 import ElementHeader from '../../../Element/ElementHeader';
 const ElementProduct4 = ({ OfferFilter }) => {
   return (

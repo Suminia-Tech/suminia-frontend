@@ -4,12 +4,12 @@ import { useSelector } from 'react-redux';
 import { Btn } from '../../AbstractElements';
 import { ShopNow } from '@/Constant';
 
-const VegeLeftContain = ({ VegetableSlider }) => {
+const VegeLeftContain = ({ HomeSliderData }) => {
   const { symbol, currencyValue } = useSelector((state) => state.CurrencyReducer);
   const router = useRouter();
   return (
     <>
-      {VegetableSlider.map((elem, i) => {
+      {HomeSliderData.map((elem, i) => {
         return (
           <Fragment key={i}>
             <div className='left-side-contain'>

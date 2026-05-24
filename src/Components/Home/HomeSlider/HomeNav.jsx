@@ -1,9 +1,9 @@
 import Img from "@/Components/Element/Images";
 import Slider from "react-slick";
-import { VegetableNavSlider } from "../../../Data/SliderSettingsData";
-const VegetableNav = ({ nav1, slider2 }) => {
+import { HomeNavSlider } from "../../../Data/SliderSettingsData";
+const HomeNav = ({ nav1, slider2 }) => {
   return (
-    <Slider {...VegetableNavSlider} style={{ height: 290, overflow: "hidden" }} className="slider-nav image-show slider-thumbnail" asNavFor={nav1} ref={(slider) => (slider2.current = slider)}>
+    <Slider {...HomeNavSlider} style={{ height: 290, overflow: "hidden" }} className="slider-nav image-show slider-thumbnail" asNavFor={nav1} ref={(slider) => (slider2.current = slider)}>
       <div>
         <div className="poster-img">
           <Img src="/assets/images/vegetable/poster/t1.jpg" alt="vegetable" />
@@ -33,4 +33,4 @@ const VegetableNav = ({ nav1, slider2 }) => {
   );
 };
 
-export default VegetableNav;
+export default HomeNav;

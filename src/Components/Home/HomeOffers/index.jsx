@@ -1,6 +1,6 @@
 import { Container, Row } from 'reactstrap';
 import OfferCard from './OfferCard';
-const VegetableOffer = ({ bannerData }) => {
+const HomeOffers = ({ bannerData }) => {
   const OfferFilter = bannerData.filter((el) => el.subtype === 'fruitsbanner');
   return (
     <section className='ratio_90'>
@@ -14,4 +14,4 @@ const VegetableOffer = ({ bannerData }) => {
     </section>
   );
 };
-export default VegetableOffer;
+export default HomeOffers;

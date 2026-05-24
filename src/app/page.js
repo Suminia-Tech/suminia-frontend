@@ -1,13 +1,13 @@
 "use client";
-import FreshFruit from "@/Components/VegetablesDemo/FreshFruit";
-import VegetableDeal from "@/Components/VegetablesDemo/VegetableDeal";
-import VegetableFresh from "@/Components/VegetablesDemo/VegetableFresh";
-import VegetableHomeSlider from "@/Components/VegetablesDemo/VegetableHomeSlider";
-import VegetableHurryUp from "@/Components/VegetablesDemo/VegetableHurryUp";
-import VegetableNewsUpdate from "@/Components/VegetablesDemo/VegetableNewsUpdate";
-import VegetableOffer from "@/Components/VegetablesDemo/VegetableOffers";
-import VegetablePromo from "@/Components/VegetablesDemo/VegetablePromo";
-import VegetableTopBanner from "@/Components/VegetablesDemo/VegetableTopBanner";
+import FreshFruit from "@/Components/Home/FreshFruit";
+import HomeDeal from "@/Components/Home/HomeDeal";
+import HomeFresh from "@/Components/Home/HomeFresh";
+import HomeSlider from "@/Components/Home/HomeSlider";
+import HomeHurryUp from "@/Components/Home/HomeHurryUp";
+import HomeNewsUpdate from "@/Components/Home/HomeNewsUpdate";
+import HomeOffers from "@/Components/Home/HomeOffers";
+import HomePromo from "@/Components/Home/HomePromo";
+import HomeTopBanner from "@/Components/Home/HomeTopBanner";
 import CommonModel from "@/Components/Element/CommonModel";
 import StartModel from "@/Layout/Element/StartModel";
 import Layout6 from "@/Layout/Layout6";
@@ -33,15 +33,15 @@ export default function Home() {
 
   return (
     <Layout6 isCategories={true}>
-      <VegetableHomeSlider mainSlider={mainSlider} />
-      <VegetableTopBanner bannerData={bannerData} />
-      <VegetableFresh productData={productData} />
-      <VegetableOffer bannerData={bannerData} />
-      <VegetableDeal bannerData={bannerData} />
-      <VegetablePromo />
+      <HomeSlider mainSlider={mainSlider} />
+      <HomeTopBanner bannerData={bannerData} />
+      <HomeFresh productData={productData} />
+      <HomeOffers bannerData={bannerData} />
+      <HomeDeal bannerData={bannerData} />
+      <HomePromo />
       <FreshFruit bannerData={bannerData} />
-      <VegetableHurryUp bannerData={bannerData} />
-      <VegetableNewsUpdate bannerData={bannerData} />
+      <HomeHurryUp bannerData={bannerData} />
+      <HomeNewsUpdate bannerData={bannerData} />
       <StartModel />
       <CommonModel />
     </Layout6>

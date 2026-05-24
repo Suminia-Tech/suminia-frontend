@@ -5,8 +5,8 @@ import { Col } from "reactstrap";
 import { Brand, Category, Color, Size, Tags, Viewdetails, productdetail } from "@/Constant";
 import AddtoCartBtn from "./AddtoCartBtn";
 import DynamicRating from "./DynamicRating";
-import KGForVegetable from "./KGForVegetable";
-import VegetableProductDetails from "./VegetableProductDetails";
+import KGSelector from "./KGSelector";
+import HomeProductDetails from "./HomeProductDetails";
 import { IS_MODAL } from "@/ReduxToolkit/Reducers/ModalReducer";
 
 const ModalProductDetails = ({ data }) => {
@@ -23,7 +23,7 @@ const ModalProductDetails = ({ data }) => {
         <h2 className="mb-2">{data?.name}</h2>
         <DynamicRating data={data?.ratingStars} customeclass={"mt-1"} />
         {data?.quantity_1 ? (
-          <KGForVegetable />
+          <KGSelector />
         ) : (
           <div className="price mt-3">
             <h3>
@@ -57,7 +57,7 @@ const ModalProductDetails = ({ data }) => {
           </div>
         )}
         {data?.quantity_1 ? (
-          <VegetableProductDetails data={data} />
+          <HomeProductDetails data={data} />
         ) : (
           <div className="product-details">
             <h4>{productdetail}</h4>

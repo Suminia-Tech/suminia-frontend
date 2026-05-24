@@ -5,7 +5,7 @@ import SectionHeader from '../../Element/SectionHeader';
 import LeftTab from './LeftTab';
 import MiddleTab from './MiddleTab';
 import RightTab from './RightTab';
-const VegetableHurryUp = ({ bannerData }) => {
+const HomeHurryUp = ({ bannerData }) => {
   const HurryUpFilter = bannerData.filter((el) => el.subtype === 'vegetableshurryup');
   return (
     <section className='tab-section'>
@@ -38,4 +38,4 @@ const VegetableHurryUp = ({ bannerData }) => {
     </section>
   );
 };
-export default VegetableHurryUp;
+export default HomeHurryUp;

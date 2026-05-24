@@ -1,7 +1,7 @@
 import { Container, Row } from 'reactstrap';
 import BannerCard from './BannerCard';
 
-const VegetableTopBanner = ({ bannerData }) => {
+const HomeTopBanner = ({ bannerData }) => {
   const VegeTopFilter = bannerData.filter((el) => el.subtype === 'vegetablestopbanner');
   return (
     <section className='ratio_landscape banner-style-2'>
@@ -14,4 +14,4 @@ const VegetableTopBanner = ({ bannerData }) => {
   );
 };
 
-export default VegetableTopBanner;
+export default HomeTopBanner;

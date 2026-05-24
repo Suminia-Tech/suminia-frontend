@@ -3,7 +3,7 @@ import { Col, Container, Row } from 'reactstrap';
 import { Btn } from '../../AbstractElements';
 import { CommonPath, OPENPRODUCTPAGE, PromoData, promoCode } from '@/Constant';
 import Img from '@/Components/Element/Images';
-const VegetablePromo = () => {
+const HomePromo = () => {
   const router = useRouter();
   return (
     <section className='code-section pt-0'>
@@ -34,4 +34,4 @@ const VegetablePromo = () => {
     </section>
   );
 };
-export default VegetablePromo;
+export default HomePromo;

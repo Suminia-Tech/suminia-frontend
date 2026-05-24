@@ -1,13 +1,13 @@
 import Img from '@/Components/Element/Images';
 import { CommonPath } from '@/Constant';
 import Slider from 'react-slick';
-import { VegetableMainSlider } from '../../../Data/SliderSettingsData';
+import { HomeMainSlider } from '../../../Data/SliderSettingsData';
 
-const VegetablePoster = ({ VegetableSlider, nav2, slider1 }) => {
+const HomePoster = ({ HomeSliderData, nav2, slider1 }) => {
   return (
     <div className='poster-image slider-for custome-arrow classic-arrow-1'>
-      <Slider asNavFor={nav2} {...VegetableMainSlider} ref={(slider) => (slider1.current = slider)}>
-        {VegetableSlider.map((el) => {
+      <Slider asNavFor={nav2} {...HomeMainSlider} ref={(slider) => (slider1.current = slider)}>
+        {HomeSliderData.map((el) => {
           return el.backgroundimages.map((elem, i) => {
             return (
               <div key={i}>
@@ -21,4 +21,4 @@ const VegetablePoster = ({ VegetableSlider, nav2, slider1 }) => {
   );
 };
 
-export default VegetablePoster;
+export default HomePoster;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import { Product3 } from '@/Constant';
-import FreshSlider from '../../../VegetablesDemo/VegetableFresh/FreshSlider';
+import FreshSlider from '../../../Home/HomeFresh/FreshSlider';
 import ElementHeader from '../../../Element/ElementHeader';
 const ElementProduct3 = ({ FreshFilter }) => {
   return (

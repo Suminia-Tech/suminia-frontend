@@ -2,7 +2,7 @@ import { Col, Container, Row } from 'reactstrap';
 import { FreshFruits, JustForYou } from '@/Constant';
 import SectionHeader from '../../Element/SectionHeader';
 import FreshSlider from './FreshSlider';
-const VegetableFresh = ({ productData }) => {
+const HomeFresh = ({ productData }) => {
   const FreshFilter = productData.filter((el) => el.type === 'vegetables');
   return (
     <section className='ratio_asos'>
@@ -17,4 +17,4 @@ const VegetableFresh = ({ productData }) => {
     </section>
   );
 };
-export default VegetableFresh;
+export default HomeFresh;

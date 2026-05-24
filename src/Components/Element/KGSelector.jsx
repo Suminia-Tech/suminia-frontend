@@ -1,5 +1,5 @@
 import { Input, Label } from "reactstrap";
-const KGForVegetable = () => {
+const KGSelector = () => {
   return (
     <ul className="price mt-3">
       <li>
@@ -33,4 +33,4 @@ const KGForVegetable = () => {
     </ul>
   );
 };
-export default KGForVegetable;
+export default KGSelector;

@@ -2,7 +2,7 @@ import { Col, Container, Row } from 'reactstrap';
 import { OurBlog, OurNewsUpdate } from '@/Constant';
 import SectionHeader from '../../Element/SectionHeader';
 import BlogCards from './BlogCards';
-const VegetableNewsUpdate = ({ bannerData }) => {
+const HomeNewsUpdate = ({ bannerData }) => {
   const BottomBannerFilter = bannerData.filter((el) => el.subtype === 'vegetablesourblog');
   return (
     <section className='section-b-space'>
@@ -17,4 +17,4 @@ const VegetableNewsUpdate = ({ bannerData }) => {
     </section>
   );
 };
-export default VegetableNewsUpdate;
+export default HomeNewsUpdate;

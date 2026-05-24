@@ -1,4 +1,4 @@
-const VegetableProductDetails = ({ data }) => {
+const HomeProductDetails = ({ data }) => {
   return (
     <div className='product-details'>
       <h4>product details</h4>
@@ -13,4 +13,4 @@ const VegetableProductDetails = ({ data }) => {
     </div>
   );
 };
-export default VegetableProductDetails;
+export default HomeProductDetails;

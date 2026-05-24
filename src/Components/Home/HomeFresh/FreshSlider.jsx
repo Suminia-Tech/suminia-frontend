@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import Slider from "react-slick";
-import { VegetableFreshSlider } from "../../../Data/SliderSettingsData";
+import { HomeFreshSlider } from "../../../Data/SliderSettingsData";
 import { CommonPath, NEW, OFF } from "@/Constant";
 import AddToCartProduct from "../../Element/AddToCart";
 import AddToWishList from "../../Element/AddToWishList";
@@ -14,7 +14,7 @@ const FreshSlider = ({ FreshFilter }) => {
   const { symbol, currencyValue } = useSelector((state) => state.CurrencyReducer);
   return (
     <div className="product-wrapper slide-6">
-      <Slider {...VegetableFreshSlider}>
+      <Slider {...HomeFreshSlider}>
         {FreshFilter.map((elem, i) => {
           return (
             <div key={i}>
