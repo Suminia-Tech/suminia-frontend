@@ -29,7 +29,7 @@ const SearchBarToggle = () => {
         <span className="input-group-text">
           <Search className="font-light" />
         </span>
-        <Input type="text" className="search-type" placeholder="Search here.." onChange={(e) => handleChange(e)} />
+        <Input type="text" className="search-type" placeholder="Buscar aquí.." onChange={(e) => handleChange(e)} />
         <span className="input-group-text close-search" onClick={() => handleClick()}>
           <X className="font-light" />
         </span>

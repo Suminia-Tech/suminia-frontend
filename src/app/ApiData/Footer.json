@@ -1,20 +1,20 @@
 [
   {
-    "title": "About us",
+    "title": "Sobre nosotros",
     "subMenu": [
       {
         "id": 1,
-        "menu": "Home",
-        "url": "/layout/fashion"
+        "menu": "Inicio",
+        "url": "/layout/vegetables"
       },
       {
         "id": 2,
-        "menu": "Shop",
+        "menu": "Tienda",
         "url": "/shop/shop_left_sidebar"
       },
       {
         "id": 3,
-        "menu": "About Us",
+        "menu": "Sobre nosotros",
         "url": "/page/user_dashboard"
       },
       {
@@ -24,67 +24,67 @@
       },
       {
         "id": 5,
-        "menu": "Contact",
+        "menu": "Contacto",
         "url": "/page/contact_us"
       }
     ]
   },
   {
-    "title": "New Categories",
+    "title": "Nuevas Categorías",
     "subMenu": [
       {
         "id": 1,
-        "menu": "Latest Shoes",
+        "menu": "Medicamentos",
         "url": "/shop/shop_left_sidebar"
       },
       {
         "id": 2,
-        "menu": "Branded Jeans",
+        "menu": "Dispositivos médicos",
         "url": "/shop/shop_left_sidebar"
       },
       {
         "id": 3,
-        "menu": "New Jackets",
+        "menu": "Suplementos",
         "url": "/shop/shop_left_sidebar"
       },
       {
         "id": 4,
-        "menu": "Colorfull Hoodies",
+        "menu": "Cuidado personal",
         "url": "/shop/shop_left_sidebar"
       },
       {
         "id": 5,
-        "menu": "Shiner Goggles",
+        "menu": "Equipos médicos",
         "url": "/shop/shop_left_sidebar"
       }
     ]
   },
   {
-    "title": "Get Help",
+    "title": "Obtener ayuda",
     "subMenu": [
       {
         "id": 1,
-        "menu": "Your Orders",
+        "menu": "Tus pedidos",
         "url": "/page/order_success"
       },
       {
         "id": 2,
-        "menu": "Your Account",
+        "menu": "Tu cuenta",
         "url": "/page/user_dashboard"
       },
       {
         "id": 3,
-        "menu": "Track Orders",
+        "menu": "Rastrear pedidos",
         "url": "/page/order_tracking"
       },
       {
         "id": 4,
-        "menu": "Your Wishlist",
+        "menu": "Tu lista de deseos",
         "url": "/page/wishlist"
       },
       {
         "id": 5,
-        "menu": "Shopping FAQs",
+        "menu": "Preguntas frecuentes",
         "url": "/page/faq"
       }
     ]

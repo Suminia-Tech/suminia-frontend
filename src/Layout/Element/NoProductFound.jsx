@@ -6,7 +6,7 @@ const NoProductFound = () => {
     <div className='search-suggestion'>
       <ul className='custom-scroll'>
         <li>
-          <Media className='product-cart'>{'No Data Found'}</Media>
+          <Media className='product-cart'>{'No se encontraron datos'}</Media>
         </li>
       </ul>
     </div>

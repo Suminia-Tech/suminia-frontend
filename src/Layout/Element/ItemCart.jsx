@@ -58,7 +58,7 @@ const ItemCart = () => {
     deleteProduct(`/api/remove/cart/${product.id}`).then((res) => {
       dispatch(ADDTOCART(res?.data));
     });
-    toast.success("Successfully Remove Product");
+    toast.success("Producto eliminado exitosamente");
   };
   return (
     <li className={`onhover-dropdown cart-dropdown${isCartOpen ? " show" : ""}`}>
