@@ -17,25 +17,25 @@ const ContactForm = () => {
             <Label htmlFor='first' className='form-label'>
               {FirstName}
             </Label>
-            <Input type='text' className='form-control' id='first' placeholder='Enter Your First Name' required />
+            <Input type='text' className='form-control' id='first' placeholder='Ingresa tu nombre' required />
           </Col>
           <Col md='6'>
             <Label htmlFor='last' className='form-label'>
               {LastName}
             </Label>
-            <Input type='text' className='form-control' id='last' placeholder='Enter Your Last Name' required />
+            <Input type='text' className='form-control' id='last' placeholder='Ingresa tu apellido' required />
           </Col>
           <Col md='6'>
             <Label htmlFor='email' className='form-label'>
               {Email}
             </Label>
-            <Input type='email' className='form-control' id='email' placeholder='Enter Your Email Address' required />
+            <Input type='email' className='form-control' id='email' placeholder='Ingresa tu correo electrónico' required />
           </Col>
           <Col md='6'>
             <Label htmlFor='email2' className='form-label'>
               {ConfirmEmail}
             </Label>
-            <Input type='email' className='form-control' id='email2' placeholder='Enter Your Confirm Email Address' required />
+            <Input type='email' className='form-control' id='email2' placeholder='Confirma tu correo electrónico' required />
           </Col>
 
           <Col xs='12'>

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git count-objects *)",
+      "Bash(pnpm add *)",
+      "Bash(python3)",
+      "Bash(git remote *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Bash(xargs sed -i '' 's|type=\"image/x-icon\" href={`${CommonPath}/favicon/2.png`}|type=\"image/svg+xml\" href={`${CommonPath}/favicon/favicon.svg`}|g')",
+      "Bash(xargs ls)",
+      "Bash(sed -i '' 's/\"Successfully Remove Product\"/\"Producto eliminado exitosamente\"/g' /Users/mac/Documents/MediSupply/medisupply-front/src/Layout/Element/ItemCart.jsx)",
+      "Bash(sed -i '' \"s/'No Data Found'/'No se encontraron datos'/g\" /Users/mac/Documents/MediSupply/medisupply-front/src/Layout/Element/NoProductFound.jsx)"
+    ]
+  }
+}

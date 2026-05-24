@@ -1,43 +1,43 @@
 export const ProductDetailNav = [
   {
     id: 1,
-    title: 'Description',
+    title: 'Descripción',
   },
   {
     id: 2,
-    title: 'Specifications',
+    title: 'Especificaciones',
   },
   {
     id: 3,
-    title: 'Sizing Guide',
+    title: 'Guía de tallas',
   },
   {
     id: 4,
-    title: 'Q & A',
+    title: 'Preguntas y respuestas',
   },
   {
     id: 5,
-    title: 'Review',
+    title: 'Reseñas',
   },
 ];
 export const QADetails = [
   {
     id: 1,
-    question: 'Is it compatible with all React themes?',
+    question: '¿Es compatible con todos los temas de React?',
     answer:
-      'If you want to see a demonstration version of the premium plugin, you can see that in this page. If you want to see a demonstration version of the premium plugin, you can see that in this page. If you want to see a demonstration version of the premium plugin, you can see that in this page.',
+      'Si deseas ver una versión de demostración del plugin premium, puedes verla en esta página. Si deseas ver una versión de demostración del plugin premium, puedes verla en esta página.',
   },
   {
     id: 2,
-    question: 'How can I try the full-featured plugin? ',
+    question: '¿Cómo puedo probar el plugin con todas sus funciones?',
     answer:
-      'Compatibility with all themes is impossible, because they are too many, but generally if themes are developed according to WordPress and WooCommerce guidelines, YITH plugins are compatible with them. Compatibility with all themes is impossible, because they are too many, but generally if themes are developed according to WordPress and WooCommerce guidelines, YITH plugins are compatible with them.',
+      'La compatibilidad con todos los temas es imposible porque son demasiados, pero en general si los temas están desarrollados según las directrices de WordPress y WooCommerce, los plugins son compatibles con ellos.',
   },
   {
     id: 3,
-    question: 'Is it compatible with all Angular themes?',
+    question: '¿Es compatible con todos los temas de Angular?',
     answer:
-      'If you want to see a demonstration version of the premium plugin, you can see that in this page. If you want to see a demonstration version of the premium plugin, you can see that in this page. If you want to see a demonstration version of the premium plugin, you can see that in this page.',
+      'Si deseas ver una versión de demostración del plugin premium, puedes verla en esta página. Si deseas ver una versión de demostración del plugin premium, puedes verla en esta página.',
   },
 ];
 export const AutoFadeSliderImageData = [

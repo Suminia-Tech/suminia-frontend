@@ -26,21 +26,21 @@ const CommentDetails = ({ elem }) => {
         </Col>
         <Col lg='4' md='12' sm='6'>
           <Label htmlFor='fname'>{FirstName}</Label>
-          <Input type='text' id='fname' placeholder='Enter First Name' required />
+          <Input type='text' id='fname' placeholder='Ingresa tu nombre' required />
         </Col>
         <Col lg='4' md='12' sm='6'>
           <Label htmlFor='lname'>{LastName}</Label>
-          <Input type='text' id='lname' placeholder='Enter Last Name' required />
+          <Input type='text' id='lname' placeholder='Ingresa tu apellido' required />
         </Col>
 
         <Col lg='4'>
           <Label htmlFor='email'>{EmailAddress}</Label>
-          <Input type='email' id='email' placeholder='example@example.com' required />
+          <Input type='email' id='email' placeholder='ejemplo@ejemplo.com' required />
         </Col>
 
         <Col xs='12'>
           <Label htmlFor='textarea'>{Comments}</Label>
-          <Input rows='3' type='textarea' placeholder='Leave a comment here' required></Input>
+          <Input rows='3' type='textarea' placeholder='Escribe un comentario' required></Input>
         </Col>
 
         <Col xs='12'>

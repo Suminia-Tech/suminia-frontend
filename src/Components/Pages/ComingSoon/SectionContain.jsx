@@ -10,7 +10,7 @@ const SectionContain = () => {
           <h1>{Wearecomingsoon}</h1>
           <p>{ComingDescription}</p>
           <Form>
-            <Input className='form-control' placeholder='enter your email address' />
+            <Input className='form-control' placeholder='ingresa tu correo electrónico' />
             <Link href={'/'} className='btn btn-solid-default mt-4'>
               {NotifyMe}
             </Link>

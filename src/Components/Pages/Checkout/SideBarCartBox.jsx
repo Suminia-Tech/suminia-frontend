@@ -43,7 +43,7 @@ const SideBarCartBox = () => {
             })
           ) : (
             <li>
-              <p>No Data Found</p>
+              <p>No se encontraron datos</p>
             </li>
           )}
           <li className='list-group-item d-flex justify-content-between lh-condensed active'>
@@ -58,7 +58,7 @@ const SideBarCartBox = () => {
 
         <Form className='card custom-card border-0'>
           <InputGroup className='custome-input-group'>
-            <Input type='text' placeholder='Promo code' />
+            <Input type='text' placeholder='Código promocional' />
             <div className='input-group-append'>
               <Btn attrBtn={{ className: 'btn-solid-default rounded-0' }}>{Redeem}</Btn>
             </div>

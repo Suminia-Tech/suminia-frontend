@@ -14,22 +14,22 @@ const RegisterSection = () => {
           </div>
 
           <div className='input'>
-            <Input placeholder='Name' type='text' name='name' id='name' />
+            <Input placeholder='Nombre' type='text' name='name' id='name' />
             <span className='spin'></span>
           </div>
 
           <div className='input'>
-            <Input type='text' name='name' id='emailname' placeholder='EmailAddress' />
+            <Input type='text' name='name' id='emailname' placeholder='Correo electrónico' />
             <span className='spin'></span>
           </div>
 
           <div className='input'>
-            <Input type='password' name='pass' id='pass' placeholder='Password' />
+            <Input type='password' name='pass' id='pass' placeholder='Contraseña' />
             <span className='spin'></span>
           </div>
 
           <div className='input'>
-            <Input type='password' name='pass' id='compass' placeholder='ConfirmPassword' />
+            <Input type='password' name='pass' id='compass' placeholder='Confirmar contraseña' />
             <span className='spin'></span>
           </div>
 

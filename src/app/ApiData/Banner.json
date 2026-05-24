@@ -9,7 +9,7 @@
                 "image": "fashion/banner/1.jpg",
                 "discount": 26,
                 "heading": "New Hoodie",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "link": "/shop",
                 "category": "shirt"
             },
@@ -27,7 +27,7 @@
                 "image": "fashion/banner/3.jpg",
                 "discount": 36,
                 "heading": "New Jacket",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "link": "/shop",
                 "category": "jacket",
                 "class": true
@@ -66,13 +66,13 @@
     {
         "type": "fashion",
         "subtype": "fashiondeal",
-        "topHeading": "Special Discount",
+        "topHeading": "Descuento especial",
         "topHeadingColor": "70% OFF",
-        "mainHeading": "Deal Of The Day",
+        "mainHeading": "Oferta del día",
         "mainHeadin2": "from ",
         "mainHeading2Color": "$75",
         "leftHeading": "Latest Jacket",
-        "leftsubheading": "BUY ONE GET ONE FREE",
+        "leftsubheading": "COMPRA UNO LLEVA UNO GRATIS",
         "image": "fashion/banner/8.jpg"
     },
     {
@@ -133,7 +133,7 @@
                 "image": "flower/banner/1.jpg",
                 "discount": 26,
                 "heading": "Pink Flower",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "link": "/shop"
             },
             {
@@ -149,7 +149,7 @@
                 "image": "flower/banner/3.jpg",
                 "discount": 36,
                 "heading": "Orange Flower",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "link": "/shop",
                 "class": true
             }
@@ -188,8 +188,8 @@
         "subtype": "flowerdeal",
         "leftimage": "flower/offer-1/2.png",
         "rightimage": "flower/offer-1/1.png",
-        "lefthead": "Shop Now",
-        "leftsubhead": "BUY ONE GET ONE FREE",
+        "lefthead": "Comprar ahora",
+        "leftsubhead": "COMPRA UNO LLEVA UNO GRATIS",
         "mainhead1": "Special Discount ",
         "offer": "70% OFF",
         "mainhead2": "Deal Of The Day ",
@@ -247,7 +247,7 @@
                 "price": 59.00,
                 "delprice": 65.00,
                 "heading": "SHOP NOW",
-                "subHeading": "BUY ONE GET ONE FREE",
+                "subHeading": "COMPRA UNO LLEVA UNO GRATIS",
                 "link": "/shop/shop_canvas_filter"
             },
             {
@@ -258,7 +258,7 @@
                 "price": 69.00,
                 "delprice": 95.00,
                 "heading": "SHOP NOW",
-                "subHeading": "BUY ONE GET ONE FREE",
+                "subHeading": "COMPRA UNO LLEVA UNO GRATIS",
                 "link": "/shop/shop_canvas_filter"
             },
             {
@@ -270,7 +270,7 @@
                 "price": 89.00,
                 "delprice": 95.00,
                 "heading": "SHOP NOW",
-                "subHeading": "BUY ONE GET ONE FREE",
+                "subHeading": "COMPRA UNO LLEVA UNO GRATIS",
                 "link": "/shop/shop_canvas_filter"
             }
         ]
@@ -279,8 +279,8 @@
         "type": "furniture",
         "subtype": "furnituredeal",
         "image": "furniture-images/deal/1.png",
-        "lefthead": "Shop Now",
-        "leftsubhead": "BUY ONE GET ONE FREE",
+        "lefthead": "Comprar ahora",
+        "leftsubhead": "COMPRA UNO LLEVA UNO GRATIS",
         "mainhead1": "Special Discount ",
         "offer": "70% OFF",
         "mainhead2": "Deal Of The Day ",
@@ -334,7 +334,7 @@
         "banners": [
             {
                 "heading": "Lemons",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "discount": 26,
                 "image": "vegetable/banner/1.jpg"
             },
@@ -342,16 +342,16 @@
                 "childtype": "middlebanner",
                 "price": "$49",
                 "mrp": "$52",
-                "smallheading": "Get Rewarded",
-                "headingtop": "Earn 10%",
-                "headingbottom": "Back Reward",
-                "subheading": "Valid online & in-store with select styles.",
+                "smallheading": "Obtén recompensas",
+                "headingtop": "Gana 10%",
+                "headingbottom": "Recompensa de devolución",
+                "subheading": "Válido en línea y en tienda con estilos seleccionados.",
                 "image": "vegetable/percentage.jpg",
                 "class": true
             },
             {
                 "heading": "Kiwi",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "discount": 26,
                 "image": "vegetable/banner/2.jpg"
             }
@@ -408,7 +408,7 @@
     {
         "type": "vegetables",
         "subtype": "vegetablesdeal",
-        "lefttext": "New Festival Offer",
+        "lefttext": "Nueva oferta de temporada",
         "discount": 70,
         "couponcode": "DGR548548",
         "fruitsimage": "vegetable/1234.png",
@@ -429,10 +429,10 @@
             }
         ],
         "rightsmallheading": "New Headphone",
-        "rightheadingtop": "50% Cash",
-        "rightheadingbottom": "Back Reward",
-        "bottomsmalltop": "Limited Offer",
-        "bottomsmallbottom": "Buy Now!!",
+        "rightheadingtop": "50% en efectivo",
+        "rightheadingbottom": "Recompensa de devolución",
+        "bottomsmalltop": "Oferta limitada",
+        "bottomsmallbottom": "¡Comprar ahora!",
         "rightimage": "vegetable/offer/2.jpg"
     },
     {
@@ -571,7 +571,7 @@
         "banners": [
             {
                 "image": "shoes/poster/1.png",
-                "topTitle": "Get 25% Rewarded",
+                "topTitle": "Obtén 25% de recompensa",
                 "heading": "Latest Sport Shoes",
                 "feature": "Fully Comfortable and Smooth Product",
                 "price": 49.0,
@@ -579,7 +579,7 @@
             },
             {
                 "image": "shoes/poster/2.png",
-                "topTitle": "Get 38% Rewarded",
+                "topTitle": "Obtén 38% de recompensa",
                 "heading": "Perfect Mixture Shoes",
                 "feature": "Fully Comfortable and Smooth Product",
                 "price": 56.0,
@@ -619,9 +619,9 @@
     {
         "type": "shoes",
         "subtype": "shoesdeal",
-        "title": "Special Discount",
+        "title": "Descuento especial",
         "discount": "70% OFF",
-        "headingtop": "Deal Of The Day",
+        "headingtop": "Oferta del día",
         "headingbottom": "from",
         "price": 75,
         "image": "shoes/deal/1.png"
@@ -632,22 +632,22 @@
         "banners": [
             {
                 "heading": "Headphone",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "image": "electronics/banner/1.jpg"
             },
             {
                 "childtype": "middlebanner",
                 "price": 49,
                 "mrp": 52,
-                "smallheading": "Get Rewarded",
-                "headingtop": "Earn 10%",
-                "headingbottom": "Back Reward",
-                "subheading": "Valid online & in-store with select styles.",
+                "smallheading": "Obtén recompensas",
+                "headingtop": "Gana 10%",
+                "headingbottom": "Recompensa de devolución",
+                "subheading": "Válido en línea y en tienda con estilos seleccionados.",
                 "class": true
             },
             {
                 "heading": "Headphone",
-                "subheading": "BUY ONE GET ONE FREE",
+                "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "image": "electronics/banner/2.jpg"
             }
         ]
@@ -655,7 +655,7 @@
     {
         "type": "electronic",
         "subtype": "electronicdeal",
-        "lefttext": "New Festival Offer",
+        "lefttext": "Nueva oferta de temporada",
         "discount": 70,
         "couponcode": "DGR548548",
         "image": "electronics/banner/3.jpg",
@@ -674,10 +674,10 @@
             }
         ],
         "rightsmallheading": "New Headphone",
-        "rightheadingtop": "50% Cash",
-        "rightheadingbottom": "Back Reward",
-        "bottomsmalltop": "Limited Offer",
-        "bottomsmallbottom": "Buy Now!!",
+        "rightheadingtop": "50% en efectivo",
+        "rightheadingbottom": "Recompensa de devolución",
+        "bottomsmalltop": "Oferta limitada",
+        "bottomsmallbottom": "¡Comprar ahora!",
         "rightimage": "electronics/banner/4.jpg"
     },
     {

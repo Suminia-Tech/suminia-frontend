@@ -15,7 +15,7 @@ const SearchContain = () => {
           <Col lg='6' md='8' className='mx-auto'>
             <div className='search-bar'>
               <div className='input-group search-bar w-100 m-0'>
-                <Input type='search' className='form-control' placeholder='Search' />
+                <Input type='search' className='form-control' placeholder='Buscar' />
                 <Btn attrBtn={{ className: 'input-group-text', id: 'basic-addon3' }}>
                   <i className='fas fa-search'></i>
                 </Btn>

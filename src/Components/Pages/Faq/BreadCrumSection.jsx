@@ -13,7 +13,7 @@ const BreadcrumSection = () => {
             <h3>{Howhelp}</h3>
             <div className="search-bar">
               <div className="input-group search-bar">
-                <Input type="search" className="form-control" placeholder="Search" />
+                <Input type="search" className="form-control" placeholder="Buscar" />
                 <Btn attrBtn={{ className: "input-group-text", id: "basic-addon3" }}>
                   <i className="fas fa-search"></i>
                 </Btn>

@@ -42,14 +42,14 @@ const CheckoutForm = () => {
           <Label htmlFor='fname' className='form-label'>
             {FirstName}
           </Label>
-          <input type='text' className='form-control' name='firstname' id='fname' placeholder='Enter First Name' {...register('firstname', { required: true })} />
+          <input type='text' className='form-control' name='firstname' id='fname' placeholder='Ingresa tu nombre' {...register('firstname', { required: true })} />
           {errors.firstname && <span style={{ color: 'red' }}>{firstnamerequired}</span>}
         </Col>
         <Col md='6'>
           <Label htmlFor='lname' className='form-label'>
             {LastName}
           </Label>
-          <input type='text' className='form-control' name='lastname' id='lname' placeholder='Enter Last Name' {...register('firstname', { required: true })} />
+          <input type='text' className='form-control' name='lastname' id='lname' placeholder='Ingresa tu apellido' {...register('firstname', { required: true })} />
           {errors.lastname && <span style={{ color: 'red' }}>{lastnamerequired}</span>}
         </Col>
         <Col md='6'>
@@ -60,7 +60,7 @@ const CheckoutForm = () => {
             <span className='input-group-text' id='basic-addon1'>
               @
             </span>
-            <input type='text' className='form-control' placeholder='Username' name='username' {...register('username', { required: true })} />
+            <input type='text' className='form-control' placeholder='Usuario' name='username' {...register('username', { required: true })} />
           </div>
           {errors.username && <span style={{ color: 'red' }}>{usernamerequired}</span>}
         </Col>
@@ -69,7 +69,7 @@ const CheckoutForm = () => {
           <Label htmlFor='email' className='form-label'>
             {Emailaddress}
           </Label>
-          <input type='email' className='form-control' id='email' placeholder='example@example.com' name='email' {...register('email', { required: true })} />
+          <input type='email' className='form-control' id='email' placeholder='ejemplo@ejemplo.com' name='email' {...register('email', { required: true })} />
           {errors.email && <span style={{ color: 'red' }}>{emailrequired}</span>}
         </Col>
 
@@ -77,7 +77,7 @@ const CheckoutForm = () => {
           <Label htmlFor='address' className='form-label'>
             {Address}
           </Label>
-          <input type='text' className='form-control' id='address' placeholder='1234 Main St' name='address' {...register('address', { required: true })} />
+          <input type='text' className='form-control' id='address' placeholder='Dirección' name='address' {...register('address', { required: true })} />
           {errors.address && <span style={{ color: 'red' }}>{addressrequired}</span>}
         </Col>
 
@@ -85,7 +85,7 @@ const CheckoutForm = () => {
           <Label htmlFor='address2' className='form-label'>
             {Address2}
           </Label>
-          <input type='text' className='form-control' id='address2' placeholder='1234 Main St' name='address2' {...register('address2', { required: true })} />
+          <input type='text' className='form-control' id='address2' placeholder='Dirección' name='address2' {...register('address2', { required: true })} />
           {errors.address2 && <span style={{ color: 'red' }}>{address2required}</span>}
         </Col>
         <CountryField />
@@ -94,7 +94,7 @@ const CheckoutForm = () => {
           <Label htmlFor='zip' className='form-label'>
             {Zip}
           </Label>
-          <input type='text' className='form-control' id='zip' placeholder='1234 Main St' name='zip' {...register('zip', { required: true })} />
+          <input type='text' className='form-control' id='zip' placeholder='Dirección' name='zip' {...register('zip', { required: true })} />
           {errors.zip && <span style={{ color: 'red' }}>{ziprequired}</span>}
         </Col>
       </Row>

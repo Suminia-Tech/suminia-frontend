@@ -20,19 +20,19 @@ const SaveAddressModal = () => {
             <label htmlFor="name" className="form-label font-light">
               {Fullname}
             </label>
-            <Input type="text" className="form-control" id="name" placeholder="full name" />
+            <Input type="text" className="form-control" id="name" placeholder="Nombre completo" />
           </div>
           <div className="mb-3">
             <label htmlFor="address" className="form-label font-light">
               {FullAddress}
             </label>
-            <Input type="text" className="form-control" id="address" placeholder="123, abcd, xyz" />
+            <Input type="text" className="form-control" id="address" placeholder="Dirección completa" />
           </div>
           <div>
             <label htmlFor="number" className="form-label font-light">
               {Mobile}
             </label>
-            <Input type="number" className="form-control" id="number" placeholder="+1-123-456-7890" />
+            <Input type="number" className="form-control" id="number" placeholder="Número de teléfono" />
           </div>
         </Form>
       </ModalBody>

@@ -21,7 +21,7 @@ const AddComments = () => {
             <Label className="mb-1" htmlFor="id">
               {EmailAddress}
             </Label>
-            <input type="email" className="form-control" id="id" placeholder="Email Address" />
+            <input type="email" className="form-control" id="id" placeholder="Correo electrónico" />
           </Col>
 
           <Col xs="12">

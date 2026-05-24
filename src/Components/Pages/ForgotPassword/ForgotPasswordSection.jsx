@@ -11,7 +11,7 @@ const ForgotPasswordSection = () => {
             <h2>{ForgotPassword}</h2>
           </div>
           <div className='input'>
-            <Input type='text' name='name' placeholder='Enter Email Address' className='is-invalid' id='emailname' />
+            <Input type='text' name='name' placeholder='Ingresa tu correo electrónico' className='is-invalid' id='emailname' />
             <span className='spin'></span>
           </div>
           <div className='button login button-1'>

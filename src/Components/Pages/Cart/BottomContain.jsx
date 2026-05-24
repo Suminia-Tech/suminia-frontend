@@ -22,7 +22,7 @@ const BottomContain = ({ cartData, totalMrp }) => {
           <div className='promo-section'>
             <Form className='row g-3'>
               <Col xs='7'>
-                <Input type='text' className='form-control' id='number' placeholder='Coupon Code' />
+                <Input type='text' className='form-control' id='number' placeholder='Código de cupón' />
               </Col>
               <Col xs='5'>
                 <Btn attrBtn={{ className: 'btn btn-solid-default rounded btn' }}>{ApplyCoupon}</Btn>

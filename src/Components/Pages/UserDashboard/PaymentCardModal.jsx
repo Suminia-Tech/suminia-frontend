@@ -35,7 +35,7 @@ const PaymentCardModal = () => {
               <Label htmlFor="card" className="form-label">
                 Name On Card
               </Label>
-              <Input type="text" className="form-control" id="card" placeholder="Name card" />
+              <Input type="text" className="form-control" id="card" placeholder="Nombre en la tarjeta" />
             </div>
             <div className="mb-4">
               <Label htmlFor="cAddress" className="form-label">
