@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
-import Layout1 from "@/Layout/Layout1";
+import Layout6 from "@/Layout/Layout6";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
 import ShopWithCategoryContain from "@/Components/Shop/ShopWithCategory";
@@ -19,7 +19,7 @@ const ShopWithCategory = () => {
     });
   }, []);
   return (
-    <Layout1>
+    <Layout6 isCategories={true}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
@@ -27,7 +27,7 @@ const ShopWithCategory = () => {
       <BreadCrumb parent={"Tienda"} title={"Tienda"} />
       <ShopWithCategoryContain productData={productData} />
 <CanvasOffset productData={productData} />
-    </Layout1>
+    </Layout6>
   );
 };
 

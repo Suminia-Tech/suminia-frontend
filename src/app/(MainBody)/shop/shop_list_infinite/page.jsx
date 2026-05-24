@@ -3,7 +3,7 @@ import { CommonPath } from "@/Constant";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
 import ShopListInfiniteContain from "@/Components/Shop/ShopListInfinite/ShopListInfinite";
-import Layout1 from "@/Layout/Layout1";
+import Layout6 from "@/Layout/Layout6";
 import { getAPIData } from "@/Utils";
 import Head from "next/head";
 import { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ const ShopListInfinite = () => {
   }, []);
   const listGrid = true;
   return (
-    <Layout1>
+    <Layout6 isCategories={true}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
@@ -28,7 +28,7 @@ const ShopListInfinite = () => {
       <BreadCrumb parent={"Tienda"} title={"Tienda"} />
       <ShopListInfiniteContain productData={productData} listGrid={listGrid} />
 <CanvasOffset productData={productData} />
-    </Layout1>
+    </Layout6>
   );
 };
 

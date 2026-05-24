@@ -5,12 +5,12 @@ import PaymentCardModal from "@/Components/Pages/UserDashboard/PaymentCardModal"
 import ProfileModal from "@/Components/Pages/UserDashboard/ProfileModal";
 import SaveAddressModal from "@/Components/Pages/UserDashboard/SaveAddressModal";
 import { CommonPath } from "@/Constant";
-import Layout1 from "@/Layout/Layout1";
+import Layout6 from "@/Layout/Layout6";
 import Head from "next/head";
 
 const UserDashboard = () => {
   return (
-    <Layout1>
+    <Layout6 isCategories={true}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
@@ -20,7 +20,7 @@ const UserDashboard = () => {
       <PaymentCardModal />
       <SaveAddressModal />
       <ProfileModal />
-    </Layout1>
+    </Layout6>
   );
 };
 

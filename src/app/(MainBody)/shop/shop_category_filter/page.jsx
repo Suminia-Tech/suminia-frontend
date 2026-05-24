@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
-import Layout1 from "@/Layout/Layout1";
+import Layout6 from "@/Layout/Layout6";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ShopSlider from "@/Components/Shop/ShopCategoryFilter/ShopSlider";
 import CanvasOffset from "@/Components/Shop/ShopCanvasFilter/CanvasOffset";
@@ -21,7 +21,7 @@ const ShopCategoryFilter = () => {
     });
   }, []);
   return (
-    <Layout1>
+    <Layout6 isCategories={true}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
@@ -30,7 +30,7 @@ const ShopCategoryFilter = () => {
       <ShopSlider />
       <ShopSection productData={productData} />
 <CanvasOffset productData={productData} />
-    </Layout1>
+    </Layout6>
   );
 };
 

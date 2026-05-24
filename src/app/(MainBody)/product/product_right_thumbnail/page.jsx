@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
-import Layout1 from "@/Layout/Layout1";
+import Layout6 from "@/Layout/Layout6";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import ProductRightThumbnailContain from "@/Components/Products/ProductRightThumbnailContain.jsx";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
@@ -21,7 +21,7 @@ const ProductLeftThumbnail = () => {
     });
   }, []);
   return (
-    <Layout1>
+    <Layout6 isCategories={true}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
@@ -31,7 +31,7 @@ const ProductLeftThumbnail = () => {
       <ProductSection productData={productData} />
 <RecentNotification />
       <StickyFooter productData={productData} />
-    </Layout1>
+    </Layout6>
   );
 };
 

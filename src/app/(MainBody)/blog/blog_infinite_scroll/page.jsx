@@ -2,7 +2,7 @@
 import BlogInfiniteScroll from "@/Components/Blog/BlogInfiniteScroll";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
 import { CommonPath } from "@/Constant";
-import Layout1 from "@/Layout/Layout1";
+import Layout6 from "@/Layout/Layout6";
 import { GETBLOGDATA } from "@/ReduxToolkit/Reducers/BlogReducer";
 import { getAPIData } from "@/Utils";
 import Head from "next/head";
@@ -20,14 +20,14 @@ const Blog_infinite_scroll = () => {
     }
   }, [Blogdatanew, dispatch]);
   return (
-    <Layout1>
+    <Layout6 isCategories={true}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
       <BreadCrumb parent={"Blog"} title={"Blog"} />
       <BlogInfiniteScroll />
-</Layout1>
+</Layout6>
   );
 };
 
