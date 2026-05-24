@@ -1,5 +1,4 @@
 "use client";
-import { HeadData } from "@/Data/TopHeaderData";
 import { usePathname } from "next/navigation";
 
 export default function Head() {
@@ -17,11 +16,8 @@ export default function Head() {
     .join(" ");
 
   const isHome = router === "/" || rawTitle.toLowerCase() === "vegetables";
-  const titleName = isHome ? "MediSupply" : `MediSupply | ${rawTitle}`;
+  const titleName = isHome ? "Marketplace Medicamentos" : `Marketplace Medicamentos | ${rawTitle}`;
 
-  const TableRecordSearch = HeadData.filter((item) => {
-    return Object.values(item).some((value) => String(value).toLowerCase().includes(rawTitle.toLowerCase()));
-  });
   return (
     <>
       <title>{titleName}</title>
