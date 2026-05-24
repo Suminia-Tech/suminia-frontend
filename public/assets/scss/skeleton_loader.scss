@@ -129,7 +129,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f0f3f8;
+  background-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 99999;
 }
 
