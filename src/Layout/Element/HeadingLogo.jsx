@@ -16,8 +16,8 @@ const HeadingLogo = () => {
           style={{ marginRight: "10px" }}
         />
         <Image
-          width={150}
-          height={65}
+          width={210}
+          height={90}
           priority
           src={`${CommonPath}/logo.png`}
           className="img-fluid"
