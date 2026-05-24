@@ -30,7 +30,7 @@ export const headDashboardColumn = [
 export const headDashboardData = [
   {
     image: (
-      <Link href={'/product/product_left_sidebar/1'}>
+      <Link href={'/product/product_left_thumbnail/1'}>
         <Image src='/assets/images/fashion/product/front/1.jpg' alt='fashion' height={70} width={46} />
       </Link>
     ),
@@ -46,7 +46,7 @@ export const headDashboardData = [
   },
   {
     image: (
-      <Link href={'/product/product_left_sidebar/2'}>
+      <Link href={'/product/product_left_thumbnail/2'}>
         <Image src='/assets/images/fashion/product/front/2.jpg' alt='fashion' height={70} width={46}/>
       </Link>
     ),
@@ -62,7 +62,7 @@ export const headDashboardData = [
   },
   {
     image: (
-      <Link href={'/product/product_left_sidebar/3'}>
+      <Link href={'/product/product_left_thumbnail/3'}>
         <Image src='/assets/images/fashion/product/front/3.jpg' alt='fashion' height={70} width={46}/>
       </Link>
     ),
@@ -78,7 +78,7 @@ export const headDashboardData = [
   },
   {
     image: (
-      <Link href={'/product/product_left_sidebar/4'}>
+      <Link href={'/product/product_left_thumbnail/4'}>
         <Image src='/assets/images/fashion/product/front/4.jpg' alt='fashion' height={70} width={46}/>
       </Link>
     ),
@@ -94,7 +94,7 @@ export const headDashboardData = [
   },
   {
     image: (
-      <Link href={'/product/product_left_sidebar/5'}>
+      <Link href={'/product/product_left_thumbnail/5'}>
         <Image src='/assets/images/fashion/product/front/5.jpg' alt='fashion' height={70} width={46}/>
       </Link>
     ),

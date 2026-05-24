@@ -10,12 +10,12 @@ const SliderProductData = ({ val, val1 }) => {
       {ShopFilterSliderData.slice(val, val1).map((elem) => (
         <Col xs="12" key={elem.id}>
           <div className="product-image">
-            <Link href={"/product/product_left_sidebar/1"}>
+            <Link href={"/product/product_left_thumbnail/1"}>
               <Img src={`${CommonPath}${elem.img}`} alt="shop" />
             </Link>
             <div className="product-details">
               <h6 className="font-light">{elem.title}</h6>
-              <Link href={"/product/product_left_sidebar/1"}>
+              <Link href={"/product/product_left_thumbnail/1"}>
                 <h3>{elem.name}</h3>
               </Link>
               <h4 className="font-light mt-1">

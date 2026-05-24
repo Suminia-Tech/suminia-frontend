@@ -25,7 +25,7 @@ const VegetablePromo = () => {
 
             <Col lg='4' md='4' className='d-flex'>
               <div className='text-md-end text-center mt-md-0 mt-3 w-100'>
-                <Btn attrBtn={{ className: 'btn-size default-white', onClick: () => router.push('/product/product_left_sidebar/1') }}>{OPENPRODUCTPAGE}</Btn>
+                <Btn attrBtn={{ className: 'btn-size default-white', onClick: () => router.push('/product/product_left_thumbnail/1') }}>{OPENPRODUCTPAGE}</Btn>
               </div>
             </Col>
           </Row>

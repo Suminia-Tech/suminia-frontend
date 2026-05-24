@@ -55,7 +55,7 @@ const WishList = ({ icon }) => {
                         return (
                           <tr key={elem.id}>
                             <td>
-                              <Link href={`/product/product_left_sidebar/${elem.id}`}>
+                              <Link href={`/product/product_left_thumbnail/${elem.id}`}>
                                 {elem?.images?.slice(0, 1).map((item, i) => (
                                   <Img src={`${CommonPath}/${item.src}`} alt="product" key={i} />
                                 ))}

@@ -10,7 +10,7 @@ import NoProductFound from './NoProductFound';
 const SearchSuggestion = ({ FilteredData, Is_Focus }) => {
   const router = useRouter();
   const getProductDetail = (value) => {
-    router.push(`/product/product_left_sidebar/${value.id}`);
+    router.push(`/product/product_left_thumbnail/${value.id}`);
   };
   const { symbol, currencyValue } = useSelector((state) => state.CurrencyReducer);
   return (

@@ -17,7 +17,7 @@ const LeftTab = ({ elem }) => {
               return (
                 <div className='product-box product-box-4' key={i}>
                   <div className='img-wrapper bg-trans'>
-                    <Link href={'/product/product_left_sidebar/25'} className='text-center'>
+                    <Link href={'/product/product_left_thumbnail/25'} className='text-center'>
                       <Img src={`${CommonPath}/${elem.image}`} className='img-fluid' alt='product' />
                     </Link>
                   </div>
