@@ -576,6 +576,11 @@
   }
 
   .brand-logo {
+    a {
+      display: flex;
+      align-items: center;
+    }
+
     img {
       [class="dark"] & {
         filter: invert(1);

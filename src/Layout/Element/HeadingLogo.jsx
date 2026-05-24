@@ -21,7 +21,7 @@ const HeadingLogo = () => {
           priority
           src={`${CommonPath}/logo.png`}
           className="img-fluid"
-          style={{ marginRight: "16px" }}
+          style={{ marginRight: "16px", marginTop: "3px" }}
           alt="logo"
         />
       </Link>
