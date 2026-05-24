@@ -6,7 +6,7 @@ import { Col, Row } from 'reactstrap';
 import { AutoFadeSliderImageData } from '../../../Data/ProductDetailsData';
 import { ThumbNavSlider, ThumbPosterSlider } from '../../../Data/SliderSettingsData';
 
-const SliderSection = () => {
+const SliderSection = ({ singleProduct }) => {
   const [state, setState] = useState({ nav1: null, nav2: null });
   const slider1 = useRef();
   const slider2 = useRef();
@@ -17,32 +17,34 @@ const SliderSection = () => {
     });
   }, []);
   const { nav1, nav2 } = state;
+
+  const images =
+    singleProduct && singleProduct.length > 0 && singleProduct[0]?.images?.length > 0
+      ? singleProduct[0].images.map((img) => ({ image: img.src }))
+      : AutoFadeSliderImageData;
+
   return (
     <Col md='6'>
       <Row>
         <Col lg='10' className='order-lg-2'>
           <div className='details-image-1 ratio_asos'>
             <Slider {...ThumbPosterSlider} asNavFor={nav1} ref={(slider) => (slider2.current = slider)}>
-              {AutoFadeSliderImageData.map((elem, i) => {
-                return (
-                  <div key={i}>
-                    <Img src={`${CommonPath}${elem.image}`} className='img-fluid w-100 image_zoom_cls-0' alt='product' />
-                  </div>
-                );
-              })}
+              {images.map((elem, i) => (
+                <div key={i}>
+                  <Img src={`${CommonPath}${elem.image}`} className='img-fluid w-100 image_zoom_cls-0' alt='product' />
+                </div>
+              ))}
             </Slider>
           </div>
         </Col>
         <Col lg='2'>
           <div className='details-image-vertical black-slide rounded overflow-hidden'>
             <Slider {...ThumbNavSlider} asNavFor={nav2} ref={(slider) => (slider1.current = slider)}>
-              {AutoFadeSliderImageData.map((elem, i) => {
-                return (
-                  <div key={i}>
-                    <Img src={`${CommonPath}${elem.image}`} className='img-fluid' alt='fashion' />
-                  </div>
-                );
-              })}
+              {images.map((elem, i) => (
+                <div key={i}>
+                  <Img src={`${CommonPath}${elem.image}`} className='img-fluid' alt='fashion' />
+                </div>
+              ))}
             </Slider>
           </div>
         </Col>

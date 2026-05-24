@@ -1,9 +1,9 @@
 import { Col, Container, Row } from 'reactstrap';
 import DetainTabSection from '../Common/DetailTabsection';
-import ProductDetailStatic from '../Product4ImageContain/ProductDetailStatic';
+import ProductDetails from '../ProductBundle/ProductDetails';
 import SliderSection from './SliderSection';
 
-const ProductLeftThumbnailContain = () => {
+const ProductLeftThumbnailContain = ({ singleProduct }) => {
   return (
     <section>
       <Container>
@@ -11,9 +11,9 @@ const ProductLeftThumbnailContain = () => {
           <Col lg='12' xs='12'>
             <div className='details-items'>
               <Row className='g-4'>
-                <SliderSection />
+                <SliderSection singleProduct={singleProduct} />
                 <Col md='6'>
-                  <ProductDetailStatic />
+                  <ProductDetails singleProduct={singleProduct} />
                 </Col>
               </Row>
             </div>
