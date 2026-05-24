@@ -27,7 +27,7 @@ const ProductVideoThumbnail = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Product Video Thumbnail"} title={"Product Video Thumbnail"} />
+      <BreadCrumb parent={"Producto"} title={"Detalle del producto"} />
       <ProductVideoThumbnailContain VideoPlay={VideoPlay} productData={productData} />
       <ProductSection productData={productData} />
 <RecentNotification />

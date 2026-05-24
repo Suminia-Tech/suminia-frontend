@@ -22,7 +22,7 @@ const Product360View = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Product 360 View"} title={"Product 360 View"} />
+      <BreadCrumb parent={"Producto"} title={"Detalle del producto"} />
       <Product360ViewContain />
 </Layout1>
   );

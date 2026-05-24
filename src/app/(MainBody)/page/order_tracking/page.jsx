@@ -12,7 +12,7 @@ const Order_tracking = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Order Tracking"} title={"Order Tracking"} />
+      <BreadCrumb parent={"Seguimiento de pedido"} title={"Seguimiento de pedido"} />
       <OrderTracking />
 </Layout1>
   );

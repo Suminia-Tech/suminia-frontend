@@ -12,7 +12,7 @@ const Error = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"404"} title={"404"} />
+      <BreadCrumb parent={"Página no encontrada"} title={"Página no encontrada"} />
       <SectionSvg />
 </Layout1>
   );

@@ -25,7 +25,7 @@ const ShopListInfinite = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Shop List Infinite"} title={"Shop List Infinite"} />
+      <BreadCrumb parent={"Tienda"} title={"Tienda"} />
       <ShopListInfiniteContain productData={productData} listGrid={listGrid} />
 <CanvasOffset productData={productData} />
     </Layout1>

@@ -24,7 +24,7 @@ const ProductBundle = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Product Bundle"} title={"Product Bundle"} />
+      <BreadCrumb parent={"Producto"} title={"Detalle del producto"} />
       <ProductBundleContain />
       <ProductSection productData={productData} />
 </Layout1>

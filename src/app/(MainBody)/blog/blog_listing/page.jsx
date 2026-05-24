@@ -12,7 +12,7 @@ const BlogListing = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Blog Listing"} title={"Blog Listing"} />
+      <BreadCrumb parent={"Blog"} title={"Blog"} />
       <BlogListinfContain />
 </Layout1>
   );

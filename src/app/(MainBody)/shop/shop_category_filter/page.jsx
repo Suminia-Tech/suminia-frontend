@@ -26,7 +26,7 @@ const ShopCategoryFilter = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Shop Category Filter"} title={"Shop Category Filter"} />
+      <BreadCrumb parent={"Tienda"} title={"Tienda"} />
       <ShopSlider />
       <ShopSection productData={productData} />
 <CanvasOffset productData={productData} />

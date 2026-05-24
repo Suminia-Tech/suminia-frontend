@@ -24,7 +24,7 @@ const ShopLeftSidebar = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Shop Left Sidebar"} title={"Shop Left Sidebar"} />
+      <BreadCrumb parent={"Tienda"} title={"Tienda"} />
       <ShopLeftSidebarContain productData={productData} />
 <CanvasOffset productData={productData} />
     </Layout1>

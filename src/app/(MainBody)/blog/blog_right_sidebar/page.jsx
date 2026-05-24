@@ -12,7 +12,7 @@ const BlogRightSidebar = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Blog Right Sidebar"} title={"Blog Right Sidebar"} />
+      <BreadCrumb parent={"Blog"} title={"Blog"} />
       <BlogRightSidebarContain />
 </Layout1>
   );

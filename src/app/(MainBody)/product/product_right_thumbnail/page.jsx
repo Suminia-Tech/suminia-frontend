@@ -26,7 +26,7 @@ const ProductLeftThumbnail = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Product Right Thumbnail"} title={"Product Right Thumbnail"} />
+      <BreadCrumb parent={"Producto"} title={"Detalle del producto"} />
       <ProductRightThumbnailContain />
       <ProductSection productData={productData} />
 <RecentNotification />

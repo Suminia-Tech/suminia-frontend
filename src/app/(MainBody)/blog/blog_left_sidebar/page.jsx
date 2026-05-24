@@ -12,7 +12,7 @@ const Blog_Left_Sidebar = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Blog Left Sidebar"} title={"Blog Left Sidebar"} />
+      <BreadCrumb parent={"Blog"} title={"Blog"} />
       <BlogLeftSidebar />
 </Layout1>
   );

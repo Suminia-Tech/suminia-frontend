@@ -24,7 +24,7 @@ const ProductNoSidebar = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Product No Sidebar"} title={"Product No Sidebar"} />
+      <BreadCrumb parent={"Producto"} title={"Detalle del producto"} />
       <ProductNoSideBarContain />
       <ProductSection productData={productData} />
 </Layout1>

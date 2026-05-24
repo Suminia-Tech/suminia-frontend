@@ -22,7 +22,7 @@ const Checkout = () => {
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
           </Head>
-          <BreadCrumb parent={"Checkout"} title={"Checkout"} />
+          <BreadCrumb parent={"Finalizar compra"} title={"Finalizar compra"} />
           <SectionCheckout />
 </Layout1>
       ) : (

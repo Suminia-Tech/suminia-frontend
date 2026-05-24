@@ -25,7 +25,7 @@ const ShopCanvasFilter = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Shop Canvas Filter"} title={"Shop Canvas Filter"} />
+      <BreadCrumb parent={"Tienda"} title={"Tienda"} />
       <ShopCanvasFilterContain productData={productData} grid5={grid5} />
 <CanvasOffset productData={productData} />
     </Layout1>

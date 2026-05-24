@@ -13,7 +13,7 @@ const ContactUs = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Contact Us"} title={"Contact Us"} />
+      <BreadCrumb parent={"Contáctanos"} title={"Contáctanos"} />
       <ContactContain />
       <MapSection />
 </Layout1>

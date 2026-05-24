@@ -24,7 +24,7 @@ const ShopWithCategory = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Shop With category"} title={"Shop With category"} />
+      <BreadCrumb parent={"Tienda"} title={"Tienda"} />
       <ShopWithCategoryContain productData={productData} />
 <CanvasOffset productData={productData} />
     </Layout1>

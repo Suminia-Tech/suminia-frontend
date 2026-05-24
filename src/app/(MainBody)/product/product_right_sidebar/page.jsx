@@ -26,7 +26,7 @@ const ProductRightSidebar = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Product Right Sidebar"} title={"Product Right Sidebar"} />
+      <BreadCrumb parent={"Producto"} title={"Detalle del producto"} />
       <ProductRightSidebarContain productData={productData} />
       <ProductSection productData={productData} />
 <RecentNotification />
