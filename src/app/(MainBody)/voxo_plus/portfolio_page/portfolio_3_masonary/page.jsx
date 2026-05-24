@@ -25,7 +25,7 @@ const Portfolio3Masonary = () => {
     <Layout1>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" type="image/x-icon" href={`${CommonPath}/favicon/2.png`} />
+        <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
       <BreadCrumb parent={"Portfolio Masonary"} title={"Portfolio Masonary"} />
       <PortfolioMasonaryContain portfoliodata={portfoliodata} colclass={colclass} masonaryclass={masonaryclass} />

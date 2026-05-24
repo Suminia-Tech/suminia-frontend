@@ -22,7 +22,7 @@ export default function Head() {
   return (
     <>
       <title>{titleName}</title>
-      <link rel="icon" type="image/x-icon" href={`/assets/images/favicon/${TableRecordSearch === null ? `2` : TableRecordSearch[0]?.image}.png`} />
+      <link rel="icon" type="image/svg+xml" href="/assets/images/favicon/favicon.svg" />
     </>
   );
 }
