@@ -6,7 +6,7 @@ export default function Head() {
   const router = usePathname();
   const pathArr = router.split("/");
 
-  const titleName = pathArr[isNaN(pathArr[pathArr.length - 1]) ? pathArr.length - 1 : pathArr.length - 2]
+  const rawTitle = pathArr[isNaN(pathArr[pathArr.length - 1]) ? pathArr.length - 1 : pathArr.length - 2]
     .split("_")
     .map((data) =>
       data
@@ -16,8 +16,11 @@ export default function Head() {
     )
     .join(" ");
 
+  const isHome = router === "/" || rawTitle.toLowerCase() === "vegetables";
+  const titleName = isHome ? "MediSupply" : `MediSupply | ${rawTitle}`;
+
   const TableRecordSearch = HeadData.filter((item) => {
-    return Object.values(item).some((value) => String(value).toLowerCase().includes(titleName.toLowerCase()));
+    return Object.values(item).some((value) => String(value).toLowerCase().includes(rawTitle.toLowerCase()));
   });
   return (
     <>

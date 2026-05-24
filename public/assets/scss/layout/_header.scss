@@ -432,7 +432,7 @@
 
     .search-box1 {
       position: relative;
-      @include pseudowh($width: 55%, $height: 100%);
+      @include pseudowh($width: 62%, $height: 100%);
       right: 0;
       z-index: 1;
       transition: all 0.3s ease;

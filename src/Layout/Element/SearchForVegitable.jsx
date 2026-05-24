@@ -22,9 +22,9 @@ const SearchForVegitable = () => {
     dispatch(IS_FOCUS(true));
   };
   return (
-    <div className={`search-box1 d-lg-block d-none ${onInputText.length > 0 ? "show" : ""}`}>
+    <div className={`search-box1 d-lg-block d-none ${onInputText.length > 0 ? "show" : ""}`} style={{ width: "70%", marginLeft: "24px" }}>
       <div className="the-basics input-group">
-        <Input type="text" className="form-control typeahead" placeholder="Search a Product" onChange={(e) => handleChange(e)} />
+        <Input type="text" className="form-control typeahead" placeholder="Buscar un producto" onChange={(e) => handleChange(e)} />
         <span className="input-group-text close-search theme-bg-color search-box">
           <Search />
         </span>
