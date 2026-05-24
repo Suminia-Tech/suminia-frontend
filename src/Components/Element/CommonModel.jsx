@@ -44,7 +44,7 @@ const CommonModel = () => {
                 </Slider>
               </div>
               <div className="quick-nav">
-                <Slider {...ProductNavModalSlider} slidesToShow={data?.images?.length} asNavFor={nav1} ref={(slider) => (slider2.current = slider)}>
+                <Slider {...ProductNavModalSlider} slidesToShow={data?.images?.length || 1} asNavFor={nav1} ref={(slider) => (slider2.current = slider)}>
                   {data?.images?.map((item, i) => {
                     return (
                       <div key={i}>

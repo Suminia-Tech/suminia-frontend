@@ -2,7 +2,6 @@
 import { getAPIData } from "@/Utils";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { CommonPath } from "@/Constant";
 import Layout6 from "@/Layout/Layout6";
 import BreadCrumb from "@/Components/Element/BreadCrumb";
@@ -12,13 +11,16 @@ import ProductSection from "@/Components/Products/Product4ImageContain/ProductSe
 import ProductLeftSidebarContain from "@/Components/Products/ProductLeftSidebarContain";
 
 const ProductDetailsByID = () => {
-  const { id } = useParams();
   const [productData, setProductData] = useState([]);
+  const [productId, setProductId] = useState(null);
+
   useEffect(() => {
-    getAPIData(`/api/products`).then((res) => {
-      setProductData(res?.data);
-    });
+    const segments = window.location.pathname.split("/");
+    const id = segments[segments.length - 1];
+    setProductId(id);
+    getAPIData(`/api/products`).then((res) => setProductData(res?.data));
   }, []);
+
   return (
     <Layout6 isCategories={true}>
       <Head>
@@ -26,7 +28,7 @@ const ProductDetailsByID = () => {
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
       <BreadCrumb parent={"Producto"} title={"Detalle del producto"} />
-      <ProductLeftSidebarContain productData={productData} id={id}/>
+      <ProductLeftSidebarContain productData={productData} id={productId} />
       <ProductSection productData={productData} />
       <RecentNotification />
       <StickyFooter productData={productData} />
