@@ -15,6 +15,7 @@ const ProductLeftThumbnailById = ({ params }) => {
   const [singleProduct, setSingleProduct] = useState([]);
 
   useEffect(() => {
+    document.documentElement.style.setProperty("--theme-color", "#096AC9");
     getAPIData(`/api/products`).then((res) => setProductData(res?.data));
     getAPIData(`/api/product/${params.id}`).then((res) => setSingleProduct(res?.data));
   }, [params.id]);
