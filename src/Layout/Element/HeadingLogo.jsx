@@ -15,11 +15,12 @@ const HeadingLogo = () => {
           className="svg-icon"
         />
         <Image
-          width={58}
-          height={25}
+          width={150}
+          height={65}
           priority
           src={`${CommonPath}/logo.png`}
           className="img-fluid"
+          style={{ marginRight: "16px" }}
           alt="logo"
         />
       </Link>

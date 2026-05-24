@@ -33,19 +33,6 @@ const Header5 = ({ noStyle, isCategories }) => {
                       <ThreeBarToggle />
                     </li>
                     <SearchBarWithBgColor customeClass={'d-lg-none d-block'} />
-                    <li className='onhover-dropdown wislist-dropdown'>
-                      <div className='cart-media'>
-                        <div className='cart-icon'>
-                          <RefreshCw />
-                          <span className='label label-theme rounded-pill'>0</span>
-                        </div>
-                        <div className='cart-content'>
-                          <h6>Empty</h6>
-                          <span>Compare</span>
-                        </div>
-                      </div>
-                    </li>
-                    <WishList />
                     <ItemCart />
                   </ul>
                 </div>
