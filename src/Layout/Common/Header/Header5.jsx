@@ -1,22 +1,21 @@
-import { Col, Row } from 'reactstrap';
+import { useState } from 'react';
+import { Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useHeaderScroll } from '@/Utils/HeaderScroll';
-import TopHeaderBar2 from '@/Layout/Element/TopHeaderBar2';
 import HeadingLogo from '@/Layout/Element/HeadingLogo';
 import AllCategories from '@/Layout/Element/AllCategories';
 import SearchForVegitable from '@/Layout/Element/SearchForVegitable';
 import ThreeBarToggle from '@/Layout/Element/ThreeBarToggle';
 import SearchBarWithBgColor from '@/Layout/Element/SearchBarWithBgColor';
-import { RefreshCw } from 'react-feather';
 import ItemCart from '@/Layout/Element/ItemCart';
 import SearchBarToggle from '@/Layout/Element/SearchBarToggle';
-import WishList from '@/Layout/Element/WishList';
 import NavBar from '@/Layout/Element/NavBar';
 
 const Header5 = ({ noStyle, isCategories }) => {
   const UpScroll = useHeaderScroll(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+
   return (
     <header id='home' className={`${!noStyle ? `${UpScroll ? 'nav-down nav-up' : ''}` : ''}`}>
-      <TopHeaderBar2 />
       <div className='main-header search-header navbar-searchbar'>
         <div className='container-fluid-lg'>
           <Row>
@@ -51,6 +50,22 @@ const Header5 = ({ noStyle, isCategories }) => {
                 <nav>
                   <NavBar />
                 </nav>
+                <div className='menu-right'>
+                  <ul>
+                    <li>
+                      <Dropdown className='top-header-dropdown' isOpen={loginOpen} toggle={() => setLoginOpen(!loginOpen)}>
+                        <DropdownToggle tag='a' href='#javascript' className='nav-link menu-title' style={{ cursor: 'pointer' }}>
+                          <span>Iniciar Sesión</span>
+                          <i className='fas fa-chevron-down ms-1'></i>
+                        </DropdownToggle>
+                        <DropdownMenu end>
+                          <DropdownItem href='/page/login'>Iniciar sesión</DropdownItem>
+                          <DropdownItem href='/page/register'>Registrarse</DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </Col>
           </Row>

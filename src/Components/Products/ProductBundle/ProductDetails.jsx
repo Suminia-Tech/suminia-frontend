@@ -1,65 +1,104 @@
-import React from 'react';
 import { useState } from 'react';
-import { BestSeller, Color, OFF } from '@/Constant';
-import GifComponents from '../Product4ImageContain/GifComponents';
+import { useSelector } from 'react-redux';
+import { Btn } from '../../AbstractElements';
+import { Input } from 'reactstrap';
+import { OFF } from '@/Constant';
+import DynamicRating from '../../Element/DynamicRating';
 import ProductActions from '../Product4ImageContain/ProductActions';
-import ProductProgressBar from '../Product4ImageContain/ProductProgressBar';
-import ProductSizeChart from '../Product4ImageContain/ProductSizeChart';
 import ShareSocial from '../Product4ImageContain/ShareSocial';
-import BundleCartDetails from './BundleCartDetails';
 
-const ProductDetails = ({ bundles, singleProduct }) => {
-  const [active, setActive] = useState();
+const ProductDetails = ({ singleProduct }) => {
+  const [selectedQty, setSelectedQty] = useState(0);
+  const [count, setCount] = useState(1);
+  const { symbol, currencyValue } = useSelector((state) => state.CurrencyReducer);
+  const product = singleProduct?.[0];
+
+  if (!product) return null;
+
+  const quantities = [product.quantity_1, product.quantity_2].filter(Boolean);
+
   return (
     <div className='cloth-details-size'>
-      <GifComponents />
-
       <div className='details-image-concept'>
-        <h2>{singleProduct && singleProduct[0]?.name}</h2>
+        <h2>{product.name}</h2>
       </div>
 
-      <div className='label-section'>
-        <span className='badge badge-grey-color'>{BestSeller}</span>
-        <span className='label-text'>in {singleProduct && singleProduct[0]?.type}</span>
-      </div>
+      <DynamicRating data={product.ratingStars} customeclass='mt-1' />
 
-      <h3 className='price-detail'>
-        ${singleProduct && singleProduct[0]?.price} <del>${singleProduct && singleProduct[0]?.mrp}.00</del>
-        {singleProduct && singleProduct[0]?.discount !== 0 && (
-          <span>
-            {singleProduct && singleProduct[0]?.discount}% {OFF}
-          </span>
+      <h3 className='price-detail mt-3'>
+        {symbol}{(product.price * currencyValue).toFixed(2)}
+        {product.mrp > product.price && (
+          <del className='ms-2'>{symbol}{(product.mrp * currencyValue).toFixed(2)}</del>
+        )}
+        {product.discount > 0 && (
+          <span className='ms-2'>{product.discount}% {OFF}</span>
         )}
       </h3>
 
-      <div className='color-selector'>
-        <h5>{Color} :</h5>
-        <ul className='image-section'>
-          <li className=''>
-            <a href='#javascript' onClick={() => setActive(1)} style={{ background: 'red' }}>
-              {active === 1 && <i className='fas fa-check'></i>}
-            </a>
-          </li>
-          <li>
-            <a href='#javascript' onClick={() => setActive(2)} style={{ background: 'blue' }}>
-              {active === 2 && <i className='fas fa-check'></i>}
-            </a>
-          </li>
-          {singleProduct &&
-            singleProduct?.colors?.map((elem, i) => (
-              <li key={i}>
-                <a style={{ background: elem }}>
-                  <i className='fas fa-check'></i>
-                </a>
-              </li>
-            ))}
-        </ul>
+      {product.available && (
+        <div className='mt-2'>
+          <span className='badge badge-theme'>En stock</span>
+        </div>
+      )}
+
+      {product.description && (
+        <div className='border-product mt-3'>
+          <p className='font-light'>{product.description}</p>
+        </div>
+      )}
+
+      {quantities.length > 0 && (
+        <div className='border-product mt-3'>
+          <h6 className='product-title d-block'>Presentación</h6>
+          <div className='size-box'>
+            <ul>
+              {quantities.map((q, i) => (
+                <li key={i} className={selectedQty === i ? 'active' : ''} onClick={() => setSelectedQty(i)}>
+                  <a href='#javascript'>{q}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {(product.brand !== 'none' || product.category !== 'none' || product.type) && (
+        <div className='border-product mt-3'>
+          <ul className='product-detail-list'>
+            {product.brand !== 'none' && (
+              <li><span className='font-light'>Marca: </span>{product.brand}</li>
+            )}
+            {product.category !== 'none' && (
+              <li><span className='font-light'>Categoría: </span>{product.category}</li>
+            )}
+            {product.type && product.type !== 'none' && (
+              <li><span className='font-light'>Tipo: </span>{product.type}</li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      <div className='border-product mt-3'>
+        <h6 className='product-title product-title-2 d-block'>Cantidad</h6>
+        <div className='qty-box'>
+          <div className='input-group'>
+            <span className='input-group-prepend'>
+              <Btn attrBtn={{ type: 'button', className: 'quantity-left-minus', onClick: () => setCount((prev) => (prev > 1 ? prev - 1 : 1)) }}>
+                <i className='fas fa-minus'></i>
+              </Btn>
+            </span>
+            <Input type='text' name='quantity' className='form-control input-number' value={count} readOnly />
+            <span className='input-group-prepend'>
+              <Btn attrBtn={{ type: 'button', className: 'quantity-right-plus', onClick: () => setCount((prev) => (prev < 15 ? prev + 1 : 15)) }}>
+                <i className='fas fa-plus'></i>
+              </Btn>
+            </span>
+          </div>
+        </div>
       </div>
-      <ProductSizeChart />
+
       <ProductActions singleProduct={singleProduct} />
-      <ProductProgressBar />
       <ShareSocial />
-      {bundles && <BundleCartDetails />}
     </div>
   );
 };

@@ -4,10 +4,9 @@ import DescriptionDetails from "./DescriptionDetails";
 import NavSection from "./NavSection";
 import QA_Details from "./Q&A_Details";
 import ReviewDetails from "./ReviewDetails";
-import SizeGuideDetails from "./SizeGuideDetails";
 import SpecificationDetail from "./SpecificationDetail";
 
-const DetainTabSection = () => {
+const DetainTabSection = ({ singleProduct }) => {
   const [active, setActive] = useState(1);
   const handleClick = useCallback((value) => {
     setActive(value);
@@ -19,15 +18,11 @@ const DetainTabSection = () => {
 
         <TabContent activeTab={active} id="nav-tabContent">
           <TabPane className={`fade ${active === 1 ? "show active" : ""}`} id="desc">
-            <DescriptionDetails />
+            <DescriptionDetails singleProduct={singleProduct} />
           </TabPane>
 
           <TabPane className={`fade ${active === 2 ? "show active" : ""}`} id="speci">
-            <SpecificationDetail />
-          </TabPane>
-
-          <TabPane className={`fade overflow-auto ${active === 3 ? "show active" : ""}`} id="nav-guide">
-            <SizeGuideDetails />
+            <SpecificationDetail singleProduct={singleProduct} />
           </TabPane>
 
           <TabPane className={`fade ${active === 4 ? "show active" : ""}`} id="question">

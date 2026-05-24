@@ -8,10 +8,6 @@ export const ProductDetailNav = [
     title: 'Especificaciones',
   },
   {
-    id: 3,
-    title: 'Guía de tallas',
-  },
-  {
     id: 4,
     title: 'Preguntas y respuestas',
   },

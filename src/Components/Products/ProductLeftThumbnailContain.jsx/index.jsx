@@ -18,7 +18,7 @@ const ProductLeftThumbnailContain = ({ singleProduct }) => {
               </Row>
             </div>
           </Col>
-          <DetainTabSection />
+          <DetainTabSection singleProduct={singleProduct} />
         </Row>
       </Container>
     </section>

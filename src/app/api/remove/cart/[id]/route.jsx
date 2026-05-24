@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import Product from "../../../../ApiData/Product.json";
 
 export async function DELETE(req, { params }) {
-  const id = params.id;
+  const { id } = await params;
   if (req.method === "DELETE") {
     if (id === "all") {
       newArr.splice(0, newArr.length);
