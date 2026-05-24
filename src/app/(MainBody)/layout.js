@@ -46,6 +46,7 @@ const RootLayout = ({ children }) => {
   const pathArr = router.split("/");
 
   useEffect(() => {
+    document.documentElement.style.setProperty("--theme-color", "#096AC9");
     if (router.search("/product") === -1) {
       document.body.classList.remove("stickyCart");
     } else if (router === "/page/coming_soon") {
