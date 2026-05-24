@@ -51,7 +51,7 @@ export const Discount = "Discount";
 export const FreshFruits = "Fresh Fruits";
 export const OurNewsUpdate = "Our News & Update";
 export const ReadMore = "Read More";
-export const Allcategories = "All categories";
+export const Allcategories = "Todas las categorías";
 export const CategoryList = "Category List";
 // -------------------
 export const pagenotfound = "page not found";
