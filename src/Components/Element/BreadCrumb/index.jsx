@@ -5,7 +5,10 @@ import BoxAnimationSection from "./BoxAnimationSection";
 const BreadCrumb = (props) => {
   const { parent = "", title = "" } = props;
   return (
-    <section className="breadcrumb-section section-b-space">
+    <section
+      className="breadcrumb-section section-b-space"
+      style={{ paddingTop: "30px", paddingBottom: "30px" }}
+    >
       <BoxAnimationSection />
       <Container>
         <Row>
