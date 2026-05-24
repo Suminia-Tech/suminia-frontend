@@ -42,7 +42,7 @@ const NavBar = ({ customClass }) => {
             return (
               <li className={`${menu.title === "VOXO PLUS" ? "mega-menu ratio_40 dropdown" : menu.title === "HOME" ? "" : "dropdown"}`} key={i}>
                 {menu.title === "HOME" ? (
-                  <Link href="/layout/vegetables" className="nav-link menu-title">
+                  <Link href="/" className="nav-link menu-title">
                     {t(menu.title)}
                   </Link>
                 ) : menu.title === "VOXO PLUS" ? (

@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  redirects: () => {
+  async rewrites() {
     return [
       {
         source: "/",
         destination: "/layout/vegetables",
-        permanent: false,
       },
     ];
   },
