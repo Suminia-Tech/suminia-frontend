@@ -4,6 +4,7 @@ import Head from "./head";
 import { I18nProvider } from "./i18n/i18n-context";
 import { detectLanguage } from "./i18n/server";
 import Script from "next/script";
+import Providers from "./providers";
 
 export default async function RootLayout({ children }) {
   const lng = await detectLanguage();
@@ -22,7 +23,7 @@ export default async function RootLayout({ children }) {
           <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
         </head>
         <body>
-          {children}
+          <Providers>{children}</Providers>
           <Script src="https://www.paypal.com/sdk/js?client-id=test" strategy="lazyOnload" />
         </body>
       </html>
