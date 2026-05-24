@@ -1,6 +1,7 @@
 "use client";
 import Head from "next/head";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { CommonPath } from "@/Constant";
 import { getAPIData } from "@/Utils";
 import Layout6 from "@/Layout/Layout6";
@@ -10,15 +11,17 @@ import RecentNotification from "@/Components/Products/RecentNotification";
 import ProductSection from "@/Components/Products/Product4ImageContain/ProductSection";
 import ProductLeftThumbnailContain from "@/Components/Products/ProductLeftThumbnailContain.jsx";
 
-const ProductLeftThumbnailById = ({ params }) => {
+const ProductLeftThumbnailById = () => {
+  const { id } = useParams();
   const [productData, setProductData] = useState([]);
   const [singleProduct, setSingleProduct] = useState([]);
 
   useEffect(() => {
+    if (!id) return;
     document.documentElement.style.setProperty("--theme-color", "#096AC9");
     getAPIData(`/api/products`).then((res) => setProductData(res?.data));
-    getAPIData(`/api/product/${params.id}`).then((res) => setSingleProduct(res?.data));
-  }, [params.id]);
+    getAPIData(`/api/product/${id}`).then((res) => setSingleProduct(res?.data));
+  }, [id]);
 
   return (
     <Layout6 isCategories={true}>
