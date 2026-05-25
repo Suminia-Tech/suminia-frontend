@@ -3,7 +3,7 @@ import { FreshFruits, JustForYou } from '@/Constant';
 import SectionHeader from '../../Element/SectionHeader';
 import FreshSlider from './FreshSlider';
 const HomeFresh = ({ productData }) => {
-  const FreshFilter = productData.filter((el) => el.type === 'vegetables');
+  const FreshFilter = productData.filter((el) => el.type === 'medicamento');
   return (
     <section className='ratio_asos'>
       <Container fluid={true} className='p-sm-0'>
