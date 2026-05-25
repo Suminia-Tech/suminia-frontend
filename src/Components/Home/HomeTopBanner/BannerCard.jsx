@@ -12,11 +12,19 @@ const BannerCard = ({ VegeTopFilter }) => {
       {VegeTopFilter.map((el) => {
         return el.banners.map((elem, i) => {
           return (
-            <Col lg="4" className={`${elem.class ? "col-xl-3 order-lg-0 order-md-1 order-0" : "col-xl-5 col-md-6 custom-col"}`} key={i}>
+            <Col
+              lg="4"
+              className={`${elem.class ? "col-xl-3 order-lg-0 order-md-1 order-0" : "col-xl-5 col-md-6 custom-col"}`}
+              key={i}
+            >
               {elem.childtype === "middlebanner" ? (
                 <div className="collection-banner text-center collection-center p-0">
                   <div className="banner-img bg-size">
-                    <Img src={`${CommonPath}/${elem.image}`} alt="collection" className="bg-img" />
+                    <Img
+                      src={`${CommonPath}/${elem.image}`}
+                      alt="collection"
+                      className="bg-img"
+                    />
                   </div>
                   <div className="contain-banner contain-center bottom-0">
                     <div className="banner-content p-2">
@@ -24,14 +32,25 @@ const BannerCard = ({ VegeTopFilter }) => {
                       <h2>{elem.headingtop} </h2>
                       <h2>{elem.headingbottom}</h2>
                       <p className="mt-2">{elem.subheading}</p>
-                      <Btn attrBtn={{ className: "btn-solid-default", onClick: () => router.push("/shop/shop_left_sidebar") }}>{LearnMore}</Btn>
+                      <Btn
+                        attrBtn={{
+                          className: "btn-solid-default",
+                          onClick: () => router.push("/shop/shop_left_sidebar"),
+                        }}
+                      >
+                        {LearnMore}
+                      </Btn>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="collection-banner text-center">
                   <div className="banner-img bg-size">
-                    <Img src={`${CommonPath}/${elem.image}`} alt="banner" className="bg-img" />
+                    <Img
+                      src={`${CommonPath}/${elem.image}`}
+                      alt="banner"
+                      className="bg-img"
+                    />
                   </div>
                   <div className="banner-detail">
                     <a href="#javascript" className="heart-wishlist">
@@ -41,7 +60,10 @@ const BannerCard = ({ VegeTopFilter }) => {
                       {elem.discount}% <span>{OFF}</span>
                     </span>
                   </div>
-                  <Link href={"/shop/shop_left_sidebar"} className="contain-banner contain-center bottom-0">
+                  <Link
+                    href={"/shop/shop_left_sidebar"}
+                    className="contain-banner contain-center bottom-0"
+                  >
                     <div className="banner-content with-bg">
                       <h2 className="mb-2">{elem.heading}</h2>
                       <span>{elem.subheading}</span>
