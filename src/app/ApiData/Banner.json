@@ -333,24 +333,24 @@
         "subtype": "vegetablestopbanner",
         "banners": [
             {
-                "heading": "Lemons",
+                "heading": "Ibuprofeno 400mg",
                 "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "discount": 26,
                 "image": "vegetable/banner/1.jpg"
             },
             {
                 "childtype": "middlebanner",
-                "price": "$49",
-                "mrp": "$52",
+                "price": "$12",
+                "mrp": "$18",
                 "smallheading": "Obtén recompensas",
                 "headingtop": "Gana 10%",
                 "headingbottom": "Recompensa de devolución",
-                "subheading": "Válido en línea y en tienda con estilos seleccionados.",
+                "subheading": "Válido en línea y en tienda con productos seleccionados.",
                 "image": "vegetable/percentage.jpg",
                 "class": true
             },
             {
-                "heading": "Kiwi",
+                "heading": "Omeprazol 20mg",
                 "subheading": "COMPRA UNO LLEVA UNO GRATIS",
                 "discount": 26,
                 "image": "vegetable/banner/2.jpg"
@@ -408,9 +408,9 @@
     {
         "type": "vegetables",
         "subtype": "vegetablesdeal",
-        "lefttext": "Nueva oferta de temporada",
+        "lefttext": "Oferta especial del mes",
         "discount": 70,
-        "couponcode": "DGR548548",
+        "couponcode": "MEDI2025",
         "fruitsimage": "vegetable/1234.png",
         "image": "vegetable/percentage.jpg",
         "cirleimage": "vegetable/circle.png",
@@ -428,7 +428,7 @@
                 "image": "social-icon/3.png"
             }
         ],
-        "rightsmallheading": "New Headphone",
+        "rightsmallheading": "Acetaminofén 500mg",
         "rightheadingtop": "50% en efectivo",
         "rightheadingbottom": "Recompensa de devolución",
         "bottomsmalltop": "Oferta limitada",
@@ -440,26 +440,26 @@
         "subtype": "vegetablesfreshfruits",
         "banners": [
             {
-                "heading": "Citrus",
-                "subheading": "Healthy Fruit",
+                "heading": "Analgésicos",
+                "subheading": "Alivio del dolor",
                 "image": "vegetable/category/1.jpg",
                 "imagefront": "vegetable/category/1.png"
             },
             {
-                "heading": "Stone Fruit",
-                "subheading": "Healthy Fruit",
+                "heading": "Antibióticos",
+                "subheading": "Combate infecciones",
                 "image": "vegetable/category/2.jpg",
                 "imagefront": "vegetable/category/2.png"
             },
             {
-                "heading": "Tropical",
-                "subheading": "Healthy Fruit",
+                "heading": "Vitaminas",
+                "subheading": "Suplementos esenciales",
                 "image": "vegetable/category/3.jpg",
                 "imagefront": "vegetable/category/3.png"
             },
             {
-                "heading": "Berries",
-                "subheading": "Healthy Fruit",
+                "heading": "Respiratorio",
+                "subheading": "Salud pulmonar",
                 "image": "vegetable/category/4.jpg",
                 "imagefront": "vegetable/category/4.png"
             }
@@ -473,34 +473,34 @@
                 "childtype": "leftbanners",
                 "children": [
                     {
-                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "title": "Acetaminofén 500mg Caja x 100",
                         "image": "vegetable/offer-1/1.png",
-                        "mrp": 57.0,
-                        "price": 54.0,
-                        "ratingStars": 4
-                    },
-                    {
-                        "title": "Red Testy Fresh Tomato",
-                        "image": "vegetable/offer-1/2.png",
-                        "mrp": 42.0,
-                        "price": 39.0,
+                        "mrp": 9.50,
+                        "price": 7.65,
                         "ratingStars": 5
                     },
                     {
-                        "title": "Standard Come",
+                        "title": "Losartán 50mg Caja x 30 tab",
+                        "image": "vegetable/offer-1/2.png",
+                        "mrp": 15.00,
+                        "price": 13.50,
+                        "ratingStars": 5
+                    },
+                    {
+                        "title": "Vitamina C 1000mg Caja x 30",
                         "image": "vegetable/offer-1/3.png",
-                        "mrp": 25.0,
-                        "price": 20.0,
-                        "ratingStars": 3
+                        "mrp": 12.00,
+                        "price": 10.80,
+                        "ratingStars": 5
                     }
                 ]
             },
             {
-                "title": "Juicy Lemone",
+                "title": "Omeprazol 20mg",
                 "childtype": "middlebanner",
-                "mrp": 945,
-                "price": 600,
-                "ratingStars": 2,
+                "mrp": 10.00,
+                "price": 9.00,
+                "ratingStars": 5,
                 "image1": "vegetable/offer-1/big.png",
                 "image2": "vegetable/circle.png"
             },
@@ -508,25 +508,25 @@
                 "childtype": "rightbanners",
                 "children": [
                     {
-                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "title": "Amoxicilina 500mg Caja x 21",
                         "image": "vegetable/offer-1/4.png",
-                        "mrp": 70.0,
-                        "price": 68.0,
-                        "ratingStars": 2
+                        "mrp": 14.00,
+                        "price": 12.35,
+                        "ratingStars": 5
                     },
                     {
-                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "title": "Cetirizina 10mg Caja x 30",
                         "image": "vegetable/offer-1/5.png",
-                        "mrp": 14.0,
-                        "price": 10.0,
-                        "ratingStars": 4
+                        "mrp": 9.00,
+                        "price": 8.55,
+                        "ratingStars": 5
                     },
                     {
-                        "title": "Fresh And Tasty Red cabbage Per Piece",
+                        "title": "Metformina 850mg Caja x 30",
                         "image": "vegetable/offer-1/6.png",
-                        "mrp": 50.0,
-                        "price": 45.0,
-                        "ratingStars": 2
+                        "mrp": 13.00,
+                        "price": 13.00,
+                        "ratingStars": 5
                     }
                 ]
             }
@@ -539,28 +539,28 @@
             {
                 "day": 16,
                 "month": "MAY",
-                "watermark": "Flowers",
-                "title": "New Offer -56% Discount",
-                "headingtop": "Fresh",
-                "headingbottom": "Latest Night Lamp From $35",
+                "watermark": "MediSupply",
+                "title": "Descuento del 30% en analgésicos",
+                "headingtop": "Oferta",
+                "headingbottom": "Acetaminofén y más desde $7.65",
                 "image": "vegetable/update/1.jpg"
             },
             {
                 "day": 17,
                 "month": "MAY",
-                "watermark": "Flowers",
-                "title": "New Offer -56% Discount",
-                "headingtop": "Fresh",
-                "headingbottom": "Latest Night Lamp From $35",
+                "watermark": "MediSupply",
+                "title": "Antibióticos con envío gratis",
+                "headingtop": "Nuevo",
+                "headingbottom": "Amoxicilina y más desde $12.35",
                 "image": "vegetable/update/2.jpg"
             },
             {
-                "day": 16,
+                "day": 18,
                 "month": "MAY",
-                "watermark": "Flowers",
-                "title": "New Offer -56% Discount",
-                "headingtop": "Fresh",
-                "headingbottom": "Latest Night Lamp From $35",
+                "watermark": "MediSupply",
+                "title": "Vitaminas y suplementos -15% OFF",
+                "headingtop": "Promo",
+                "headingbottom": "Vitamina C, D3 y Calcio desde $9",
                 "image": "vegetable/update/3.jpg"
             }
         ]

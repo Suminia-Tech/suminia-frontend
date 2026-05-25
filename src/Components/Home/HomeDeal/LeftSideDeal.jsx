@@ -10,9 +10,9 @@ const LeftSideDeal = ({ elem }) => {
   return (
     <Col xl="9" lg="8">
       <div className="timer-banner text-center bg-size">
-        <Img src={`${CommonPath}/${elem.image}`} alt="vegetable" className="bg-img" />
-        <Img src={`${CommonPath}/${elem.fruitsimage}`} className="img-fluid veg-image" alt="vegetable" />
-        <Img src={`${CommonPath}/${elem.cirleimage}`} className="round-circle" alt="vegetable" />
+        <Img src={`${CommonPath}/${elem.image}`} alt="producto" className="bg-img" />
+        <Img src={`${CommonPath}/${elem.fruitsimage}`} className="img-fluid veg-image" alt="producto" />
+        <Img src={`${CommonPath}/${elem.cirleimage}`} className="round-circle" alt="producto" />
         <div className="coupon-code theme-color">{elem.couponcode}</div>
         <div className="discount-offer">
           <h5>
@@ -45,7 +45,7 @@ const LeftSideDeal = ({ elem }) => {
           {elem.socialmedia.map((item, i) => {
             return (
               <div className="social-icon" key={i}>
-                <Img src={`${CommonPath}/${item.image}`} className="img-fluid" alt="vegetable" />
+                <Img src={`${CommonPath}/${item.image}`} className="img-fluid" alt="producto" />
                 <h6>{item.title}</h6>
               </div>
             );

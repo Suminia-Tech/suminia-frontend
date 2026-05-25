@@ -19,7 +19,7 @@ const HomeSlider = ({ mainSlider }) => {
     <section className='pt-0 home-section home-section-6'>
       <HomePoster HomeSliderData={HomeSliderData} nav2={nav2} slider1={slider1} />
       <div className='background-circle'>
-        <Img src='/assets/images/vegetable/poster/circle.png' className='img-fluid' alt='vegetable' />
+        <Img src='/assets/images/vegetable/poster/circle.png' className='img-fluid' alt='producto' />
       </div>
       <HomeNav HomeSliderData={HomeSliderData} nav1={nav1} slider2={slider2} />
 

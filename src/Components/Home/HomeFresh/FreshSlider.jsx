@@ -22,7 +22,7 @@ const FreshSlider = ({ FreshFilter }) => {
                 <div className="img-wrapper hover-image">
                   <Link href={`/product/product_left_thumbnail/${elem.id}`}>
                     {elem.images.map((item, i) => {
-                      return <Img src={`${CommonPath}/${item.src}`} className="img-fluid bg-img" alt="vegetable" key={i} />;
+                      return <Img src={`${CommonPath}/${item.src}`} className="img-fluid bg-img" alt="producto" key={i} />;
                     })}
                   </Link>
                   <div className="label-block">
