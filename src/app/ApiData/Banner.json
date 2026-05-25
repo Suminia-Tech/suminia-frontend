@@ -363,42 +363,42 @@
         "banners": [
             {
                 "id": 1,
-                "heading": "Fresh Plum",
-                "ratingStars": 4,
-                "discount": 50,
+                "heading": "Analgésicos",
+                "ratingStars": 5,
+                "discount": 10,
                 "image": "vegetable/fruit/1.jpg"
             },
             {
                 "id": 2,
-                "heading": "Fresh Muskmelon",
-                "ratingStars": 3,
+                "heading": "Antibióticos",
+                "ratingStars": 5,
                 "discount": 0,
                 "image": "vegetable/fruit/2.jpg"
             },
             {
                 "id": 3,
-                "heading": "Fresh Water Melon",
-                "ratingStars": 5,
-                "discount": 90,
+                "heading": "Vitaminas",
+                "ratingStars": 4,
+                "discount": 15,
                 "image": "vegetable/fruit/3.jpg"
             },
             {
                 "id": 4,
-                "heading": "Fresh Apricote",
-                "ratingStars": 4,
+                "heading": "Cardiovascular",
+                "ratingStars": 5,
                 "discount": 0,
                 "image": "vegetable/fruit/4.jpg"
             },
             {
                 "id": 5,
-                "heading": "Fresh Black Berry",
-                "ratingStars": 5,
-                "discount": 60,
+                "heading": "Gastrointestinal",
+                "ratingStars": 4,
+                "discount": 20,
                 "image": "vegetable/fruit/5.jpg"
             },
             {
                 "id": 6,
-                "heading": "Fresh Natural Fruits",
+                "heading": "Dermatológico",
                 "ratingStars": 4,
                 "discount": 0,
                 "image": "vegetable/fruit/6.jpg"
