@@ -22,7 +22,7 @@ export default async function RootLayout({ children }) {
           <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
           <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
         </head>
-        <body>
+        <body suppressHydrationWarning>
           <Providers>{children}</Providers>
           <Script src="https://www.paypal.com/sdk/js?client-id=test" strategy="lazyOnload" />
         </body>
