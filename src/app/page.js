@@ -1,5 +1,4 @@
 "use client";
-import FreshFruit from "@/Components/Home/FreshFruit";
 import HomeDeal from "@/Components/Home/HomeDeal";
 import HomeFresh from "@/Components/Home/HomeFresh";
 import HomeSlider from "@/Components/Home/HomeSlider";
@@ -39,7 +38,6 @@ export default function Home() {
       <HomeOffers bannerData={bannerData} />
       <HomeDeal bannerData={bannerData} />
       <HomePromo />
-      <FreshFruit bannerData={bannerData} />
       <HomeHurryUp bannerData={bannerData} />
       <HomeNewsUpdate bannerData={bannerData} />
       <StartModel />
