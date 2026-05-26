@@ -366,42 +366,42 @@
                 "heading": "Analgésicos",
                 "ratingStars": 5,
                 "discount": 10,
-                "image": "vegetable/fruit/1.jpg"
+                "image": "vegetable/fruit/analgesicos.svg"
             },
             {
                 "id": 2,
                 "heading": "Antibióticos",
                 "ratingStars": 5,
                 "discount": 0,
-                "image": "vegetable/fruit/2.jpg"
+                "image": "vegetable/fruit/antibioticos.svg"
             },
             {
                 "id": 3,
                 "heading": "Vitaminas",
                 "ratingStars": 4,
                 "discount": 15,
-                "image": "vegetable/fruit/3.jpg"
+                "image": "vegetable/fruit/vitaminas.svg"
             },
             {
                 "id": 4,
                 "heading": "Cardiovascular",
                 "ratingStars": 5,
                 "discount": 0,
-                "image": "vegetable/fruit/4.jpg"
+                "image": "vegetable/fruit/cardiovascular.svg"
             },
             {
                 "id": 5,
                 "heading": "Gastrointestinal",
                 "ratingStars": 4,
                 "discount": 20,
-                "image": "vegetable/fruit/5.jpg"
+                "image": "vegetable/fruit/gastrointestinal.svg"
             },
             {
                 "id": 6,
                 "heading": "Dermatológico",
                 "ratingStars": 4,
                 "discount": 0,
-                "image": "vegetable/fruit/6.jpg"
+                "image": "vegetable/fruit/dermatologico.svg"
             }
         ]
     },

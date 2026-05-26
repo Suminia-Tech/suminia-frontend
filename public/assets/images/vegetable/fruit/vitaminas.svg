@@ -1,0 +1,14 @@
+<svg width="180" height="180" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="34" y="32" width="32" height="44" rx="6" fill="#b8d9b8" stroke="#7ab87a" stroke-width="1.5"/>
+  <rect x="38" y="24" width="24" height="12" rx="4" fill="#9abe9a" stroke="#7ab87a" stroke-width="1.2"/>
+  <rect x="36" y="20" width="28" height="8" rx="3" fill="#7ab87a"/>
+  <rect x="38" y="44" width="24" height="18" rx="3" fill="white" opacity="0.6"/>
+  <line x1="41" y1="49" x2="59" y2="49" stroke="#7ab87a" stroke-width="1.2"/>
+  <line x1="41" y1="53" x2="59" y2="53" stroke="#7ab87a" stroke-width="1.2"/>
+  <line x1="41" y1="57" x2="53" y2="57" stroke="#7ab87a" stroke-width="1.2"/>
+  <ellipse cx="22" cy="62" rx="7" ry="5" fill="#f5c842" stroke="#d4a800" stroke-width="1"/>
+  <line x1="22" y1="57" x2="22" y2="67" stroke="#c89900" stroke-width="0.8"/>
+  <ellipse cx="78" cy="58" rx="7" ry="5" fill="#f5c842" stroke="#d4a800" stroke-width="1"/>
+  <line x1="78" y1="53" x2="78" y2="63" stroke="#c89900" stroke-width="0.8"/>
+  <line x1="41" y1="35" x2="41" y2="68" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+</svg>
