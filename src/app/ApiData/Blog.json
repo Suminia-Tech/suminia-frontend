@@ -2,49 +2,61 @@
     {
         "type": "blogDetails",
         "indexOf": 0,
-        "image": "inner-page/product/1.png",
+        "title": "Cadena de suministro médica: el reto digital que los hospitales aún no resuelven.",
+        "date": "15 Abr 2025",
+        "image": "vegetable/update/1.jpg",
         "topText": "Solo el 17% de los líderes hospitalarios tiene visibilidad completa sobre su cadena de suministro, según un informe de Avia Health Marketplace publicado en abril de 2025. El 78% de los hospitales aún depende de procesos manuales para gestionar inventarios, lo que genera hasta USD 5,000 millones en desperdicio anual por productos vencidos o mal gestionados.",
-        "middleText": "El sector de distribución de insumos médicos sigue siendo uno de los más rezagados en transformación digital frente a otras industrias B2B. Mientras que industrias como el retail o la logística han adoptado sistemas integrados de gestión de inventario en tiempo real, los hospitales y comercializadores de insumos médicos aún operan con hojas de cálculo, pedidos telefónicos y procesos fragmentados. Esta brecha digital no solo genera ineficiencias operativas, sino que también pone en riesgo la disponibilidad de medicamentos e insumos críticos en momentos de alta demanda. La pandemia de COVID-19 evidenció esta fragilidad cuando múltiples sistemas hospitalarios reportaron desabastecimientos no detectados a tiempo por falta de visibilidad digital en la cadena.",
-        "bottomText": "La solución no es única ni inmediata. Los expertos señalan que la transformación digital en salud requiere una combinación de inversión en tecnología, cambio cultural y estándares de interoperabilidad entre proveedores, distribuidores y hospitales. Plataformas como MediSupply apuntan precisamente a cerrar esta brecha, ofreciendo a los actores del ecosistema médico herramientas digitales para gestionar pedidos, trazabilidad y disponibilidad de productos de forma centralizada y en tiempo real. La digitalización de la cadena de suministro médica no es una opción; es una necesidad urgente para garantizar la continuidad del cuidado al paciente.",
+        "middleText": "El sector de distribución de insumos médicos sigue siendo uno de los más rezagados en transformación digital frente a otras industrias B2B. Mientras que industrias como el retail o la logística han adoptado sistemas integrados de gestión de inventario en tiempo real, los hospitales y comercializadores de insumos médicos aún operan con hojas de cálculo, pedidos telefónicos y procesos fragmentados. Esta brecha digital no solo genera ineficiencias operativas, sino que también pone en riesgo la disponibilidad de medicamentos e insumos críticos en momentos de alta demanda.",
+        "bottomText": "Plataformas como MediSupply apuntan precisamente a cerrar esta brecha, ofreciendo a los actores del ecosistema médico herramientas digitales para gestionar pedidos, trazabilidad y disponibilidad de productos de forma centralizada y en tiempo real. La digitalización de la cadena de suministro médica no es una opción; es una necesidad urgente para garantizar la continuidad del cuidado al paciente.",
         "social": [
-            {
-                "id": 1,
-                "link": "https://www.facebook.com/",
-                "class": "fab fa-facebook-f"
-            },
-            {
-                "id": 2,
-                "link": "https://twitter.com/",
-                "class": "fab fa-twitter"
-            },
-            {
-                "id": 3,
-                "link": "https://in.pinterest.com/",
-                "class": "fab fa-pinterest-p"
-            }
+            { "id": 1, "link": "https://www.facebook.com/", "class": "fab fa-facebook-f" },
+            { "id": 2, "link": "https://twitter.com/", "class": "fab fa-twitter" },
+            { "id": 3, "link": "https://in.pinterest.com/", "class": "fab fa-pinterest-p" }
         ],
         "carouselItems": [
-            {
-                "id": 1,
-                "heading": "Cadena de suministro médica sin digitalizar",
-                "author": "Avia Health",
-                "date": "15 Abr 2025",
-                "image": "inner-page/product/1.png"
-            },
-            {
-                "id": 2,
-                "heading": "Healthtech alcanzará USD 2 billones para 2034",
-                "author": "IMARC Group",
-                "date": "19 Feb 2025",
-                "image": "inner-page/product/2.png"
-            },
-            {
-                "id": 3,
-                "heading": "Avances en biotecnología y terapia génica en 2024",
-                "author": "Anemocyte",
-                "date": "5 Feb 2025",
-                "image": "inner-page/product/3.png"
-            }
+            { "id": 1, "heading": "Cadena de suministro médica sin digitalizar", "author": "Avia Health", "date": "15 Abr 2025", "image": "vegetable/update/1.jpg" },
+            { "id": 2, "heading": "Healthtech alcanzará USD 2 billones para 2034", "author": "IMARC Group", "date": "19 Feb 2025", "image": "vegetable/update/2.jpg" },
+            { "id": 3, "heading": "Avances en biotecnología y terapia génica en 2024", "author": "Anemocyte", "date": "5 Feb 2025", "image": "vegetable/update/3.jpg" }
+        ]
+    },
+    {
+        "type": "blogDetails",
+        "indexOf": 1,
+        "title": "Healthtech alcanzará USD 2 billones para 2034: América Latina lidera la adopción.",
+        "date": "19 Feb 2025",
+        "image": "vegetable/update/2.jpg",
+        "topText": "El mercado global de salud digital fue valorado en USD 573,000 millones en 2025 y se proyecta que alcanzará los USD 2,088,000 millones para 2034, con una tasa de crecimiento anual compuesta del 15%, según el informe de IMARC Group publicado en febrero de 2025. América Latina se destaca como una región de adopción acelerada, impulsada por gobiernos que invierten en infraestructura sanitaria digital.",
+        "middleText": "La telemedicina, las aplicaciones de salud móvil y los sistemas de gestión hospitalaria digital son los tres pilares que explican este crecimiento sostenido. En Colombia, Brasil y México, la inversión en healthtech creció más del 40% entre 2022 y 2024, atrayendo tanto a startups locales como a grandes jugadores internacionales que ven en la región una oportunidad sin explotar. La pandemia aceleró la adopción de soluciones digitales que antes tardaban años en implementarse.",
+        "bottomText": "Para el sector de distribución de insumos médicos, esta tendencia abre una ventana de oportunidad enorme. Las plataformas B2B que conectan fabricantes, distribuidores y hospitales con tecnología digital están capturando una parte creciente del mercado, reemplazando modelos de venta tradicionales basados en representantes y catálogos físicos. MediSupply forma parte de esta transformación, digitalizando el acceso a medicamentos e insumos médicos para compradores institucionales y minoristas.",
+        "social": [
+            { "id": 1, "link": "https://www.facebook.com/", "class": "fab fa-facebook-f" },
+            { "id": 2, "link": "https://twitter.com/", "class": "fab fa-twitter" },
+            { "id": 3, "link": "https://in.pinterest.com/", "class": "fab fa-pinterest-p" }
+        ],
+        "carouselItems": [
+            { "id": 1, "heading": "Cadena de suministro médica sin digitalizar", "author": "Avia Health", "date": "15 Abr 2025", "image": "vegetable/update/1.jpg" },
+            { "id": 2, "heading": "Healthtech alcanzará USD 2 billones para 2034", "author": "IMARC Group", "date": "19 Feb 2025", "image": "vegetable/update/2.jpg" },
+            { "id": 3, "heading": "Avances en biotecnología y terapia génica en 2024", "author": "Anemocyte", "date": "5 Feb 2025", "image": "vegetable/update/3.jpg" }
+        ]
+    },
+    {
+        "type": "blogDetails",
+        "indexOf": 2,
+        "title": "Avances en biotecnología y terapia génica en 2024: una nueva era para la industria farmacéutica.",
+        "date": "5 Feb 2025",
+        "image": "vegetable/update/3.jpg",
+        "topText": "La terapia génica consolidó su protagonismo en 2024 con avances en sistemas de edición genética más precisos y seguros para el tratamiento de enfermedades raras y trastornos autoinmunes, con resultados que apuntan a remisiones de largo plazo, según un análisis de Anemocyte publicado en febrero de 2025. Estos avances representan un cambio de paradigma en cómo se concibe el tratamiento de enfermedades que antes se consideraban incurables.",
+        "middleText": "Los modelos de manufactura descentralizada de terapias personalizadas, producidas cerca del punto de tratamiento, están reduciendo los tiempos logísticos y acelerando el acceso a medicamentos biológicos de última generación. Esta tendencia está transformando la cadena de valor farmacéutica: en lugar de grandes plantas centralizadas, emergen centros de producción regionales con capacidad de personalizar tratamientos para poblaciones específicas.",
+        "bottomText": "Para la industria de distribución médica, esto implica nuevos desafíos y oportunidades. Los distribuidores deben adaptarse a manejar productos biológicos con cadenas de frío más estrictas, vida útil más corta y mayor valor unitario. MediSupply está desarrollando capacidades especializadas para este segmento, integrando herramientas de trazabilidad y control de temperatura que garantizan la integridad del producto desde el fabricante hasta el paciente.",
+        "social": [
+            { "id": 1, "link": "https://www.facebook.com/", "class": "fab fa-facebook-f" },
+            { "id": 2, "link": "https://twitter.com/", "class": "fab fa-twitter" },
+            { "id": 3, "link": "https://in.pinterest.com/", "class": "fab fa-pinterest-p" }
+        ],
+        "carouselItems": [
+            { "id": 1, "heading": "Cadena de suministro médica sin digitalizar", "author": "Avia Health", "date": "15 Abr 2025", "image": "vegetable/update/1.jpg" },
+            { "id": 2, "heading": "Healthtech alcanzará USD 2 billones para 2034", "author": "IMARC Group", "date": "19 Feb 2025", "image": "vegetable/update/2.jpg" },
+            { "id": 3, "heading": "Avances en biotecnología y terapia génica en 2024", "author": "Anemocyte", "date": "5 Feb 2025", "image": "vegetable/update/3.jpg" }
         ]
     },
     {

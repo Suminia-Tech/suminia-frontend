@@ -37,7 +37,7 @@ const BlogCards = ({ BottomBannerFilter }) => {
                     <Btn
                       attrBtn={{
                         className: 'default-theme',
-                        onClick: () => router.push('/blog/blog_details'),
+                        onClick: () => router.push(`/blog/blog_details?id=${i}`),
                       }}>
                       {ReadMore}
                       <i className='fas fa-chevron-right'></i>

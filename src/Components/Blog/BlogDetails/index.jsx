@@ -5,9 +5,9 @@ import CommentDetails from './CommentDetails';
 import FormatDetails from './FormatDetails';
 import LeftSidebar from './LeftSidebar';
 
-const BlogDetails = () => {
+const BlogDetails = ({ articleId = 0 }) => {
   const { blogdata } = useSelector((state) => state.BlogReducer);
-  const DetailFilter = blogdata.filter((el) => el.type === 'blogDetails');
+  const DetailFilter = blogdata.filter((el) => el.type === 'blogDetails' && el.indexOf === articleId);
   return (
     <section className='masonary-blog-section'>
       <Container>
