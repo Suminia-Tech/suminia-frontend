@@ -10,7 +10,7 @@
         "ratingStars": 5,
         "inStock": 500,
         "totalReviews": 240,
-        "mrp": 8.50,
+        "mrp": 8.5,
         "feature": "none",
         "price": 7.65,
         "available": true,
@@ -23,8 +23,16 @@
         "quantity_2": "Caja x 20 tab",
         "new": false,
         "images": [
-            { "imageId": 1, "class": "front", "src": "inner-page/product/1.jpg" },
-            { "imageId": 2, "class": "back", "src": "inner-page/product/1.jpg" }
+            {
+                "imageId": 1,
+                "class": "front",
+                "src": "inner-page/product/1.png"
+            },
+            {
+                "imageId": 2,
+                "class": "back",
+                "src": "inner-page/product/1.png"
+            }
         ]
     },
     {
@@ -38,9 +46,9 @@
         "ratingStars": 4,
         "inStock": 350,
         "totalReviews": 185,
-        "mrp": 9.00,
+        "mrp": 9,
         "feature": "none",
-        "price": 9.00,
+        "price": 9,
         "available": true,
         "first_available_date": "15-03-2009",
         "department": "none",
@@ -51,8 +59,16 @@
         "quantity_2": "Caja x 10 tab",
         "new": false,
         "images": [
-            { "imageId": 3, "class": "front", "src": "inner-page/product/2.jpg" },
-            { "imageId": 4, "class": "back", "src": "inner-page/product/2.jpg" }
+            {
+                "imageId": 3,
+                "class": "front",
+                "src": "inner-page/product/2.png"
+            },
+            {
+                "imageId": 4,
+                "class": "back",
+                "src": "inner-page/product/2.png"
+            }
         ]
     },
     {
@@ -66,9 +82,9 @@
         "ratingStars": 4,
         "inStock": 200,
         "totalReviews": 98,
-        "mrp": 12.00,
+        "mrp": 12,
         "feature": "none",
-        "price": 11.40,
+        "price": 11.4,
         "available": true,
         "first_available_date": "10-06-2011",
         "department": "none",
@@ -79,8 +95,16 @@
         "quantity_2": "Caja x 10 tab",
         "new": false,
         "images": [
-            { "imageId": 5, "class": "front", "src": "inner-page/product/3.jpg" },
-            { "imageId": 6, "class": "back", "src": "inner-page/product/3.jpg" }
+            {
+                "imageId": 5,
+                "class": "front",
+                "src": "inner-page/product/3.png"
+            },
+            {
+                "imageId": 6,
+                "class": "back",
+                "src": "inner-page/product/3.png"
+            }
         ]
     },
     {
@@ -94,9 +118,9 @@
         "ratingStars": 4,
         "inStock": 180,
         "totalReviews": 76,
-        "mrp": 10.50,
+        "mrp": 10.5,
         "feature": "none",
-        "price": 10.50,
+        "price": 10.5,
         "available": true,
         "first_available_date": "05-09-2008",
         "department": "none",
@@ -107,8 +131,16 @@
         "quantity_2": "Caja x 10 tab",
         "new": false,
         "images": [
-            { "imageId": 7, "class": "front", "src": "inner-page/product/4.jpg" },
-            { "imageId": 8, "class": "back", "src": "inner-page/product/4.jpg" }
+            {
+                "imageId": 7,
+                "class": "front",
+                "src": "inner-page/product/4.png"
+            },
+            {
+                "imageId": 8,
+                "class": "back",
+                "src": "inner-page/product/4.png"
+            }
         ]
     },
     {
@@ -122,9 +154,9 @@
         "ratingStars": 5,
         "inStock": 600,
         "totalReviews": 320,
-        "mrp": 6.50,
+        "mrp": 6.5,
         "feature": "none",
-        "price": 6.50,
+        "price": 6.5,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -135,8 +167,16 @@
         "quantity_2": "Caja x 30 tab",
         "new": false,
         "images": [
-            { "imageId": 9, "class": "front", "src": "inner-page/product/5.jpg" },
-            { "imageId": 10, "class": "back", "src": "inner-page/product/5.jpg" }
+            {
+                "imageId": 9,
+                "class": "front",
+                "src": "inner-page/product/5.png"
+            },
+            {
+                "imageId": 10,
+                "class": "back",
+                "src": "inner-page/product/5.png"
+            }
         ]
     },
     {
@@ -150,7 +190,7 @@
         "ratingStars": 4,
         "inStock": 150,
         "totalReviews": 54,
-        "mrp": 11.00,
+        "mrp": 11,
         "feature": "none",
         "price": 9.35,
         "available": true,
@@ -163,8 +203,16 @@
         "quantity_2": "Caja x 10 amp",
         "new": false,
         "images": [
-            { "imageId": 11, "class": "front", "src": "inner-page/product/6.jpg" },
-            { "imageId": 12, "class": "back", "src": "inner-page/product/6.jpg" }
+            {
+                "imageId": 11,
+                "class": "front",
+                "src": "inner-page/product/6.png"
+            },
+            {
+                "imageId": 12,
+                "class": "back",
+                "src": "inner-page/product/6.png"
+            }
         ]
     },
     {
@@ -178,9 +226,9 @@
         "ratingStars": 4,
         "inStock": 80,
         "totalReviews": 42,
-        "mrp": 18.00,
+        "mrp": 18,
         "feature": "none",
-        "price": 18.00,
+        "price": 18,
         "available": true,
         "first_available_date": "01-07-2013",
         "department": "none",
@@ -191,8 +239,16 @@
         "quantity_2": "Caja x 10 cap",
         "new": false,
         "images": [
-            { "imageId": 13, "class": "front", "src": "inner-page/product/7.jpg" },
-            { "imageId": 14, "class": "back", "src": "inner-page/product/7.jpg" }
+            {
+                "imageId": 13,
+                "class": "front",
+                "src": "inner-page/product/7.png"
+            },
+            {
+                "imageId": 14,
+                "class": "back",
+                "src": "inner-page/product/7.png"
+            }
         ]
     },
     {
@@ -206,9 +262,9 @@
         "ratingStars": 4,
         "inStock": 100,
         "totalReviews": 38,
-        "mrp": 14.00,
+        "mrp": 14,
         "feature": "none",
-        "price": 14.00,
+        "price": 14,
         "available": true,
         "first_available_date": "10-11-2014",
         "department": "none",
@@ -219,8 +275,16 @@
         "quantity_2": "Caja x 10 amp",
         "new": false,
         "images": [
-            { "imageId": 15, "class": "front", "src": "inner-page/product/8.jpg" },
-            { "imageId": 16, "class": "back", "src": "inner-page/product/8.jpg" }
+            {
+                "imageId": 15,
+                "class": "front",
+                "src": "inner-page/product/8.png"
+            },
+            {
+                "imageId": 16,
+                "class": "back",
+                "src": "inner-page/product/8.png"
+            }
         ]
     },
     {
@@ -234,7 +298,7 @@
         "ratingStars": 5,
         "inStock": 400,
         "totalReviews": 210,
-        "mrp": 13.00,
+        "mrp": 13,
         "feature": "none",
         "price": 12.35,
         "available": true,
@@ -247,8 +311,16 @@
         "quantity_2": "Frasco 60ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 17, "class": "front", "src": "inner-page/product/9.jpg" },
-            { "imageId": 18, "class": "back", "src": "inner-page/product/9.jpg" }
+            {
+                "imageId": 17,
+                "class": "front",
+                "src": "inner-page/product/9.png"
+            },
+            {
+                "imageId": 18,
+                "class": "back",
+                "src": "inner-page/product/9.png"
+            }
         ]
     },
     {
@@ -262,9 +334,9 @@
         "ratingStars": 5,
         "inStock": 250,
         "totalReviews": 175,
-        "mrp": 22.00,
+        "mrp": 22,
         "feature": "none",
-        "price": 22.00,
+        "price": 22,
         "available": true,
         "first_available_date": "01-05-2008",
         "department": "none",
@@ -275,8 +347,16 @@
         "quantity_2": "Caja x 6 tab",
         "new": false,
         "images": [
-            { "imageId": 19, "class": "front", "src": "inner-page/product/10.jpg" },
-            { "imageId": 20, "class": "back", "src": "inner-page/product/10.jpg" }
+            {
+                "imageId": 19,
+                "class": "front",
+                "src": "inner-page/product/1.png"
+            },
+            {
+                "imageId": 20,
+                "class": "back",
+                "src": "inner-page/product/1.png"
+            }
         ]
     },
     {
@@ -290,7 +370,7 @@
         "ratingStars": 4,
         "inStock": 200,
         "totalReviews": 120,
-        "mrp": 16.50,
+        "mrp": 16.5,
         "feature": "none",
         "price": 15.18,
         "available": true,
@@ -303,8 +383,16 @@
         "quantity_2": "Caja x 7 tab",
         "new": false,
         "images": [
-            { "imageId": 21, "class": "front", "src": "inner-page/product/11.jpg" },
-            { "imageId": 22, "class": "back", "src": "inner-page/product/11.jpg" }
+            {
+                "imageId": 21,
+                "class": "front",
+                "src": "inner-page/product/2.png"
+            },
+            {
+                "imageId": 22,
+                "class": "back",
+                "src": "inner-page/product/2.png"
+            }
         ]
     },
     {
@@ -318,9 +406,9 @@
         "ratingStars": 5,
         "inStock": 180,
         "totalReviews": 95,
-        "mrp": 28.00,
+        "mrp": 28,
         "feature": "none",
-        "price": 28.00,
+        "price": 28,
         "available": true,
         "first_available_date": "01-06-2009",
         "department": "none",
@@ -331,8 +419,16 @@
         "quantity_2": "Frasco 70ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 23, "class": "front", "src": "inner-page/product/12.jpg" },
-            { "imageId": 24, "class": "back", "src": "inner-page/product/12.jpg" }
+            {
+                "imageId": 23,
+                "class": "front",
+                "src": "inner-page/product/3.png"
+            },
+            {
+                "imageId": 24,
+                "class": "back",
+                "src": "inner-page/product/3.png"
+            }
         ]
     },
     {
@@ -346,7 +442,7 @@
         "ratingStars": 4,
         "inStock": 220,
         "totalReviews": 88,
-        "mrp": 9.50,
+        "mrp": 9.5,
         "feature": "none",
         "price": 8.36,
         "available": true,
@@ -359,8 +455,16 @@
         "quantity_2": "Frasco 120ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 25, "class": "front", "src": "inner-page/product/13.jpg" },
-            { "imageId": 26, "class": "back", "src": "inner-page/product/13.jpg" }
+            {
+                "imageId": 25,
+                "class": "front",
+                "src": "inner-page/product/4.png"
+            },
+            {
+                "imageId": 26,
+                "class": "back",
+                "src": "inner-page/product/4.png"
+            }
         ]
     },
     {
@@ -374,9 +478,9 @@
         "ratingStars": 4,
         "inStock": 120,
         "totalReviews": 64,
-        "mrp": 32.00,
+        "mrp": 32,
         "feature": "none",
-        "price": 32.00,
+        "price": 32,
         "available": true,
         "first_available_date": "20-09-2010",
         "department": "none",
@@ -387,8 +491,16 @@
         "quantity_2": "Caja x 7 tab",
         "new": false,
         "images": [
-            { "imageId": 27, "class": "front", "src": "inner-page/product/14.jpg" },
-            { "imageId": 28, "class": "back", "src": "inner-page/product/14.jpg" }
+            {
+                "imageId": 27,
+                "class": "front",
+                "src": "inner-page/product/5.png"
+            },
+            {
+                "imageId": 28,
+                "class": "back",
+                "src": "inner-page/product/5.png"
+            }
         ]
     },
     {
@@ -402,9 +514,9 @@
         "ratingStars": 4,
         "inStock": 160,
         "totalReviews": 72,
-        "mrp": 14.00,
+        "mrp": 14,
         "feature": "none",
-        "price": 14.00,
+        "price": 14,
         "available": true,
         "first_available_date": "01-04-2008",
         "department": "none",
@@ -415,8 +527,16 @@
         "quantity_2": "Frasco 60ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 29, "class": "front", "src": "inner-page/product/15.jpg" },
-            { "imageId": 30, "class": "back", "src": "inner-page/product/15.jpg" }
+            {
+                "imageId": 29,
+                "class": "front",
+                "src": "inner-page/product/6.png"
+            },
+            {
+                "imageId": 30,
+                "class": "back",
+                "src": "inner-page/product/6.png"
+            }
         ]
     },
     {
@@ -430,9 +550,9 @@
         "ratingStars": 4,
         "inStock": 130,
         "totalReviews": 55,
-        "mrp": 19.00,
+        "mrp": 19,
         "feature": "none",
-        "price": 19.00,
+        "price": 19,
         "available": true,
         "first_available_date": "05-08-2011",
         "department": "none",
@@ -443,8 +563,16 @@
         "quantity_2": "Caja x 7 cap",
         "new": false,
         "images": [
-            { "imageId": 31, "class": "front", "src": "inner-page/product/16.jpg" },
-            { "imageId": 32, "class": "back", "src": "inner-page/product/16.jpg" }
+            {
+                "imageId": 31,
+                "class": "front",
+                "src": "inner-page/product/7.png"
+            },
+            {
+                "imageId": 32,
+                "class": "back",
+                "src": "inner-page/product/7.png"
+            }
         ]
     },
     {
@@ -458,9 +586,9 @@
         "ratingStars": 5,
         "inStock": 450,
         "totalReviews": 198,
-        "mrp": 15.00,
+        "mrp": 15,
         "feature": "none",
-        "price": 13.50,
+        "price": 13.5,
         "available": true,
         "first_available_date": "01-01-2006",
         "department": "none",
@@ -471,8 +599,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 33, "class": "front", "src": "inner-page/product/17.jpg" },
-            { "imageId": 34, "class": "back", "src": "inner-page/product/17.jpg" }
+            {
+                "imageId": 33,
+                "class": "front",
+                "src": "inner-page/product/8.png"
+            },
+            {
+                "imageId": 34,
+                "class": "back",
+                "src": "inner-page/product/8.png"
+            }
         ]
     },
     {
@@ -486,9 +622,9 @@
         "ratingStars": 5,
         "inStock": 380,
         "totalReviews": 167,
-        "mrp": 12.00,
+        "mrp": 12,
         "feature": "none",
-        "price": 12.00,
+        "price": 12,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -499,8 +635,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 35, "class": "front", "src": "inner-page/product/18.jpg" },
-            { "imageId": 36, "class": "back", "src": "inner-page/product/18.jpg" }
+            {
+                "imageId": 35,
+                "class": "front",
+                "src": "inner-page/product/9.png"
+            },
+            {
+                "imageId": 36,
+                "class": "back",
+                "src": "inner-page/product/9.png"
+            }
         ]
     },
     {
@@ -514,9 +658,9 @@
         "ratingStars": 5,
         "inStock": 300,
         "totalReviews": 142,
-        "mrp": 18.00,
+        "mrp": 18,
         "feature": "none",
-        "price": 17.10,
+        "price": 17.1,
         "available": true,
         "first_available_date": "10-03-2007",
         "department": "none",
@@ -527,8 +671,16 @@
         "quantity_2": "Caja x 14 tab",
         "new": false,
         "images": [
-            { "imageId": 37, "class": "front", "src": "inner-page/product/19.jpg" },
-            { "imageId": 38, "class": "back", "src": "inner-page/product/19.jpg" }
+            {
+                "imageId": 37,
+                "class": "front",
+                "src": "inner-page/product/1.png"
+            },
+            {
+                "imageId": 38,
+                "class": "back",
+                "src": "inner-page/product/1.png"
+            }
         ]
     },
     {
@@ -542,9 +694,9 @@
         "ratingStars": 4,
         "inStock": 200,
         "totalReviews": 88,
-        "mrp": 20.00,
+        "mrp": 20,
         "feature": "none",
-        "price": 20.00,
+        "price": 20,
         "available": true,
         "first_available_date": "01-07-2008",
         "department": "none",
@@ -555,8 +707,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 39, "class": "front", "src": "inner-page/product/20.jpg" },
-            { "imageId": 40, "class": "back", "src": "inner-page/product/20.jpg" }
+            {
+                "imageId": 39,
+                "class": "front",
+                "src": "inner-page/product/2.png"
+            },
+            {
+                "imageId": 40,
+                "class": "back",
+                "src": "inner-page/product/2.png"
+            }
         ]
     },
     {
@@ -570,9 +730,9 @@
         "ratingStars": 5,
         "inStock": 310,
         "totalReviews": 156,
-        "mrp": 25.00,
+        "mrp": 25,
         "feature": "none",
-        "price": 23.00,
+        "price": 23,
         "available": true,
         "first_available_date": "01-10-2005",
         "department": "none",
@@ -583,8 +743,16 @@
         "quantity_2": "Caja x 14 tab",
         "new": false,
         "images": [
-            { "imageId": 41, "class": "front", "src": "inner-page/product/21.jpg" },
-            { "imageId": 42, "class": "back", "src": "inner-page/product/21.jpg" }
+            {
+                "imageId": 41,
+                "class": "front",
+                "src": "inner-page/product/3.png"
+            },
+            {
+                "imageId": 42,
+                "class": "back",
+                "src": "inner-page/product/3.png"
+            }
         ]
     },
     {
@@ -598,9 +766,9 @@
         "ratingStars": 4,
         "inStock": 270,
         "totalReviews": 112,
-        "mrp": 18.00,
+        "mrp": 18,
         "feature": "none",
-        "price": 15.30,
+        "price": 15.3,
         "available": true,
         "first_available_date": "01-01-2004",
         "department": "none",
@@ -611,8 +779,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 43, "class": "front", "src": "inner-page/product/1.jpg" },
-            { "imageId": 44, "class": "back", "src": "inner-page/product/1.jpg" }
+            {
+                "imageId": 43,
+                "class": "front",
+                "src": "inner-page/product/4.png"
+            },
+            {
+                "imageId": 44,
+                "class": "back",
+                "src": "inner-page/product/4.png"
+            }
         ]
     },
     {
@@ -626,9 +802,9 @@
         "ratingStars": 4,
         "inStock": 190,
         "totalReviews": 78,
-        "mrp": 8.00,
+        "mrp": 8,
         "feature": "none",
-        "price": 8.00,
+        "price": 8,
         "available": true,
         "first_available_date": "01-01-2006",
         "department": "none",
@@ -639,8 +815,16 @@
         "quantity_2": "Caja x 10 amp",
         "new": false,
         "images": [
-            { "imageId": 45, "class": "front", "src": "inner-page/product/2.jpg" },
-            { "imageId": 46, "class": "back", "src": "inner-page/product/2.jpg" }
+            {
+                "imageId": 45,
+                "class": "front",
+                "src": "inner-page/product/5.png"
+            },
+            {
+                "imageId": 46,
+                "class": "back",
+                "src": "inner-page/product/5.png"
+            }
         ]
     },
     {
@@ -654,9 +838,9 @@
         "ratingStars": 4,
         "inStock": 140,
         "totalReviews": 62,
-        "mrp": 14.00,
+        "mrp": 14,
         "feature": "none",
-        "price": 14.00,
+        "price": 14,
         "available": true,
         "first_available_date": "01-03-2007",
         "department": "none",
@@ -667,8 +851,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 47, "class": "front", "src": "inner-page/product/3.jpg" },
-            { "imageId": 48, "class": "back", "src": "inner-page/product/3.jpg" }
+            {
+                "imageId": 47,
+                "class": "front",
+                "src": "inner-page/product/6.png"
+            },
+            {
+                "imageId": 48,
+                "class": "back",
+                "src": "inner-page/product/6.png"
+            }
         ]
     },
     {
@@ -682,9 +874,9 @@
         "ratingStars": 5,
         "inStock": 500,
         "totalReviews": 285,
-        "mrp": 10.00,
+        "mrp": 10,
         "feature": "none",
-        "price": 9.00,
+        "price": 9,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -695,8 +887,16 @@
         "quantity_2": "Caja x 14 cap",
         "new": false,
         "images": [
-            { "imageId": 49, "class": "front", "src": "inner-page/product/4.jpg" },
-            { "imageId": 50, "class": "back", "src": "inner-page/product/4.jpg" }
+            {
+                "imageId": 49,
+                "class": "front",
+                "src": "inner-page/product/7.png"
+            },
+            {
+                "imageId": 50,
+                "class": "back",
+                "src": "inner-page/product/7.png"
+            }
         ]
     },
     {
@@ -710,9 +910,9 @@
         "ratingStars": 5,
         "inStock": 320,
         "totalReviews": 148,
-        "mrp": 16.00,
+        "mrp": 16,
         "feature": "none",
-        "price": 16.00,
+        "price": 16,
         "available": true,
         "first_available_date": "01-06-2008",
         "department": "none",
@@ -723,8 +923,16 @@
         "quantity_2": "Caja x 14 tab",
         "new": false,
         "images": [
-            { "imageId": 51, "class": "front", "src": "inner-page/product/5.jpg" },
-            { "imageId": 52, "class": "back", "src": "inner-page/product/5.jpg" }
+            {
+                "imageId": 51,
+                "class": "front",
+                "src": "inner-page/product/8.png"
+            },
+            {
+                "imageId": 52,
+                "class": "back",
+                "src": "inner-page/product/8.png"
+            }
         ]
     },
     {
@@ -738,9 +946,9 @@
         "ratingStars": 4,
         "inStock": 200,
         "totalReviews": 86,
-        "mrp": 7.50,
+        "mrp": 7.5,
         "feature": "none",
-        "price": 7.50,
+        "price": 7.5,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -751,8 +959,16 @@
         "quantity_2": "Frasco 120ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 53, "class": "front", "src": "inner-page/product/6.jpg" },
-            { "imageId": 54, "class": "back", "src": "inner-page/product/6.jpg" }
+            {
+                "imageId": 53,
+                "class": "front",
+                "src": "inner-page/product/9.png"
+            },
+            {
+                "imageId": 54,
+                "class": "back",
+                "src": "inner-page/product/9.png"
+            }
         ]
     },
     {
@@ -766,9 +982,9 @@
         "ratingStars": 4,
         "inStock": 175,
         "totalReviews": 72,
-        "mrp": 11.00,
+        "mrp": 11,
         "feature": "none",
-        "price": 11.00,
+        "price": 11,
         "available": true,
         "first_available_date": "01-04-2009",
         "department": "none",
@@ -779,8 +995,16 @@
         "quantity_2": "Frasco 120ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 55, "class": "front", "src": "inner-page/product/7.jpg" },
-            { "imageId": 56, "class": "back", "src": "inner-page/product/7.jpg" }
+            {
+                "imageId": 55,
+                "class": "front",
+                "src": "inner-page/product/1.png"
+            },
+            {
+                "imageId": 56,
+                "class": "back",
+                "src": "inner-page/product/1.png"
+            }
         ]
     },
     {
@@ -794,9 +1018,9 @@
         "ratingStars": 4,
         "inStock": 230,
         "totalReviews": 95,
-        "mrp": 8.00,
+        "mrp": 8,
         "feature": "none",
-        "price": 7.60,
+        "price": 7.6,
         "available": true,
         "first_available_date": "01-01-2006",
         "department": "none",
@@ -807,8 +1031,16 @@
         "quantity_2": "Frasco 60ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 57, "class": "front", "src": "inner-page/product/8.jpg" },
-            { "imageId": 58, "class": "back", "src": "inner-page/product/8.jpg" }
+            {
+                "imageId": 57,
+                "class": "front",
+                "src": "inner-page/product/2.png"
+            },
+            {
+                "imageId": 58,
+                "class": "back",
+                "src": "inner-page/product/2.png"
+            }
         ]
     },
     {
@@ -822,9 +1054,9 @@
         "ratingStars": 3,
         "inStock": 160,
         "totalReviews": 48,
-        "mrp": 6.00,
+        "mrp": 6,
         "feature": "none",
-        "price": 6.00,
+        "price": 6,
         "available": true,
         "first_available_date": "01-01-2007",
         "department": "none",
@@ -835,8 +1067,16 @@
         "quantity_2": "Caja x 10 sup",
         "new": false,
         "images": [
-            { "imageId": 59, "class": "front", "src": "inner-page/product/9.jpg" },
-            { "imageId": 60, "class": "back", "src": "inner-page/product/9.jpg" }
+            {
+                "imageId": 59,
+                "class": "front",
+                "src": "inner-page/product/3.png"
+            },
+            {
+                "imageId": 60,
+                "class": "back",
+                "src": "inner-page/product/3.png"
+            }
         ]
     },
     {
@@ -850,9 +1090,9 @@
         "ratingStars": 4,
         "inStock": 280,
         "totalReviews": 115,
-        "mrp": 9.00,
+        "mrp": 9,
         "feature": "none",
-        "price": 7.20,
+        "price": 7.2,
         "available": true,
         "first_available_date": "01-01-2004",
         "department": "none",
@@ -863,8 +1103,16 @@
         "quantity_2": "Frasco 150ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 61, "class": "front", "src": "inner-page/product/10.jpg" },
-            { "imageId": 62, "class": "back", "src": "inner-page/product/10.jpg" }
+            {
+                "imageId": 61,
+                "class": "front",
+                "src": "inner-page/product/4.png"
+            },
+            {
+                "imageId": 62,
+                "class": "back",
+                "src": "inner-page/product/4.png"
+            }
         ]
     },
     {
@@ -878,9 +1126,9 @@
         "ratingStars": 4,
         "inStock": 120,
         "totalReviews": 42,
-        "mrp": 12.50,
+        "mrp": 12.5,
         "feature": "none",
-        "price": 12.50,
+        "price": 12.5,
         "available": true,
         "first_available_date": "01-05-2010",
         "department": "none",
@@ -891,8 +1139,16 @@
         "quantity_2": "Caja x 20 tab",
         "new": false,
         "images": [
-            { "imageId": 63, "class": "front", "src": "inner-page/product/11.jpg" },
-            { "imageId": 64, "class": "back", "src": "inner-page/product/11.jpg" }
+            {
+                "imageId": 63,
+                "class": "front",
+                "src": "inner-page/product/5.png"
+            },
+            {
+                "imageId": 64,
+                "class": "back",
+                "src": "inner-page/product/5.png"
+            }
         ]
     },
     {
@@ -906,9 +1162,9 @@
         "ratingStars": 5,
         "inStock": 420,
         "totalReviews": 196,
-        "mrp": 7.00,
+        "mrp": 7,
         "feature": "none",
-        "price": 7.00,
+        "price": 7,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -919,8 +1175,16 @@
         "quantity_2": "Frasco 120ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 65, "class": "front", "src": "inner-page/product/12.jpg" },
-            { "imageId": 66, "class": "back", "src": "inner-page/product/12.jpg" }
+            {
+                "imageId": 65,
+                "class": "front",
+                "src": "inner-page/product/6.png"
+            },
+            {
+                "imageId": 66,
+                "class": "back",
+                "src": "inner-page/product/6.png"
+            }
         ]
     },
     {
@@ -934,7 +1198,7 @@
         "ratingStars": 5,
         "inStock": 350,
         "totalReviews": 162,
-        "mrp": 9.00,
+        "mrp": 9,
         "feature": "none",
         "price": 8.55,
         "available": true,
@@ -947,8 +1211,16 @@
         "quantity_2": "Frasco 120ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 67, "class": "front", "src": "inner-page/product/13.jpg" },
-            { "imageId": 68, "class": "back", "src": "inner-page/product/13.jpg" }
+            {
+                "imageId": 67,
+                "class": "front",
+                "src": "inner-page/product/7.png"
+            },
+            {
+                "imageId": 68,
+                "class": "back",
+                "src": "inner-page/product/7.png"
+            }
         ]
     },
     {
@@ -962,9 +1234,9 @@
         "ratingStars": 5,
         "inStock": 180,
         "totalReviews": 134,
-        "mrp": 22.00,
+        "mrp": 22,
         "feature": "none",
-        "price": 22.00,
+        "price": 22,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -975,8 +1247,16 @@
         "quantity_2": "none",
         "new": false,
         "images": [
-            { "imageId": 69, "class": "front", "src": "inner-page/product/14.jpg" },
-            { "imageId": 70, "class": "back", "src": "inner-page/product/14.jpg" }
+            {
+                "imageId": 69,
+                "class": "front",
+                "src": "inner-page/product/8.png"
+            },
+            {
+                "imageId": 70,
+                "class": "back",
+                "src": "inner-page/product/8.png"
+            }
         ]
     },
     {
@@ -990,9 +1270,9 @@
         "ratingStars": 4,
         "inStock": 220,
         "totalReviews": 98,
-        "mrp": 12.00,
+        "mrp": 12,
         "feature": "none",
-        "price": 12.00,
+        "price": 12,
         "available": true,
         "first_available_date": "01-06-2007",
         "department": "none",
@@ -1003,8 +1283,16 @@
         "quantity_2": "Frasco 240ml",
         "new": false,
         "images": [
-            { "imageId": 71, "class": "front", "src": "inner-page/product/15.jpg" },
-            { "imageId": 72, "class": "back", "src": "inner-page/product/15.jpg" }
+            {
+                "imageId": 71,
+                "class": "front",
+                "src": "inner-page/product/9.png"
+            },
+            {
+                "imageId": 72,
+                "class": "back",
+                "src": "inner-page/product/9.png"
+            }
         ]
     },
     {
@@ -1018,9 +1306,9 @@
         "ratingStars": 5,
         "inStock": 140,
         "totalReviews": 88,
-        "mrp": 38.00,
+        "mrp": 38,
         "feature": "none",
-        "price": 38.00,
+        "price": 38,
         "available": true,
         "first_available_date": "01-09-2008",
         "department": "none",
@@ -1031,8 +1319,16 @@
         "quantity_2": "none",
         "new": false,
         "images": [
-            { "imageId": 73, "class": "front", "src": "inner-page/product/16.jpg" },
-            { "imageId": 74, "class": "back", "src": "inner-page/product/16.jpg" }
+            {
+                "imageId": 73,
+                "class": "front",
+                "src": "inner-page/product/1.png"
+            },
+            {
+                "imageId": 74,
+                "class": "back",
+                "src": "inner-page/product/1.png"
+            }
         ]
     },
     {
@@ -1046,9 +1342,9 @@
         "ratingStars": 4,
         "inStock": 190,
         "totalReviews": 76,
-        "mrp": 20.00,
+        "mrp": 20,
         "feature": "none",
-        "price": 18.00,
+        "price": 18,
         "available": true,
         "first_available_date": "01-04-2009",
         "department": "none",
@@ -1059,8 +1355,16 @@
         "quantity_2": "Caja x 10 tab efervescente",
         "new": true,
         "images": [
-            { "imageId": 75, "class": "front", "src": "inner-page/product/17.jpg" },
-            { "imageId": 76, "class": "back", "src": "inner-page/product/17.jpg" }
+            {
+                "imageId": 75,
+                "class": "front",
+                "src": "inner-page/product/2.png"
+            },
+            {
+                "imageId": 76,
+                "class": "back",
+                "src": "inner-page/product/2.png"
+            }
         ]
     },
     {
@@ -1074,9 +1378,9 @@
         "ratingStars": 4,
         "inStock": 160,
         "totalReviews": 68,
-        "mrp": 35.00,
+        "mrp": 35,
         "feature": "none",
-        "price": 35.00,
+        "price": 35,
         "available": true,
         "first_available_date": "01-07-2010",
         "department": "none",
@@ -1087,8 +1391,16 @@
         "quantity_2": "Caja x 14 tab",
         "new": false,
         "images": [
-            { "imageId": 77, "class": "front", "src": "inner-page/product/18.jpg" },
-            { "imageId": 78, "class": "back", "src": "inner-page/product/18.jpg" }
+            {
+                "imageId": 77,
+                "class": "front",
+                "src": "inner-page/product/3.png"
+            },
+            {
+                "imageId": 78,
+                "class": "back",
+                "src": "inner-page/product/3.png"
+            }
         ]
     },
     {
@@ -1102,9 +1414,9 @@
         "ratingStars": 4,
         "inStock": 120,
         "totalReviews": 54,
-        "mrp": 10.00,
+        "mrp": 10,
         "feature": "none",
-        "price": 10.00,
+        "price": 10,
         "available": true,
         "first_available_date": "01-01-2006",
         "department": "none",
@@ -1115,8 +1427,16 @@
         "quantity_2": "Caja x 10 amp",
         "new": false,
         "images": [
-            { "imageId": 79, "class": "front", "src": "inner-page/product/19.jpg" },
-            { "imageId": 80, "class": "back", "src": "inner-page/product/19.jpg" }
+            {
+                "imageId": 79,
+                "class": "front",
+                "src": "inner-page/product/4.png"
+            },
+            {
+                "imageId": 80,
+                "class": "back",
+                "src": "inner-page/product/4.png"
+            }
         ]
     },
     {
@@ -1130,9 +1450,9 @@
         "ratingStars": 5,
         "inStock": 500,
         "totalReviews": 234,
-        "mrp": 12.00,
+        "mrp": 12,
         "feature": "none",
-        "price": 10.80,
+        "price": 10.8,
         "available": true,
         "first_available_date": "01-01-2008",
         "department": "none",
@@ -1143,8 +1463,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 81, "class": "front", "src": "inner-page/product/20.jpg" },
-            { "imageId": 82, "class": "back", "src": "inner-page/product/20.jpg" }
+            {
+                "imageId": 81,
+                "class": "front",
+                "src": "inner-page/product/5.png"
+            },
+            {
+                "imageId": 82,
+                "class": "back",
+                "src": "inner-page/product/5.png"
+            }
         ]
     },
     {
@@ -1158,9 +1486,9 @@
         "ratingStars": 5,
         "inStock": 380,
         "totalReviews": 178,
-        "mrp": 15.00,
+        "mrp": 15,
         "feature": "none",
-        "price": 15.00,
+        "price": 15,
         "available": true,
         "first_available_date": "01-05-2010",
         "department": "none",
@@ -1171,8 +1499,16 @@
         "quantity_2": "Caja x 30 cap blandas",
         "new": true,
         "images": [
-            { "imageId": 83, "class": "front", "src": "inner-page/product/21.jpg" },
-            { "imageId": 84, "class": "back", "src": "inner-page/product/21.jpg" }
+            {
+                "imageId": 83,
+                "class": "front",
+                "src": "inner-page/product/6.png"
+            },
+            {
+                "imageId": 84,
+                "class": "back",
+                "src": "inner-page/product/6.png"
+            }
         ]
     },
     {
@@ -1186,9 +1522,9 @@
         "ratingStars": 4,
         "inStock": 290,
         "totalReviews": 112,
-        "mrp": 8.50,
+        "mrp": 8.5,
         "feature": "none",
-        "price": 8.50,
+        "price": 8.5,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -1199,8 +1535,16 @@
         "quantity_2": "Frasco 120ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 85, "class": "front", "src": "inner-page/product/1.jpg" },
-            { "imageId": 86, "class": "back", "src": "inner-page/product/1.jpg" }
+            {
+                "imageId": 85,
+                "class": "front",
+                "src": "inner-page/product/7.png"
+            },
+            {
+                "imageId": 86,
+                "class": "back",
+                "src": "inner-page/product/7.png"
+            }
         ]
     },
     {
@@ -1214,9 +1558,9 @@
         "ratingStars": 4,
         "inStock": 260,
         "totalReviews": 96,
-        "mrp": 16.00,
+        "mrp": 16,
         "feature": "none",
-        "price": 15.20,
+        "price": 15.2,
         "available": true,
         "first_available_date": "01-03-2009",
         "department": "none",
@@ -1227,8 +1571,16 @@
         "quantity_2": "Caja x 60 tab masticables",
         "new": false,
         "images": [
-            { "imageId": 87, "class": "front", "src": "inner-page/product/2.jpg" },
-            { "imageId": 88, "class": "back", "src": "inner-page/product/2.jpg" }
+            {
+                "imageId": 87,
+                "class": "front",
+                "src": "inner-page/product/8.png"
+            },
+            {
+                "imageId": 88,
+                "class": "back",
+                "src": "inner-page/product/8.png"
+            }
         ]
     },
     {
@@ -1242,9 +1594,9 @@
         "ratingStars": 4,
         "inStock": 340,
         "totalReviews": 132,
-        "mrp": 11.00,
+        "mrp": 11,
         "feature": "none",
-        "price": 11.00,
+        "price": 11,
         "available": true,
         "first_available_date": "01-01-2006",
         "department": "none",
@@ -1255,8 +1607,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 89, "class": "front", "src": "inner-page/product/3.jpg" },
-            { "imageId": 90, "class": "back", "src": "inner-page/product/3.jpg" }
+            {
+                "imageId": 89,
+                "class": "front",
+                "src": "inner-page/product/9.png"
+            },
+            {
+                "imageId": 90,
+                "class": "back",
+                "src": "inner-page/product/9.png"
+            }
         ]
     },
     {
@@ -1270,9 +1630,9 @@
         "ratingStars": 4,
         "inStock": 280,
         "totalReviews": 88,
-        "mrp": 9.00,
+        "mrp": 9,
         "feature": "none",
-        "price": 9.00,
+        "price": 9,
         "available": true,
         "first_available_date": "01-07-2010",
         "department": "none",
@@ -1283,8 +1643,16 @@
         "quantity_2": "Frasco 120ml jarabe",
         "new": false,
         "images": [
-            { "imageId": 91, "class": "front", "src": "inner-page/product/4.jpg" },
-            { "imageId": 92, "class": "back", "src": "inner-page/product/4.jpg" }
+            {
+                "imageId": 91,
+                "class": "front",
+                "src": "inner-page/product/1.png"
+            },
+            {
+                "imageId": 92,
+                "class": "back",
+                "src": "inner-page/product/1.png"
+            }
         ]
     },
     {
@@ -1298,9 +1666,9 @@
         "ratingStars": 4,
         "inStock": 200,
         "totalReviews": 78,
-        "mrp": 8.00,
+        "mrp": 8,
         "feature": "none",
-        "price": 8.00,
+        "price": 8,
         "available": true,
         "first_available_date": "01-01-2006",
         "department": "none",
@@ -1311,8 +1679,16 @@
         "quantity_2": "Tubo 40g",
         "new": false,
         "images": [
-            { "imageId": 93, "class": "front", "src": "inner-page/product/5.jpg" },
-            { "imageId": 94, "class": "back", "src": "inner-page/product/5.jpg" }
+            {
+                "imageId": 93,
+                "class": "front",
+                "src": "inner-page/product/2.png"
+            },
+            {
+                "imageId": 94,
+                "class": "back",
+                "src": "inner-page/product/2.png"
+            }
         ]
     },
     {
@@ -1326,9 +1702,9 @@
         "ratingStars": 5,
         "inStock": 230,
         "totalReviews": 102,
-        "mrp": 9.50,
+        "mrp": 9.5,
         "feature": "none",
-        "price": 9.50,
+        "price": 9.5,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -1339,8 +1715,16 @@
         "quantity_2": "Tubo 40g",
         "new": false,
         "images": [
-            { "imageId": 95, "class": "front", "src": "inner-page/product/6.jpg" },
-            { "imageId": 96, "class": "back", "src": "inner-page/product/6.jpg" }
+            {
+                "imageId": 95,
+                "class": "front",
+                "src": "inner-page/product/3.png"
+            },
+            {
+                "imageId": 96,
+                "class": "back",
+                "src": "inner-page/product/3.png"
+            }
         ]
     },
     {
@@ -1354,9 +1738,9 @@
         "ratingStars": 5,
         "inStock": 150,
         "totalReviews": 68,
-        "mrp": 14.00,
+        "mrp": 14,
         "feature": "none",
-        "price": 14.00,
+        "price": 14,
         "available": true,
         "first_available_date": "01-04-2008",
         "department": "none",
@@ -1367,8 +1751,16 @@
         "quantity_2": "Tubo 30g",
         "new": false,
         "images": [
-            { "imageId": 97, "class": "front", "src": "inner-page/product/7.jpg" },
-            { "imageId": 98, "class": "back", "src": "inner-page/product/7.jpg" }
+            {
+                "imageId": 97,
+                "class": "front",
+                "src": "inner-page/product/4.png"
+            },
+            {
+                "imageId": 98,
+                "class": "back",
+                "src": "inner-page/product/4.png"
+            }
         ]
     },
     {
@@ -1382,9 +1774,9 @@
         "ratingStars": 4,
         "inStock": 110,
         "totalReviews": 56,
-        "mrp": 16.00,
+        "mrp": 16,
         "feature": "none",
-        "price": 16.00,
+        "price": 16,
         "available": true,
         "first_available_date": "01-06-2011",
         "department": "none",
@@ -1395,8 +1787,16 @@
         "quantity_2": "none",
         "new": false,
         "images": [
-            { "imageId": 99, "class": "front", "src": "inner-page/product/8.jpg" },
-            { "imageId": 100, "class": "back", "src": "inner-page/product/8.jpg" }
+            {
+                "imageId": 99,
+                "class": "front",
+                "src": "inner-page/product/5.png"
+            },
+            {
+                "imageId": 100,
+                "class": "back",
+                "src": "inner-page/product/5.png"
+            }
         ]
     },
     {
@@ -1410,9 +1810,9 @@
         "ratingStars": 5,
         "inStock": 400,
         "totalReviews": 188,
-        "mrp": 13.00,
+        "mrp": 13,
         "feature": "none",
-        "price": 13.00,
+        "price": 13,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -1423,8 +1823,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 101, "class": "front", "src": "inner-page/product/9.jpg" },
-            { "imageId": 102, "class": "back", "src": "inner-page/product/9.jpg" }
+            {
+                "imageId": 101,
+                "class": "front",
+                "src": "inner-page/product/6.png"
+            },
+            {
+                "imageId": 102,
+                "class": "back",
+                "src": "inner-page/product/6.png"
+            }
         ]
     },
     {
@@ -1438,9 +1846,9 @@
         "ratingStars": 4,
         "inStock": 220,
         "totalReviews": 86,
-        "mrp": 10.00,
+        "mrp": 10,
         "feature": "none",
-        "price": 9.50,
+        "price": 9.5,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -1451,8 +1859,16 @@
         "quantity_2": "Caja x 60 tab",
         "new": false,
         "images": [
-            { "imageId": 103, "class": "front", "src": "inner-page/product/10.jpg" },
-            { "imageId": 104, "class": "back", "src": "inner-page/product/10.jpg" }
+            {
+                "imageId": 103,
+                "class": "front",
+                "src": "inner-page/product/7.png"
+            },
+            {
+                "imageId": 104,
+                "class": "back",
+                "src": "inner-page/product/7.png"
+            }
         ]
     },
     {
@@ -1466,9 +1882,9 @@
         "ratingStars": 5,
         "inStock": 80,
         "totalReviews": 72,
-        "mrp": 45.00,
+        "mrp": 45,
         "feature": "none",
-        "price": 45.00,
+        "price": 45,
         "available": true,
         "first_available_date": "01-01-2005",
         "department": "none",
@@ -1479,8 +1895,16 @@
         "quantity_2": "Cartucho 3mL x 5",
         "new": false,
         "images": [
-            { "imageId": 105, "class": "front", "src": "inner-page/product/11.jpg" },
-            { "imageId": 106, "class": "back", "src": "inner-page/product/11.jpg" }
+            {
+                "imageId": 105,
+                "class": "front",
+                "src": "inner-page/product/8.png"
+            },
+            {
+                "imageId": 106,
+                "class": "back",
+                "src": "inner-page/product/8.png"
+            }
         ]
     }
 ]
