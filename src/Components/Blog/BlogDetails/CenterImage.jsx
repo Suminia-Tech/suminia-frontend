@@ -4,8 +4,8 @@ import Img from '@/Components/Element/Images';
 
 const CenterImage = ({ elem }) => {
   return (
-    <div className='blog-image-box'>
-      <Img src={`${CommonPath}/${elem.image}`} alt='blogs' className='card-img-top' />
+    <div className='blog-image-box' style={{ height: '460px', overflow: 'hidden', borderRadius: '8px' }}>
+      <Img src={`${CommonPath}/${elem.image}`} alt='blogs' className='card-img-top' style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
       <div className='blog-title'>
         <div>
           <div className='social-media media-center'>

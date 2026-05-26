@@ -37,28 +37,8 @@ export const QADetails = [
   },
 ];
 export const AutoFadeSliderImageData = [
-  {
-    id: 1,
-    image: '/fashion/1.jpg',
-    star: '4.8',
-    number: '120',
-  },
-  {
-    id: 2,
-    image: '/fashion/2.jpg',
-    star: '4.8',
-    number: '85',
-  },
-  {
-    id: 3,
-    image: '/fashion/3.jpg',
-    star: '2.8',
-    number: '95',
-  },
-  {
-    id: 4,
-    image: '/fashion/4.jpg',
-    star: '3.8',
-    number: '78',
-  },
+  { id: 1, image: '/inner-page/product/1.png', star: '4.8', number: '120' },
+  { id: 2, image: '/inner-page/product/2.png', star: '4.8', number: '85' },
+  { id: 3, image: '/inner-page/product/3.png', star: '2.8', number: '95' },
+  { id: 4, image: '/inner-page/product/4.png', star: '3.8', number: '78' },
 ];

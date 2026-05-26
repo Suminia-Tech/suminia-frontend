@@ -1,5 +1,4 @@
-import { CommonPath, FooterDespp, GotQustion, mobileno } from '@/Constant';
-import Image from 'next/image';
+import { FooterDespp, GotQustion, mobileno } from '@/Constant';
 import { Col } from 'reactstrap';
 const QuestionTabs = () => {
   return (
@@ -8,7 +7,7 @@ const QuestionTabs = () => {
         <h3>{GotQustion}</h3>
         <div className='footer-number'>
           <div className='footer-number-image'>
-            <Image width={20} height={20} src={`${CommonPath}/shoes/other/headphone.png`} className='img-fluid' alt='headphone' />
+            <i className='fas fa-headset' style={{ fontSize: '20px' }}></i>
           </div>
 
           <div className='footer-number-container'>

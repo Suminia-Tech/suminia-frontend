@@ -1,6 +1,5 @@
 import { Col } from 'reactstrap';
 import { Address, Email, phone, VoxoMail, mobileno, ActualAddress, CommonPath } from '@/Constant';
-import { LogoSvg } from '@/Data/SVG';
 import Image from 'next/image';
 
 const ContactFooter = () => {
@@ -8,10 +7,10 @@ const ContactFooter = () => {
     <>
       <Col xl='3' lg='4' md='6'>
         <div className='footer-contact'>
-          <div className='brand-logo'>
-            <a href='#javascript' className='footer-logo'>
-              <LogoSvg />
-              <Image width={58} height={25} src={`${CommonPath}/logo.png`} className='img-fluid' alt='logo' />
+          <div className='brand-logo' style={{ marginBottom: '16px' }}>
+            <a href='/'>
+              <img src='/assets/svg/icons.svg' width={30} height={30} alt='logo-icon' className='svg-icon' style={{ marginRight: '8px' }} />
+              <Image width={110} height={46} src={`${CommonPath}/logo.png`} className='img-fluid' alt='logo' style={{ marginTop: '2px' }} />
             </a>
           </div>
           <ul className='contact-lists'>
