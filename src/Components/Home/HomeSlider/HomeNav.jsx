@@ -3,10 +3,16 @@ import Slider from "react-slick";
 import { HomeNavSlider } from "../../../Data/SliderSettingsData";
 const HomeNav = ({ nav1, slider2 }) => {
   return (
-    <Slider {...HomeNavSlider} style={{ height: 290, overflow: "hidden" }} className="slider-nav image-show slider-thumbnail" asNavFor={nav1} ref={(slider) => (slider2.current = slider)}>
+    <Slider
+      {...HomeNavSlider}
+      style={{ height: 290, overflow: "hidden" }}
+      className="slider-nav image-show slider-thumbnail"
+      asNavFor={nav1}
+      ref={(slider) => (slider2.current = slider)}
+    >
       <div>
         <div className="poster-img">
-          <Img src="/assets/images/vegetable/poster/t1.jpg" alt="vegetable" />
+          <Img src="/assets/images/vegetable/poster/t1.png" alt="vegetable" />
           <div className="overlay-color">
             <i className="fas fa-plus theme-color"></i>
           </div>
@@ -14,7 +20,7 @@ const HomeNav = ({ nav1, slider2 }) => {
       </div>
       <div>
         <div className="poster-img">
-          <Img src="/assets/images/vegetable/poster/t2.jpg" alt="vegetable" />
+          <Img src="/assets/images/vegetable/poster/t2.png" alt="vegetable" />
           <div className="overlay-color">
             <i className="fas fa-plus theme-color"></i>
           </div>
@@ -23,7 +29,7 @@ const HomeNav = ({ nav1, slider2 }) => {
 
       <div>
         <div className="poster-img">
-          <Img src="/assets/images/vegetable/poster/t3.jpg" alt="vegetable" />
+          <Img src="/assets/images/vegetable/poster/t3.png" alt="vegetable" />
           <div className="overlay-color">
             <i className="fas fa-plus theme-color"></i>
           </div>
