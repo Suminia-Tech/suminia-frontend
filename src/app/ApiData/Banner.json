@@ -433,7 +433,7 @@
         "rightheadingbottom": "Recompensa de devolución",
         "bottomsmalltop": "Oferta limitada",
         "bottomsmallbottom": "¡Comprar ahora!",
-        "rightimage": "vegetable/offer/2.jpg"
+        "rightimage": "inner-page/product/1.png"
     },
     {
         "type": "vegetables",
@@ -537,30 +537,30 @@
         "subtype": "vegetablesourblog",
         "banners": [
             {
-                "day": 16,
-                "month": "MAY",
+                "day": 15,
+                "month": "ABR",
                 "watermark": "MediSupply",
-                "title": "Descuento del 30% en analgésicos",
-                "headingtop": "Oferta",
-                "headingbottom": "Acetaminofén y más desde $7.65",
+                "title": "Cadena de suministro médica sin digitalizar",
+                "headingtop": "Tendencia",
+                "headingbottom": "Solo el 17% de hospitales tiene visibilidad total de su inventario — USD 5,000M en desperdicio anual.",
                 "image": "vegetable/update/1.jpg"
             },
             {
-                "day": 17,
-                "month": "MAY",
+                "day": 19,
+                "month": "FEB",
                 "watermark": "MediSupply",
-                "title": "Antibióticos con envío gratis",
-                "headingtop": "Nuevo",
-                "headingbottom": "Amoxicilina y más desde $12.35",
+                "title": "Healthtech alcanzará USD 2 billones para 2034",
+                "headingtop": "Mercado",
+                "headingbottom": "El mercado de salud digital crece al 15% anual. América Latina lidera la adopción en la región.",
                 "image": "vegetable/update/2.jpg"
             },
             {
-                "day": 18,
-                "month": "MAY",
+                "day": 5,
+                "month": "FEB",
                 "watermark": "MediSupply",
-                "title": "Vitaminas y suplementos -15% OFF",
-                "headingtop": "Promo",
-                "headingbottom": "Vitamina C, D3 y Calcio desde $9",
+                "title": "Avances en biotecnología y terapia génica en 2024",
+                "headingtop": "Innovación",
+                "headingbottom": "Nuevos sistemas de edición genética y manufactura descentralizada aceleran el acceso a medicamentos biológicos.",
                 "image": "vegetable/update/3.jpg"
             }
         ]
