@@ -155,11 +155,11 @@ export const ShowMenu = "Mostrar menú";
 export const Category = "Categoría";
 export const PopularPosts = "Publicaciones populares";
 export const Johnwike = "John wike";
-export const date = "15 Ago 2022";
+export const date = "15 Abr 2025";
 export const LeaveComments = "Dejar comentarios";
 export const Comments = "Comentarios";
 // -------------------------------------------
-export const Blogtitle = "Una publicación en formato estándar.";
+export const Blogtitle = "Cadena de suministro médica: el reto digital que los hospitales aún no resuelven.";
 export const BlogDesp1 = "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500.";
 export const BlogDesp2 =
   "Contrariamente a la creencia popular, Lorem Ipsum no es simplemente texto aleatorio. Tiene sus raíces en una pieza de literatura clásica del latín del siglo 45 a.C., lo que lo hace tener más de 2000 años de antigüedad.";
