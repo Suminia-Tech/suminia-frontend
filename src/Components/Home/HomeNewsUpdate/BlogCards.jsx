@@ -32,8 +32,8 @@ const BlogCards = ({ BottomBannerFilter }) => {
                   <div className='blog-footer'>
                     <h2 className='theme-color'>{elem.watermark}</h2>
                     <h5 className='theme-color'>{elem.title}</h5>
-                    <h4>{elem.headingtop}</h4>
-                    <h4 className='brand-name'>{elem.headingbottom}</h4>
+                    <h6>{elem.headingtop}</h6>
+                    <p className='brand-name' style={{ fontSize: '13px', lineHeight: '1.4' }}>{elem.headingbottom}</p>
                     <Btn
                       attrBtn={{
                         className: 'default-theme',
