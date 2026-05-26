@@ -474,21 +474,21 @@
                 "children": [
                     {
                         "title": "Acetaminofén 500mg Caja x 100",
-                        "image": "vegetable/offer-1/1.png",
+                        "image": "inner-page/product/1.png",
                         "mrp": 9.50,
                         "price": 7.65,
                         "ratingStars": 5
                     },
                     {
                         "title": "Losartán 50mg Caja x 30 tab",
-                        "image": "vegetable/offer-1/2.png",
+                        "image": "inner-page/product/2.png",
                         "mrp": 15.00,
                         "price": 13.50,
                         "ratingStars": 5
                     },
                     {
                         "title": "Vitamina C 1000mg Caja x 30",
-                        "image": "vegetable/offer-1/3.png",
+                        "image": "inner-page/product/3.png",
                         "mrp": 12.00,
                         "price": 10.80,
                         "ratingStars": 5
@@ -501,7 +501,7 @@
                 "mrp": 10.00,
                 "price": 9.00,
                 "ratingStars": 5,
-                "image1": "vegetable/offer-1/big.png",
+                "image1": "inner-page/product/4.png",
                 "image2": "vegetable/circle.png"
             },
             {
@@ -509,21 +509,21 @@
                 "children": [
                     {
                         "title": "Amoxicilina 500mg Caja x 21",
-                        "image": "vegetable/offer-1/4.png",
+                        "image": "inner-page/product/5.png",
                         "mrp": 14.00,
                         "price": 12.35,
                         "ratingStars": 5
                     },
                     {
                         "title": "Cetirizina 10mg Caja x 30",
-                        "image": "vegetable/offer-1/5.png",
+                        "image": "inner-page/product/6.png",
                         "mrp": 9.00,
                         "price": 8.55,
                         "ratingStars": 5
                     },
                     {
                         "title": "Metformina 850mg Caja x 30",
-                        "image": "vegetable/offer-1/6.png",
+                        "image": "inner-page/product/7.png",
                         "mrp": 13.00,
                         "price": 13.00,
                         "ratingStars": 5
