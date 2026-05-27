@@ -11,10 +11,6 @@ export const ProductDetailNav = [
     id: 4,
     title: 'Preguntas y respuestas',
   },
-  {
-    id: 5,
-    title: 'Reseñas',
-  },
 ];
 export const QADetails = [
   {

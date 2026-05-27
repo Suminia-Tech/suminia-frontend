@@ -3,7 +3,6 @@ import { Col, TabContent, TabPane } from "reactstrap";
 import DescriptionDetails from "./DescriptionDetails";
 import NavSection from "./NavSection";
 import QA_Details from "./Q&A_Details";
-import ReviewDetails from "./ReviewDetails";
 import SpecificationDetail from "./SpecificationDetail";
 
 const DetainTabSection = ({ singleProduct }) => {
@@ -29,9 +28,6 @@ const DetainTabSection = ({ singleProduct }) => {
             <QA_Details />
           </TabPane>
 
-          <TabPane className={`fade ${active === 5 ? "show active" : ""}`} id="review">
-            <ReviewDetails />
-          </TabPane>
         </TabContent>
       </div>
     </Col>
