@@ -1,8 +1,8 @@
-import { Alreadyhaveanaccount, Facebook, Google, Orsignupwith, Registers, SignUp } from '@/Constant';
+import { Alreadyhaveanaccount, Registers, SignUp } from '@/Constant';
 import Link from 'next/link';
-import { Col, Input, Row } from 'reactstrap';
+import { Input } from 'reactstrap';
+
 import { Btn } from '../../AbstractElements';
-import Img from '@/Components/Element/Images';
 
 const RegisterSection = () => {
   return (
@@ -40,28 +40,6 @@ const RegisterSection = () => {
             </Btn>
           </div>
 
-          <p className='sign-category'>
-            <span>{Orsignupwith}</span>
-          </p>
-
-          <Row className='gx-md-3 gy-3'>
-            <Col md='6'>
-              <a href='https://www.facebook.com/'>
-                <div className='social-media fb-media'>
-                  <Img src='/assets/images/inner-page/facebook.png' className='img-fluid' alt='facebook' />
-                  <h6>{Facebook}</h6>
-                </div>
-              </a>
-            </Col>
-            <Col md='6'>
-              <a href='https://www.gmail.com/'>
-                <div className='social-media google-media'>
-                  <Img src='/assets/images/inner-page/google.png' className='img-fluid' alt='google' />
-                  <h6>{Google}</h6>
-                </div>
-              </a>
-            </Col>
-          </Row>
           <p>
             <Link href={'/page/login'} className='theme-color'>
               {Alreadyhaveanaccount}
