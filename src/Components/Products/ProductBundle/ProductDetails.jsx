@@ -75,27 +75,16 @@ const ProductDetails = ({ singleProduct }) => {
       {(product.brand !== "none" ||
         product.category !== "none" ||
         product.type) && (
-        <div className="mt-2">
-          <ul className="product-detail-list">
-            {product.brand !== "none" && (
-              <li>
-                <span className="font-light">Marca: </span>
-                {product.brand}
-              </li>
-            )}
-            {product.category !== "none" && (
-              <li>
-                <span className="font-light">Categoría: </span>
-                {product.category}
-              </li>
-            )}
-            {product.type && product.type !== "none" && (
-              <li>
-                <span className="font-light">Tipo: </span>
-                {product.type}
-              </li>
-            )}
-          </ul>
+        <div className="mt-2" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px' }}>
+          {product.brand !== "none" && (
+            <span className="font-light">Marca:<strong style={{ fontWeight: '500', marginLeft: '4px' }}>{product.brand}</strong></span>
+          )}
+          {product.category !== "none" && (
+            <span className="font-light">Categoría:<strong style={{ fontWeight: '500', marginLeft: '4px' }}>{product.category}</strong></span>
+          )}
+          {product.type && product.type !== "none" && (
+            <span className="font-light">Tipo:<strong style={{ fontWeight: '500', marginLeft: '4px' }}>{product.type}</strong></span>
+          )}
         </div>
       )}
 
