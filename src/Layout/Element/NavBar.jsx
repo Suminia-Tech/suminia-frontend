@@ -40,9 +40,9 @@ const NavBar = ({ customClass }) => {
           </li>
           {headerData?.map((menu, i) => {
             return (
-              <li className={`${menu.title === "VOXO PLUS" ? "mega-menu ratio_40 dropdown" : menu.title === "HOME" ? "" : "dropdown"}`} key={i}>
-                {menu.title === "HOME" ? (
-                  <Link href="/" className="nav-link menu-title">
+              <li className={`${menu.type === "link" ? "" : menu.title === "VOXO PLUS" ? "mega-menu ratio_40 dropdown" : "dropdown"}`} key={i}>
+                {menu.type === "link" ? (
+                  <Link href={menu.path} className="nav-link menu-title">
                     {t(menu.title)}
                   </Link>
                 ) : menu.title === "VOXO PLUS" ? (
@@ -56,7 +56,7 @@ const NavBar = ({ customClass }) => {
                     {overlay && <span className="according-menu">{menu.title === check ? "-" : "+"}</span>}
                   </a>
                 )}
-                {menu.title === "HOME" ? null : menu.title === "VOXO PLUS" ? (
+                {menu.type === "link" ? null : menu.title === "VOXO PLUS" ? (
                   <div
                     className="mega-menu-container poster-bg-image menu-content"
                     style={{
