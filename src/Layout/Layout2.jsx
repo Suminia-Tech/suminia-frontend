@@ -1,5 +1,4 @@
 import Cookie1 from "./Common/Cookie/Cookie1";
-import ThemeCustomizer from "./Common/Customizer";
 import Footers from "./Common/Footer";
 import Header2 from "./Common/Header/Header2";
 import TapTop from "./Common/TapTop";
@@ -14,7 +13,6 @@ const Layout2 = ({ children, isCategories, customClass }) => {
       <Header2 isCategories={isCategories} icon={icon} customClass={customClass} />
       {children}
       <Cookie1 />
-      <ThemeCustomizer />
       <TapTop />
       <Footers QuestionTab={QuestionTab} />
     </>

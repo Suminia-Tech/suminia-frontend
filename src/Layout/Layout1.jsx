@@ -2,7 +2,6 @@ import Cookie from "./Common/Cookie";
 import TapTop from "./Common/TapTop";
 import Footers from "./Common/Footer";
 import StarterLoader from './Common/Loader';
-import ThemeCustomizer from "./Common/Customizer";
 import Header1 from "./Common/Header/Header1";
 
 const Layout1 = ({ children, isCookie }) => {
@@ -10,7 +9,6 @@ const Layout1 = ({ children, isCookie }) => {
     <>
       <Header1 />
       {children}
-      <ThemeCustomizer />
       {isCookie === "/layout/vegetables" || isCookie === "/" ? <Cookie /> : false}
       <TapTop />
       <Footers />

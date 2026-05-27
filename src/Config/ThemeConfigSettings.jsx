@@ -1,6 +1,6 @@
 export const ConfigDB = {
   type: 'default',
   layoutDirection: 'ltr',
-  primaryColor: '#e22454',
+  primaryColor: '#096AC9',
   darkMode: 'light',
 };

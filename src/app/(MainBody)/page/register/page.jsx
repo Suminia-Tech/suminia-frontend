@@ -1,7 +1,6 @@
 "use client";
 import RegisterSection from "@/Components/Pages/Register/RegisterSection";
 import { CommonPath } from "@/Constant";
-import ThemeCustomizer from "@/Layout/Common/Customizer";
 import Head from "next/head";
 
 const Register = () => {
@@ -12,7 +11,6 @@ const Register = () => {
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
       <RegisterSection />
-      <ThemeCustomizer />
     </>
   );
 };
