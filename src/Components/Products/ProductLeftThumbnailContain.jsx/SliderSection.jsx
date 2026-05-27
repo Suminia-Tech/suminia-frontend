@@ -31,7 +31,7 @@ const SliderSection = ({ singleProduct }) => {
             <Slider {...ThumbPosterSlider} asNavFor={nav1} ref={(slider) => (slider2.current = slider)}>
               {images.map((elem, i) => (
                 <div key={i}>
-                  <Img src={`${CommonPath}${elem.image}`} className='img-fluid w-100 image_zoom_cls-0' alt='product' />
+                  <Img src={`${CommonPath}/${elem.image}`} className='img-fluid w-100 image_zoom_cls-0' alt='producto' />
                 </div>
               ))}
             </Slider>
@@ -42,7 +42,7 @@ const SliderSection = ({ singleProduct }) => {
             <Slider {...ThumbNavSlider} asNavFor={nav2} ref={(slider) => (slider1.current = slider)}>
               {images.map((elem, i) => (
                 <div key={i}>
-                  <Img src={`${CommonPath}${elem.image}`} className='img-fluid' alt='fashion' />
+                  <Img src={`${CommonPath}/${elem.image}`} className='img-fluid' alt='producto' />
                 </div>
               ))}
             </Slider>

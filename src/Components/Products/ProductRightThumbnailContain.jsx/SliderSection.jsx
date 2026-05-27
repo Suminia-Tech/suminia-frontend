@@ -26,7 +26,7 @@ const SliderSection = () => {
               {AutoFadeSliderImageData.map((elem, i) => {
                 return (
                   <div key={i}>
-                    <Img src={`${CommonPath}${elem.image}`} className='img-fluid w-100 image_zoom_cls-0' alt='fluid' />
+                    <Img src={`${CommonPath}/${elem.image}`} className='img-fluid w-100 image_zoom_cls-0' alt='fluid' />
                   </div>
                 );
               })}
@@ -39,7 +39,7 @@ const SliderSection = () => {
               {AutoFadeSliderImageData.map((elem) => {
                 return (
                   <div key={elem.id}>
-                    <Img src={`${CommonPath}${elem.image}`} className='img-fluid' alt='fluid' />
+                    <Img src={`${CommonPath}/${elem.image}`} className='img-fluid' alt='fluid' />
                   </div>
                 );
               })}

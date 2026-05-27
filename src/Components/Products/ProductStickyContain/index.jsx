@@ -18,7 +18,7 @@ const ProductStickyContain = () => {
                     {AutoFadeSliderImageData.slice(0, 3).map((elem) => {
                       return (
                         <Col xs='12' key={elem.id}>
-                          <Img src={`${CommonPath}${elem.image}`} className='img-fluid w-100' alt='fluid' />
+                          <Img src={`${CommonPath}/${elem.image}`} className='img-fluid w-100' alt='fluid' />
                         </Col>
                       );
                     })}

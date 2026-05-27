@@ -27,7 +27,7 @@ const AutoFadeSliderStatic = ({ VideoPlay }) => {
             return (
               <div key={elem.id}>
                 <div className="product-image-tag">
-                  <Img src={`${CommonPath}${elem.image}`} className="img-fluid w-100 image_zoom_cls-0" alt="" />
+                  <Img src={`${CommonPath}/${elem.image}`} className="img-fluid w-100 image_zoom_cls-0" alt="" />
                   <div className="label-tag">
                     <h6>
                       <i className="fas fa-star"></i> {elem.ratingStars} <span className="font-light">{120}</span>
@@ -51,7 +51,7 @@ const AutoFadeSliderStatic = ({ VideoPlay }) => {
           {AutoFadeSliderImageData.map((elem) => {
             return (
               <div key={elem.id}>
-                <Img src={`${CommonPath}${elem.image}`} className="img-fluid" alt="image-360" />
+                <Img src={`${CommonPath}/${elem.image}`} className="img-fluid" alt="image-360" />
               </div>
             );
           })}
