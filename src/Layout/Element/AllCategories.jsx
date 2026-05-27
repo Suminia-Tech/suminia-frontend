@@ -24,7 +24,7 @@ const AllCategories = ({ isCategories }) => {
       {isCategories && (
         <Btn
           attrBtn={{
-            className: "btn-solid-default toggle-category d-sm-block d-none",
+            className: "btn-solid-default btn-spacing toggle-category d-sm-block d-none",
             onClick: () => {
               width < 1200 && dispatch(OVERLAY());
               dispatch(CATEGORYRESPONSIVE());
@@ -80,13 +80,6 @@ const AllCategories = ({ isCategories }) => {
                               </Col>
                             );
                           })}
-                          <Col xl="3">
-                            <div className="category-banner">
-                              <picture>
-                                <img src={`${CommonPath}/${menu.bannerImage}`} className="img-fluid" alt="category" />
-                              </picture>
-                            </div>
-                          </Col>
                         </Row>
                       </li>
                     </ul>
