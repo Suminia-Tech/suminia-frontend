@@ -56,7 +56,7 @@ const ProductCart = () => {
     router.push("/shop/shop_left_sidebar");
   };
   return (
-    <section className="cart-section section-b-space">
+    <section className="cart-section section-b-space" style={{ paddingTop: '30px' }}>
       <Container>
         <Row className="justify-content-center">
           {loading ? (
