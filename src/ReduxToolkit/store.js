@@ -11,6 +11,8 @@ import  CommonReducer  from "./Reducers/AllReducer";
 import  CompareReducer  from "./Reducers/CompareReducer";
 import  ThemeCustomizerReducer  from "./Reducers/ThemeCustomizerReducer";
 import authReducer from "./authSlice";
+import { suminiaApi } from "@/services/suminiaApi";
+import { firebaseApi } from "@/services/firebaseApi";
 
 export const store = configureStore({
   reducer: {
@@ -26,5 +28,11 @@ export const store = configureStore({
     CompareReducer,
     ThemeCustomizerReducer,
     auth: authReducer,
+    [suminiaApi.reducerPath]: suminiaApi.reducer,
+    [firebaseApi.reducerPath]: firebaseApi.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .concat(suminiaApi.middleware)
+      .concat(firebaseApi.middleware),
 });

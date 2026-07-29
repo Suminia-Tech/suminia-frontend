@@ -2,39 +2,35 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import authService from '@/services/authService';
+import { useLoginMutation } from '@/services/suminiaApi';
 import styles from './login.module.scss';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('superuser@example.com');
   const [password, setPassword] = useState('S3crEtP4ssw0rd!');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const router = useRouter();
+  const [login, { isLoading, error }] = useLoginMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
 
     try {
-      await authService.login(email, password);
+      await login({ email, password }).unwrap();
       // Login exitoso, redirigir al dashboard
       router.push('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
       console.error('Login error:', err);
-    } finally {
-      setLoading(false);
     }
   };
+
+  const errorMessage = error?.data?.message || error?.message || null;
 
   return (
     <div className={styles.container}>
       <div className={styles.loginBox}>
         <h1>Suminia Login</h1>
 
-        {error && <div className={styles.error}>{error}</div>}
+        {errorMessage && <div className={styles.error}>{errorMessage}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
@@ -61,8 +57,8 @@ export default function LoginPage() {
             />
           </div>
 
-          <button type="submit" disabled={loading} className={styles.submitBtn}>
-            {loading ? 'Logging in...' : 'Login'}
+          <button type="submit" disabled={isLoading} className={styles.submitBtn}>
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
