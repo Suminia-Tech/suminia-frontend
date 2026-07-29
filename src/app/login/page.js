@@ -2,20 +2,30 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
+import authService from '@/services/authService';
 import styles from './login.module.scss';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('superuser@example.com');
   const [password, setPassword] = useState('S3crEtP4ssw0rd!');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const router = useRouter();
-  const { login, loading, error } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await authService.login(email, password);
+      // Login exitoso, redirigir al dashboard
       router.push('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
