@@ -29,11 +29,12 @@ if (typeof window !== 'undefined') {
     (response) => response,
     (error) => {
       if (error.response?.status === 401) {
-        // Token expirado, limpiar y redirigir a login
+        // Token expirado: se limpia la sesión y se vuelve al inicio, donde el
+        // usuario puede reautenticarse desde el modal de login.
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.location.href = '/';
       }
       return Promise.reject(error);
     }

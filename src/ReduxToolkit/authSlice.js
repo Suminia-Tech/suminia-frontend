@@ -1,9 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from '@/services/authService';
 
+// El estado arranca vacío para que el HTML del servidor y el del cliente coincidan.
+// La sesión persistida se carga en el cliente con la accion `hydrate`.
 const initialState = {
-  user: authService.getCurrentUser(),
-  isAuthenticated: authService.isAuthenticated(),
+  user: null,
+  isAuthenticated: false,
+  hydrated: false,
   loading: false,
   error: null,
 };
@@ -49,6 +52,19 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    // Restaura la sesión guardada en localStorage al montar la app en el cliente
+    hydrate: (state) => {
+      state.user = authService.getCurrentUser();
+      state.isAuthenticated = authService.isAuthenticated();
+      state.hydrated = true;
+    },
+    // Sesión establecida por el login de RTK Query
+    setCredentials: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      state.hydrated = true;
+      state.error = null;
+    },
     logout: (state) => {
       authService.logout();
       state.user = null;
@@ -106,5 +122,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { hydrate, setCredentials, logout, clearError } = authSlice.actions;
 export default authSlice.reducer;

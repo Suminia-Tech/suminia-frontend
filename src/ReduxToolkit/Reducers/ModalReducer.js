@@ -6,6 +6,7 @@ const initialState = {
     offset: false,
     overlay: false,
     firstModal: false,
+    loginModal: false,
     addToCartModal: false,
     addedCartData: '',
     sizeModal: false,
@@ -53,6 +54,12 @@ const ModalReducer = createSlice({
     STARTMODAL: (state) => {
       state.firstModal = !state.firstModal;
     },
+    LOGINMODAL: (state) => {
+      state.loginModal = !state.loginModal;
+    },
+    CLOSELOGINMODAL: (state) => {
+      state.loginModal = false;
+    },
     ISCARTADD: (state, action) => {
       state.addToCartModal = !state.addToCartModal;
       state.addedCartData = action.payload || "";
@@ -97,6 +104,6 @@ const ModalReducer = createSlice({
   },
 });
 
-export const { IS_MODAL, IS_OFFSET, OVERLAY, CLOSEOVERLAY, RESETOVERLAY, TOPMENUTOGGLE, STARTMODAL, ISCARTADD, SIZEMODAL, CATEGORYRESPONSIVE, ISPROFILEMODAL, PAYMENTCARDMODAL, SAVEADDRESSMODAL, NOTIFICATIONALTER, YOUTUBEMODAL, ISDASHBOARD, OPENDELETEMODAL, CONFIRMDELETE, CONFIGMODAL, PRODUCTPAGEFILTER } = ModalReducer.actions;
+export const { IS_MODAL, IS_OFFSET, OVERLAY, CLOSEOVERLAY, RESETOVERLAY, TOPMENUTOGGLE, STARTMODAL, LOGINMODAL, CLOSELOGINMODAL, ISCARTADD, SIZEMODAL, CATEGORYRESPONSIVE, ISPROFILEMODAL, PAYMENTCARDMODAL, SAVEADDRESSMODAL, NOTIFICATIONALTER, YOUTUBEMODAL, ISDASHBOARD, OPENDELETEMODAL, CONFIRMDELETE, CONFIGMODAL, PRODUCTPAGEFILTER } = ModalReducer.actions;
 
 export default ModalReducer.reducer;
