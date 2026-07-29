@@ -10,6 +10,7 @@ import  ProductFilter  from "./Reducers/ProductFilterReducer";
 import  CommonReducer  from "./Reducers/AllReducer";
 import  CompareReducer  from "./Reducers/CompareReducer";
 import  ThemeCustomizerReducer  from "./Reducers/ThemeCustomizerReducer";
+import authReducer from "./authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,5 +25,6 @@ export const store = configureStore({
     CurrencyReducer,
     CompareReducer,
     ThemeCustomizerReducer,
+    auth: authReducer,
   },
 });
