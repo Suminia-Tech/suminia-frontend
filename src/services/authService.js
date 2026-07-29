@@ -6,10 +6,12 @@ const authService = {
     const response = await api.post('/auth/login', { email, password });
     const { data } = response.data;
 
-    // Guardar tokens y usuario en localStorage
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    // Guardar tokens y usuario en localStorage (solo en cliente)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
 
     return data;
   },
@@ -65,19 +67,23 @@ const authService = {
 
   // Logout
   logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+    }
   },
 
   // Obtener usuario actual
   getCurrentUser: () => {
+    if (typeof window === 'undefined') return null;
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   },
 
   // Verificar si está autenticado
   isAuthenticated: () => {
+    if (typeof window === 'undefined') return false;
     return !!localStorage.getItem('accessToken');
   },
 };

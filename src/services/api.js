@@ -9,31 +9,35 @@ const api = axios.create({
   },
 });
 
-// Interceptor para agregar token a cada request
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Interceptor para agregar token a cada request (solo en cliente)
+if (typeof window !== 'undefined') {
+  api.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+}
 
-// Interceptor para manejar errores de respuesta
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Token expirado, limpiar y redirigir a login
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+// Interceptor para manejar errores de respuesta (solo en cliente)
+if (typeof window !== 'undefined') {
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        // Token expirado, limpiar y redirigir a login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+}
 
 export default api;
