@@ -9,10 +9,20 @@ import SearchBarWithBgColor from '@/Layout/Element/SearchBarWithBgColor';
 import ItemCart from '@/Layout/Element/ItemCart';
 import SearchBarToggle from '@/Layout/Element/SearchBarToggle';
 import NavBar from '@/Layout/Element/NavBar';
+import { useAuth } from '@/hooks/useAuth';
+import { LOGINMODAL } from '@/ReduxToolkit/Reducers/ModalReducer';
+import { useDispatch } from 'react-redux';
 
 const Header5 = ({ noStyle, isCategories }) => {
   const UpScroll = useHeaderScroll(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    logout();
+    setLoginOpen(false);
+  };
 
   return (
     <header id='home' className={`${!noStyle ? `${UpScroll ? 'nav-down nav-up' : ''}` : ''}`}>
@@ -53,16 +63,22 @@ const Header5 = ({ noStyle, isCategories }) => {
                 <div className='menu-right'>
                   <ul>
                     <li>
-                      <Dropdown className='top-header-dropdown' isOpen={loginOpen} toggle={() => setLoginOpen(!loginOpen)}>
-                        <DropdownToggle tag='a' href='#javascript' className='nav-link menu-title' style={{ cursor: 'pointer' }}>
+                      {isAuthenticated ? (
+                        <Dropdown className='top-header-dropdown' isOpen={loginOpen} toggle={() => setLoginOpen(!loginOpen)}>
+                          <DropdownToggle tag='a' href='#javascript' className='nav-link menu-title' style={{ cursor: 'pointer' }}>
+                            <span>{user?.name}</span>
+                            <i className='fas fa-chevron-down ms-1'></i>
+                          </DropdownToggle>
+                          <DropdownMenu end>
+                            <DropdownItem href='/page/user_dashboard'>Mi cuenta</DropdownItem>
+                            <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      ) : (
+                        <a className='nav-link menu-title' style={{ cursor: 'pointer' }} onClick={() => dispatch(LOGINMODAL())}>
                           <span>Iniciar Sesión</span>
-                          <i className='fas fa-chevron-down ms-1'></i>
-                        </DropdownToggle>
-                        <DropdownMenu end>
-                          <DropdownItem href='/page/login'>Iniciar sesión</DropdownItem>
-                          <DropdownItem href='/page/register'>Registrarse</DropdownItem>
-                        </DropdownMenu>
-                      </Dropdown>
+                        </a>
+                      )}
                     </li>
                   </ul>
                 </div>

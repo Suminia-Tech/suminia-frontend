@@ -1,10 +1,15 @@
+'use client';
+
 import { Alreadyhaveanaccount, Registers, SignUp } from '@/Constant';
-import Link from 'next/link';
+import { LOGINMODAL } from '@/ReduxToolkit/Reducers/ModalReducer';
+import { useDispatch } from 'react-redux';
 import { Input } from 'reactstrap';
 
 import { Btn } from '../../AbstractElements';
 
 const RegisterSection = () => {
+  const dispatch = useDispatch();
+
   return (
     <div className='login-section'>
       <div className='materialContainer'>
@@ -41,9 +46,9 @@ const RegisterSection = () => {
           </div>
 
           <p>
-            <Link href={'/page/login'} className='theme-color'>
+            <a className='theme-color' style={{ cursor: 'pointer' }} onClick={() => dispatch(LOGINMODAL())}>
               {Alreadyhaveanaccount}
-            </Link>
+            </a>
           </p>
         </div>
       </div>

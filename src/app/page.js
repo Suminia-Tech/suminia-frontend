@@ -8,7 +8,6 @@ import HomeOffers from "@/Components/Home/HomeOffers";
 import HomePromo from "@/Components/Home/HomePromo";
 import HomeTopBanner from "@/Components/Home/HomeTopBanner";
 import CommonModel from "@/Components/Element/CommonModel";
-import StartModel from "@/Layout/Element/StartModel";
 import Layout6 from "@/Layout/Layout6";
 import { getAPIData } from "@/Utils";
 import { useEffect, useState } from "react";
@@ -40,7 +39,6 @@ export default function Home() {
       <HomePromo />
       <HomeHurryUp bannerData={bannerData} />
       <HomeNewsUpdate bannerData={bannerData} />
-      <StartModel />
       <CommonModel />
     </Layout6>
   );

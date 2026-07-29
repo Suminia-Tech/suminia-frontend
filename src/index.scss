@@ -1,3 +1,32 @@
 @import "../public/assets/scss/app.scss";
 
+/* El formulario de login se reutiliza dentro de un modal: conserva los estilos
+   anidados de .login-section pero anula las propiedades de pagina completa. */
+.login-modal {
+  /* Sin overflow:hidden: el boton de cierre del tema se posiciona fuera
+     del contenido (top/right negativos) y quedaria recortado. */
+  .modal-content {
+    border-radius: 18px;
+  }
+
+  .modal-body {
+    padding: 0;
+  }
+
+  .login-section {
+    min-height: auto;
+    padding: 0;
+    background: transparent;
+
+    .materialContainer {
+      max-width: 100%;
+    }
+
+    .box {
+      box-shadow: none;
+      border-radius: 18px;
+    }
+  }
+}
+
  

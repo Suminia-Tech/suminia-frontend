@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { setCredentials } from '@/ReduxToolkit/authSlice';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
@@ -27,17 +28,14 @@ export const suminiaApi = createApi({
         body: credentials,
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          // Guardar tokens y usuario
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('accessToken', data.data.accessToken);
-            localStorage.setItem('refreshToken', data.data.refreshToken);
-            localStorage.setItem('user', JSON.stringify(data.data.user));
-          }
-        } catch (err) {
-          console.error('Login failed:', err);
+        const { data } = await queryFulfilled;
+        // Persistir la sesión y propagarla al store para que el header reaccione
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('accessToken', data.data.accessToken);
+          localStorage.setItem('refreshToken', data.data.refreshToken);
+          localStorage.setItem('user', JSON.stringify(data.data.user));
         }
+        dispatch(setCredentials(data.data.user));
       },
       invalidatesTags: ['Auth', 'Profile'],
     }),

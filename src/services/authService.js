@@ -78,7 +78,13 @@ const authService = {
   getCurrentUser: () => {
     if (typeof window === 'undefined') return null;
     const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    if (!user) return null;
+    try {
+      return JSON.parse(user);
+    } catch {
+      authService.logout();
+      return null;
+    }
   },
 
   // Verificar si está autenticado
