@@ -4,28 +4,25 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Input } from 'reactstrap';
-import { firebase_app } from '../../../Config/firebase';
+import { useLoginMutation } from '@/services/suminiaApi';
 import { Btn } from '../../AbstractElements';
 import AddAccountLink from './AddAccountLink';
 
 const LoginContain = () => {
-  const [email, setEmail] = useState('test@gmail.com');
-  const [password, setPassword] = useState('test123');
+  const [email, setEmail] = useState('superuser@example.com');
+  const [password, setPassword] = useState('S3crEtP4ssw0rd!');
   const router = useRouter();
+  const [login, { isLoading }] = useLoginMutation();
 
   const loginAuth = async (email, password) => {
     try {
-      await firebase_app
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(function () {
-          setTimeout(() => {
-            router.push(`/page/checkout`);
-          }, 200);
-        });
+      await login({ email, password }).unwrap();
+      setTimeout(() => {
+        router.push(`/dashboard`);
+      }, 200);
     } catch (error) {
       setTimeout(() => {
-        toast.error('error', error);
+        toast.error(error?.data?.message || 'Login failed');
       }, 200);
     }
   };
@@ -49,8 +46,8 @@ const LoginContain = () => {
             {Forgotyourpassword}
           </Link>
           <div className='button login'>
-            <Btn attrBtn={{ onClick: () => loginAuth(email, password) }}>
-              <span>{LogIn}</span>
+            <Btn attrBtn={{ onClick: () => loginAuth(email, password), disabled: isLoading }}>
+              <span>{isLoading ? 'Logging in...' : LogIn}</span>
               <i className='fa fa-check'></i>
             </Btn>
           </div>
