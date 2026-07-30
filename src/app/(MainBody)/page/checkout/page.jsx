@@ -3,32 +3,39 @@ import BreadCrumb from "@/Components/Element/BreadCrumb";
 import { CommonPath } from "@/Constant";
 import Layout6 from "@/Layout/Layout6";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import SectionCheckout from "@/Components/Pages/Checkout";
-import { firebase_app } from "@/Config/firebase";
-import Logins from "../login/page";
-
+import { useAuth } from "@/hooks/useAuth";
+import { OPENLOGINMODAL } from "@/ReduxToolkit/Reducers/ModalReducer";
+import { useDispatch } from "react-redux";
 
 const Checkout = () => {
-  const [currentUser, setCurrentUser] = useState(false);
+  const { isAuthenticated, hydrated } = useAuth();
+  const dispatch = useDispatch();
+
+  // El checkout requiere sesion. Se espera a que la sesion persistida se haya
+  // cargado antes de decidir, para no abrir el modal a un usuario ya logueado.
   useEffect(() => {
-    firebase_app.auth().onAuthStateChanged(setCurrentUser);
-  }, []);
+    if (hydrated && !isAuthenticated) {
+      dispatch(OPENLOGINMODAL());
+    }
+  }, [hydrated, isAuthenticated, dispatch]);
+
   return (
-    <>
-      {currentUser !== null ? (
-        <Layout6 isCategories={true}>
-          <Head>
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
-          </Head>
-          <BreadCrumb parent={"Finalizar compra"} title={"Finalizar compra"} />
-          <SectionCheckout />
-</Layout6>
+    <Layout6 isCategories={true}>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
+      </Head>
+      <BreadCrumb parent={"Finalizar compra"} title={"Finalizar compra"} />
+      {isAuthenticated ? (
+        <SectionCheckout />
       ) : (
-        <Logins />
+        <div className="container-fluid-lg py-5 text-center">
+          <p>Inicia sesión para finalizar tu compra.</p>
+        </div>
       )}
-    </>
+    </Layout6>
   );
 };
 
