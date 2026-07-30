@@ -17,15 +17,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # pnpm se fija a la major 10, la misma que corre en el servidor. Con
+      # "latest" el runner instalaba un pnpm que ya exige Node mas nuevo que el
+      # 20 de este job y el paso fallaba con ERR_UNKNOWN_BUILTIN_MODULE.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -45,16 +49,25 @@ jobs:
 
     steps:
       - name: Deploy to Production Server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.PRODUCTION_HOST }}
           username: ${{ secrets.PRODUCTION_USERNAME }}
           key: ${{ secrets.PRODUCTION_SSH_KEY }}
           port: ${{ secrets.PRODUCTION_PORT || 22 }}
           script: |
+            set -e
+
+            # ssh-action abre una shell no interactiva y el .bashrc de Ubuntu
+            # hace return en ese caso, por lo que nvm nunca se carga y pnpm y
+            # pm2 quedan fuera del PATH.
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm use 20 > /dev/null
+
             cd /var/www/Suminia/suminia-frontend
             git pull origin main
             pnpm install --frozen-lockfile
             pnpm run build
-            pm2 restart suminia-frontend || pm2 start ecosystem.config.js
+            pm2 startOrRestart ecosystem.config.js --update-env
             pm2 save

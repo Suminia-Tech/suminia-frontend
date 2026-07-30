@@ -1,8 +1,14 @@
+// Se invoca el binario de Next directamente, no "pnpm start", para no depender
+// de que pnpm este en el PATH del proceso que lanza PM2. No se usa
+// .next/standalone/server.js porque next.config.mjs no declara
+// output: "standalone", de modo que esa ruta no se genera en el build.
 module.exports = {
   apps: [
     {
       name: "suminia-frontend",
-      script: ".next/standalone/server.js",
+      cwd: "/var/www/Suminia/suminia-frontend",
+      script: "node_modules/next/dist/bin/next",
+      args: "start --port 3000",
       instances: 1,
       exec_mode: "fork",
       env: {
@@ -15,7 +21,8 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: "1G",
-      ignore_watch: ["node_modules", "logs", ".next"]
+      ignore_watch: ["node_modules", "logs", ".next"],
+      time: true
     }
   ]
 };
