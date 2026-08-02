@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Input, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Btn } from '../../AbstractElements';
+import PasswordToggle from '../../Element/PasswordToggle';
 
 const LoginModal = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const LoginModal = () => {
   const [login, { isLoading }] = useLoginMutation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const toggle = () => dispatch(LOGINMODAL());
 
@@ -59,7 +61,7 @@ const LoginModal = () => {
                   </div>
                   <div className='input'>
                     <Input
-                      type='password'
+                      type={showPassword ? 'text' : 'password'}
                       name='password'
                       id='login-modal-password'
                       placeholder='Contraseña'
@@ -67,6 +69,7 @@ const LoginModal = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                    <PasswordToggle visible={showPassword} onToggle={() => setShowPassword((v) => !v)} />
                     <span className='spin'></span>
                   </div>
                   <Link href={'/page/forgot_password'} className='pass-forgot' onClick={() => dispatch(CLOSELOGINMODAL())}>

@@ -2,6 +2,57 @@
 
 /* El formulario de login se reutiliza dentro de un modal: conserva los estilos
    anidados de .login-section pero anula las propiedades de pagina completa. */
+/* El registro pide los datos de la empresa ademas de los del administrador, de
+   modo que se reparte en dos columnas. El contenedor de .login-section esta
+   limitado a 460px, pensado para el formulario de acceso. */
+.register-section {
+  .materialContainer {
+    max-width: 820px;
+  }
+
+  .box {
+    width: 100%;
+  }
+
+  /* El tema define .login-section .materialContainer .box p con color gris
+     translucido, centrado y flotado. Esa regla tiene mas especificidad que una
+     clase suelta, de modo que hay que igualarla para poder sobreescribirla. */
+  .materialContainer .box p.form-section-title {
+    color: #222;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 22px 0 6px;
+  }
+}
+
+/* Boton para mostrar u ocultar la contraseña. Se ancla sobre el campo, que
+   mide 60px y arranca 10px por debajo del borde de .input, ya posicionado como
+   relative por el tema. */
+.password-toggle {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+  z-index: 2;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--theme-color);
+  }
+}
+
+/* Deja sitio al icono para que el texto no pase por debajo */
+.input:has(.password-toggle) input {
+  padding-right: 34px;
+}
+
 .login-modal {
   /* Sin overflow:hidden: el boton de cierre del tema se posiciona fuera
      del contenido (top/right negativos) y quedaria recortado. */

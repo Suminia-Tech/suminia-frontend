@@ -67,7 +67,7 @@ export const suminiaApi = createApi({
 
     validateResetToken: builder.mutation({
       query: (token) => ({
-        url: '/auth/validate-reset-token',
+        url: '/auth/validate-reset-password-token',
         method: 'POST',
         body: { token },
       }),
@@ -83,7 +83,7 @@ export const suminiaApi = createApi({
 
     resendVerification: builder.mutation({
       query: (email) => ({
-        url: '/auth/resend-verification',
+        url: '/auth/resend-verification-email',
         method: 'POST',
         body: { email },
       }),

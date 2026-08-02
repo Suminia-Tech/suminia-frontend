@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { User } from 'react-feather';
 import { Logins, Registers } from '@/Constant';
 import { useAuth } from '@/hooks/useAuth';
+import { getAccountLabel } from '@/Utils/roleLabel';
 import { LOGINMODAL } from '@/ReduxToolkit/Reducers/ModalReducer';
 import { useDispatch } from 'react-redux';
 
@@ -23,7 +24,7 @@ const AdminUser = () => {
               <li className='d-block fw-bold'>{user?.name}</li>
               <li>
                 <Link href={'/page/user_dashboard'} className='d-block'>
-                  Mi cuenta
+                  {getAccountLabel(user)}
                 </Link>
               </li>
               <li onClick={logout} className='d-block' style={{ cursor: 'pointer' }}>

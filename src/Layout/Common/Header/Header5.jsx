@@ -10,6 +10,7 @@ import ItemCart from '@/Layout/Element/ItemCart';
 import SearchBarToggle from '@/Layout/Element/SearchBarToggle';
 import NavBar from '@/Layout/Element/NavBar';
 import { useAuth } from '@/hooks/useAuth';
+import { getAccountLabel } from '@/Utils/roleLabel';
 import { LOGINMODAL } from '@/ReduxToolkit/Reducers/ModalReducer';
 import { useDispatch } from 'react-redux';
 
@@ -70,7 +71,7 @@ const Header5 = ({ noStyle, isCategories }) => {
                             <i className='fas fa-chevron-down ms-1'></i>
                           </DropdownToggle>
                           <DropdownMenu end>
-                            <DropdownItem href='/page/user_dashboard'>Mi cuenta</DropdownItem>
+                            <DropdownItem href='/page/user_dashboard'>{getAccountLabel(user)}</DropdownItem>
                             <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
