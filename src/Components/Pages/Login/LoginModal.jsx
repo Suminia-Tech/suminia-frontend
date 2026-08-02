@@ -20,18 +20,25 @@ const LoginModal = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null);
 
   const toggle = () => dispatch(LOGINMODAL());
 
   const loginAuth = async (e) => {
     e.preventDefault();
+    setError(null);
     try {
       await login({ email, password }).unwrap();
       dispatch(CLOSELOGINMODAL());
       setPassword('');
       router.push('/page/user_dashboard');
-    } catch (error) {
-      toast.error(error?.data?.message || 'No se pudo iniciar sesión');
+    } catch (err) {
+      /* El mensaje se muestra dentro del modal ademas de en el toast: el aviso
+         flotante desaparece solo y es facil pasarlo por alto justo cuando hace
+         falta leerlo. */
+      const message = err?.data?.message || 'No se pudo iniciar sesión';
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -54,7 +61,7 @@ const LoginModal = () => {
                       name='email'
                       id='login-modal-email'
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => { setEmail(e.target.value); setError(null); }}
                       required
                     />
                     <span className='spin'></span>
@@ -66,7 +73,7 @@ const LoginModal = () => {
                       id='login-modal-password'
                       placeholder='Contraseña'
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => { setPassword(e.target.value); setError(null); }}
                       required
                     />
                     <PasswordToggle visible={showPassword} onToggle={() => setShowPassword((v) => !v)} />
@@ -75,6 +82,8 @@ const LoginModal = () => {
                   <Link href={'/page/forgot_password'} className='pass-forgot' onClick={() => dispatch(CLOSELOGINMODAL())}>
                     {Forgotyourpassword}
                   </Link>
+                  {error && <p className='text-danger text-center mt-3 mb-0'>{error}</p>}
+
                   <div className='button login'>
                     <Btn attrBtn={{ type: 'submit', disabled: isLoading }}>
                       <span>{isLoading ? 'Ingresando...' : LogIn}</span>

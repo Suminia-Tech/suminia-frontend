@@ -58,10 +58,12 @@ export const suminiaApi = createApi({
     }),
 
     resetPassword: builder.mutation({
-      query: ({ token, newPassword }) => ({
+      // El DTO del backend espera "password", no "newPassword": el pipe corre con
+      // forbidNonWhitelisted, de modo que el nombre antiguo daba 422.
+      query: ({ token, password }) => ({
         url: '/auth/reset-password',
         method: 'POST',
-        body: { token, newPassword },
+        body: { token, password },
       }),
     }),
 
