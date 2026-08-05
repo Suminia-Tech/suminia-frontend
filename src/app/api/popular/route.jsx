@@ -1,4 +1,4 @@
-import Popular from '../../ApiData/Popular.json'
+import Popular from '@/_template/ApiData/Popular.json'
 import { NextResponse } from "next/server";
 
 export async function GET() {

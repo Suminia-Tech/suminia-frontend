@@ -1,4 +1,4 @@
-import Product from '../../ApiData/Product.json'
+import Product from '@/_template/ApiData/Product.json'
 import { NextResponse } from "next/server";
 
 

@@ -15,7 +15,6 @@
     "accept-language": "^3.0.20",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
-    "firebase": "^11.2.0",
     "i18next": "^26.2.0",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-resources-to-backend": "^1.2.1",
@@ -37,8 +36,12 @@
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
-    "sass": "1.77.6"
+    "sass": "1.77.6",
+    "typescript": "^5.9.3"
   }
 }

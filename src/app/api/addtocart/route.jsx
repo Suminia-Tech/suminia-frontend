@@ -1,4 +1,4 @@
-import { newArr } from "../../ApiData/serverGlobalVariable";
+import { newArr } from "@/_template/ApiData/serverGlobalVariable";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {

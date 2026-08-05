@@ -1,0 +1,18 @@
+import React from 'react';
+import { Col } from 'reactstrap';
+import { Collection3 } from '@/_template/Constant';
+import ElementHeader from '../../../Element/ElementHeader';
+
+const Banner3 = ({ bannerData }) => {
+  return (
+    <Col xs='12'>
+      <div className='header-image-contain mb-0 section-b-space'>
+        <ElementHeader customeclass={'title title1 text-center'} title={Collection3} />
+        <div className='contain-image-box'>
+</div>
+      </div>
+    </Col>
+  );
+};
+
+export default Banner3;

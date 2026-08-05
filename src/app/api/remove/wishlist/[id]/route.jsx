@@ -1,6 +1,6 @@
-import { storeId } from "@/app/ApiData/serverGlobalVariable";
+import { storeId } from "@/_template/ApiData/serverGlobalVariable";
 import { NextResponse } from "next/server";
-import Product from "../../../../ApiData/Product.json";
+import Product from "@/_template/ApiData/Product.json";
 
 export async function DELETE(req, res) {
   const { searchParams } = new URL(req.url);
