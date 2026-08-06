@@ -130,4 +130,3 @@ andamio visual mientras se construyen las pantallas reales.
   instancia, pero sobra uno.
 - **TypeScript se queda en la línea 5.x.** La 7 rompe el peer de `typescript-eslint` que
   trae `eslint-config-next` 16.
-- **`package.json` todavía se llama `voxo`.** Resto de la plantilla, pendiente de renombrar.
