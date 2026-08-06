@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { RegisterSection } from '@/modules/auth';
 
 export const metadata: Metadata = {
-  title: 'Registrarse | Suminia',
+  title: 'Registrarse',
   description: 'Registra tu empresa como comprador o proveedor en Suminia.',
 };
 

@@ -6,7 +6,7 @@ import Layout6 from '@/_template/Layout/Layout6';
 import { VerifyEmailScreen } from '@/modules/auth';
 
 export const metadata: Metadata = {
-  title: 'Verificar correo | Suminia',
+  title: 'Verificar correo',
 };
 
 export default function VerifyEmailPage() {

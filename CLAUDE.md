@@ -32,10 +32,10 @@ sirve para compartir layout y para agrupar visualmente.
 
 ```
 app/
-├── layout.js            raíz del documento
-├── providers.tsx        Redux + inicialización de sesión
+├── layout.js            raíz del documento + metadata global
+├── favicon.ico          Next genera solo el <link rel="icon">
+├── providers.tsx        Redux + inicialización de sesión (límite cliente)
 ├── page.js              /
-├── i18n/                configuración de i18next (no genera rutas)
 ├── api/                 ⚠ backend FALSO: 21 handlers que devuelven
 │                          los JSON de _template/ApiData. Se borran al
 │                          conectar el backend real.
@@ -52,6 +52,13 @@ app/
 
 **Rutas nuevas van siempre en `(suminia)/`**, con URL en kebab-case y sin el
 prefijo `/page/` que arrastra la plantilla.
+
+En `app/` solo vive lo que el framework exige (`layout`, `page`, `route`,
+`favicon.ico`) más `providers.tsx`. Todo lo demás va a `modules/` o `shared/`.
+
+**Títulos:** el layout raíz define `title.template = '%s | Suminia'`, así que cada
+página declara solo su nombre (`title: 'Registrarse'`). No usar `next/head` ni
+archivos `head.js`: son APIs del Pages Router y de Next 13.0, retiradas.
 
 ### Anatomía de un módulo
 

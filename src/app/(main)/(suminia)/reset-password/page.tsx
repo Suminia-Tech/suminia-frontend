@@ -6,7 +6,7 @@ import Layout6 from '@/_template/Layout/Layout6';
 import { ResetPasswordScreen } from '@/modules/auth';
 
 export const metadata: Metadata = {
-  title: 'Restablecer contraseña | Suminia',
+  title: 'Restablecer contraseña',
 };
 
 export default function ResetPasswordPage() {
