@@ -1,7 +1,10 @@
 // Se invoca el binario de Next directamente, no "pnpm start", para no depender
-// de que pnpm este en el PATH del proceso que lanza PM2. No se usa
-// .next/standalone/server.js porque next.config.mjs no declara
-// output: "standalone", de modo que esa ruta no se genera en el build.
+// de que pnpm este en el PATH del proceso que lanza PM2.
+//
+// next.config.mjs SI declara output: "standalone", de modo que el build genera
+// .next/standalone/server.js; ese es el arranque que usa el Dockerfile. Aqui se
+// mantiene "next start" porque PM2 corre sobre el arbol completo del proyecto,
+// donde ya estan todas las dependencias y no hace falta la salida reducida.
 module.exports = {
   apps: [
     {
