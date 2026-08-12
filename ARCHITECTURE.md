@@ -32,25 +32,103 @@ app  →  modules  →  shared
 
 ## Módulos de negocio
 
-Llevan el mismo nombre que los módulos del backend NestJS, de modo que `auth`, `catalog`
+Llevan el mismo nombre que los módulos del backend NestJS, de modo que `auth`, `products`
 u `orders` significan lo mismo a ambos lados del stack.
 
 ```
 src/modules/
 ├── auth/             ← autenticación (login, registro, verificación, contraseñas)
 │
-├── catalog/          ← Producto: catálogo, filtros, detalle          (planificado)
-├── suppliers/        ← Proveedor: perfil, catálogo propio            (planificado)
-├── buyers/           ← Comprador: perfil, equipo                     (planificado)
-├── orders/           ← Pedidos entre comprador y proveedor           (planificado)
-└── payments/         ← Pagos y crédito                               (planificado)
+├── users/            ← usuarios de la plataforma y de cada empresa   (planificado)
+├── organizations/    ← proveedores y compradores                    (planificado)
+├── products/         ← producto: catálogo, filtros, detalle         (planificado)
+├── orders/           ← pedidos entre comprador y proveedor          (planificado)
+└── payments/         ← pagos y crédito                              (planificado)
+```
+
+### `organizations` consume dos módulos del backend
+
+La correspondencia con el backend es uno a uno salvo en un caso:
+
+| Backend | Frontend |
+|---|---|
+| `auth/` | `modules/auth/` |
+| `users/` | `modules/users/` |
+| `suppliers/` + `buyers/` | `modules/organizations/` |
+| `products/` | `modules/products/` |
+| `orders/` | `modules/orders/` |
+
+En el backend, `suppliers` y `buyers` son dominios distintos: el proveedor gestiona
+catálogo, el comprador gestiona checkout. En el frontend, en cambio, **comparten pantalla**
+— la misma tabla, el mismo formulario, la misma validación de NIT y el mismo flujo de
+aprobación, porque ambos se apoyan en la tabla `Organization`.
+
+Por eso el frontend los consolida en un módulo con subcarpetas por variante, en lugar de
+duplicar esas piezas en dos módulos que además no podrían compartirlas (un módulo no
+importa otro módulo).
+
+```
+modules/organizations/
+├── api/
+│   ├── organizationsApi.ts        endpoints comunes (list, get, approve)
+│   ├── suppliersApi.ts            → /suppliers del backend
+│   └── buyersApi.ts               → /buyers del backend
+├── model/
+│   ├── organization.types.ts      Organization, OrganizationType, Status
+│   ├── supplier.types.ts          Supplier = Organization + lo suyo
+│   ├── buyer.types.ts             Buyer = Organization + lo suyo
+│   └── organizationsSlice.ts      filtros, selección
+├── lib/
+│   ├── taxId.ts                   validación de NIT
+│   └── organizationStatus.ts      etiquetas PENDING/ACTIVE
+├── ui/
+│   ├── common/                    OrganizationTable · OrganizationForm · StatusBadge
+│   ├── supplier/                  SuppliersScreen · SupplierCatalogTab
+│   └── buyer/                     BuyersScreen · BuyerOrdersTab
+└── index.ts
+```
+
+Los tres archivos de `api/` reflejan la separación del backend, y `supplier.types.ts` /
+`buyer.types.ts` tipan los campos propios de cada dominio. Rutas:
+
+```
+app/(main)/(suminia)/suppliers/page.tsx  →  /suppliers
+app/(main)/(suminia)/buyers/page.tsx     →  /buyers
 ```
 
 ---
 
 ## Estructura de un módulo
 
-Todos siguen exactamente el mismo diseño interno. No se inventan carpetas nuevas:
+Todos siguen exactamente el mismo diseño interno. **Los cinco nombres de primer nivel son
+fijos** — `api`, `model`, `lib`, `hooks`, `ui` — y no se inventan otros. Dentro de cada uno
+se anida libremente cuando el módulo crece:
+
+```
+organizations/
+├── api/
+│   ├── organizationsApi.ts
+│   ├── suppliersApi.ts
+│   └── buyersApi.ts
+├── model/
+│   ├── organization.types.ts
+│   ├── supplier.types.ts
+│   ├── buyer.types.ts
+│   └── organizationsSlice.ts
+├── lib/
+│   ├── taxId.ts
+│   └── organizationStatus.ts
+└── ui/
+    ├── common/          ← lo que comparten las dos pantallas
+    ├── supplier/        ← lo propio del proveedor
+    └── buyer/           ← lo propio del comprador
+```
+
+Las subcarpetas son la herramienta para separar variantes dentro de un módulo cuando el
+frontend consolida varios dominios del backend en una misma pantalla. Lo común vive suelto
+o en `common/`; lo propio de cada variante, en su subcarpeta.
+
+El módulo de referencia hoy es `auth`, que al tener una sola variante no necesita anidar:
 
 ```
 auth/
@@ -253,10 +331,43 @@ módulos, se componen en `app/`.
 
 ---
 
+## Cuándo introducir `entities/`
+
+`shared/` no admite lógica de negocio, y un módulo no puede importar otro. Eso deja un
+hueco: **una entidad de negocio que varios módulos necesitan** — por ejemplo
+`Organization`, que hará falta en `organizations`, en `orders` (un pedido referencia a
+comprador y proveedor) y en `products` (un producto pertenece a un proveedor).
+
+La solución cuando llegue ese momento es una capa por debajo de los módulos:
+
+```
+app  →  modules  →  entities  →  shared
+```
+
+```
+src/entities/organization/
+├── model/organization.types.ts
+├── lib/taxId.ts
+├── ui/OrganizationTable.tsx
+└── index.ts
+```
+
+Con dos reglas nuevas de ESLint: `entities/*` no importa `modules/*`, y no importa otra
+entidad.
+
+**El disparador es concreto: cuando un tercer módulo necesite la misma entidad.** Con dos
+consumidores basta un módulo con subcarpetas — es menos estructura y la extracción
+posterior es mecánica (mover archivos, añadir la regla, reescribir imports). Crear la capa
+antes es pagar por adelantado una separación que todavía no sostiene nada.
+
+Hasta entonces, la capa **no existe**: no se crea vacía "para cuando haga falta".
+
+---
+
 ## Convenciones de nombres
 
 ```
-<módulo>Api.ts                  → authApi.ts, catalogApi.ts
+<módulo>Api.ts                  → authApi.ts, productsApi.ts
 <módulo>Slice.ts                → authSlice.ts
 <dominio>.types.ts              → auth.types.ts, product.types.ts
 <Pantalla>Screen.tsx            → ResetPasswordScreen.tsx
@@ -264,7 +375,7 @@ use<Algo>.ts                    → useAuth.ts, useCatalogFilters.ts
 index.ts                        → API pública del módulo
 ```
 
-- Carpetas de módulo en singular y en el idioma del backend: `auth`, `catalog`, `orders`.
+- Carpetas de módulo en singular y en el idioma del backend: `auth`, `products`, `orders`.
 - URLs en kebab-case: `/forgot-password`, no `/forgot_password`.
 
 ---

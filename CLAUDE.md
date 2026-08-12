@@ -34,7 +34,7 @@ decisiones estructurales — consúltalo antes de crear un módulo, una ruta o u
 ```
 src/
 ├── app/          Rutas de Next: page.tsx, layout.tsx, metadata. Sin lógica.
-├── modules/      Módulos de negocio de Suminia (auth, catalog, suppliers, orders…)
+├── modules/      Módulos de negocio de Suminia (auth, users, organizations, products, orders…)
 ├── shared/       Transversal, sin lógica de negocio (api, ui, lib, config, i18n)
 ├── store/        configureStore + hooks tipados
 └── _template/    Plantilla Voxo en cuarentena. Solo se borra, no se mejora.
@@ -47,11 +47,11 @@ app  →  modules  →  shared
 ```
 
 Los módulos llevan el mismo nombre que los del backend NestJS, de modo que `auth`,
-`catalog` u `orders` significan lo mismo a ambos lados del stack.
+`products` u `orders` significan lo mismo a ambos lados del stack.
 
 ### Anatomía de un módulo
 
-No inventar carpetas nuevas:
+Los cinco nombres de primer nivel son fijos; dentro se anida libremente:
 
 ```
 modules/<nombre>/
@@ -62,6 +62,16 @@ modules/<nombre>/
 ├── ui/         pantallas (…Screen.tsx) y piezas (ProductCard.tsx)
 └── index.ts    API pública ← lo único importable desde fuera
 ```
+
+Las subcarpetas separan variantes cuando el frontend consolida varios dominios del backend
+en una misma pantalla. `organizations` es el caso: consume `suppliers` y `buyers` del
+backend y sirve `/suppliers` y `/buyers` desde `ui/supplier/` y `ui/buyer/`, con lo común
+en `ui/common/`.
+
+La correspondencia con el backend es uno a uno salvo ahí. Ver `ARCHITECTURE.md`.
+
+Si una entidad la necesitan **tres** módulos, se extrae a una capa `entities/` — el
+disparador está descrito en `ARCHITECTURE.md`. Hasta entonces esa capa no existe.
 
 ### Rutas
 
