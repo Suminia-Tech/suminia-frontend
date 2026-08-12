@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import { authReducer } from '@/modules/auth';
+import { organizationsReducer } from '@/modules/organizations';
 import { baseApi } from '@/shared/api/baseApi';
 
 /* Reducers heredados de la plantilla Voxo. Se van retirando conforme cada
@@ -20,6 +21,7 @@ import ThemeCustomizerReducer from '@/_template/ReduxToolkit/Reducers/ThemeCusto
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    organizations: organizationsReducer,
     [baseApi.reducerPath]: baseApi.reducer,
 
     HeaderScroll,
