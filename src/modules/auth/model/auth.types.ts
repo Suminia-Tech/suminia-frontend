@@ -20,6 +20,10 @@ export interface User {
   name: string;
   email: string;
   roles?: Role[];
+  /* El backend aplana en `permissions` los permisos de todos los roles del
+     usuario y los envia en el login. Las pantallas los leen de aqui para
+     decidir que acciones mostrar; el backend los vuelve a verificar. */
+  permissions?: string[];
   organizationId?: string;
   emailVerified?: boolean;
 }
