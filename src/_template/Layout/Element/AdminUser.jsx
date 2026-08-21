@@ -23,7 +23,7 @@ const AdminUser = () => {
             <>
               <li className='d-block fw-bold'>{user?.name}</li>
               <li>
-                <Link href={'/page/user_dashboard'} className='d-block'>
+                <Link href={'/account'} className='d-block'>
                   {getAccountLabel(user)}
                 </Link>
               </li>

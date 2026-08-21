@@ -38,7 +38,7 @@ const CommonMobileView = () => {
           </Link>
         </li>
         <li>
-          <Link href="/page/user_dashboard">
+          <Link href="/account">
             <User />
             <span>{Account}</span>
           </Link>

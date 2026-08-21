@@ -15,7 +15,7 @@
       {
         "id": 3,
         "menu": "Sobre nosotros",
-        "url": "/page/user_dashboard"
+        "url": "/account"
       },
       {
         "id": 4,
@@ -70,7 +70,7 @@
       {
         "id": 2,
         "menu": "Tu cuenta",
-        "url": "/page/user_dashboard"
+        "url": "/account"
       },
       {
         "id": 3,

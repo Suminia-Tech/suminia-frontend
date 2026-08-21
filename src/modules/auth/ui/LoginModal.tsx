@@ -38,7 +38,7 @@ const LoginModal = () => {
       toast.dismiss();
       dispatch(CLOSELOGINMODAL());
       setPassword('');
-      router.push('/page/user_dashboard');
+      router.push('/account');
     } catch (err) {
       /* El mensaje se muestra dentro del modal ademas de en el toast: el aviso
          flotante desaparece solo y es facil pasarlo por alto justo cuando hace

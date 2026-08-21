@@ -71,7 +71,7 @@ const Header5 = ({ noStyle, isCategories }) => {
                             <i className='fas fa-chevron-down ms-1'></i>
                           </DropdownToggle>
                           <DropdownMenu end>
-                            <DropdownItem href='/page/user_dashboard'>{getAccountLabel(user)}</DropdownItem>
+                            <DropdownItem href='/account'>{getAccountLabel(user)}</DropdownItem>
                             <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
