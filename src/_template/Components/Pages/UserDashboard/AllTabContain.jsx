@@ -8,6 +8,8 @@ import ProfileContain from './ProfileContain';
 import SaveAddress from './SaveAddress';
 import SecurityContain from './SecurityContain';
 import WishListContain from './WishListContain';
+import { MyCompanyScreen } from '@/modules/organizations';
+import { MY_COMPANY_TAB } from './accountTabs';
 
 const AllTabContain = ({ activeTab }) => {
   return (
@@ -40,6 +42,10 @@ const AllTabContain = ({ activeTab }) => {
 
         <TabPane className={`${activeTab === 7 ? 'show active ' : ''}dashboard-security dashboard`} tabId={7}>
           <SecurityContain />
+        </TabPane>
+
+        <TabPane className={`${activeTab === MY_COMPANY_TAB ? 'show active ' : ''}dashboard-profile dashboard`} tabId={MY_COMPANY_TAB}>
+          <MyCompanyScreen />
         </TabPane>
       </TabContent>
     </Col>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { hasPermission } from '@/shared/lib/permissions';
@@ -92,51 +92,49 @@ export const MyCompanyScreen = () => {
   }
 
   return (
-    <section className='section-b-space'>
-      <Container>
-        <Row className='mb-4 align-items-center'>
-          <Col>
-            <h2 className='mb-1'>{supplier.name}</h2>
-            <StatusBadge status={supplier.status} />
-          </Col>
-        </Row>
+    <>
+      <Row className='mb-4 align-items-center'>
+        <Col>
+          <h2 className='mb-1'>{supplier.name}</h2>
+          <StatusBadge status={supplier.status} />
+        </Col>
+      </Row>
 
-        {supplier.status === 'PENDING' && (
-          <div className='alert alert-warning'>
-            Tu empresa está pendiente de aprobación. El equipo de Suminia revisa los
-            datos y te avisa cuando quede activa.
-          </div>
-        )}
-
-        {errorMessage && <div className='alert alert-danger'>{errorMessage}</div>}
-
-        <div className='dashboard-profile'>
-          {canEdit ? (
-              <OrganizationForm
-              key={supplier.updatedAt}
-              organization={supplier}
-              isSaving={isSaving}
-              onSubmit={handleSubmit}
-            />
-          ) : (
-            /* Sin organization:update los datos se muestran en la misma lista
-               etiqueta/valor que usa el panel de cuenta de la plantilla. */
-            <ul className='dash-profile'>
-              {readOnlyFields.map(({ label, value }) => (
-                <li key={label}>
-                  <div className='left'>
-                    <h6 className='font-light'>{label}</h6>
-                  </div>
-                  <div className='right'>
-                    <h6>{value ?? '—'}</h6>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+      {supplier.status === 'PENDING' && (
+        <div className='alert alert-warning'>
+          Tu empresa está pendiente de aprobación. El equipo de Suminia revisa los
+          datos y te avisa cuando quede activa.
         </div>
-      </Container>
-    </section>
+      )}
+
+      {errorMessage && <div className='alert alert-danger'>{errorMessage}</div>}
+
+      <div className='dashboard-profile'>
+        {canEdit ? (
+            <OrganizationForm
+            key={supplier.updatedAt}
+            organization={supplier}
+            isSaving={isSaving}
+            onSubmit={handleSubmit}
+          />
+        ) : (
+          /* Sin organization:update los datos se muestran en la misma lista
+             etiqueta/valor que usa el panel de cuenta de la plantilla. */
+          <ul className='dash-profile'>
+            {readOnlyFields.map(({ label, value }) => (
+              <li key={label}>
+                <div className='left'>
+                  <h6 className='font-light'>{label}</h6>
+                </div>
+                <div className='right'>
+                  <h6>{value ?? '—'}</h6>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </>
   );
 };
 

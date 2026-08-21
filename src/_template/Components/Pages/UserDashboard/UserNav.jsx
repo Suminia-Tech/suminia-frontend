@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Fragment, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, Nav, NavItem, NavLink } from "reactstrap";
@@ -7,6 +6,7 @@ import useWindowDimensions from "../../../Utils/useWindowDimensions";
 import AllTabContain from "./AllTabContain";
 import { ISDASHBOARD, OVERLAY } from "@/_template/ReduxToolkit/Reducers/ModalReducer";
 import { useAuth } from "@/modules/auth";
+import { MY_COMPANY_TAB } from "./accountTabs";
 
 const UserNav = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -38,13 +38,13 @@ const UserNav = () => {
               </NavItem>
             );
           })}
-          {/* Pantallas reales de Suminia. A diferencia del resto del menu, que
-              son pestanas de la demo, estas son rutas propias. Solo se
-              muestran a quien pertenece a una empresa: el personal interno de
-              Suminia no tiene organizacion. */}
+          {/* Pantallas reales de Suminia, con el mismo comportamiento de
+              pestana que el resto del menu. Solo se muestran a quien pertenece
+              a una empresa: el personal interno de Suminia no tiene
+              organizacion. */}
           {user?.organizationId && (
-            <NavItem className="mb-2">
-              <NavLink tag={Link} href="/account/company">
+            <NavItem className="mb-2" onClick={() => dispatch(ISDASHBOARD())}>
+              <NavLink className={`${activeTab === MY_COMPANY_TAB ? "active" : ""}`} onClick={() => toggle(MY_COMPANY_TAB)}>
                 <i className="fas fa-angle-right"></i>
                 Mi empresa
               </NavLink>
