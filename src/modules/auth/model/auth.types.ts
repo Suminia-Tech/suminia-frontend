@@ -24,7 +24,9 @@ export interface User {
      usuario y los envia en el login. Las pantallas los leen de aqui para
      decidir que acciones mostrar; el backend los vuelve a verificar. */
   permissions?: string[];
-  organizationId?: string;
+  /* La empresa del usuario. Nulo para el personal interno de Suminia
+     (superuser, admin), que no pertenece a ninguna organizacion. */
+  organizationId?: string | null;
   emailVerified?: boolean;
 }
 

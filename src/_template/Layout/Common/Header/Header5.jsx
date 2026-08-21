@@ -72,6 +72,9 @@ const Header5 = ({ noStyle, isCategories }) => {
                           </DropdownToggle>
                           <DropdownMenu end>
                             <DropdownItem href='/account'>{getAccountLabel(user)}</DropdownItem>
+                            {/* Solo el personal de una empresa tiene organizacion:
+                                el interno de Suminia no. */}
+                            {user?.organizationId && <DropdownItem href='/account/company'>Mi empresa</DropdownItem>}
                             <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>

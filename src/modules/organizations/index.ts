@@ -2,6 +2,7 @@
    rutas internas (../model, ../api, ../ui): solo lo que se exporta aqui. */
 
 export { SuppliersScreen } from './ui/supplier/SuppliersScreen';
+export { MyCompanyScreen } from './ui/supplier/MyCompanyScreen';
 
 export { default as organizationsReducer } from './model/organizationsSlice';
 
