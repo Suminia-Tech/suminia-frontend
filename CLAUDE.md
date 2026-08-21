@@ -110,6 +110,31 @@ app/(main)/(template)/  ← demos de Voxo, se borran por partes
 - **Metadata:** el layout raíz define `title.template = '%s | Suminia'`, así que cada
   página declara solo su nombre (`title: 'Registrarse'`). No usar `next/head` ni archivos
   `head.js`: son APIs retiradas y duplican el `<title>`.
+- **Diseño: usar el que ya tiene el proyecto.** Las pantallas nuevas deben verse como
+  las que ya existen. Antes de escribir UI, mirar una pantalla equivalente de
+  `_template/` y reutilizar sus clases y su estructura. No introducir componentes de
+  Bootstrap sin estilar (`Card`, `Alert`, `FormGroup`) cuando el tema ya resuelve ese
+  caso. Vocabulario del tema, con los archivos donde está definido:
+
+  | Para | Usar | Definido en |
+  |---|---|---|
+  | Sección de página | `section-b-space` + `Container` | `layout/` |
+  | Encabezado de bloque | `box-head` con `<h3>` | `pages/_inner_page.scss` |
+  | Lista etiqueta/valor | `dashboard-profile` > `dash-profile` > `li` > `left`/`right` | `pages/_inner_page.scss` |
+  | Formularios | `form-label`, `form-control` | `components/_form.scss` |
+  | Texto secundario | `font-light` | `base/` |
+  | Botones | `btn btn-primary`, `btn-full`, `btn-sm` | `components/_button.scss` |
+  | Avisos | `alert` del tema | `components/_alert.scss` |
+
+  **Comprobar el alcance antes de copiar una clase.** Muchas del tema solo están
+  definidas anidadas dentro de un contenedor y fuera de él no hacen nada:
+  `dash-profile` necesita estar dentro de `dashboard-profile`, y `btn-animation` solo
+  tiene estilos dentro de `.product-buttons` — en las pantallas de auth se usa sin ese
+  contenedor, de modo que ahí no aplica nada.
+
+  Si el tema no cubre un caso, se añade el estilo en `src/index.scss` siguiendo sus
+  convenciones — no se resuelve con estilos en línea ni con clases sueltas de Bootstrap.
+
 - **Comentarios:** un bloque explicando el *porqué* donde la decisión no sea obvia, no
   narración línea a línea. Sin emojis.
 

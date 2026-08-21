@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Alert, Card, CardBody, Col, Container, Row } from 'reactstrap';
+import { Col, Container, Row } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { hasPermission } from '@/shared/lib/permissions';
@@ -38,6 +38,14 @@ export const MyCompanyScreen = () => {
   const canEdit = hasPermission(user?.permissions, 'organization:update');
   const supplier = data?.data;
 
+  const readOnlyFields = [
+    { label: 'Razón social', value: supplier?.legalName },
+    { label: 'Correo de contacto', value: supplier?.email },
+    { label: 'Teléfono', value: supplier?.phone },
+    { label: 'Ciudad', value: supplier?.city },
+    { label: 'Dirección', value: supplier?.address },
+  ];
+
   const handleSubmit = async (values: OrganizationFormValues) => {
     if (!organizationId) return;
     setErrorMessage(null);
@@ -62,24 +70,24 @@ export const MyCompanyScreen = () => {
   };
 
   if (!hydrated || isLoading) {
-    return <p className='text-muted'>Cargando...</p>;
+    return <p className='font-light'>Cargando...</p>;
   }
 
   /* El personal interno de Suminia no pertenece a ninguna organizacion, de modo
      que esta pantalla no aplica para ellos. */
   if (!organizationId) {
     return (
-      <Alert color='secondary'>
+      <div className='alert alert-secondary'>
         Tu cuenta no está asociada a ninguna empresa.
-      </Alert>
+      </div>
     );
   }
 
   if (isError || !supplier) {
     return (
-      <Alert color='danger'>
+      <div className='alert alert-danger'>
         {extractErrorMessage(error, 'No se pudieron cargar los datos de la empresa.')}
-      </Alert>
+      </div>
     );
   }
 
@@ -94,45 +102,39 @@ export const MyCompanyScreen = () => {
         </Row>
 
         {supplier.status === 'PENDING' && (
-          <Alert color='warning'>
+          <div className='alert alert-warning'>
             Tu empresa está pendiente de aprobación. El equipo de Suminia revisa los
             datos y te avisa cuando quede activa.
-          </Alert>
+          </div>
         )}
 
-        {errorMessage && <Alert color='danger'>{errorMessage}</Alert>}
+        {errorMessage && <div className='alert alert-danger'>{errorMessage}</div>}
 
-        <Card>
-          <CardBody>
-            {canEdit ? (
+        <div className='dashboard-profile'>
+          {canEdit ? (
               <OrganizationForm
-                key={supplier.updatedAt}
-                organization={supplier}
-                isSaving={isSaving}
-                onSubmit={handleSubmit}
-              />
-            ) : (
-              <Row>
-                <Col md='6'>
-                  <p className='mb-1 text-muted'>Correo de contacto</p>
-                  <p>{supplier.email}</p>
-                </Col>
-                <Col md='6'>
-                  <p className='mb-1 text-muted'>Teléfono</p>
-                  <p>{supplier.phone ?? '—'}</p>
-                </Col>
-                <Col md='6'>
-                  <p className='mb-1 text-muted'>Ciudad</p>
-                  <p>{supplier.city ?? '—'}</p>
-                </Col>
-                <Col md='6'>
-                  <p className='mb-1 text-muted'>Dirección</p>
-                  <p>{supplier.address ?? '—'}</p>
-                </Col>
-              </Row>
-            )}
-          </CardBody>
-        </Card>
+              key={supplier.updatedAt}
+              organization={supplier}
+              isSaving={isSaving}
+              onSubmit={handleSubmit}
+            />
+          ) : (
+            /* Sin organization:update los datos se muestran en la misma lista
+               etiqueta/valor que usa el panel de cuenta de la plantilla. */
+            <ul className='dash-profile'>
+              {readOnlyFields.map(({ label, value }) => (
+                <li key={label}>
+                  <div className='left'>
+                    <h6 className='font-light'>{label}</h6>
+                  </div>
+                  <div className='right'>
+                    <h6>{value ?? '—'}</h6>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </Container>
     </section>
   );
