@@ -48,6 +48,14 @@ export const tokenStorage = {
     window.localStorage.setItem(USER_KEY, JSON.stringify(user));
   },
 
+  /* Refresca solo el usuario, conservando los tokens. Lo usa la consulta de
+     perfil al arrancar: los datos del usuario cambian (permisos, rol, empresa)
+     mientras la sesion sigue siendo la misma. */
+  saveUser<TUser>(user: TUser): void {
+    if (!isBrowser()) return;
+    window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+  },
+
   clear(): void {
     if (!isBrowser()) return;
 

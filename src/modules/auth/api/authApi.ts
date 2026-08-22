@@ -65,9 +65,18 @@ export const authApi = baseApi.injectEndpoints({
       query: (body) => ({ url: '/auth/change-password', method: 'PATCH', body }),
     }),
 
+    /* Al arrancar la app se vuelve a pedir el perfil para que la sesion refleje
+       los datos actuales. Sin esto, el usuario guardado en localStorage queda
+       congelado en como era al iniciar sesion: si cambian sus permisos, su rol
+       o su empresa, el frontend sigue con la foto vieja hasta el proximo login. */
     getProfile: builder.query<ProfileResponse, void>({
       query: () => '/auth/profile',
       providesTags: ['Profile'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        const { data } = await queryFulfilled;
+        tokenStorage.saveUser(data.data);
+        dispatch(setCredentials(data.data));
+      },
     }),
   }),
 });

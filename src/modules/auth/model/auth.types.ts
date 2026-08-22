@@ -81,4 +81,6 @@ export interface Session {
 }
 
 export type LoginResponse = ApiResponse<Session>;
-export type ProfileResponse = ApiResponse<{ user: User }>;
+/* /auth/profile devuelve el usuario directamente en `data`, no anidado bajo
+   `user` como hace el login. */
+export type ProfileResponse = ApiResponse<User>;
