@@ -12,10 +12,31 @@ export const ACCOUNT_TABS = {
   SUMMARY: 1,
   COMPANY: 2,
   TEAM: 3,
+  PROFILE: 4,
+  SECURITY: 5,
 };
 
+/* `permission` oculta la entrada a quien no la tiene: un operador no puede
+   listar el equipo, de modo que ofrecerle la pestana solo le daria un 403.
+   `requiresOrganization` deja fuera al personal interno de Suminia, que no
+   pertenece a ninguna empresa. */
 export const ACCOUNT_TAB_ITEMS = [
-  { id: ACCOUNT_TABS.SUMMARY, label: "Resumen" },
-  { id: ACCOUNT_TABS.COMPANY, label: "Mi empresa" },
-  { id: ACCOUNT_TABS.TEAM, label: "Mi equipo" },
+  {
+    id: ACCOUNT_TABS.SUMMARY,
+    label: "Resumen",
+    requiresOrganization: true,
+  },
+  {
+    id: ACCOUNT_TABS.COMPANY,
+    label: "Mi empresa",
+    requiresOrganization: true,
+  },
+  {
+    id: ACCOUNT_TABS.TEAM,
+    label: "Mi equipo",
+    requiresOrganization: true,
+    permission: "user:list",
+  },
+  { id: ACCOUNT_TABS.PROFILE, label: "Mi perfil" },
+  { id: ACCOUNT_TABS.SECURITY, label: "Seguridad" },
 ];

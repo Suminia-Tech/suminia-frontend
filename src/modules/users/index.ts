@@ -2,5 +2,7 @@
    internas (../model, ../api, ../ui): solo lo que se exporta aqui. */
 
 export { MyTeamScreen } from './ui/MyTeamScreen';
+export { MyProfileScreen } from './ui/MyProfileScreen';
+
 export { useGetTeamQuery } from './api/usersApi';
 export type { TeamUser, UserStatus } from './model/user.types';

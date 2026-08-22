@@ -29,3 +29,27 @@ export const getUserStatusLabel = (status: UserStatus): string =>
 
 export const getUserStatusClassName = (status: UserStatus): string =>
   STATUS_LABELS[status]?.className ?? 'bg-secondary';
+
+/* Roles que un administrador puede asignar dentro de su equipo. El lado del
+   marketplace se deduce de sus propios roles: el backend rechaza con 403 que
+   un proveedor asigne roles de comprador, y aqui se evita ofrecerlos. */
+export const getAssignableRoles = (
+  currentUserRoles: string[],
+): { value: string; label: string }[] => {
+  const isSupplier = currentUserRoles.some((role) => role.startsWith('supplier_'));
+  const isBuyer = currentUserRoles.some((role) => role.startsWith('buyer_'));
+
+  if (isSupplier) {
+    return [
+      { value: 'supplier_operator', label: 'Operador' },
+      { value: 'supplier_admin', label: 'Administrador' },
+    ];
+  }
+  if (isBuyer) {
+    return [
+      { value: 'buyer_operator', label: 'Operador' },
+      { value: 'buyer_admin', label: 'Administrador' },
+    ];
+  }
+  return [];
+};

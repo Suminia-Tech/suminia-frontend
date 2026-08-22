@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Table } from 'reactstrap';
 
@@ -15,6 +16,9 @@ interface OrganizationTableProps {
   organizations: Organization[];
   isLoading: boolean;
   emptyMessage: string;
+  /* Prefijo de la ficha de detalle: /suppliers o /buyers. Sin el, el nombre no
+     enlaza a ningun sitio. */
+  detailBasePath?: string;
   actions?: (organization: Organization) => ReactNode;
 }
 
@@ -22,6 +26,7 @@ const OrganizationTable = ({
   organizations,
   isLoading,
   emptyMessage,
+  detailBasePath,
   actions,
 }: OrganizationTableProps) => {
   if (isLoading) {
@@ -47,7 +52,15 @@ const OrganizationTable = ({
       <tbody>
         {organizations.map((organization) => (
           <tr key={organization.id}>
-            <td className='fw-semibold'>{organization.name}</td>
+            <td className='fw-semibold'>
+              {detailBasePath ? (
+                <Link href={`${detailBasePath}/${organization.id}`}>
+                  {organization.name}
+                </Link>
+              ) : (
+                organization.name
+              )}
+            </td>
             <td>{organization.legalName}</td>
             <td>{formatTaxId(organization.taxId)}</td>
             <td>{organization.city ?? '—'}</td>

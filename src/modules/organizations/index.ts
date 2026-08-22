@@ -4,6 +4,7 @@
 export { SuppliersScreen } from './ui/supplier/SuppliersScreen';
 export { MyCompanyScreen } from './ui/supplier/MyCompanyScreen';
 export { SupplierSummaryScreen } from './ui/supplier/SupplierSummaryScreen';
+export { SupplierDetailScreen } from './ui/supplier/SupplierDetailScreen';
 
 export { default as organizationsReducer } from './model/organizationsSlice';
 

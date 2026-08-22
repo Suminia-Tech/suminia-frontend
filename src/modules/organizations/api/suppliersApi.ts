@@ -47,6 +47,33 @@ export const suppliersApi = baseApi.injectEndpoints({
       ],
     }),
 
+    /* Rechazar, suspender y reactivar son la misma decision del personal
+       interno sobre si una empresa puede operar, y el backend valida que la
+       transicion tenga sentido desde el estado actual. */
+    rejectSupplier: builder.mutation<ApiResponse<Supplier>, string>({
+      query: (id) => ({ url: `/suppliers/${id}/reject`, method: 'PATCH' }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Supplier', id },
+        { type: 'Supplier', id: 'LIST' },
+      ],
+    }),
+
+    suspendSupplier: builder.mutation<ApiResponse<Supplier>, string>({
+      query: (id) => ({ url: `/suppliers/${id}/suspend`, method: 'PATCH' }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Supplier', id },
+        { type: 'Supplier', id: 'LIST' },
+      ],
+    }),
+
+    reactivateSupplier: builder.mutation<ApiResponse<Supplier>, string>({
+      query: (id) => ({ url: `/suppliers/${id}/reactivate`, method: 'PATCH' }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Supplier', id },
+        { type: 'Supplier', id: 'LIST' },
+      ],
+    }),
+
     deleteSupplier: builder.mutation<ApiResponse<void>, string>({
       query: (id) => ({ url: `/suppliers/${id}`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Supplier', id: 'LIST' }],
@@ -59,5 +86,8 @@ export const {
   useGetSupplierQuery,
   useUpdateSupplierMutation,
   useApproveSupplierMutation,
+  useRejectSupplierMutation,
+  useSuspendSupplierMutation,
+  useReactivateSupplierMutation,
   useDeleteSupplierMutation,
 } = suppliersApi;

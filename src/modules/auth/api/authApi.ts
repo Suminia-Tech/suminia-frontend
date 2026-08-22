@@ -56,6 +56,15 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
+    /* El id sale del token, de modo que no se envia: solo se puede cambiar la
+       contrasena de la propia cuenta. */
+    changePassword: builder.mutation<
+      void,
+      { currentPassword: string; newPassword: string }
+    >({
+      query: (body) => ({ url: '/auth/change-password', method: 'PATCH', body }),
+    }),
+
     getProfile: builder.query<ProfileResponse, void>({
       query: () => '/auth/profile',
       providesTags: ['Profile'],
@@ -71,5 +80,6 @@ export const {
   useValidateResetTokenMutation,
   useVerifyEmailMutation,
   useResendVerificationMutation,
+  useChangePasswordMutation,
   useGetProfileQuery,
 } = authApi;

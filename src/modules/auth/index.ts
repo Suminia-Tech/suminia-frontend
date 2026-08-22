@@ -7,6 +7,7 @@ export { default as RegisterSection } from './ui/RegisterSection';
 export { default as ForgotPasswordSection } from './ui/ForgotPasswordSection';
 export { ResetPasswordScreen } from './ui/ResetPasswordScreen';
 export { VerifyEmailScreen } from './ui/VerifyEmailScreen';
+export { SecurityScreen } from './ui/SecurityScreen';
 
 export { useAuth } from './hooks/useAuth';
 export { getAccountLabel, getRoleLabel } from './lib/roleLabel';
