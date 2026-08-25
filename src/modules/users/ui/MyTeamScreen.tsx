@@ -65,7 +65,11 @@ export const MyTeamScreen = () => {
       <div className='box-head'>
         <h3>Mi equipo</h3>
         {canCreate && (
+          /* .box-head es flex pero sin space-between, de modo que el enlace
+             queda pegado al titulo. ms-auto lo empuja al extremo sin tocar el
+             resto de encabezados del tema. */
           <a
+            className='ms-auto'
             href='#javascript'
             onClick={(event) => {
               event.preventDefault();
@@ -99,7 +103,7 @@ export const MyTeamScreen = () => {
                 <tr key={member.id}>
                   <td>
                     {member.name}
-                    {isSelf && <span className='font-light'> (tú)</span>}
+                    {isSelf && <span className='font-light'>&nbsp;(tú)</span>}
                   </td>
                   <td>{member.email}</td>
                   <td>{getTeamRoleLabel(member.roles)}</td>
