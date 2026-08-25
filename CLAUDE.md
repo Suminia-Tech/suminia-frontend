@@ -100,7 +100,9 @@ app/(main)/(template)/  ← demos de Voxo, se borran por partes
 - **Datos: un solo camino.** RTK Query sobre `shared/api/baseApi.ts`, con
   `injectEndpoints` desde cada módulo. No crear otras instancias de `createApi`, ni usar
   axios o `fetch` sueltos en componentes.
-- **`localStorage` solo en `shared/lib/tokenStorage.ts`.** Ningún otro archivo lo toca.
+- **`localStorage` solo en `shared/lib/`.** Hoy lo tocan `tokenStorage.ts` (la sesión)
+  y `cookieConsent.ts` (el aviso de cookies). Ningún otro archivo lo usa: si hace falta
+  persistir algo nuevo, se añade un módulo ahí.
 - **Tipar el contrato del backend** en `model/*.types.ts` del módulo. Es la frontera donde
   de verdad se rompen las cosas.
 - **Estado:** usar `useAppDispatch` / `useAppSelector` de `@/store/hooks`, no los de
