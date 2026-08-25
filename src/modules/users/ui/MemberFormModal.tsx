@@ -1,18 +1,25 @@
 'use client';
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
-import { isEmail } from '@/shared/lib/validators';
-import { STRONG_PASSWORD_HINT, isStrongPassword } from '@/shared/lib/validators';
+import {
+  STRONG_PASSWORD_HINT,
+  isEmail,
+  isStrongPassword,
+} from '@/shared/lib/validators';
 
 import { useCreateMemberMutation } from '../api/usersApi';
 import { getAssignableRoles } from '../lib/userLabels';
 
 /* Alta de un miembro del equipo. La empresa no se pide: el backend la toma de
    la sesion de quien crea, de modo que no hay forma de dar de alta a alguien
-   en otra organizacion. */
+   en otra organizacion.
+
+   Sigue la estructura de los modales del panel de cuenta (add-address-modal):
+   la cabecera va vacia porque el tema saca su boton de cierre fuera del marco,
+   el contenido va en el cuerpo y las acciones en el pie. */
 
 interface MemberFormModalProps {
   isOpen: boolean;
@@ -20,6 +27,7 @@ interface MemberFormModalProps {
   currentUserRoles: string[];
 }
 
+const FORM_ID = 'member-form';
 const INITIAL = { name: '', email: '', phone: '', password: '', roleName: '' };
 
 const MemberFormModal = ({
@@ -35,7 +43,8 @@ const MemberFormModal = ({
   const [createMember, { isLoading }] = useCreateMemberMutation();
 
   const handleChange =
-    (field: keyof typeof INITIAL) => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof typeof INITIAL) =>
+    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { value } = event.target;
       setForm((current) => ({ ...current, [field]: value }));
       setErrors((current) => ({ ...current, [field]: undefined }));
@@ -46,7 +55,8 @@ const MemberFormModal = ({
     const next: Record<string, string> = {};
     if (!form.name.trim()) next.name = 'Ingresa el nombre';
     if (!form.email.trim()) next.email = 'Ingresa el correo';
-    else if (!isEmail(form.email.trim())) next.email = 'El correo no tiene un formato válido';
+    else if (!isEmail(form.email.trim()))
+      next.email = 'El correo no tiene un formato válido';
     if (!form.password) next.password = 'Ingresa una contraseña';
     else if (!isStrongPassword(form.password)) next.password = STRONG_PASSWORD_HINT;
     if (!form.roleName) next.roleName = 'Selecciona un rol';
@@ -81,12 +91,19 @@ const MemberFormModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={onClose} centered>
-      <ModalHeader toggle={onClose}>Añadir miembro</ModalHeader>
+    <Modal className='add-address-modal' centered isOpen={isOpen} toggle={onClose}>
+      {/* Vacia a proposito: el tema posiciona el boton de cierre fuera del
+          marco y le da padding cero a la cabecera. */}
+      <ModalHeader toggle={onClose}></ModalHeader>
+
       <ModalBody>
-        <form onSubmit={handleSubmit} noValidate>
+        <div className='box-head'>
+          <h3>Añadir miembro</h3>
+        </div>
+
+        <form id={FORM_ID} onSubmit={handleSubmit} noValidate>
           <div className='mb-3'>
-            <label className='form-label'>Nombre</label>
+            <label className='form-label font-light'>Nombre del usuario</label>
             <input
               type='text'
               className='form-control'
@@ -97,7 +114,7 @@ const MemberFormModal = ({
           </div>
 
           <div className='mb-3'>
-            <label className='form-label'>Correo electrónico</label>
+            <label className='form-label font-light'>Correo electrónico</label>
             <input
               type='email'
               className='form-control'
@@ -108,7 +125,7 @@ const MemberFormModal = ({
           </div>
 
           <div className='mb-3'>
-            <label className='form-label'>Teléfono (opcional)</label>
+            <label className='form-label font-light'>Teléfono (opcional)</label>
             <input
               type='text'
               className='form-control'
@@ -118,13 +135,11 @@ const MemberFormModal = ({
           </div>
 
           <div className='mb-3'>
-            <label className='form-label'>Rol</label>
+            <label className='form-label font-light'>Rol</label>
             <select
               className='form-control'
               value={form.roleName}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, roleName: event.target.value }))
-              }
+              onChange={handleChange('roleName')}
             >
               {roles.map((role) => (
                 <option key={role.value} value={role.value}>
@@ -135,8 +150,8 @@ const MemberFormModal = ({
             {errors.roleName && <small className='text-danger'>{errors.roleName}</small>}
           </div>
 
-          <div className='mb-3'>
-            <label className='form-label'>Contraseña inicial</label>
+          <div>
+            <label className='form-label font-light'>Contraseña inicial</label>
             <input
               type='text'
               className='form-control'
@@ -153,13 +168,27 @@ const MemberFormModal = ({
             )}
           </div>
 
-          {generalError && <div className='alert alert-danger'>{generalError}</div>}
-
-          <button type='submit' className='btn btn-primary btn-sm' disabled={isLoading}>
-            {isLoading ? 'Creando...' : 'Crear miembro'}
-          </button>
+          {generalError && <div className='alert alert-danger mt-3'>{generalError}</div>}
         </form>
       </ModalBody>
+
+      <ModalFooter className='pt-0 text-end d-block'>
+        <button
+          type='button'
+          className='btn btn-outline-secondary rounded-1 me-2'
+          onClick={onClose}
+        >
+          Cancelar
+        </button>
+        <button
+          type='submit'
+          form={FORM_ID}
+          className='btn btn-primary rounded-1'
+          disabled={isLoading}
+        >
+          {isLoading ? 'Creando...' : 'Crear miembro'}
+        </button>
+      </ModalFooter>
     </Modal>
   );
 };
