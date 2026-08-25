@@ -106,3 +106,36 @@
     opacity: 1;
   }
 }
+
+/* Campo de contraseña con boton de mostrar/ocultar, para formularios fuera de
+   las pantallas de acceso.
+
+   .password-toggle esta posicionado contra .login-section .input, que el tema
+   solo define ahi dentro: fuera de esas pantallas el boton se escapaba del
+   campo porque no encontraba un ancestro posicionado. Este contenedor lo
+   resuelve y ajusta el boton a la altura real del input. */
+.password-field {
+  position: relative;
+
+  .form-control {
+    padding-right: 42px;
+  }
+
+  .password-field-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: none;
+    border: none;
+    color: rgba($theme-font-color, 0.65);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--theme-color);
+    }
+  }
+}

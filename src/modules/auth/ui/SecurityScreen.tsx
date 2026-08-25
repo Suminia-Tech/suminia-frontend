@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Col, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
-import { PasswordToggle } from '@/shared/ui';
+import { PasswordField } from '@/shared/ui';
 import { STRONG_PASSWORD_HINT, isStrongPassword } from '@/shared/lib/validators';
 
 import { useChangePasswordMutation } from '../api/authApi';
@@ -20,7 +20,6 @@ export const SecurityScreen = () => {
   const [form, setForm] = useState(INITIAL);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
-  const [visible, setVisible] = useState({ current: false, next: false });
 
   const [changePassword, { isLoading }] = useChangePasswordMutation();
 
@@ -72,18 +71,11 @@ export const SecurityScreen = () => {
         <Row>
           <Col md='6' className='mb-3'>
             <label className='form-label'>Contraseña actual</label>
-            <div className='input'>
-              <input
-                type={visible.current ? 'text' : 'password'}
-                className='form-control'
-                value={form.currentPassword}
-                onChange={handleChange('currentPassword')}
-              />
-              <PasswordToggle
-                visible={visible.current}
-                onToggle={() => setVisible((v) => ({ ...v, current: !v.current }))}
-              />
-            </div>
+            <PasswordField
+              value={form.currentPassword}
+              onChange={handleChange('currentPassword')}
+              autoComplete='current-password'
+            />
             {errors.currentPassword && (
               <small className='text-danger'>{errors.currentPassword}</small>
             )}
@@ -93,18 +85,11 @@ export const SecurityScreen = () => {
         <Row>
           <Col md='6' className='mb-3'>
             <label className='form-label'>Contraseña nueva</label>
-            <div className='input'>
-              <input
-                type={visible.next ? 'text' : 'password'}
-                className='form-control'
-                value={form.newPassword}
-                onChange={handleChange('newPassword')}
-              />
-              <PasswordToggle
-                visible={visible.next}
-                onToggle={() => setVisible((v) => ({ ...v, next: !v.next }))}
-              />
-            </div>
+            <PasswordField
+              value={form.newPassword}
+              onChange={handleChange('newPassword')}
+              autoComplete='new-password'
+            />
             {errors.newPassword ? (
               <small className='text-danger'>{errors.newPassword}</small>
             ) : (
@@ -113,11 +98,10 @@ export const SecurityScreen = () => {
           </Col>
           <Col md='6' className='mb-3'>
             <label className='form-label'>Confirmar contraseña nueva</label>
-            <input
-              type={visible.next ? 'text' : 'password'}
-              className='form-control'
+            <PasswordField
               value={form.confirmPassword}
               onChange={handleChange('confirmPassword')}
+              autoComplete='new-password'
             />
             {errors.confirmPassword && (
               <small className='text-danger'>{errors.confirmPassword}</small>

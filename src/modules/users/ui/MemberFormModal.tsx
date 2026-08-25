@@ -10,6 +10,8 @@ import {
   isStrongPassword,
 } from '@/shared/lib/validators';
 
+import { PasswordField } from '@/shared/ui';
+
 import { useCreateMemberMutation } from '../api/usersApi';
 import { getAssignableRoles } from '../lib/userLabels';
 
@@ -152,11 +154,10 @@ const MemberFormModal = ({
 
           <div>
             <label className='form-label font-light'>Contraseña inicial</label>
-            <input
-              type='text'
-              className='form-control'
+            <PasswordField
               value={form.password}
               onChange={handleChange('password')}
+              autoComplete='new-password'
             />
             {errors.password ? (
               <small className='text-danger'>{errors.password}</small>
