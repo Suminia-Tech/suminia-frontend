@@ -81,3 +81,28 @@
 }
 
  
+
+/* El tema pinta .form-control:focus con $light-blue (#eff2f7), practicamente
+   el mismo tono que Bootstrap usa para los campos deshabilitados. El resultado
+   es que un campo se apaga justo cuando lo estas escribiendo, y parece que no
+   se puede editar.
+
+   Se invierte: el campo activo queda blanco y con el borde del tema, y los
+   bloqueados se marcan de verdad. */
+.form-control {
+  &:focus {
+    background-color: $white;
+    border-color: var(--theme-color);
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: $light-blue;
+    border-color: $border-color;
+    color: rgba($theme-font-color, 0.65);
+    cursor: not-allowed;
+    /* Bootstrap baja la opacidad de los deshabilitados; aqui el color ya
+       comunica el estado y bajarla ademas los deja ilegibles. */
+    opacity: 1;
+  }
+}
