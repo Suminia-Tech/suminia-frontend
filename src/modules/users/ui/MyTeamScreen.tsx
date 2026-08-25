@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { UserPlus } from 'react-feather';
 import { toast } from 'react-toastify';
 import { Table } from 'reactstrap';
 
@@ -69,13 +70,14 @@ export const MyTeamScreen = () => {
              queda pegado al titulo. ms-auto lo empuja al extremo sin tocar el
              resto de encabezados del tema. */
           <a
-            className='ms-auto fw-bold'
+            className='ms-auto fw-bold d-inline-flex align-items-center gap-1'
             href='#javascript'
             onClick={(event) => {
               event.preventDefault();
               setFormOpen(true);
             }}
           >
+            <UserPlus size={16} />
             Añadir miembro
           </a>
         )}
