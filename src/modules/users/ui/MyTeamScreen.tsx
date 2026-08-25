@@ -69,7 +69,7 @@ export const MyTeamScreen = () => {
              queda pegado al titulo. ms-auto lo empuja al extremo sin tocar el
              resto de encabezados del tema. */
           <a
-            className='ms-auto'
+            className='ms-auto fw-bold'
             href='#javascript'
             onClick={(event) => {
               event.preventDefault();
