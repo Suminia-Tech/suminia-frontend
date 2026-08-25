@@ -49,7 +49,7 @@ const ProfileForm = ({ initialName, email, roleLabel }: ProfileFormProps) => {
       <form onSubmit={handleSubmit} noValidate>
         <Row>
           <Col md='6' className='mb-3'>
-            <label className='form-label'>Nombre completo</label>
+            <label className='form-label'>Nombre del usuario</label>
             <input
               type='text'
               className='form-control'
@@ -58,11 +58,6 @@ const ProfileForm = ({ initialName, email, roleLabel }: ProfileFormProps) => {
                 setName(event.target.value)
               }
             />
-            {/* "Nombre" a secas se confunde con el nombre comercial de la
-                empresa, que se edita en la pestana Mi empresa. */}
-            <small className='font-light'>
-              Tu nombre, no el de la empresa. Es el que ven tus compañeros de equipo.
-            </small>
           </Col>
           <Col md='6' className='mb-3'>
             <label className='form-label'>Correo electrónico</label>
