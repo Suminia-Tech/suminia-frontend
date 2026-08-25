@@ -56,6 +56,14 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
+    /* Editar el propio perfil no exige user:update: ese permiso habilita
+       gestionar a OTROS, y un operador que no lo tiene debe poder corregir su
+       nombre. Invalida Profile para que la sesion recoja el cambio. */
+    updateProfile: builder.mutation<void, { name?: string; phone?: string }>({
+      query: (body) => ({ url: '/auth/profile', method: 'PATCH', body }),
+      invalidatesTags: ['Profile'],
+    }),
+
     /* El id sale del token, de modo que no se envia: solo se puede cambiar la
        contrasena de la propia cuenta. */
     changePassword: builder.mutation<
@@ -89,6 +97,7 @@ export const {
   useValidateResetTokenMutation,
   useVerifyEmailMutation,
   useResendVerificationMutation,
+  useUpdateProfileMutation,
   useChangePasswordMutation,
   useGetProfileQuery,
 } = authApi;

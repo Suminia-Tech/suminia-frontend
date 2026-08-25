@@ -1,7 +1,7 @@
 import { Col, TabContent, TabPane } from "reactstrap";
-import { SecurityScreen } from "@/modules/auth";
+import { MyProfileScreen, SecurityScreen } from "@/modules/auth";
 import { MyCompanyScreen, SupplierSummaryScreen } from "@/modules/organizations";
-import { MyProfileScreen, MyTeamScreen } from "@/modules/users";
+import { MyTeamScreen } from "@/modules/users";
 import MobileViewBtn from "./MobileViewBtn";
 import { ACCOUNT_TABS } from "./accountTabs";
 
