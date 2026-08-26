@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { Table } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { canOperate } from '@/shared/lib/organizationAccess';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
 
@@ -29,7 +30,10 @@ export const MyTeamScreen = () => {
   });
   const [updateMember, { isLoading: isSaving }] = useUpdateMemberMutation();
 
-  const canCreate = hasPermission(user?.permissions, 'user:create');
+  /* El backend bloquea el alta si la empresa no esta aprobada
+     (ActiveOrganizationGuard), de modo que ofrecerla seria ofrecer un 403. */
+  const isOperational = canOperate(user?.organizationStatus);
+  const canCreate = hasPermission(user?.permissions, 'user:create') && isOperational;
   const canUpdate = hasPermission(user?.permissions, 'user:update');
   const currentUserRoles = (user?.roles ?? []).map((role) =>
     typeof role === 'string' ? role : role.name,
@@ -82,6 +86,13 @@ export const MyTeamScreen = () => {
           </a>
         )}
       </div>
+
+      {!isOperational && (
+        <div className='alert alert-warning'>
+          Tu empresa está pendiente de aprobación. Podrás incorporar personas a tu
+          equipo cuando el equipo de Suminia la verifique.
+        </div>
+      )}
 
       {members.length === 0 ? (
         <p className='font-light'>Todavía no hay nadie más en tu empresa.</p>

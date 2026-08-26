@@ -15,6 +15,8 @@ export type Role = RoleName | { name: RoleName };
 
 export type OrganizationType = 'BUYER' | 'SUPPLIER';
 
+export type OrganizationStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'REJECTED';
+
 export interface User {
   id: string;
   name: string;
@@ -27,6 +29,10 @@ export interface User {
   /* La empresa del usuario. Nulo para el personal interno de Suminia
      (superuser, admin), que no pertenece a ninguna organizacion. */
   organizationId?: string | null;
+  /* Estado de esa empresa. Permite saber si puede operar sin volver a
+     consultarla, y es lo que decide si se ofrecen las acciones que el backend
+     bloquea con ActiveOrganizationGuard. */
+  organizationStatus?: OrganizationStatus | null;
   emailVerified?: boolean;
 }
 
