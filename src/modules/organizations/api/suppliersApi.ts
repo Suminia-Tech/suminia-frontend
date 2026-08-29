@@ -1,12 +1,12 @@
 import { baseApi } from '@/shared/api/baseApi';
-
+import { toDatatableQuery } from '@/shared/api/datatable';
 import type {
   ApiResponse,
   DatatableParams,
   PaginatedResponse,
-} from '../model/organization.types';
+} from '@/shared/api/types';
+
 import type { Supplier, UpdateSupplierRequest } from '../model/supplier.types';
-import { toDatatableQuery } from './organizationsApi';
 
 export const suppliersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

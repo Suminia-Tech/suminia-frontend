@@ -139,3 +139,76 @@
     }
   }
 }
+
+/* Miniatura del producto en el listado del proveedor. El tema no trae un
+   contenedor de imagen cuadrado para tablas: los suyos son tarjetas de
+   catalogo, con proporciones y sombras propias que aqui desentonan. */
+.product-thumb {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: $light-blue;
+  color: rgba($theme-font-color, 0.45);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Cada imagen de la galeria. La proporcion es fija para que subir fotos de
+   distintos tamaños no descuadre la rejilla. */
+.product-image-tile {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: $light-blue;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+  }
+
+  /* Las acciones aparecen al pasar el raton en pantallas con puntero, pero se
+     quedan visibles donde no lo hay: en tactil no existe hover y de otro modo
+     no habria forma de borrar una imagen. */
+  .product-image-actions {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    display: flex;
+    gap: 2px;
+
+    .btn {
+      padding: 4px 6px;
+      line-height: 1;
+      background-color: rgba($white, 0.9);
+      border-radius: 4px;
+    }
+  }
+
+  @media (hover: hover) {
+    .product-image-actions {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover .product-image-actions {
+      opacity: 1;
+    }
+  }
+}
