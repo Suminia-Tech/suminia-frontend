@@ -92,9 +92,37 @@ Los tres archivos de `api/` reflejan la separación del backend, y `supplier.typ
 `buyer.types.ts` tipan los campos propios de cada dominio. Rutas:
 
 ```
-app/(main)/(suminia)/suppliers/page.tsx  →  /suppliers
-app/(main)/(suminia)/buyers/page.tsx     →  /buyers
+app/(main)/admin/proveedores/page.tsx    →  /admin/proveedores
+app/(main)/proveedor/productos/page.tsx  →  /proveedor/productos
+app/(main)/comprador/catalogo/page.tsx   →  /comprador/catalogo
 ```
+
+### Un área por rol
+
+**El primer segmento de la URL es el rol**, y cada área tiene su propio `layout.tsx`:
+
+```
+app/(main)/
+├── _shell/          AreaShell · AreaHeader — el chasis, parametrizado por menu
+├── proveedor/       layout + guarda + barra lateral del panel
+├── comprador/       layout + guarda — catalogo, sin barra lateral
+├── admin/           layout + guarda — personal interno de Suminia
+├── (suminia)/       publico: registro, verificacion, recuperar contrasena
+└── (template)/      demos de Voxo, con su chatarra de tienda aparte
+```
+
+Esto es lo que permite que ninguna pantalla pregunte quién la está viendo: **el rol ya
+quedó decidido por la ruta**. El proveedor no tiene un carrito escondido tras un `if`,
+simplemente su `layout` no se lo pasa a `AreaShell`.
+
+La traducción rol → área vive en un solo sitio, `modules/auth/lib/area.ts`. `AreaGuard`
+la usa para mandar a cada quien a la suya, y `getHomePath` decide dónde aterriza al
+iniciar sesión y qué hace `/`.
+
+**No hay `middleware.ts`.** La sesión vive en `localStorage`, que el servidor no puede
+leer, de modo que la guarda es de cliente. No es la barrera de seguridad —esa la pone el
+backend con 403 en cada endpoint— sino lo que evita pintar un panel ajeno. Mover el token
+a una cookie permitiría comprobarlo antes de servir la página.
 
 ---
 
@@ -235,7 +263,7 @@ Una página no lleva lógica. Declara metadata, lee `params`/`searchParams` y re
 pantalla del módulo:
 
 ```tsx
-// app/(main)/(suminia)/register/page.tsx
+// app/(main)/(suminia)/register/page.tsx  (publico, sin area)
 import type { Metadata } from 'next';
 import { RegisterSection } from '@/modules/auth';
 

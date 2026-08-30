@@ -12,6 +12,7 @@ import { PasswordToggle, SubmitButton } from '@/shared/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 import { useLoginMutation } from '../api/authApi';
+import { getHomePath } from '../lib/area';
 import { authLabels } from '../lib/labels';
 
 const LoginModal = () => {
@@ -32,13 +33,15 @@ const LoginModal = () => {
     setError(null);
 
     try {
-      await login({ email, password }).unwrap();
+      const session = await login({ email, password }).unwrap();
       // Descarta los avisos de intentos fallidos previos: sin esto quedan
       // flotando sobre una sesion ya iniciada y parece que el login fallo.
       toast.dismiss();
       dispatch(CLOSELOGINMODAL());
       setPassword('');
-      router.push('/account');
+      /* Cada rol aterriza en su area. Antes todos caian en /account, que era
+         la misma pantalla para proveedor, comprador y personal interno. */
+      router.push(getHomePath(session.data.user));
     } catch (err) {
       /* El mensaje se muestra dentro del modal ademas de en el toast: el aviso
          flotante desaparece solo y es facil pasarlo por alto justo cuando hace

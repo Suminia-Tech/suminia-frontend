@@ -212,3 +212,81 @@
     }
   }
 }
+
+/* Menu principal de cada area. La barra de la plantilla (.nav-menu) arrastra el
+   desplegable multinivel, el toggle movil y el fondo de la tienda; aqui hacen
+   falta cuatro enlaces y nada mas. */
+.area-nav {
+  ul {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: block;
+    padding: 12px 0;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: $theme-font-color;
+    text-transform: uppercase;
+    font-size: 14px;
+
+    &:hover,
+    &.active {
+      color: var(--theme-color);
+    }
+  }
+}
+
+/* Tarjeta del catalogo que navega el comprador. Las del tema (.product-box)
+   traen contador, lista de deseos y boton de compra rapida, que todavia no
+   existen; esta se queda en lo que hay: foto, nombre, proveedor y precio. */
+.catalog-card {
+  height: 100%;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: $white;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba($theme-font-color, 0.08);
+  }
+
+  .catalog-card-media {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $light-blue;
+    color: rgba($theme-font-color, 0.45);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .catalog-card-body {
+    padding: 14px;
+
+    h5 {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    strong {
+      color: var(--theme-color);
+    }
+  }
+}

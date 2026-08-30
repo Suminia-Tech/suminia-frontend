@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 
 import BreadCrumb from '@/_template/Components/Element/BreadCrumb';
-import Layout6 from '@/_template/Layout/Layout6';
 import { SupplierDetailScreen } from '@/modules/organizations';
 
 export const metadata: Metadata = {
-  title: 'Proveedor',
+  title: 'Detalle del proveedor',
+  description: 'Datos y estado de aprobación de una empresa proveedora.',
 };
 
-export default async function SupplierDetailPage({
+export default async function ProveedorDetallePage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -16,9 +16,9 @@ export default async function SupplierDetailPage({
   const { id } = await params;
 
   return (
-    <Layout6 isCategories={true}>
-      <BreadCrumb parent={'Proveedores'} title={'Proveedor'} />
+    <>
+      <BreadCrumb parent={'Proveedores'} title={'Detalle del proveedor'} />
       <SupplierDetailScreen supplierId={id} />
-    </Layout6>
+    </>
   );
 }

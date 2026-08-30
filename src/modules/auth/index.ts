@@ -2,6 +2,7 @@
    internas (../model, ../api, ../ui): solo lo que se exporta aqui. */
 
 export { AuthInitializer } from './ui/AuthInitializer';
+export { AreaGuard } from './ui/AreaGuard';
 export { default as LoginModal } from './ui/LoginModal';
 export { default as RegisterSection } from './ui/RegisterSection';
 export { default as ForgotPasswordSection } from './ui/ForgotPasswordSection';
@@ -17,3 +18,6 @@ export { useGetProfileQuery } from './api/authApi';
 export { default as authReducer } from './model/authSlice';
 
 export type { OrganizationType, Role, RoleName, User } from './model/auth.types';
+
+export { getUserArea, belongsToArea, getHomePath } from './lib/area';
+export type { Area } from './lib/area';

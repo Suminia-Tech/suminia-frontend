@@ -79,12 +79,20 @@ En el App Router **la ruta de carpetas es la URL**, y un nombre **entre parénte
 grupo de rutas: no aparece en la URL**.
 
 ```
-app/(main)/(suminia)/   ← rutas reales del producto
+app/(main)/proveedor/   ← area del proveedor   (layout + guarda propios)
+app/(main)/comprador/   ← area del comprador
+app/(main)/admin/       ← area del personal interno de Suminia
+app/(main)/(suminia)/   ← publico: registro, verificacion, recuperar contrasena
 app/(main)/(template)/  ← demos de Voxo, se borran por partes
 ```
 
-**Rutas nuevas van siempre en `(suminia)/`**, con URL en kebab-case y sin el prefijo
-`/page/` que arrastra la plantilla.
+**El primer segmento de la URL es el rol.** Cada area tiene su `layout.tsx`, que monta su
+propio chasis (`_shell/AreaShell`) con su menu y su guarda. Ninguna pantalla pregunta
+quien la esta viendo: el rol ya quedo decidido por la ruta.
+
+Una ruta nueva va **dentro del area a la que pertenece**, con URL en kebab-case y sin el
+prefijo `/page/` que arrastra la plantilla. Solo lo que es publico de verdad —registro,
+verificacion de correo— va en `(suminia)/`.
 
 ## Reglas (forzadas por ESLint, no son sugerencias)
 

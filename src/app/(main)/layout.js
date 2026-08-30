@@ -1,16 +1,8 @@
 "use client";
-import ConfirmDeleteModal from "@/_template/Components/Pages/UserDashboard/ConfirmDeleteModal";
-import DeleteModal from "@/_template/Components/Pages/UserDashboard/DeleteModal";
-import CopyConfigModal from "@/_template/Layout/Common/Customizer/CopyConfigModal";
-import SizeModal from "@/_template/Layout/Element/SizeModal";
-import Overlay from "@/_template/Layout/Overlay";
 import { store } from "@/store";
 import { usePathname } from "next/navigation";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import CartSuccessModal from "@/_template/Components/Element/CartSuccessModal";
-import CommonMobileView from "@/_template/Components/Element/CommonMobileView";
-import CommonModel from "@/_template/Components/Element/CommonModel";
 import React, { useEffect } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
@@ -60,9 +52,6 @@ const RootLayout = ({ children }) => {
     <Provider store={store}>
       <ErrorBoundary>
         {children}
-        <Overlay />
-        <CartSuccessModal />
-        {pathArr.includes("register") || pathArr.includes("login") || pathArr.includes("forgot_password") || (pathArr.includes("coming_soon") !== true && <CommonMobileView />)}
         {/* pauseOnFocusLoss desactivado a proposito: con el valor por defecto,
             salir de la pestana congela el temporizador y los avisos se quedan
             en pantalla indefinidamente, incluso sobre una sesion ya iniciada. */}
@@ -73,11 +62,6 @@ const RootLayout = ({ children }) => {
           closeOnClick
           newestOnTop
         />
-        <SizeModal />
-        <CommonModel />
-        <DeleteModal />
-        <ConfirmDeleteModal />
-        <CopyConfigModal />
       </ErrorBoundary>
     </Provider>
   );

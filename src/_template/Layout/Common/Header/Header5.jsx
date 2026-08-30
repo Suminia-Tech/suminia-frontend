@@ -10,7 +10,7 @@ import ItemCart from '@/_template/Layout/Element/ItemCart';
 import SearchBarToggle from '@/_template/Layout/Element/SearchBarToggle';
 import NavBar from '@/_template/Layout/Element/NavBar';
 import { useAuth } from '@/modules/auth';
-import { getAccountLabel } from '@/modules/auth';
+import { getAccountLabel, getHomePath } from '@/modules/auth';
 import { LOGINMODAL } from '@/_template/ReduxToolkit/Reducers/ModalReducer';
 import { useDispatch } from 'react-redux';
 
@@ -71,10 +71,10 @@ const Header5 = ({ noStyle, isCategories }) => {
                             <i className='fas fa-chevron-down ms-1'></i>
                           </DropdownToggle>
                           <DropdownMenu end>
-                            <DropdownItem href='/account'>{getAccountLabel(user)}</DropdownItem>
-                            {/* Solo el personal de una empresa tiene organizacion:
-                                el interno de Suminia no. */}
-                            {user?.organizationId && <DropdownItem href='/account/company'>Mi empresa</DropdownItem>}
+                            {/* Cada rol tiene su propia area: /proveedor, /comprador
+                                o /admin. Este header solo lo usan ya las paginas de la
+                                plantilla, que se iran borrando. */}
+                            <DropdownItem href={getHomePath(user)}>{getAccountLabel(user)}</DropdownItem>
                             <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>

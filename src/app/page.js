@@ -9,6 +9,7 @@ import HomePromo from "@/_template/Components/Home/HomePromo";
 import HomeTopBanner from "@/_template/Components/Home/HomeTopBanner";
 import CommonModel from "@/_template/Components/Element/CommonModel";
 import Layout6 from "@/_template/Layout/Layout6";
+import HomeRedirect from "./HomeRedirect";
 import { getAPIData } from "@/_template/Utils";
 import { useEffect, useState } from "react";
 
@@ -31,6 +32,8 @@ export default function Home() {
 
   return (
     <Layout6 isCategories={true}>
+      {/* Con sesion, cada rol se va a su area; sin ella se queda esta portada. */}
+      <HomeRedirect />
       <HomeSlider mainSlider={mainSlider} />
       <HomeTopBanner bannerData={bannerData} />
       <HomeFresh productData={productData} />

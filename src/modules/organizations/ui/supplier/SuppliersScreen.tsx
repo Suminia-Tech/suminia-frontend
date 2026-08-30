@@ -92,7 +92,7 @@ export const SuppliersScreen = () => {
         <OrganizationTable
           organizations={suppliers}
           isLoading={isFetching}
-          detailBasePath='/suppliers'
+          detailBasePath='/admin/proveedores'
           emptyMessage={
             search || status
               ? 'Ningún proveedor coincide con la búsqueda.'
