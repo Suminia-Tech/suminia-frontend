@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
 
@@ -157,7 +157,12 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
   };
 
   return (
-    <Modal className='add-address-modal' centered isOpen={isOpen} toggle={onClose}>
+    <Modal
+      className='add-address-modal product-form-modal'
+      centered
+      isOpen={isOpen}
+      toggle={onClose}
+    >
       {/* Vacia a proposito: el tema posiciona el boton de cierre fuera del
           marco y le da padding cero a la cabecera. */}
       <ModalHeader toggle={onClose}></ModalHeader>
@@ -168,92 +173,94 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
         </div>
 
         <form id={FORM_ID} onSubmit={handleSubmit} noValidate>
-          <div className='mb-3'>
-            <label className='form-label font-light'>Nombre del producto</label>
-            <input
-              type='text'
-              className='form-control'
-              value={form.name}
-              onChange={handleChange('name')}
-            />
-            {errors.name && <small className='text-danger'>{errors.name}</small>}
-          </div>
-
-          <div className='mb-3'>
-            <label className='form-label font-light'>Categoría</label>
-            <select
-              className='form-control'
-              value={form.categoryId}
-              onChange={handleChange('categoryId')}
-            >
-              <option value=''>Selecciona una categoría</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            {errors.categoryId && (
-              <small className='text-danger'>{errors.categoryId}</small>
-            )}
-          </div>
-
-          <div className='row'>
-            <div className='col-md-6 mb-3'>
-              <label className='form-label font-light'>Marca (opcional)</label>
-              <input
-                type='text'
-                className='form-control'
-                value={form.brand}
-                onChange={handleChange('brand')}
-              />
-            </div>
-            <div className='col-md-6 mb-3'>
-              <label className='form-label font-light'>Fabricante (opcional)</label>
-              <input
-                type='text'
-                className='form-control'
-                value={form.manufacturer}
-                onChange={handleChange('manufacturer')}
-              />
-            </div>
-          </div>
-
-          <div className='mb-3'>
-            <label className='form-label font-light'>Descripción (opcional)</label>
-            <textarea
-              className='form-control'
-              rows={3}
-              value={form.description}
-              onChange={handleChange('description')}
-            />
-          </div>
-
-          <div className='mb-3'>
-            <label className='form-label font-light'>Estado</label>
-            <select
-              className='form-control'
-              value={form.status}
-              onChange={handleChange('status')}
-            >
-              <option value='DRAFT'>Borrador — solo lo ves tú</option>
-              <option value='ACTIVE'>Publicado — visible en el catálogo</option>
-              {isEditing && <option value='INACTIVE'>Retirado del catálogo</option>}
-            </select>
-          </div>
-
-          {!isEditing && (
-            <>
-              <div className='box-head mt-4'>
-                <h3>Primer formato de venta</h3>
+          <Row>
+            {/* Al editar no hay columna de formato, de modo que los datos del
+                producto ocupan el ancho entero en vez de dejar un hueco. */}
+            <Col lg={isEditing ? '12' : '6'}>
+              <div className='mb-3'>
+                <label className='form-label font-light'>Nombre del producto</label>
+                <input
+                  type='text'
+                  className='form-control'
+                  value={form.name}
+                  onChange={handleChange('name')}
+                />
+                {errors.name && <small className='text-danger'>{errors.name}</small>}
               </div>
-              <p className='font-light'>
-                Un producto se vende en uno o varios formatos: caja x 100, talla M,
-                frasco de 500 mL. Empieza con uno y agrega los demás después.
-              </p>
 
-              <div className='row'>
-                <div className='col-md-7 mb-3'>
+              <div className='mb-3'>
+                <label className='form-label font-light'>Categoría</label>
+                <select
+                  className='form-control'
+                  value={form.categoryId}
+                  onChange={handleChange('categoryId')}
+                >
+                  <option value=''>Selecciona una categoría</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.categoryId && (
+                  <small className='text-danger'>{errors.categoryId}</small>
+                )}
+              </div>
+
+              <Row>
+                <Col sm='6' className='mb-3'>
+                  <label className='form-label font-light'>Marca</label>
+                  <input
+                    type='text'
+                    className='form-control'
+                    value={form.brand}
+                    onChange={handleChange('brand')}
+                  />
+                </Col>
+                <Col sm='6' className='mb-3'>
+                  <label className='form-label font-light'>Fabricante</label>
+                  <input
+                    type='text'
+                    className='form-control'
+                    value={form.manufacturer}
+                    onChange={handleChange('manufacturer')}
+                  />
+                </Col>
+              </Row>
+
+              <div className='mb-3'>
+                <label className='form-label font-light'>Descripción</label>
+                <textarea
+                  className='form-control'
+                  rows={3}
+                  value={form.description}
+                  onChange={handleChange('description')}
+                />
+              </div>
+
+              <div className='mb-3'>
+                <label className='form-label font-light'>Estado</label>
+                <select
+                  className='form-control'
+                  value={form.status}
+                  onChange={handleChange('status')}
+                >
+                  <option value='DRAFT'>Borrador — solo lo ves tú</option>
+                  <option value='ACTIVE'>Publicado — visible en el catálogo</option>
+                  {isEditing && <option value='INACTIVE'>Retirado del catálogo</option>}
+                </select>
+              </div>
+            </Col>
+
+            {!isEditing && (
+              <Col lg='6' className='product-form-aside'>
+                <h5 className='mb-1'>Primer formato de venta</h5>
+                <p className='font-light'>
+                  Un producto se vende en uno o varios formatos: caja x 100, talla M,
+                  frasco de 500 mL. Empieza con uno y agrega los demás después.
+                </p>
+
+                <div className='mb-3'>
                   <label className='form-label font-light'>Nombre del formato</label>
                   <input
                     type='text'
@@ -266,55 +273,58 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     <small className='text-danger'>{errors.presentationName}</small>
                   )}
                 </div>
-                <div className='col-md-5 mb-3'>
-                  <label className='form-label font-light'>Empaque</label>
-                  <input
-                    type='text'
-                    className='form-control'
-                    placeholder='Caja'
-                    value={form.packaging}
-                    onChange={handleChange('packaging')}
-                  />
-                  {errors.packaging && (
-                    <small className='text-danger'>{errors.packaging}</small>
-                  )}
-                </div>
-              </div>
 
-              <div className='row'>
-                <div className='col-md-4 mb-3'>
-                  <label className='form-label font-light'>Precio (COP)</label>
-                  <input
-                    type='number'
-                    min='0'
-                    className='form-control'
-                    value={form.price}
-                    onChange={handleChange('price')}
-                  />
-                  {errors.price && <small className='text-danger'>{errors.price}</small>}
-                </div>
-                <div className='col-md-4 mb-3'>
-                  <label className='form-label font-light'>Inventario</label>
-                  <input
-                    type='number'
-                    min='0'
-                    className='form-control'
-                    value={form.stock}
-                    onChange={handleChange('stock')}
-                  />
-                </div>
-                <div className='col-md-4 mb-3'>
-                  <label className='form-label font-light'>SKU (opcional)</label>
-                  <input
-                    type='text'
-                    className='form-control'
-                    value={form.sku}
-                    onChange={handleChange('sku')}
-                  />
-                </div>
-              </div>
-            </>
-          )}
+                <Row>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Empaque</label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      placeholder='Caja'
+                      value={form.packaging}
+                      onChange={handleChange('packaging')}
+                    />
+                    {errors.packaging && (
+                      <small className='text-danger'>{errors.packaging}</small>
+                    )}
+                  </Col>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>SKU</label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      value={form.sku}
+                      onChange={handleChange('sku')}
+                    />
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Precio (COP)</label>
+                    <input
+                      type='number'
+                      min='0'
+                      className='form-control'
+                      value={form.price}
+                      onChange={handleChange('price')}
+                    />
+                    {errors.price && <small className='text-danger'>{errors.price}</small>}
+                  </Col>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Inventario</label>
+                    <input
+                      type='number'
+                      min='0'
+                      className='form-control'
+                      value={form.stock}
+                      onChange={handleChange('stock')}
+                    />
+                  </Col>
+                </Row>
+              </Col>
+            )}
+          </Row>
 
           {generalError && <div className='alert alert-danger mt-3'>{generalError}</div>}
         </form>
