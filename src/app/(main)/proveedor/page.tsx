@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
 
-/* La raiz del area no tiene pantalla propia: lo primero que hace un proveedor
-   es mirar su catalogo, de modo que /proveedor lleva alli en vez de ofrecer un
-   panel vacio de bienvenida. */
+/* La raiz del area entra por la cuenta: es el resumen de la empresa, y desde
+   ahi el proveedor decide si va a su catalogo. */
 export default function ProveedorPage() {
-  redirect('/proveedor/productos');
+  redirect('/proveedor/cuenta');
 }

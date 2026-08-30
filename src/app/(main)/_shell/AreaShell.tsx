@@ -20,12 +20,11 @@ interface AreaShellProps {
   children: ReactNode;
   /** Fila superior propia del area, si la necesita. */
   headerTop?: ReactNode;
-  accountLinks?: AreaNavItem[];
 }
 
-const AreaShell = ({ nav, homeHref, children, headerTop, accountLinks }: AreaShellProps) => (
+const AreaShell = ({ nav, homeHref, children, headerTop }: AreaShellProps) => (
   <>
-    <AreaHeader nav={nav} homeHref={homeHref} accountLinks={accountLinks}>
+    <AreaHeader nav={nav} homeHref={homeHref}>
       {headerTop}
     </AreaHeader>
     {children}

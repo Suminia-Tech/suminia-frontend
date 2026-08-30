@@ -28,12 +28,9 @@ interface AreaHeaderProps {
   homeHref: string;
   /** Fila superior opcional: el comprador cuelga aqui buscador y carrito. */
   children?: React.ReactNode;
-  /* Secciones de cuenta dentro del menu de usuario. El proveedor las deja
-     vacias porque su panel ya las tiene en la barra lateral. */
-  accountLinks?: AreaNavItem[];
 }
 
-const AreaHeader = ({ nav, homeHref, children, accountLinks = [] }: AreaHeaderProps) => {
+const AreaHeader = ({ nav, homeHref, children }: AreaHeaderProps) => {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
@@ -92,12 +89,9 @@ const AreaHeader = ({ nav, homeHref, children, accountLinks = [] }: AreaHeaderPr
                           </DropdownToggle>
                           <DropdownMenu end>
                             <DropdownItem header>{getAccountLabel(user)}</DropdownItem>
-                            {accountLinks.map((item) => (
-                              <DropdownItem key={item.href} href={item.href}>
-                                {item.label}
-                              </DropdownItem>
-                            ))}
-                            {accountLinks.length > 0 && <DropdownItem divider />}
+                            {/* Las secciones de cuenta viven en MI CUENTA, en el
+                                menu principal: repetirlas aqui daria dos caminos
+                                al mismo sitio. */}
                             <DropdownItem onClick={logout}>Cerrar sesión</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>

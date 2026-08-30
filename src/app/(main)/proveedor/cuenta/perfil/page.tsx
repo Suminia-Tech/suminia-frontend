@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Container } from 'reactstrap';
 
 import { MyProfileScreen } from '@/modules/auth';
 
@@ -10,12 +9,8 @@ export const metadata: Metadata = {
 
 export default function PerfilPage() {
   return (
-    <section className='section-b-space'>
-      <Container>
-        <div className='dashboard-profile'>
-          <MyProfileScreen />
-        </div>
-      </Container>
-    </section>
+    <div className='dashboard-profile'>
+      <MyProfileScreen />
+    </div>
   );
 }

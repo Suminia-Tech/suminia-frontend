@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Container } from 'reactstrap';
 
 import { MyTeamScreen } from '@/modules/users';
 
@@ -10,12 +9,8 @@ export const metadata: Metadata = {
 
 export default function EquipoPage() {
   return (
-    <section className='section-b-space'>
-      <Container>
-        <div className='table-dashboard dashboard'>
-          <MyTeamScreen />
-        </div>
-      </Container>
-    </section>
+    <div className='table-dashboard dashboard'>
+      <MyTeamScreen />
+    </div>
   );
 }

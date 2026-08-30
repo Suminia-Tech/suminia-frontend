@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Container } from 'reactstrap';
 
 import { MyProductsScreen } from '@/modules/products';
 
@@ -7,6 +8,16 @@ export const metadata: Metadata = {
   description: 'Administra el catálogo que tu empresa publica en Suminia.',
 };
 
+/* Ancho completo, sin barra lateral: la tabla lleva miniaturas, formatos,
+   precio e inventario y en una columna de nueve se quedaba estrecha. */
 export default function ProductosPage() {
-  return <MyProductsScreen />;
+  return (
+    <section className='section-b-space'>
+      <Container>
+        <div className='table-dashboard dashboard'>
+          <MyProductsScreen />
+        </div>
+      </Container>
+    </section>
+  );
 }
