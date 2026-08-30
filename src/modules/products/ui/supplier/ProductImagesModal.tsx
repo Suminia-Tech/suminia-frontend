@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { ConfirmModal } from '@/shared/ui';
 
 import { useRemoveImageMutation, useUpdateImageMutation } from '../../api/productsApi';
 import { useImageUpload } from '../../hooks/useImageUpload';
@@ -28,6 +29,7 @@ interface ProductImagesModalProps {
 const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busyImageId, setBusyImageId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
   const { upload, uploading, error, clearError } = useImageUpload(product.id);
   const [updateImage] = useUpdateImageMutation();
@@ -63,11 +65,16 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
     }
   };
 
-  const remove = async (imageId: string) => {
-    setBusyImageId(imageId);
+  /* Borrar quita tambien el archivo de S3, de modo que no hay vuelta atras
+     aunque la fila sea una baja logica. */
+  const confirmRemove = async () => {
+    if (!pendingDelete) return;
+
+    setBusyImageId(pendingDelete);
     try {
-      await removeImage({ productId: product.id, imageId }).unwrap();
+      await removeImage({ productId: product.id, imageId: pendingDelete }).unwrap();
       toast.success('Imagen eliminada');
+      setPendingDelete(null);
     } catch (err) {
       toast.error(extractErrorMessage(err, 'No se pudo eliminar la imagen.'));
     } finally {
@@ -119,7 +126,7 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
                       className='btn btn-sm text-danger'
                       title='Eliminar'
                       disabled={busyImageId === image.id}
-                      onClick={() => remove(image.id)}
+                      onClick={() => setPendingDelete(image.id)}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -144,6 +151,26 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
           onChange={handleFile}
         />
       </ModalBody>
+
+      {pendingDelete && (
+        <ConfirmModal
+          isOpen={Boolean(pendingDelete)}
+          onClose={() => setPendingDelete(null)}
+          onConfirm={confirmRemove}
+          isLoading={busyImageId === pendingDelete}
+          title='¿Eliminar esta imagen?'
+          confirmLabel='Sí, eliminar'
+        >
+          <p className='mb-0'>
+            El archivo se borra del almacenamiento y no se puede recuperar.
+            {images.length === 1
+              ? ' Es la única que tiene el producto: quedará sin foto en el catálogo.'
+              : images.find((image) => image.id === pendingDelete)?.isPrimary
+                ? ' Es la principal, así que la siguiente ocupará su lugar.'
+                : ''}
+          </p>
+        </ConfirmModal>
+      )}
 
       <ModalFooter className='pt-0 text-end d-block'>
         <button

@@ -8,6 +8,7 @@ import { Table } from 'reactstrap';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { canOperate } from '@/shared/lib/organizationAccess';
 import { hasPermission } from '@/shared/lib/permissions';
+import { ConfirmModal } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useDeleteProductMutation, useGetProductsQuery } from '../../api/productsApi';
@@ -31,12 +32,13 @@ export const MyProductsScreen = () => {
   const [editing, setEditing] = useState<Product | null>(null);
   const [isFormOpen, setFormOpen] = useState(false);
   const [imagesFor, setImagesFor] = useState<Product | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
 
   const { data, isLoading, isError, error } = useGetProductsQuery(
     { limit: 50, sort: 'updatedAt', sortDirection: 'desc' },
     { skip: !hydrated },
   );
-  const [deleteProduct] = useDeleteProductMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
   /* El backend bloquea las altas si la empresa no esta aprobada
      (ActiveOrganizationGuard), de modo que ofrecerlas seria ofrecer un 403. */
@@ -55,10 +57,13 @@ export const MyProductsScreen = () => {
     setFormOpen(true);
   };
 
-  const remove = async (product: Product) => {
+  const confirmRemove = async () => {
+    if (!pendingDelete) return;
+
     try {
-      await deleteProduct(product.id).unwrap();
+      await deleteProduct(pendingDelete.id).unwrap();
       toast.success('Producto retirado del catálogo');
+      setPendingDelete(null);
     } catch (err) {
       toast.error(extractErrorMessage(err, 'No se pudo eliminar el producto.'));
     }
@@ -189,7 +194,7 @@ export const MyProductsScreen = () => {
                         <button
                           type='button'
                           className='btn btn-sm text-danger'
-                          onClick={() => remove(product)}
+                          onClick={() => setPendingDelete(product)}
                         >
                           Eliminar
                         </button>
@@ -216,6 +221,30 @@ export const MyProductsScreen = () => {
             setEditing(null);
           }}
         />
+      )}
+
+      {pendingDelete && (
+        <ConfirmModal
+          isOpen={Boolean(pendingDelete)}
+          onClose={() => setPendingDelete(null)}
+          onConfirm={confirmRemove}
+          isLoading={isDeleting}
+          title='¿Eliminar este producto?'
+          confirmLabel='Sí, eliminar'
+        >
+          <p className='mb-1'>
+            <strong>{pendingDelete.name}</strong>
+          </p>
+          <p className='mb-0'>
+            Se retira del catálogo junto con sus {pendingDelete.presentations.length}{' '}
+            {pendingDelete.presentations.length === 1 ? 'formato' : 'formatos'}
+            {pendingDelete.images.length > 0 &&
+              ` y sus ${pendingDelete.images.length} ${
+                pendingDelete.images.length === 1 ? 'imagen' : 'imágenes'
+              }`}
+            . Los pedidos que ya lo incluyan lo conservan.
+          </p>
+        </ConfirmModal>
       )}
 
       {imagesProduct && (
