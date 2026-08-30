@@ -297,29 +297,45 @@
 
    El ancho se fija aqui y no con size="lg" porque el "lg" de Bootstrap se queda
    en 800px, justo por debajo de lo que necesitan dos columnas con sus campos
-   partidos por la mitad. */
+   partidos por la mitad.
+
+   Ojo con el selector: reactstrap pone el className del Modal en .modal-dialog,
+   no en el .modal de fuera. Buscar ".product-form-modal .modal-dialog" no
+   encuentra nada y el modal se queda con el ancho por defecto. */
 .product-form-modal {
-  .modal-dialog {
-    max-width: 920px;
+  max-width: 980px;
+
+  .modal-body {
+    /* Mas aire que el del tema: son once campos y con su padding responsive
+       quedaban pegados al borde. */
+    padding: 32px 36px 24px;
+
+    /* El cuerpo se desplaza solo si el alto no alcanza, en vez de empujar el
+       pie del modal fuera de la pantalla. */
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
   }
 
-  /* Separador entre las dos columnas, solo cuando de verdad van lado a lado.
-     Apilado sirve de division horizontal. */
+  .modal-footer {
+    padding: 0 36px 28px;
+  }
+
+  /* Separacion real entre las dos columnas: sin esto el texto de la derecha
+     queda pegado a la linea divisoria. */
   .product-form-aside {
     border-left: 1px solid $border-color;
+    padding-left: 36px;
 
     @media (max-width: 991.98px) {
       border-left: none;
       border-top: 1px solid $border-color;
-      padding-top: 20px;
-      margin-top: 8px;
+      padding-left: calc(var(--bs-gutter-x) * 0.5);
+      padding-top: 24px;
+      margin-top: 12px;
     }
   }
 
-  /* El cuerpo se desplaza solo si el alto no alcanza, en vez de empujar el pie
-     del modal fuera de la pantalla. */
-  .modal-body {
-    max-height: calc(100vh - 220px);
-    overflow-y: auto;
+  .form-label {
+    margin-bottom: 6px;
   }
 }
