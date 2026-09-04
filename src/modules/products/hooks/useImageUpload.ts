@@ -30,7 +30,20 @@ const uploadToStorage = async (ticket: UploadTicket, file: File): Promise<void> 
   Object.entries(ticket.fields).forEach(([key, value]) => form.append(key, value));
   form.append('file', file);
 
-  const response = await fetch(ticket.uploadUrl, { method: 'POST', body: form });
+  /* fetch lanza TypeError sin detalle cuando el navegador corta la peticion
+     antes de dejarla salir, que en la practica siempre es CORS: el bucket no
+     permite este origen. El mensaje propio de fetch —"Failed to fetch"— no dice
+     nada, y el archivo puede haber llegado igual: S3 responde 204 pero el
+     navegador oculta la respuesta, de modo que la confirmacion no llega a
+     correr y el objeto queda huerfano. */
+  let response: Response;
+  try {
+    response = await fetch(ticket.uploadUrl, { method: 'POST', body: form });
+  } catch {
+    throw new Error(
+      'El almacenamiento rechazó la conexión desde esta dirección. Revisa el CORS del bucket.',
+    );
+  }
 
   if (!response.ok) {
     /* S3 contesta los errores en XML, no en JSON. El codigo es lo unico que
