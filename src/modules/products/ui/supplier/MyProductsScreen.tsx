@@ -3,15 +3,20 @@
 import { useState } from 'react';
 import { Image as ImageIcon, PlusCircle } from 'react-feather';
 import { toast } from 'react-toastify';
-import { Table } from 'reactstrap';
+import { Col, Row, Table } from 'reactstrap';
 
+import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { canOperate } from '@/shared/lib/organizationAccess';
 import { hasPermission } from '@/shared/lib/permissions';
-import { ConfirmModal } from '@/shared/ui';
+import { ConfirmModal, Pagination } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
-import { useDeleteProductMutation, useGetProductsQuery } from '../../api/productsApi';
+import {
+  useDeleteProductMutation,
+  useGetCategoriesQuery,
+  useGetProductsQuery,
+} from '../../api/productsApi';
 import {
   PRODUCT_STATUS_CLASS,
   PRODUCT_STATUS_LABEL,
@@ -19,12 +24,16 @@ import {
   getPrimaryImage,
   getTotalStock,
 } from '../../lib/productLabels';
-import type { Product } from '../../model/product.types';
+import type { Product, ProductStatus } from '../../model/product.types';
 import ProductFormModal from './ProductFormModal';
 import ProductImagesModal from './ProductImagesModal';
+import ProductPresentationsModal from './ProductPresentationsModal';
+
+const PAGE_SIZE = 15;
 
 /* Catalogo propio del proveedor. El backend ya devuelve solo lo de su empresa
-   —y a el si le muestra los borradores—, de modo que aqui no se filtra nada. */
+   —y a el si le muestra los borradores—, de modo que aqui no se filtra nada por
+   pertenencia: los filtros de esta pantalla son de busqueda, no de permiso. */
 export const MyProductsScreen = () => {
   const user = useAppSelector((state) => state.auth.user);
   const hydrated = useAppSelector((state) => state.auth.hydrated);
@@ -32,10 +41,58 @@ export const MyProductsScreen = () => {
   const [editing, setEditing] = useState<Product | null>(null);
   const [isFormOpen, setFormOpen] = useState(false);
   const [imagesFor, setImagesFor] = useState<Product | null>(null);
+  const [formatsFor, setFormatsFor] = useState<Product | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
 
-  const { data, isLoading, isError, error } = useGetProductsQuery(
-    { limit: 50, sort: 'updatedAt', sortDirection: 'desc' },
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [status, setStatus] = useState<ProductStatus | ''>('');
+
+  /* La busqueda se retrasa para no consultar en cada tecla; los desplegables
+     no, porque un cambio de filtro es una sola decision. */
+  const debouncedSearch = useDebouncedValue(search);
+
+  /* Cualquier cambio de criterio vuelve a la primera pagina: quedarse en la
+     cuatro tras filtrar suele dar una lista vacia que parece un error.
+
+     Se hace en el manejador y no en un efecto: reaccionar al cambio con
+     setState encadena un render de mas y deja un instante en el que la pagina
+     y el filtro no concuerdan. */
+  const changeSearch = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const changeCategory = (value: string) => {
+    setCategoryId(value);
+    setPage(1);
+  };
+
+  const changeStatus = (value: ProductStatus | '') => {
+    setStatus(value);
+    setPage(1);
+  };
+
+  const { data: categoriesData } = useGetCategoriesQuery(undefined, { skip: !hydrated });
+  const categories = categoriesData?.data ?? [];
+
+  const { data, isLoading, isFetching, isError, error } = useGetProductsQuery(
+    {
+      page,
+      limit: PAGE_SIZE,
+      sort: 'updatedAt',
+      sortDirection: 'desc',
+      ...(debouncedSearch ? { search: debouncedSearch } : {}),
+      ...(categoryId || status
+        ? {
+            filter: {
+              ...(categoryId ? { categoryId } : {}),
+              ...(status ? { status } : {}),
+            },
+          }
+        : {}),
+    },
     { skip: !hydrated },
   );
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
@@ -69,25 +126,17 @@ export const MyProductsScreen = () => {
     }
   };
 
-  if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
-  }
-
-  if (isError) {
-    return (
-      <div className='alert alert-danger'>
-        {extractErrorMessage(error, 'No se pudo cargar el catálogo.')}
-      </div>
-    );
-  }
-
   const products = data?.data.data ?? [];
+  const meta = data?.data.meta;
+  const hasFilters = Boolean(debouncedSearch || categoryId || status);
 
-  /* La galeria se alimenta de la lista, no de una consulta aparte: asi la
-     imagen recien subida aparece sola cuando RTK Query invalida el listado. */
-  const imagesProduct = imagesFor
-    ? (products.find((item) => item.id === imagesFor.id) ?? imagesFor)
-    : null;
+  /* Los modales se alimentan de la lista, no de una consulta aparte: asi lo que
+     se acaba de cambiar aparece solo cuando RTK Query invalida el listado. */
+  const fresh = (candidate: Product | null) =>
+    candidate ? (products.find((item) => item.id === candidate.id) ?? candidate) : null;
+
+  const imagesProduct = fresh(imagesFor);
+  const formatsProduct = fresh(formatsFor);
 
   return (
     <>
@@ -117,95 +166,153 @@ export const MyProductsScreen = () => {
         </div>
       )}
 
-      {products.length === 0 ? (
+      <Row className='mb-3 g-2'>
+        <Col md='6'>
+          <input
+            type='search'
+            className='form-control'
+            placeholder='Buscar por nombre, marca o fabricante'
+            value={search}
+            onChange={(event) => changeSearch(event.target.value)}
+          />
+        </Col>
+        <Col md='3'>
+          <select
+            className='form-control'
+            value={categoryId}
+            onChange={(event) => changeCategory(event.target.value)}
+          >
+            <option value=''>Todas las categorías</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </Col>
+        <Col md='3'>
+          <select
+            className='form-control'
+            value={status}
+            onChange={(event) => changeStatus(event.target.value as ProductStatus | '')}
+          >
+            <option value=''>Todos los estados</option>
+            <option value='DRAFT'>Borrador</option>
+            <option value='ACTIVE'>Publicado</option>
+            <option value='INACTIVE'>Retirado</option>
+          </select>
+        </Col>
+      </Row>
+
+      {!hydrated || isLoading ? (
+        <p className='font-light'>Cargando...</p>
+      ) : isError ? (
+        <div className='alert alert-danger'>
+          {extractErrorMessage(error, 'No se pudo cargar el catálogo.')}
+        </div>
+      ) : products.length === 0 ? (
         <p className='font-light'>
-          Todavía no tienes productos. Crea el primero y quedará como borrador hasta
-          que decidas publicarlo.
+          {hasFilters
+            ? 'No hay productos que coincidan con lo que buscas.'
+            : 'Todavía no tienes productos. Crea el primero y quedará como borrador hasta que decidas publicarlo.'}
         </p>
       ) : (
-        <Table responsive className='align-middle'>
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Categoría</th>
-              <th>Formatos</th>
-              <th>Precio</th>
-              <th>Inventario</th>
-              <th>Estado</th>
-              {(canUpdate || canDelete) && <th className='text-end'>Acciones</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => {
-              const image = getPrimaryImage(product);
+        /* isFetching sin isLoading es una recarga con datos ya en pantalla: se
+           atenua en vez de vaciarse, para que la tabla no salte al filtrar. */
+        <div className={isFetching ? 'is-refreshing' : undefined}>
+          <Table responsive className='align-middle'>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Formatos</th>
+                <th>Precio</th>
+                <th>Inventario</th>
+                <th>Estado</th>
+                {(canUpdate || canDelete) && <th className='text-end'>Acciones</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => {
+                const image = getPrimaryImage(product);
 
-              return (
-                <tr key={product.id}>
-                  <td>
-                    <div className='d-flex align-items-center gap-2'>
-                      <span className='product-thumb'>
-                        {image ? (
-                          /* eslint-disable-next-line @next/next/no-img-element --
-                             las imagenes viven en S3 y next/image exigiria
-                             declarar el dominio del bucket en la configuracion. */
-                          <img src={image.url} alt={image.alt ?? product.name} />
-                        ) : (
-                          <ImageIcon size={16} />
-                        )}
-                      </span>
-                      <span>
-                        {product.name}
-                        {product.brand && (
-                          <small className='font-light d-block'>{product.brand}</small>
-                        )}
-                      </span>
-                    </div>
-                  </td>
-                  <td className='font-light'>{product.categoryName ?? '—'}</td>
-                  <td className='font-light'>{product.presentations.length}</td>
-                  <td>{formatPriceRange(product)}</td>
-                  <td className='font-light'>{getTotalStock(product)}</td>
-                  <td>
-                    <span className={`badge ${PRODUCT_STATUS_CLASS[product.status]}`}>
-                      {PRODUCT_STATUS_LABEL[product.status]}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
-                    <td className='text-end'>
-                      {canUpdate && (
-                        <>
-                          <button
-                            type='button'
-                            className='btn btn-sm'
-                            onClick={() => openEdit(product)}
-                          >
-                            Editar
-                          </button>
-                          <button
-                            type='button'
-                            className='btn btn-sm'
-                            onClick={() => setImagesFor(product)}
-                          >
-                            Imágenes ({product.images.length})
-                          </button>
-                        </>
-                      )}
-                      {canDelete && (
-                        <button
-                          type='button'
-                          className='btn btn-sm text-danger'
-                          onClick={() => setPendingDelete(product)}
-                        >
-                          Eliminar
-                        </button>
-                      )}
+                return (
+                  <tr key={product.id}>
+                    <td>
+                      <div className='d-flex align-items-center gap-2'>
+                        <span className='product-thumb'>
+                          {image ? (
+                            /* eslint-disable-next-line @next/next/no-img-element --
+                               las imagenes viven en S3 y next/image exigiria
+                               declarar el dominio del bucket en la configuracion. */
+                            <img src={image.url} alt={image.alt ?? product.name} />
+                          ) : (
+                            <ImageIcon size={16} />
+                          )}
+                        </span>
+                        <span>
+                          {product.name}
+                          {product.brand && (
+                            <small className='font-light d-block'>{product.brand}</small>
+                          )}
+                        </span>
+                      </div>
                     </td>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+                    <td className='font-light'>{product.categoryName ?? '—'}</td>
+                    <td className='font-light'>{product.presentations.length}</td>
+                    <td>{formatPriceRange(product)}</td>
+                    <td className='font-light'>{getTotalStock(product)}</td>
+                    <td>
+                      <span className={`badge ${PRODUCT_STATUS_CLASS[product.status]}`}>
+                        {PRODUCT_STATUS_LABEL[product.status]}
+                      </span>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className='text-end text-nowrap'>
+                        {canUpdate && (
+                          <>
+                            <button
+                              type='button'
+                              className='btn btn-sm'
+                              onClick={() => openEdit(product)}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              type='button'
+                              className='btn btn-sm'
+                              onClick={() => setFormatsFor(product)}
+                            >
+                              Formatos ({product.presentations.length})
+                            </button>
+                            <button
+                              type='button'
+                              className='btn btn-sm'
+                              onClick={() => setImagesFor(product)}
+                            >
+                              Imágenes ({product.images.length})
+                            </button>
+                          </>
+                        )}
+                        {canDelete && (
+                          <button
+                            type='button'
+                            className='btn btn-sm text-danger'
+                            onClick={() => setPendingDelete(product)}
+                          >
+                            Eliminar
+                          </button>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+
+          {meta && <Pagination meta={meta} onChange={setPage} label='productos' />}
+        </div>
       )}
 
       {isFormOpen && (
@@ -220,6 +327,14 @@ export const MyProductsScreen = () => {
             setFormOpen(false);
             setEditing(null);
           }}
+        />
+      )}
+
+      {formatsProduct && (
+        <ProductPresentationsModal
+          isOpen={Boolean(formatsProduct)}
+          product={formatsProduct}
+          onClose={() => setFormatsFor(null)}
         />
       )}
 

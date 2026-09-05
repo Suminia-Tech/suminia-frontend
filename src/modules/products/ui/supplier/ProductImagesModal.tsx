@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, type ChangeEvent } from 'react';
-import { Star, Trash2, Upload } from 'react-feather';
+import { ArrowLeft, ArrowRight, Star, Trash2, Upload } from 'react-feather';
 import { toast } from 'react-toastify';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
@@ -49,6 +49,36 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
     event.target.value = '';
   };
 
+  /* Reordenar es intercambiar la posicion con el vecino. Se mandan las dos
+     posiciones como el indice que les toca en el nuevo orden, en vez del valor
+     que traian: asi una lista con posiciones repetidas —todas en 0, como queda
+     si nadie las ha tocado— se va normalizando sola al primer movimiento. */
+  const move = async (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= images.length) return;
+
+    const current = images[index];
+    const neighbour = images[target];
+
+    setBusyImageId(current.id);
+    try {
+      await updateImage({
+        productId: product.id,
+        imageId: current.id,
+        data: { position: target },
+      }).unwrap();
+      await updateImage({
+        productId: product.id,
+        imageId: neighbour.id,
+        data: { position: index },
+      }).unwrap();
+    } catch (err) {
+      toast.error(extractErrorMessage(err, 'No se pudo reordenar.'));
+    } finally {
+      setBusyImageId(null);
+    }
+  };
+
   const makePrimary = async (imageId: string) => {
     setBusyImageId(imageId);
     try {
@@ -92,6 +122,13 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
         </div>
         <p className='font-light'>{product.name}</p>
 
+        {images.length > 1 && (
+          <p className='font-light'>
+            El orden es el que ve el comprador. La marcada como principal es la que
+            aparece en los listados.
+          </p>
+        )}
+
         {images.length === 0 ? (
           <p className='font-light'>
             Este producto todavía no tiene imágenes. La primera que subas queda como
@@ -99,7 +136,7 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
           </p>
         ) : (
           <div className='row g-3'>
-            {images.map((image) => (
+            {images.map((image, index) => (
               <div className='col-6 col-md-4' key={image.id}>
                 <div className='product-image-tile'>
                   {/* eslint-disable-next-line @next/next/no-img-element -- las
@@ -110,6 +147,24 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
                   {image.isPrimary && <span className='badge badge-success'>Principal</span>}
 
                   <div className='product-image-actions'>
+                    <button
+                      type='button'
+                      className='btn btn-sm'
+                      title='Mover a la izquierda'
+                      disabled={index === 0 || busyImageId === image.id}
+                      onClick={() => move(index, -1)}
+                    >
+                      <ArrowLeft size={14} />
+                    </button>
+                    <button
+                      type='button'
+                      className='btn btn-sm'
+                      title='Mover a la derecha'
+                      disabled={index === images.length - 1 || busyImageId === image.id}
+                      onClick={() => move(index, 1)}
+                    >
+                      <ArrowRight size={14} />
+                    </button>
                     {!image.isPrimary && (
                       <button
                         type='button'

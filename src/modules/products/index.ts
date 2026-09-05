@@ -6,6 +6,7 @@
    distintos aunque lean el mismo endpoint. */
 export { MyProductsScreen } from './ui/supplier/MyProductsScreen';
 export { CatalogScreen } from './ui/buyer/CatalogScreen';
+export { ProductDetailScreen } from './ui/buyer/ProductDetailScreen';
 
 export {
   useGetProductsQuery,

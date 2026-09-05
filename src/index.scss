@@ -339,3 +339,142 @@
     margin-bottom: 6px;
   }
 }
+
+/* Recarga con datos ya en pantalla: se atenua en vez de vaciarse, para que la
+   tabla no salte cada vez que se cambia un filtro. */
+.is-refreshing {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+/* Barra de paginacion. El tema trae .pagination de Bootstrap, pero pintada para
+   la tienda: cuadrada, con bordes gruesos y sin sitio para el recuento. */
+.list-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+
+  ul {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .btn {
+    min-width: 34px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+
+    &.active {
+      background-color: var(--theme-color);
+      border-color: var(--theme-color);
+      color: $white;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+    }
+  }
+}
+
+/* El modal de formatos lleva una tabla dentro: con los 500px por defecto de
+   Bootstrap las seis columnas no caben.
+
+   Ojo con el selector: reactstrap pone el className del Modal en .modal-dialog,
+   no en el .modal de fuera. */
+.presentations-modal {
+  max-width: 940px;
+
+  .modal-body {
+    padding: 32px 36px 24px;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: 0 36px 28px;
+  }
+
+  .presentations-table {
+    th,
+    td {
+      padding: 10px 8px;
+    }
+  }
+
+  /* El formulario se despliega bajo la tabla: se separa con un fondo propio
+     para que se lea como un panel aparte y no como otra fila mas. */
+  .presentation-form {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: $light-blue;
+  }
+}
+
+/* Galeria de la ficha del comprador. */
+.product-gallery {
+  .product-gallery-main {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: $light-blue;
+    color: rgba($theme-font-color, 0.45);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .product-gallery-thumbs {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    overflow-x: auto;
+
+    button {
+      flex: 0 0 64px;
+      width: 64px;
+      height: 64px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      overflow: hidden;
+      background: none;
+      cursor: pointer;
+
+      &.active {
+        border-color: var(--theme-color);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+/* La tarjeta del catalogo pasa a ser un enlace: hereda el color del texto para
+   que no se pinte de azul entera. */
+.catalog-card {
+  display: block;
+  color: inherit;
+
+  &:hover {
+    color: inherit;
+  }
+}
