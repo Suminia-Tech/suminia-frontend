@@ -1549,3 +1549,22 @@ $area-bg: #f1f4f9;
     }
   }
 }
+
+/* Vista previa del nombre compuesto de un formato. Va destacada porque es la
+   respuesta a "y esto como se va a ver", que es justo lo que el campo de texto
+   libre dejaba en el aire. */
+.name-preview {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background-color: $white;
+  border: 1px dashed $border-color;
+
+  strong {
+    font-size: 15px;
+  }
+}

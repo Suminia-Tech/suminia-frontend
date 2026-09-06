@@ -78,7 +78,10 @@ export interface ProductCategory {
 /* --- Peticiones --- */
 
 export interface PresentationRequest {
-  name: string;
+  /* El nombre no se envia: lo compone el backend a partir del empaque, la
+     cantidad, la unidad y la variante. Pedirlo aparte era declarar dos veces el
+     mismo dato, y las dos versiones se separaban al editar una sola. */
+  variant?: string;
   packaging: string;
   sku?: string;
   barcode?: string;

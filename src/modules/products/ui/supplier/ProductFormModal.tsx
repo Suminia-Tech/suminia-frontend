@@ -16,7 +16,8 @@ import {
   toAttributePairs,
   type AttributePair,
 } from '../../lib/attributes';
-import { CONTENT_UNITS } from '../../lib/units';
+import { composePresentationName } from '../../lib/presentationName';
+import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
 import type { Product, ProductStatus } from '../../model/product.types';
 
 /* Alta y edicion de un producto. La empresa no se pide: el backend la toma de
@@ -52,7 +53,7 @@ const INITIAL = {
   manufacturer: '',
   description: '',
   status: 'DRAFT' as ProductStatus,
-  presentationName: '',
+  variant: '',
   packaging: '',
   price: '',
   stock: '',
@@ -121,8 +122,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     if (!form.categoryId) next.categoryId = 'Selecciona una categoría';
 
     if (!isEditing) {
-      if (!form.presentationName.trim())
-        next.presentationName = 'Ingresa cómo se llama el formato';
       if (!form.packaging.trim()) next.packaging = 'Indica el empaque';
       if (!form.price.trim()) next.price = 'Ingresa el precio';
       else if (Number.isNaN(Number(form.price)) || Number(form.price) <= 0)
@@ -168,7 +167,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
           ...common,
           presentations: [
             {
-              name: form.presentationName.trim(),
+              variant: form.variant.trim() || undefined,
               packaging: form.packaging.trim(),
               price: Number(form.price),
               stock: form.stock.trim() ? Number(form.stock) : 0,
@@ -341,34 +340,41 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   frasco de 500 mL. Empieza con uno y agrega los demás después.
                 </p>
 
-                <div className='mb-3'>
-                  <label className='form-label font-light'>Nombre del formato</label>
-                  <input
-                    type='text'
-                    className='form-control'
-                    placeholder='Talla M · Caja x 100'
-                    value={form.presentationName}
-                    onChange={handleChange('presentationName')}
-                  />
-                  {errors.presentationName && (
-                    <small className='text-danger'>{errors.presentationName}</small>
-                  )}
-                </div>
-
                 <Row>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Variante (opcional)</label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      placeholder='Talla M'
+                      value={form.variant}
+                      onChange={handleChange('variant')}
+                    />
+                    <small className='font-light'>Talla, calibre, presentación.</small>
+                  </Col>
                   <Col sm='6' className='mb-3'>
                     <label className='form-label font-light'>Empaque</label>
                     <input
                       type='text'
+                      list='packaging-suggestions'
                       className='form-control'
                       placeholder='Caja'
                       value={form.packaging}
                       onChange={handleChange('packaging')}
                     />
+                    <datalist id='packaging-suggestions'>
+                      {PACKAGING_SUGGESTIONS.map((option) => (
+                        <option value={option} key={option} />
+                      ))}
+                    </datalist>
                     {errors.packaging && (
                       <small className='text-danger'>{errors.packaging}</small>
                     )}
                   </Col>
+                </Row>
+
+
+                <Row>
                   <Col sm='6' className='mb-3'>
                     <label className='form-label font-light'>SKU</label>
                     <input
@@ -447,11 +453,20 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   </Col>
                 </Row>
 
-                <p className='font-light'>
-                  Cantidad y unidad son lo que permite comparar precios: una caja de
-                  100 unidades, un galón de 3.785 L. Si se vende de una en una,
-                  escribe 1 y «unidad».
-                </p>
+                {/* El nombre no se escribe: se compone de lo de arriba. Verlo
+                    mientras se rellena es lo que hace evidente para que sirve
+                    cada campo, sin un parrafo que lo explique. */}
+                <div className='name-preview'>
+                  <span className='font-light'>Se guardará como</span>
+                  <strong>
+                    {composePresentationName({
+                      packaging: form.packaging,
+                      contentQuantity: form.contentQuantity,
+                      contentUnit: form.contentUnit,
+                      variant: form.variant,
+                    }) || '—'}
+                  </strong>
+                </div>
               </Col>
             )}
           </Row>

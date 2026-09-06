@@ -13,8 +13,9 @@ import {
   useRemovePresentationMutation,
   useUpdatePresentationMutation,
 } from '../../api/productsApi';
+import { composePresentationName } from '../../lib/presentationName';
 import { formatPrice } from '../../lib/productLabels';
-import { CONTENT_UNITS } from '../../lib/units';
+import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
 import type { Product, ProductPresentation } from '../../model/product.types';
 
 /* Los formatos de venta de un producto: la caja x 100, la talla M, el frasco de
@@ -31,7 +32,7 @@ interface ProductPresentationsModalProps {
 }
 
 const EMPTY_DRAFT = {
-  name: '',
+  variant: '',
   packaging: '',
   price: '',
   stock: '',
@@ -43,8 +44,16 @@ const EMPTY_DRAFT = {
 
 type Draft = typeof EMPTY_DRAFT;
 
+/* La variante se recupera de los atributos, que es donde la guarda el backend:
+   el nombre esta compuesto y no se puede desarmar con fiabilidad. */
+const readVariant = (attributes: unknown): string => {
+  if (!attributes || typeof attributes !== 'object') return '';
+  const value = (attributes as Record<string, unknown>).variante;
+  return typeof value === 'string' ? value : '';
+};
+
 const toDraft = (presentation: ProductPresentation): Draft => ({
-  name: presentation.name,
+  variant: readVariant(presentation.attributes),
   packaging: presentation.packaging,
   price: String(presentation.price),
   stock: String(presentation.stock),
@@ -58,7 +67,7 @@ const toDraft = (presentation: ProductPresentation): Draft => ({
 /* Los opcionales vacios se omiten en vez de mandarse como cadena vacia: el DTO
    del backend corre con forbidNonWhitelisted y prefiere la ausencia. */
 const toPayload = (draft: Draft) => ({
-  name: draft.name.trim(),
+  variant: draft.variant.trim() || undefined,
   packaging: draft.packaging.trim(),
   price: Number(draft.price),
   stock: draft.stock.trim() ? Number(draft.stock) : 0,
@@ -70,7 +79,6 @@ const toPayload = (draft: Draft) => ({
 
 const validate = (draft: Draft): Record<string, string> => {
   const errors: Record<string, string> = {};
-  if (!draft.name.trim()) errors.name = 'Ingresa el nombre del formato';
   if (!draft.packaging.trim()) errors.packaging = 'Indica el empaque';
   if (!draft.price.trim()) errors.price = 'Ingresa el precio';
   else if (Number.isNaN(Number(draft.price)) || Number(draft.price) <= 0)
@@ -330,13 +338,20 @@ const ProductPresentationsModal = ({
             <h5 className='mb-3'>{editingId ? 'Editar formato' : 'Nuevo formato'}</h5>
 
             <Row>
-              <Col md='7' className='mb-3'>
-                {field('Nombre del formato', 'name', {
-                  placeholder: 'Talla M · Caja x 100',
-                })}
+              <Col md='6' className='mb-3'>
+                {field('Variante (opcional)', 'variant', { placeholder: 'Talla M' })}
+                <small className='font-light'>Talla, calibre, presentación.</small>
               </Col>
-              <Col md='5' className='mb-3'>
-                {field('Empaque', 'packaging', { placeholder: 'Caja' })}
+              <Col md='6' className='mb-3'>
+                {field('Empaque', 'packaging', {
+                  placeholder: 'Caja',
+                  list: 'packaging-options',
+                })}
+                <datalist id='packaging-options'>
+                  {PACKAGING_SUGGESTIONS.map((option) => (
+                    <option value={option} key={option} />
+                  ))}
+                </datalist>
               </Col>
             </Row>
 
@@ -376,6 +391,20 @@ const ProductPresentationsModal = ({
                 {field('Código de barras', 'barcode', { placeholder: '7701234567890' })}
               </Col>
             </Row>
+
+            {/* El nombre no se escribe: se compone de lo de arriba. Verlo
+                mientras se rellena hace evidente para que sirve cada campo. */}
+            <div className='name-preview'>
+              <span className='font-light'>Se guardará como</span>
+              <strong>
+                {composePresentationName({
+                  packaging: draft.packaging,
+                  contentQuantity: draft.contentQuantity,
+                  contentUnit: draft.contentUnit,
+                  variant: draft.variant,
+                }) || '—'}
+              </strong>
+            </div>
 
             <div className='text-end'>
               <button
