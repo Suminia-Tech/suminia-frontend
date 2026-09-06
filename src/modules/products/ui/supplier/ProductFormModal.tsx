@@ -403,6 +403,55 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     />
                   </Col>
                 </Row>
+
+                {/* Cantidad y unidad son lo que hace comparable el formato: de
+                    ellas sale el precio por unidad, que es lo que revela que la
+                    caja de 100 sale mejor que la de 10. */}
+                <Row>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Cantidad</label>
+                    <input
+                      type='number'
+                      min='0'
+                      step='any'
+                      className='form-control'
+                      placeholder='100'
+                      value={form.contentQuantity}
+                      onChange={handleChange('contentQuantity')}
+                    />
+                    {errors.contentQuantity && (
+                      <small className='text-danger'>{errors.contentQuantity}</small>
+                    )}
+                  </Col>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Unidad</label>
+                    <input
+                      type='text'
+                      list='content-units-create'
+                      className='form-control'
+                      placeholder='unidad'
+                      value={form.contentUnit}
+                      onChange={handleChange('contentUnit')}
+                    />
+                    {/* Sugerencias, no una lista cerrada: el dominio va a pedir
+                        unidades que hoy no sabemos —viales, ampollas, dosis— y
+                        cerrarla obligaria a tocar el codigo por cada una. */}
+                    <datalist id='content-units-create'>
+                      {CONTENT_UNITS.map((unit) => (
+                        <option value={unit} key={unit} />
+                      ))}
+                    </datalist>
+                    {errors.contentUnit && (
+                      <small className='text-danger'>{errors.contentUnit}</small>
+                    )}
+                  </Col>
+                </Row>
+
+                <p className='font-light'>
+                  Cantidad y unidad son lo que permite comparar precios: una caja de
+                  100 unidades, un galón de 3.785 L. Si se vende de una en una,
+                  escribe 1 y «unidad».
+                </p>
               </Col>
             )}
           </Row>
