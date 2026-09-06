@@ -71,7 +71,7 @@ const Header5 = ({ noStyle, isCategories }) => {
                             <i className='fas fa-chevron-down ms-1'></i>
                           </DropdownToggle>
                           <DropdownMenu end>
-                            {/* Cada rol tiene su propia area: /proveedor, /comprador
+                            {/* Cada rol tiene su propia area: /supplier, /buyer
                                 o /admin. Este header solo lo usan ya las paginas de la
                                 plantilla, que se iran borrando. */}
                             <DropdownItem href={getHomePath(user)}>{getAccountLabel(user)}</DropdownItem>

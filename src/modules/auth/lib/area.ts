@@ -1,22 +1,22 @@
 import type { RoleName, User } from '../model/auth.types';
 
 /* Cada rol pertenece a un area del sitio, y el area es el primer segmento de la
-   URL: /proveedor, /comprador, /admin. Tenerlo en la ruta es lo que permite que
+   URL: /supplier, /buyer, /admin. Tenerlo en la ruta es lo que permite que
    cada layout monte su propio chasis sin preguntar quien eres — el rol ya viene
    decidido por donde estas parado.
 
    Esta es la unica traduccion rol -> area del proyecto. Si aparece un rol nuevo
    se agrega aqui y todo lo demas sigue funcionando. */
 
-export type Area = 'proveedor' | 'comprador' | 'admin';
+export type Area = 'supplier' | 'buyer' | 'admin';
 
 const AREA_BY_ROLE: Record<RoleName, Area> = {
   superuser: 'admin',
   admin: 'admin',
-  supplier_admin: 'proveedor',
-  supplier_operator: 'proveedor',
-  buyer_admin: 'comprador',
-  buyer_operator: 'comprador',
+  supplier_admin: 'supplier',
+  supplier_operator: 'supplier',
+  buyer_admin: 'buyer',
+  buyer_operator: 'buyer',
 };
 
 const roleNames = (user: User | null | undefined): RoleName[] => {

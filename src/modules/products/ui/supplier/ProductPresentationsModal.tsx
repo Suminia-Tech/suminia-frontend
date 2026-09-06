@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { Check, Plus, Star, Trash2, X } from 'react-feather';
+import { Check, Edit2, Plus, Star, Trash2, X } from 'react-feather';
 import { toast } from 'react-toastify';
-import { Col, Modal, ModalBody, ModalFooter, ModalHeader, Row, Table } from 'reactstrap';
+import { Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
 import { ConfirmModal } from '@/shared/ui';
@@ -217,76 +217,98 @@ const ProductPresentationsModal = ({
         </div>
         <p className='font-light'>{product.name}</p>
 
-        <Table responsive className='align-middle presentations-table'>
-          <thead>
-            <tr>
-              <th>Formato</th>
-              <th>Empaque</th>
-              <th>Contenido</th>
-              <th>Precio</th>
-              <th>Inventario</th>
-              <th className='text-end'>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {presentations.map((presentation) => (
-              <tr key={presentation.id}>
-                <td>
-                  {presentation.name}
-                  {presentation.isDefault && (
-                    <span className='badge badge-success ms-2'>Principal</span>
-                  )}
-                  {presentation.sku && (
-                    <small className='font-light d-block'>{presentation.sku}</small>
-                  )}
-                </td>
-                <td className='font-light'>{presentation.packaging}</td>
-                <td className='font-light'>
-                  {presentation.contentQuantity
-                    ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
-                    : '—'}
-                </td>
-                <td>{formatPrice(presentation.price, presentation.currency)}</td>
-                <td className='font-light'>{presentation.stock}</td>
-                <td className='text-end text-nowrap'>
-                  {!presentation.isDefault && (
-                    <button
-                      type='button'
-                      className='btn btn-sm'
-                      title='Marcar como principal'
-                      disabled={busyId === presentation.id}
-                      onClick={() => makeDefault(presentation)}
-                    >
-                      <Star size={14} />
-                    </button>
-                  )}
-                  <button
-                    type='button'
-                    className='btn btn-sm'
-                    onClick={() => startEdit(presentation)}
-                  >
-                    Editar
-                  </button>
-                  {/* Sin formatos el producto deja de ser vendible, y el backend
-                      responde 422. Se desactiva en vez de ofrecer un error. */}
-                  <button
-                    type='button'
-                    className='btn btn-sm text-danger'
-                    title={
-                      isLastOne
-                        ? 'Un producto debe conservar al menos un formato'
-                        : 'Retirar'
-                    }
-                    disabled={isLastOne || busyId === presentation.id}
-                    onClick={() => setPendingDelete(presentation)}
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </td>
+        <div className='catalog-panel'>
+          <table className='catalog-table'>
+            <thead>
+              <tr>
+                <th>Formato</th>
+                <th>Empaque</th>
+                <th className='num'>Contenido</th>
+                <th className='num'>Precio</th>
+                <th className='num'>Inventario</th>
+                <th className='actions'></th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {presentations.map((presentation) => (
+                <tr key={presentation.id}>
+                  <td>
+                    <span className='catalog-product-text'>
+                      <strong>{presentation.name}</strong>
+                      {presentation.sku && (
+                        <small className='font-light'>{presentation.sku}</small>
+                      )}
+                    </span>
+                  </td>
+                  <td>
+                    <span className='chip'>{presentation.packaging}</span>
+                  </td>
+                  <td className='num font-light'>
+                    {presentation.contentQuantity
+                      ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
+                      : '—'}
+                  </td>
+                  <td className='num'>
+                    <strong>
+                      {formatPrice(presentation.price, presentation.currency)}
+                    </strong>
+                  </td>
+                  <td
+                    className={`num${presentation.stock === 0 ? ' text-danger' : ' font-light'}`}
+                  >
+                    {presentation.stock === 0 ? 'Agotado' : presentation.stock}
+                  </td>
+                  <td className='actions'>
+                    <div className='row-actions'>
+                      <button
+                        type='button'
+                        title={
+                          presentation.isDefault
+                            ? 'Es el formato principal'
+                            : 'Marcar como principal'
+                        }
+                        aria-label='Marcar como principal'
+                        className={presentation.isDefault ? 'is-active' : undefined}
+                        disabled={presentation.isDefault || busyId === presentation.id}
+                        onClick={() => makeDefault(presentation)}
+                      >
+                        <Star
+                          size={15}
+                          fill={presentation.isDefault ? 'currentColor' : 'none'}
+                        />
+                      </button>
+                      <button
+                        type='button'
+                        title='Editar formato'
+                        aria-label='Editar formato'
+                        onClick={() => startEdit(presentation)}
+                      >
+                        <Edit2 size={15} />
+                      </button>
+                      {/* Sin formatos el producto deja de ser vendible, y el
+                          backend responde 422. Se desactiva en vez de ofrecer
+                          un error. */}
+                      <button
+                        type='button'
+                        className='is-danger'
+                        title={
+                          isLastOne
+                            ? 'Un producto debe conservar al menos un formato'
+                            : 'Retirar formato'
+                        }
+                        aria-label='Retirar formato'
+                        disabled={isLastOne || busyId === presentation.id}
+                        onClick={() => setPendingDelete(presentation)}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {(isCreating || editingId) && (
           <form onSubmit={submit} noValidate className='presentation-form'>

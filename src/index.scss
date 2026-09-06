@@ -402,11 +402,8 @@
     padding: 0 36px 28px;
   }
 
-  .presentations-table {
-    th,
-    td {
-      padding: 10px 8px;
-    }
+  .catalog-table th {
+    background-color: transparent;
   }
 
   /* El formulario se despliega bajo la tabla: se separa con un fondo propio
@@ -476,5 +473,359 @@
 
   &:hover {
     color: inherit;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Panel de catalogo del proveedor
+
+   No se reutiliza .table del tema: esta pensada para el carrito de la tienda
+   —filas altas, bordes en todas las celdas, cabecera gris— y aqui hace falta
+   una tabla de trabajo, densa y legible, que se recorre muchas veces al dia.
+   --------------------------------------------------------------------------- */
+
+.catalog-manager {
+  --row-gap: 14px;
+}
+
+.catalog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  h3 {
+    margin-bottom: 2px;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.catalog-filters {
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $white;
+
+  .form-control {
+    height: 42px;
+  }
+}
+
+/* El icono va dentro del campo, no al lado: un buscador con lupa fuera parece
+   dos controles distintos. */
+.input-with-icon {
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 13px;
+    transform: translateY(-50%);
+    color: rgba($theme-font-color, 0.45);
+    pointer-events: none;
+  }
+
+  .form-control {
+    padding-left: 38px;
+  }
+}
+
+.catalog-panel {
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $white;
+  overflow: hidden;
+
+  &.is-refreshing {
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+  }
+}
+
+.catalog-panel-foot {
+  padding: 12px 18px;
+  border-top: 1px solid $border-color;
+}
+
+.catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba($theme-font-color, 0.5);
+    background-color: rgba($light-blue, 0.6);
+    border-bottom: 1px solid $border-color;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: var(--row-gap) 16px;
+    border-bottom: 1px solid rgba($border-color, 0.5);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr {
+    transition: background-color 0.12s ease;
+
+    &:hover {
+      background-color: rgba($light-blue, 0.45);
+    }
+  }
+
+  /* Las cifras a la derecha y con ancho fijo por digito: asi los precios se
+     alinean por la coma y se comparan de un vistazo en vertical. */
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .actions {
+    width: 1%;
+    text-align: right;
+  }
+}
+
+.catalog-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.catalog-thumb {
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba($border-color, 0.7);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: $light-blue;
+  color: rgba($theme-font-color, 0.35);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.catalog-product-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+
+  strong {
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 12px;
+  }
+}
+
+/* Etiqueta neutra para la categoria: no es un estado ni una accion, de modo que
+   no debe pintarse de color. */
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  background-color: $light-blue;
+  color: rgba($theme-font-color, 0.75);
+  white-space: nowrap;
+}
+
+/* Estado con punto en vez de bloque de color: se lee igual de rapido y no
+   compite con el nombre del producto, que es lo que se busca al recorrer. */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  &.status-success {
+    color: #2e7d32;
+  }
+
+  &.status-neutral {
+    color: #b26a00;
+  }
+
+  &.status-muted {
+    color: rgba($theme-font-color, 0.45);
+  }
+}
+
+/* Acciones: iconos con su contador. Aparecen atenuadas y se afirman al pasar
+   por la fila, para que la tabla no se lea como una parrilla de botones. */
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 9px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: none;
+    color: rgba($theme-font-color, 0.6);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease,
+      border-color 0.12s ease;
+
+    &:hover {
+      background-color: $light-blue;
+      border-color: $border-color;
+      color: var(--theme-color);
+    }
+
+    &.is-danger:hover {
+      color: #c62828;
+      border-color: rgba(#c62828, 0.3);
+      background-color: rgba(#c62828, 0.07);
+    }
+
+    /* Un producto sin imagenes no se ve bien en el catalogo: la cuenta en cero
+       se marca para que salte al recorrer la lista. */
+    &.is-empty {
+      color: #b26a00;
+    }
+
+    /* El que ya es principal se queda encendido y sin interaccion: sirve de
+       indicador, no de accion. */
+    &.is-active {
+      color: var(--theme-color);
+    }
+
+    &:disabled {
+      cursor: default;
+
+      &:not(.is-active) {
+        opacity: 0.35;
+      }
+
+      &:hover {
+        background: none;
+        border-color: transparent;
+        color: inherit;
+      }
+    }
+  }
+}
+
+.catalog-empty {
+  padding: 56px 24px;
+  text-align: center;
+  color: rgba($theme-font-color, 0.55);
+
+  svg {
+    margin-bottom: 14px;
+    color: rgba($theme-font-color, 0.25);
+  }
+
+  h5 {
+    margin-bottom: 6px;
+    color: $theme-font-color;
+    font-weight: 600;
+  }
+
+  p {
+    max-width: 420px;
+    margin: 0 auto 18px;
+    font-size: 14px;
+  }
+}
+
+/* Esqueleto de carga: conserva el alto de la tabla para que el contenido no
+   salte cuando llega. */
+.catalog-skeleton {
+  padding: 8px 16px;
+
+  .catalog-skeleton-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: var(--row-gap) 0;
+    border-bottom: 1px solid rgba($border-color, 0.5);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .sk {
+    display: block;
+    border-radius: 6px;
+    background: linear-gradient(
+      90deg,
+      rgba($light-blue, 0.7) 25%,
+      rgba($light-blue, 1) 37%,
+      rgba($light-blue, 0.7) 63%
+    );
+    background-size: 400% 100%;
+    animation: catalog-skeleton 1.4s ease infinite;
+  }
+
+  .sk-thumb {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .sk-line {
+    flex: 1;
+    height: 12px;
+  }
+
+  .sk-short {
+    flex: 0 0 90px;
+    height: 12px;
+  }
+}
+
+@keyframes catalog-skeleton {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
   }
 }

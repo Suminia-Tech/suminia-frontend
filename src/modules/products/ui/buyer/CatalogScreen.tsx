@@ -119,7 +119,7 @@ export const CatalogScreen = () => {
 
               return (
                 <Col key={product.id} xs='6' md='4' lg='3'>
-                  <Link href={`/comprador/catalogo/${product.id}`} className='catalog-card'>
+                  <Link href={`/buyer/catalog/${product.id}`} className='catalog-card'>
                     <div className='catalog-card-media'>
                       {image ? (
                         /* eslint-disable-next-line @next/next/no-img-element --

@@ -79,12 +79,15 @@ En el App Router **la ruta de carpetas es la URL**, y un nombre **entre parénte
 grupo de rutas: no aparece en la URL**.
 
 ```
-app/(main)/proveedor/   ← area del proveedor   (layout + guarda propios)
-app/(main)/comprador/   ← area del comprador
+app/(main)/supplier/    ← area del proveedor   (layout + guarda propios)
+app/(main)/buyer/       ← area del comprador
 app/(main)/admin/       ← area del personal interno de Suminia
 app/(main)/(suminia)/   ← publico: registro, verificacion, recuperar contrasena
 app/(main)/(template)/  ← demos de Voxo, se borran por partes
 ```
+
+**Las URLs van en ingles**, como los modulos y los endpoints del backend; el espanol se
+queda para lo que lee el usuario.
 
 **El primer segmento de la URL es el rol.** Cada area tiene su `layout.tsx`, que monta su
 propio chasis (`_shell/AreaShell`) con su menu y su guarda. Ninguna pantalla pregunta

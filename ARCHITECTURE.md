@@ -92,9 +92,9 @@ Los tres archivos de `api/` reflejan la separación del backend, y `supplier.typ
 `buyer.types.ts` tipan los campos propios de cada dominio. Rutas:
 
 ```
-app/(main)/admin/proveedores/page.tsx    →  /admin/proveedores
-app/(main)/proveedor/productos/page.tsx  →  /proveedor/productos
-app/(main)/comprador/catalogo/page.tsx   →  /comprador/catalogo
+app/(main)/admin/suppliers/page.tsx      →  /admin/suppliers
+app/(main)/supplier/products/page.tsx    →  /supplier/products
+app/(main)/buyer/catalog/page.tsx        →  /buyer/catalog
 ```
 
 ### Un área por rol
@@ -104,12 +104,15 @@ app/(main)/comprador/catalogo/page.tsx   →  /comprador/catalogo
 ```
 app/(main)/
 ├── _shell/          AreaShell · AreaHeader — el chasis, parametrizado por menu
-├── proveedor/       layout + guarda + barra lateral del panel
-├── comprador/       layout + guarda — catalogo, sin barra lateral
+├── supplier/        layout + guarda; su cuenta lleva barra lateral
+├── buyer/           layout + guarda — catalogo a ancho completo
 ├── admin/           layout + guarda — personal interno de Suminia
 ├── (suminia)/       publico: registro, verificacion, recuperar contrasena
 └── (template)/      demos de Voxo, con su chatarra de tienda aparte
 ```
+
+Las URLs van en inglés como el resto del código —los módulos y los endpoints del backend
+ya lo estaban—, y el español se queda para lo que lee el usuario.
 
 Esto es lo que permite que ninguna pantalla pregunte quién la está viendo: **el rol ya
 quedó decidido por la ruta**. El proveedor no tiene un carrito escondido tras un `if`,

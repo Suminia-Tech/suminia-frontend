@@ -8,8 +8,8 @@ import type { PanelSection } from '../_shell/PanelNav';
    Nada de la tienda B2C —categorias, buscador, carrito— porque un proveedor
    vende, no compra. */
 export const SUPPLIER_NAV: AreaNavItem[] = [
-  { label: 'MI CUENTA', href: '/proveedor/cuenta' },
-  { label: 'MIS PRODUCTOS', href: '/proveedor/productos' },
+  { label: 'MI CUENTA', href: '/supplier/account' },
+  { label: 'MIS PRODUCTOS', href: '/supplier/products' },
   { label: 'BLOG', href: '/blog/blog_details?id=0' },
 ];
 
@@ -17,9 +17,9 @@ export const SUPPLIER_NAV: AreaNavItem[] = [
    en su propia entrada del menu superior, porque es el trabajo diario del
    proveedor y no un ajuste de su cuenta. */
 export const SUPPLIER_ACCOUNT_SECTIONS: PanelSection[] = [
-  { label: 'Resumen', href: '/proveedor/cuenta' },
-  { label: 'Mi empresa', href: '/proveedor/cuenta/empresa' },
-  { label: 'Mi equipo', href: '/proveedor/cuenta/equipo', permission: 'user:list' },
-  { label: 'Mi perfil', href: '/proveedor/cuenta/perfil' },
-  { label: 'Seguridad', href: '/proveedor/cuenta/seguridad' },
+  { label: 'Resumen', href: '/supplier/account' },
+  { label: 'Mi empresa', href: '/supplier/account/company' },
+  { label: 'Mi equipo', href: '/supplier/account/team', permission: 'user:list' },
+  { label: 'Mi perfil', href: '/supplier/account/profile' },
+  { label: 'Seguridad', href: '/supplier/account/security' },
 ];

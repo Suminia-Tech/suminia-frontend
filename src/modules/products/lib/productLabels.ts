@@ -6,11 +6,14 @@ export const PRODUCT_STATUS_LABEL: Record<ProductStatus, string> = {
   INACTIVE: 'Retirado',
 };
 
-/* Se reutilizan las clases de badge del tema en vez de inventar colores. */
-export const PRODUCT_STATUS_CLASS: Record<ProductStatus, string> = {
-  DRAFT: 'badge-secondary',
-  ACTIVE: 'badge-success',
-  INACTIVE: 'badge-danger',
+/* Tono de cada estado. Se guarda el nombre del tono y no la clase completa para
+   que la hoja de estilos decida como se ve: los badge de Bootstrap son bloques
+   de color saturado y aqui hace falta algo mas discreto, que no compita con el
+   nombre del producto. */
+export const PRODUCT_STATUS_TONE: Record<ProductStatus, string> = {
+  DRAFT: 'neutral',
+  ACTIVE: 'success',
+  INACTIVE: 'muted',
 };
 
 /* Sin decimales: los precios del catalogo van en pesos colombianos, donde el

@@ -1,9 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Image as ImageIcon, PlusCircle } from 'react-feather';
+import {
+  Edit2,
+  Image as ImageIcon,
+  Layers,
+  Package,
+  Plus,
+  Search,
+  Trash2,
+} from 'react-feather';
 import { toast } from 'react-toastify';
-import { Col, Row, Table } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -18,8 +26,8 @@ import {
   useGetProductsQuery,
 } from '../../api/productsApi';
 import {
-  PRODUCT_STATUS_CLASS,
   PRODUCT_STATUS_LABEL,
+  PRODUCT_STATUS_TONE,
   formatPriceRange,
   getPrimaryImage,
   getTotalStock,
@@ -138,26 +146,36 @@ export const MyProductsScreen = () => {
   const imagesProduct = fresh(imagesFor);
   const formatsProduct = fresh(formatsFor);
 
+  const clearFilters = () => {
+    setSearch('');
+    setCategoryId('');
+    setStatus('');
+    setPage(1);
+  };
+
   return (
-    <>
-      <div className='box-head'>
-        <h3>Mis productos</h3>
+    <div className='catalog-manager'>
+      <header className='catalog-header'>
+        <div>
+          <h3>Mis productos</h3>
+          <p className='font-light'>
+            {meta
+              ? `${meta.totalCount} ${meta.totalCount === 1 ? 'producto' : 'productos'} en tu catálogo`
+              : 'Lo que tu empresa ofrece en Suminia'}
+          </p>
+        </div>
+
         {canCreate && (
-          /* .box-head es flex pero sin space-between: ms-auto empuja la accion
-             al extremo sin tocar el resto de encabezados del tema. */
-          <a
-            className='ms-auto fw-bold d-inline-flex align-items-center gap-1'
-            href='#javascript'
-            onClick={(event) => {
-              event.preventDefault();
-              openCreate();
-            }}
+          <button
+            type='button'
+            className='btn btn-primary rounded-1 d-inline-flex align-items-center gap-2'
+            onClick={openCreate}
           >
-            <PlusCircle size={16} />
+            <Plus size={16} />
             Nuevo producto
-          </a>
+          </button>
         )}
-      </div>
+      </header>
 
       {!isOperational && (
         <div className='alert alert-warning'>
@@ -166,152 +184,237 @@ export const MyProductsScreen = () => {
         </div>
       )}
 
-      <Row className='mb-3 g-2'>
-        <Col md='6'>
-          <input
-            type='search'
-            className='form-control'
-            placeholder='Buscar por nombre, marca o fabricante'
-            value={search}
-            onChange={(event) => changeSearch(event.target.value)}
-          />
-        </Col>
-        <Col md='3'>
-          <select
-            className='form-control'
-            value={categoryId}
-            onChange={(event) => changeCategory(event.target.value)}
-          >
-            <option value=''>Todas las categorías</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </Col>
-        <Col md='3'>
-          <select
-            className='form-control'
-            value={status}
-            onChange={(event) => changeStatus(event.target.value as ProductStatus | '')}
-          >
-            <option value=''>Todos los estados</option>
-            <option value='DRAFT'>Borrador</option>
-            <option value='ACTIVE'>Publicado</option>
-            <option value='INACTIVE'>Retirado</option>
-          </select>
-        </Col>
-      </Row>
+      <div className='catalog-filters'>
+        <Row className='g-2 align-items-center'>
+          <Col md='5'>
+            <div className='input-with-icon'>
+              <Search size={16} />
+              <input
+                type='search'
+                className='form-control'
+                placeholder='Buscar por nombre, marca o fabricante'
+                value={search}
+                onChange={(event) => changeSearch(event.target.value)}
+              />
+            </div>
+          </Col>
+          <Col md='3'>
+            <select
+              className='form-control'
+              value={categoryId}
+              onChange={(event) => changeCategory(event.target.value)}
+            >
+              <option value=''>Todas las categorías</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </Col>
+          <Col md='3'>
+            <select
+              className='form-control'
+              value={status}
+              onChange={(event) => changeStatus(event.target.value as ProductStatus | '')}
+            >
+              <option value=''>Todos los estados</option>
+              <option value='DRAFT'>Borrador</option>
+              <option value='ACTIVE'>Publicado</option>
+              <option value='INACTIVE'>Retirado</option>
+            </select>
+          </Col>
+          <Col md='1'>
+            {hasFilters && (
+              <button
+                type='button'
+                className='btn btn-link p-0 font-light w-100'
+                onClick={clearFilters}
+              >
+                Limpiar
+              </button>
+            )}
+          </Col>
+        </Row>
+      </div>
 
       {!hydrated || isLoading ? (
-        <p className='font-light'>Cargando...</p>
+        /* Esqueleto en vez de un "Cargando...": conserva el alto de la tabla, de
+           modo que el contenido no salta cuando llega. */
+        <div className='catalog-panel'>
+          <div className='catalog-skeleton'>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div className='catalog-skeleton-row' key={index}>
+                <span className='sk sk-thumb' />
+                <span className='sk sk-line' />
+                <span className='sk sk-short' />
+              </div>
+            ))}
+          </div>
+        </div>
       ) : isError ? (
         <div className='alert alert-danger'>
           {extractErrorMessage(error, 'No se pudo cargar el catálogo.')}
         </div>
       ) : products.length === 0 ? (
-        <p className='font-light'>
-          {hasFilters
-            ? 'No hay productos que coincidan con lo que buscas.'
-            : 'Todavía no tienes productos. Crea el primero y quedará como borrador hasta que decidas publicarlo.'}
-        </p>
+        <div className='catalog-panel'>
+          <div className='catalog-empty'>
+            <Package size={34} />
+            {hasFilters ? (
+              <>
+                <h5>Nada coincide con lo que buscas</h5>
+                <p className='font-light'>
+                  Prueba con otro término o quita los filtros.
+                </p>
+                <button
+                  type='button'
+                  className='btn btn-outline-secondary rounded-1'
+                  onClick={clearFilters}
+                >
+                  Limpiar filtros
+                </button>
+              </>
+            ) : (
+              <>
+                <h5>Tu catálogo está vacío</h5>
+                <p className='font-light'>
+                  Crea tu primer producto. Queda como borrador hasta que decidas
+                  publicarlo, así que puedes prepararlo con calma.
+                </p>
+                {canCreate && (
+                  <button
+                    type='button'
+                    className='btn btn-primary rounded-1 d-inline-flex align-items-center gap-2'
+                    onClick={openCreate}
+                  >
+                    <Plus size={16} />
+                    Nuevo producto
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       ) : (
         /* isFetching sin isLoading es una recarga con datos ya en pantalla: se
            atenua en vez de vaciarse, para que la tabla no salte al filtrar. */
-        <div className={isFetching ? 'is-refreshing' : undefined}>
-          <Table responsive className='align-middle'>
+        <div className={`catalog-panel${isFetching ? ' is-refreshing' : ''}`}>
+          <table className='catalog-table'>
             <thead>
               <tr>
                 <th>Producto</th>
                 <th>Categoría</th>
-                <th>Formatos</th>
-                <th>Precio</th>
-                <th>Inventario</th>
+                <th className='num'>Formatos</th>
+                <th className='num'>Precio</th>
+                <th className='num'>Inventario</th>
                 <th>Estado</th>
-                {(canUpdate || canDelete) && <th className='text-end'>Acciones</th>}
+                {(canUpdate || canDelete) && <th className='actions'></th>}
               </tr>
             </thead>
             <tbody>
               {products.map((product) => {
                 const image = getPrimaryImage(product);
+                const stock = getTotalStock(product);
 
                 return (
                   <tr key={product.id}>
                     <td>
-                      <div className='d-flex align-items-center gap-2'>
-                        <span className='product-thumb'>
+                      <div className='catalog-product'>
+                        <span className='catalog-thumb'>
                           {image ? (
                             /* eslint-disable-next-line @next/next/no-img-element --
                                las imagenes viven en S3 y next/image exigiria
                                declarar el dominio del bucket en la configuracion. */
                             <img src={image.url} alt={image.alt ?? product.name} />
                           ) : (
-                            <ImageIcon size={16} />
+                            <ImageIcon size={18} />
                           )}
                         </span>
-                        <span>
-                          {product.name}
-                          {product.brand && (
-                            <small className='font-light d-block'>{product.brand}</small>
-                          )}
+                        <span className='catalog-product-text'>
+                          <strong>{product.name}</strong>
+                          <small className='font-light'>
+                            {product.brand ?? product.manufacturer ?? 'Sin marca'}
+                          </small>
                         </span>
                       </div>
                     </td>
-                    <td className='font-light'>{product.categoryName ?? '—'}</td>
-                    <td className='font-light'>{product.presentations.length}</td>
-                    <td>{formatPriceRange(product)}</td>
-                    <td className='font-light'>{getTotalStock(product)}</td>
                     <td>
-                      <span className={`badge ${PRODUCT_STATUS_CLASS[product.status]}`}>
+                      <span className='chip'>{product.categoryName ?? '—'}</span>
+                    </td>
+                    <td className='num font-light'>{product.presentations.length}</td>
+                    <td className='num'>
+                      <strong>{formatPriceRange(product)}</strong>
+                    </td>
+                    <td className={`num${stock === 0 ? ' text-danger' : ' font-light'}`}>
+                      {stock === 0 ? 'Agotado' : stock}
+                    </td>
+                    <td>
+                      <span className={`status-pill status-${PRODUCT_STATUS_TONE[product.status]}`}>
                         {PRODUCT_STATUS_LABEL[product.status]}
                       </span>
                     </td>
                     {(canUpdate || canDelete) && (
-                      <td className='text-end text-nowrap'>
-                        {canUpdate && (
-                          <>
+                      <td className='actions'>
+                        <div className='row-actions'>
+                          {canUpdate && (
+                            <>
+                              <button
+                                type='button'
+                                title='Editar producto'
+                                aria-label='Editar producto'
+                                onClick={() => openEdit(product)}
+                              >
+                                <Edit2 size={15} />
+                              </button>
+                              {/* El contador va dentro del boton: saber cuantos
+                                  formatos e imagenes tiene cada producto es lo
+                                  que dice cual esta a medio preparar. */}
+                              <button
+                                type='button'
+                                title='Formatos de venta'
+                                aria-label='Formatos de venta'
+                                onClick={() => setFormatsFor(product)}
+                              >
+                                <Layers size={15} />
+                                <span>{product.presentations.length}</span>
+                              </button>
+                              <button
+                                type='button'
+                                title='Imágenes'
+                                aria-label='Imágenes'
+                                className={product.images.length === 0 ? 'is-empty' : undefined}
+                                onClick={() => setImagesFor(product)}
+                              >
+                                <ImageIcon size={15} />
+                                <span>{product.images.length}</span>
+                              </button>
+                            </>
+                          )}
+                          {canDelete && (
                             <button
                               type='button'
-                              className='btn btn-sm'
-                              onClick={() => openEdit(product)}
+                              className='is-danger'
+                              title='Eliminar producto'
+                              aria-label='Eliminar producto'
+                              onClick={() => setPendingDelete(product)}
                             >
-                              Editar
+                              <Trash2 size={15} />
                             </button>
-                            <button
-                              type='button'
-                              className='btn btn-sm'
-                              onClick={() => setFormatsFor(product)}
-                            >
-                              Formatos ({product.presentations.length})
-                            </button>
-                            <button
-                              type='button'
-                              className='btn btn-sm'
-                              onClick={() => setImagesFor(product)}
-                            >
-                              Imágenes ({product.images.length})
-                            </button>
-                          </>
-                        )}
-                        {canDelete && (
-                          <button
-                            type='button'
-                            className='btn btn-sm text-danger'
-                            onClick={() => setPendingDelete(product)}
-                          >
-                            Eliminar
-                          </button>
-                        )}
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>
                 );
               })}
             </tbody>
-          </Table>
+          </table>
 
-          {meta && <Pagination meta={meta} onChange={setPage} label='productos' />}
+          {meta && (
+            <div className='catalog-panel-foot'>
+              <Pagination meta={meta} onChange={setPage} label='productos' />
+            </div>
+          )}
         </div>
       )}
 
@@ -369,6 +472,6 @@ export const MyProductsScreen = () => {
           onClose={() => setImagesFor(null)}
         />
       )}
-    </>
+    </div>
   );
 };

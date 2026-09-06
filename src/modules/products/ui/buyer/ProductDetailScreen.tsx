@@ -44,7 +44,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
           <div className='alert alert-danger'>
             {extractErrorMessage(error, 'Este producto no está disponible.')}
           </div>
-          <Link href='/comprador/catalogo' className='btn btn-primary rounded-1'>
+          <Link href='/buyer/catalog' className='btn btn-primary rounded-1'>
             Volver al catálogo
           </Link>
         </Container>
@@ -65,7 +65,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
     <section className='section-b-space'>
       <Container>
         <Link
-          href='/comprador/catalogo'
+          href='/buyer/catalog'
           className='font-light d-inline-flex align-items-center gap-1 mb-3'
         >
           <ChevronLeft size={16} />

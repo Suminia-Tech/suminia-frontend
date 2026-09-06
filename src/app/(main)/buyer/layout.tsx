@@ -11,8 +11,8 @@ import { BUYER_NAV } from './_nav';
    permanente: el catalogo ocupa el ancho completo y las secciones de cuenta
    son paginas sueltas. Cuando el carrito exista, cuelga de este chasis. */
 const BuyerLayout = ({ children }: { children: ReactNode }) => (
-  <AreaGuard area='comprador'>
-    <AreaShell nav={BUYER_NAV} homeHref='/comprador'>
+  <AreaGuard area='buyer'>
+    <AreaShell nav={BUYER_NAV} homeHref='/buyer'>
       {children}
     </AreaShell>
   </AreaGuard>
