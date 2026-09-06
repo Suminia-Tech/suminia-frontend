@@ -82,8 +82,10 @@ export interface PresentationRequest {
   packaging: string;
   sku?: string;
   barcode?: string;
-  contentQuantity?: number;
-  contentUnit?: string;
+  /* Obligatorias y juntas: de ellas sale el precio por unidad, que es lo que
+     hace comparable un formato con otro. El backend las exige al crear. */
+  contentQuantity: number;
+  contentUnit: string;
   price: number;
   currency?: string;
   stock?: number;

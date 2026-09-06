@@ -16,6 +16,7 @@ import {
   toAttributePairs,
   type AttributePair,
 } from '../../lib/attributes';
+import { CONTENT_UNITS } from '../../lib/units';
 import type { Product, ProductStatus } from '../../model/product.types';
 
 /* Alta y edicion de un producto. La empresa no se pide: el backend la toma de
@@ -56,6 +57,8 @@ const INITIAL = {
   price: '',
   stock: '',
   sku: '',
+  contentQuantity: '',
+  contentUnit: '',
 };
 
 type FormState = typeof INITIAL;
@@ -124,6 +127,16 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       if (!form.price.trim()) next.price = 'Ingresa el precio';
       else if (Number.isNaN(Number(form.price)) || Number(form.price) <= 0)
         next.price = 'El precio debe ser un número mayor que cero';
+
+      /* De la cantidad y la unidad sale el precio por unidad, que es con lo que
+         el comprador decide. Un formato de una sola pieza declara 1 y "unidad". */
+      if (!form.contentQuantity.trim()) next.contentQuantity = 'Ingresa la cantidad';
+      else if (
+        Number.isNaN(Number(form.contentQuantity)) ||
+        Number(form.contentQuantity) <= 0
+      )
+        next.contentQuantity = 'Debe ser mayor que cero';
+      if (!form.contentUnit.trim()) next.contentUnit = 'Indica la unidad';
     }
 
     return next;
@@ -160,6 +173,8 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
               price: Number(form.price),
               stock: form.stock.trim() ? Number(form.stock) : 0,
               sku: form.sku.trim() || undefined,
+              contentQuantity: Number(form.contentQuantity),
+              contentUnit: form.contentUnit.trim(),
             },
           ],
         }).unwrap();

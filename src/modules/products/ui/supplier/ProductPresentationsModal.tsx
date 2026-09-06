@@ -14,6 +14,7 @@ import {
   useUpdatePresentationMutation,
 } from '../../api/productsApi';
 import { formatPrice } from '../../lib/productLabels';
+import { CONTENT_UNITS } from '../../lib/units';
 import type { Product, ProductPresentation } from '../../model/product.types';
 
 /* Los formatos de venta de un producto: la caja x 100, la talla M, el frasco de
@@ -63,10 +64,8 @@ const toPayload = (draft: Draft) => ({
   stock: draft.stock.trim() ? Number(draft.stock) : 0,
   sku: draft.sku.trim() || undefined,
   barcode: draft.barcode.trim() || undefined,
-  contentQuantity: draft.contentQuantity.trim()
-    ? Number(draft.contentQuantity)
-    : undefined,
-  contentUnit: draft.contentUnit.trim() || undefined,
+  contentQuantity: Number(draft.contentQuantity),
+  contentUnit: draft.contentUnit.trim(),
 });
 
 const validate = (draft: Draft): Record<string, string> => {
@@ -76,6 +75,17 @@ const validate = (draft: Draft): Record<string, string> => {
   if (!draft.price.trim()) errors.price = 'Ingresa el precio';
   else if (Number.isNaN(Number(draft.price)) || Number(draft.price) <= 0)
     errors.price = 'El precio debe ser mayor que cero';
+
+  /* Cantidad y unidad son lo que hace comparable el formato: de ellas sale el
+     precio por unidad. Un formato de una sola pieza declara 1 y "unidad". */
+  if (!draft.contentQuantity.trim()) errors.contentQuantity = 'Ingresa la cantidad';
+  else if (
+    Number.isNaN(Number(draft.contentQuantity)) ||
+    Number(draft.contentQuantity) <= 0
+  )
+    errors.contentQuantity = 'Debe ser mayor que cero';
+  if (!draft.contentUnit.trim()) errors.contentUnit = 'Indica la unidad';
+
   return errors;
 };
 
@@ -189,13 +199,15 @@ const ProductPresentationsModal = ({
   const field = (
     label: string,
     key: keyof Draft,
-    props: { type?: string; placeholder?: string } = {},
+    props: { type?: string; placeholder?: string; list?: string } = {},
   ) => (
     <>
       <label className='form-label font-light'>{label}</label>
       <input
         type={props.type ?? 'text'}
         min={props.type === 'number' ? '0' : undefined}
+        step={props.type === 'number' ? 'any' : undefined}
+        list={props.list}
         className='form-control'
         placeholder={props.placeholder}
         value={draft[key]}
@@ -345,7 +357,18 @@ const ProductPresentationsModal = ({
                 {field('Cantidad', 'contentQuantity', { type: 'number' })}
               </Col>
               <Col md='4' className='mb-3'>
-                {field('Unidad', 'contentUnit', { placeholder: 'unidad, mL, g' })}
+                {field('Unidad', 'contentUnit', {
+                  placeholder: 'unidad, mL, g',
+                  list: 'content-units',
+                })}
+                {/* Sugerencias, no una lista cerrada: el dominio va a pedir
+                    unidades que hoy no sabemos —viales, ampollas, dosis— y
+                    cerrarla obligaria a tocar el codigo por cada una. */}
+                <datalist id='content-units'>
+                  {CONTENT_UNITS.map((unit) => (
+                    <option value={unit} key={unit} />
+                  ))}
+                </datalist>
               </Col>
               {/* El codigo de barras identifica el formato en bodega, no el
                   producto: la caja x 100 y la x 10 llevan uno distinto. */}
