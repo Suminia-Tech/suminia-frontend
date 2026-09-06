@@ -1,0 +1,188 @@
+# CLAUDE.md
+
+Guía para Claude Code (claude.ai/code) al trabajar en este repositorio.
+
+## Proyecto
+
+**Suminia frontend** — marketplace B2B de medicamentos e insumos médicos. Next.js 16
+(App Router) + React 19 + Redux Toolkit / RTK Query, en TypeScript. Gestor de paquetes:
+**pnpm**.
+
+El backend vive aparte (NestJS + Prisma + PostgreSQL) y se consume por HTTP:
+`NEXT_PUBLIC_API_URL`, por defecto `http://localhost:8001`.
+
+## Comandos
+
+```bash
+pnpm dev          # desarrollo
+pnpm build        # build de producción (Turbopack)
+pnpm start        # servir el build
+pnpm lint         # ESLint, incluye las reglas de frontera
+npx tsc --noEmit  # typecheck
+```
+
+Antes de dar algo por terminado: `npx tsc --noEmit && pnpm lint && pnpm build`.
+
+No hay tests en el proyecto. Durante los refactors, los tipos son la única red de
+seguridad.
+
+## Arquitectura
+
+Módulos verticales con capas ligeras. **`ARCHITECTURE.md` es la fuente de verdad** de las
+decisiones estructurales — consúltalo antes de crear un módulo, una ruta o un endpoint.
+
+```
+src/
+├── app/          Rutas de Next: page.tsx, layout.tsx, metadata. Sin lógica.
+├── modules/      Módulos de negocio de Suminia (auth, users, organizations, products, orders…)
+├── shared/       Transversal, sin lógica de negocio (api, ui, lib, config, i18n)
+├── store/        configureStore + hooks tipados
+└── _template/    Plantilla Voxo en cuarentena. Solo se borra, no se mejora.
+```
+
+La regla de dependencia, forzada por ESLint:
+
+```
+app  →  modules  →  shared
+```
+
+Los módulos llevan el mismo nombre que los del backend NestJS, de modo que `auth`,
+`products` u `orders` significan lo mismo a ambos lados del stack.
+
+### Anatomía de un módulo
+
+Los cinco nombres de primer nivel son fijos; dentro se anida libremente:
+
+```
+modules/<nombre>/
+├── api/        endpoints RTK Query, vía baseApi.injectEndpoints
+├── model/      tipos del dominio + slice de estado
+├── lib/        funciones puras (validaciones, formateo, cálculos)
+├── hooks/      hooks de React propios del módulo
+├── ui/         pantallas (…Screen.tsx) y piezas (ProductCard.tsx)
+└── index.ts    API pública ← lo único importable desde fuera
+```
+
+Las subcarpetas separan variantes cuando el frontend consolida varios dominios del backend
+en una misma pantalla. `organizations` es el caso: consume `suppliers` y `buyers` del
+backend y sirve `/suppliers` y `/buyers` desde `ui/supplier/` y `ui/buyer/`, con lo común
+en `ui/common/`.
+
+La correspondencia con el backend es uno a uno salvo ahí. Ver `ARCHITECTURE.md`.
+
+Si una entidad la necesitan **tres** módulos, se extrae a una capa `entities/` — el
+disparador está descrito en `ARCHITECTURE.md`. Hasta entonces esa capa no existe.
+
+### Rutas
+
+En el App Router **la ruta de carpetas es la URL**, y un nombre **entre paréntesis es un
+grupo de rutas: no aparece en la URL**.
+
+```
+app/(main)/supplier/    ← area del proveedor   (layout + guarda propios)
+app/(main)/buyer/       ← area del comprador
+app/(main)/admin/       ← area del personal interno de Suminia
+app/(main)/(suminia)/   ← publico: registro, verificacion, recuperar contrasena
+app/(main)/(template)/  ← demos de Voxo, se borran por partes
+```
+
+**Las URLs van en ingles**, como los modulos y los endpoints del backend; el espanol se
+queda para lo que lee el usuario.
+
+**El primer segmento de la URL es el rol.** Cada area tiene su `layout.tsx`, que monta su
+propio chasis y su guarda: `_shell/SidebarShell` para las areas de trabajo —panel
+lateral con la navegacion agrupada— y `_shell/AreaShell` para las que se navegan. Ninguna pantalla pregunta
+quien la esta viendo: el rol ya quedo decidido por la ruta.
+
+Una ruta nueva va **dentro del area a la que pertenece**, con URL en kebab-case y sin el
+prefijo `/page/` que arrastra la plantilla. Solo lo que es publico de verdad —registro,
+verificacion de correo— va en `(suminia)/`.
+
+## Reglas (forzadas por ESLint, no son sugerencias)
+
+1. **Un módulo nunca importa otro módulo.** Si dos lo necesitan, sube a `shared/`.
+2. **Nada entra a las tripas de un módulo.** Solo `@/modules/<nombre>`, nunca
+   `@/modules/<nombre>/model/...`. Dentro del módulo se usan rutas relativas.
+3. **`shared/` no depende de `modules/` ni de `_template/`.**
+4. **`app/*/page.tsx` no lleva lógica.** Declara metadata, lee `params`/`searchParams` y
+   renderiza una pantalla del módulo. El `'use client'` baja hasta la pantalla.
+
+## Convenciones
+
+- **Datos: un solo camino.** RTK Query sobre `shared/api/baseApi.ts`, con
+  `injectEndpoints` desde cada módulo. No crear otras instancias de `createApi`, ni usar
+  axios o `fetch` sueltos en componentes.
+- **`localStorage` solo en `shared/lib/`.** Hoy lo tocan `tokenStorage.ts` (la sesión),
+  `cookieConsent.ts` (el aviso de cookies) y `uiPreferences.ts` (el panel contraído).
+  Ningún otro archivo lo usa: si hace falta persistir algo nuevo, se añade un módulo ahí.
+  Para leerlo desde un componente, `useSyncExternalStore` en lugar de un efecto: el
+  servidor no ve `localStorage`, y arrancar con otro valor desajusta la hidratación.
+- **Tipar el contrato del backend** en `model/*.types.ts` del módulo. Es la frontera donde
+  de verdad se rompen las cosas.
+- **Estado:** usar `useAppDispatch` / `useAppSelector` de `@/store/hooks`, no los de
+  `react-redux`.
+- **TypeScript:** `strict: true` en el código nuevo; `allowJs` + `checkJs: false` deja la
+  plantilla fuera del chequeo. Código nuevo siempre en `.ts` / `.tsx`.
+- **Metadata:** el layout raíz define `title.template = '%s | Suminia'`, así que cada
+  página declara solo su nombre (`title: 'Registrarse'`). No usar `next/head` ni archivos
+  `head.js`: son APIs retiradas y duplican el `<title>`.
+- **Diseño: usar el que ya tiene el proyecto.** Las pantallas nuevas deben verse como
+  las que ya existen. Antes de escribir UI, mirar una pantalla equivalente de
+  `_template/` y reutilizar sus clases y su estructura. No introducir componentes de
+  Bootstrap sin estilar (`Card`, `Alert`, `FormGroup`) cuando el tema ya resuelve ese
+  caso. Vocabulario del tema, con los archivos donde está definido:
+
+  | Para | Usar | Definido en |
+  |---|---|---|
+  | Sección de página | `section-b-space` + `Container` | `layout/` |
+  | Encabezado de bloque | `box-head` con `<h3>` | `pages/_inner_page.scss` |
+  | Lista etiqueta/valor | `dashboard-profile` > `dash-profile` > `li` > `left`/`right` | `pages/_inner_page.scss` |
+  | Formularios | `form-label`, `form-control` | `components/_form.scss` |
+  | Texto secundario | `font-light` | `base/` |
+  | Botones | `btn btn-primary`, `btn-full`, `btn-sm` | `components/_button.scss` |
+  | Avisos | `alert` del tema | `components/_alert.scss` |
+
+  **Ojo con las reglas globales del tema.** `base/_typography.scss` declara
+  `li { display: inline-block }` para todo el documento, de modo que cualquier lista
+  vertical propia tiene que decir explícitamente que lo es. Se descubrió con el panel
+  lateral contraído, donde los iconos se colocaban de dos en dos.
+
+  **Comprobar el alcance antes de copiar una clase.** Muchas del tema solo están
+  definidas anidadas dentro de un contenedor y fuera de él no hacen nada:
+  `dash-profile` necesita estar dentro de `dashboard-profile`, y `btn-animation` solo
+  tiene estilos dentro de `.product-buttons` — en las pantallas de auth se usa sin ese
+  contenedor, de modo que ahí no aplica nada.
+
+  Si el tema no cubre un caso, se añade el estilo en `src/index.scss` siguiendo sus
+  convenciones — no se resuelve con estilos en línea ni con clases sueltas de Bootstrap.
+
+- **Comentarios:** un bloque explicando el *porqué* donde la decisión no sea obvia, no
+  narración línea a línea. Sin emojis.
+
+## `_template/`
+
+La plantilla comercial Voxo (~22.000 líneas) de la que partió el proyecto. Sirve de
+andamio visual mientras se construyen las pantallas reales.
+
+- No se refactoriza ni se corrige: se **borra** conforme cada pantalla se reemplaza.
+- Sus reglas de lint están apagadas a propósito en `eslint.config.mjs`, junto con las de
+  `app/(main)/(template)/**` y `app/api/**`.
+- Al reemplazar una pantalla demo: se borra su carpeta de `(template)/`, se crea la nueva
+  en `(suminia)/`, y se eliminan los componentes de `_template/` que quedaron sin uso.
+- `store/index.ts` todavía registra 11 reducers de la plantilla. No agregar nuevos ahí.
+- `app/api/` + `_template/ApiData/` son un backend falso: 21 handlers que devuelven JSON
+  estático. Al conectar un módulo al backend real, se borran los que dejaron de usarse.
+
+## Lo no evidente
+
+- **Los componentes de la plantilla asumen que su consumidor es un Client Component.**
+  Usan hooks sin declarar `'use client'`. Al renderizarlos desde una página nueva (que es
+  Server Component) hay que marcarlos con `'use client'` — ya se hizo con `Layout6` y
+  `BreadCrumb`.
+- **Una pantalla que use `useSearchParams` necesita `<Suspense>` en la página**, o Next
+  fuerza el renderizado dinámico de toda la ruta.
+- **Hay dos `<Provider store={store}>` anidados**, en `app/providers.tsx` y en
+  `app/(main)/layout.js`. Herencia de la plantilla; no rompe nada porque es la misma
+  instancia, pero sobra uno.
+- **TypeScript se queda en la línea 5.x.** La 7 rompe el peer de `typescript-eslint` que
+  trae `eslint-config-next` 16.

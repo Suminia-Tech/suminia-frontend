@@ -1,0 +1,103 @@
+import { baseApi } from '@/shared/api/baseApi';
+import { tokenStorage } from '@/shared/lib/tokenStorage';
+
+import { setCredentials } from '../model/authSlice';
+import type {
+  LoginRequest,
+  LoginResponse,
+  ProfileResponse,
+  RegisterRequest,
+  ResetPasswordRequest,
+} from '../model/auth.types';
+
+export const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation<LoginResponse, LoginRequest>({
+      query: (credentials) => ({ url: '/auth/login', method: 'POST', body: credentials }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        const { data } = await queryFulfilled;
+        // Persistir la sesion y propagarla al store para que el header reaccione
+        tokenStorage.save(data.data);
+        dispatch(setCredentials(data.data.user));
+      },
+      invalidatesTags: ['Auth', 'Profile'],
+    }),
+
+    register: builder.mutation<void, RegisterRequest>({
+      query: (body) => ({ url: '/auth/register', method: 'POST', body }),
+      invalidatesTags: ['Auth'],
+    }),
+
+    forgotPassword: builder.mutation<void, string>({
+      query: (email) => ({ url: '/auth/forgot-password', method: 'POST', body: { email } }),
+    }),
+
+    resetPassword: builder.mutation<void, ResetPasswordRequest>({
+      query: (body) => ({ url: '/auth/reset-password', method: 'POST', body }),
+    }),
+
+    validateResetToken: builder.mutation<void, string>({
+      query: (token) => ({
+        url: '/auth/validate-reset-password-token',
+        method: 'POST',
+        body: { token },
+      }),
+    }),
+
+    verifyEmail: builder.mutation<void, string>({
+      query: (token) => ({ url: '/auth/verify-email', method: 'POST', body: { token } }),
+    }),
+
+    resendVerification: builder.mutation<void, string>({
+      query: (email) => ({
+        url: '/auth/resend-verification-email',
+        method: 'POST',
+        body: { email },
+      }),
+    }),
+
+    /* Editar el propio perfil no exige user:update: ese permiso habilita
+       gestionar a OTROS, y un operador que no lo tiene debe poder corregir su
+       nombre. Invalida Profile para que la sesion recoja el cambio. */
+    updateProfile: builder.mutation<void, { name?: string; phone?: string }>({
+      query: (body) => ({ url: '/auth/profile', method: 'PATCH', body }),
+      invalidatesTags: ['Profile'],
+    }),
+
+    /* El id sale del token, de modo que no se envia: solo se puede cambiar la
+       contrasena de la propia cuenta. */
+    changePassword: builder.mutation<
+      void,
+      { currentPassword: string; newPassword: string }
+    >({
+      query: (body) => ({ url: '/auth/change-password', method: 'PATCH', body }),
+    }),
+
+    /* Al arrancar la app se vuelve a pedir el perfil para que la sesion refleje
+       los datos actuales. Sin esto, el usuario guardado en localStorage queda
+       congelado en como era al iniciar sesion: si cambian sus permisos, su rol
+       o su empresa, el frontend sigue con la foto vieja hasta el proximo login. */
+    getProfile: builder.query<ProfileResponse, void>({
+      query: () => '/auth/profile',
+      providesTags: ['Profile'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        const { data } = await queryFulfilled;
+        tokenStorage.saveUser(data.data);
+        dispatch(setCredentials(data.data));
+      },
+    }),
+  }),
+});
+
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useValidateResetTokenMutation,
+  useVerifyEmailMutation,
+  useResendVerificationMutation,
+  useUpdateProfileMutation,
+  useChangePasswordMutation,
+  useGetProfileQuery,
+} = authApi;

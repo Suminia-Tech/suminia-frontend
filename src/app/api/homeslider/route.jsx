@@ -1,4 +1,4 @@
-import HomeSlider from '../../ApiData/HomeSlider.json'
+import HomeSlider from '@/_template/ApiData/HomeSlider.json'
 import { NextResponse } from "next/server";
 
 export async function GET(req) {

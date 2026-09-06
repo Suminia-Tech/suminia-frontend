@@ -81,3 +81,1471 @@
 }
 
  
+
+/* El tema pinta .form-control:focus con $light-blue (#eff2f7), practicamente
+   el mismo tono que Bootstrap usa para los campos deshabilitados. El resultado
+   es que un campo se apaga justo cuando lo estas escribiendo, y parece que no
+   se puede editar.
+
+   Se invierte: el campo activo queda blanco y con el borde del tema, y los
+   bloqueados se marcan de verdad. */
+.form-control {
+  &:focus {
+    background-color: $white;
+    border-color: var(--theme-color);
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: $light-blue;
+    border-color: $border-color;
+    color: rgba($theme-font-color, 0.65);
+    cursor: not-allowed;
+    /* Bootstrap baja la opacidad de los deshabilitados; aqui el color ya
+       comunica el estado y bajarla ademas los deja ilegibles. */
+    opacity: 1;
+  }
+}
+
+/* Campo de contraseña con boton de mostrar/ocultar, para formularios fuera de
+   las pantallas de acceso.
+
+   .password-toggle esta posicionado contra .login-section .input, que el tema
+   solo define ahi dentro: fuera de esas pantallas el boton se escapaba del
+   campo porque no encontraba un ancestro posicionado. Este contenedor lo
+   resuelve y ajusta el boton a la altura real del input. */
+.password-field {
+  position: relative;
+
+  .form-control {
+    padding-right: 42px;
+  }
+
+  .password-field-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: none;
+    border: none;
+    color: rgba($theme-font-color, 0.65);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--theme-color);
+    }
+  }
+}
+
+/* Miniatura del producto en el listado del proveedor. El tema no trae un
+   contenedor de imagen cuadrado para tablas: los suyos son tarjetas de
+   catalogo, con proporciones y sombras propias que aqui desentonan. */
+.product-thumb {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: $light-blue;
+  color: rgba($theme-font-color, 0.45);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Menu principal de cada area. La barra de la plantilla (.nav-menu) arrastra el
+   desplegable multinivel, el toggle movil y el fondo de la tienda; aqui hacen
+   falta cuatro enlaces y nada mas. */
+.area-nav {
+  ul {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: block;
+    padding: 12px 0;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: $theme-font-color;
+    text-transform: uppercase;
+    font-size: 14px;
+
+    &:hover,
+    &.active {
+      color: var(--theme-color);
+    }
+  }
+}
+
+/* Tarjeta del catalogo que navega el comprador. Las del tema (.product-box)
+   traen contador, lista de deseos y boton de compra rapida, que todavia no
+   existen; esta se queda en lo que hay: foto, nombre, proveedor y precio. */
+.catalog-card {
+  height: 100%;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: $white;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba($theme-font-color, 0.08);
+  }
+
+  .catalog-card-media {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $light-blue;
+    color: rgba($theme-font-color, 0.45);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .catalog-card-body {
+    padding: 14px;
+
+    h5 {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    strong {
+      color: var(--theme-color);
+    }
+  }
+}
+
+/* El modal de producto pide bastantes campos: los 500px por defecto de Bootstrap
+   lo estiraban en una columna larguisima. Con mas ancho caben dos columnas —los
+   datos del producto y su primer formato de venta— y se lee de un vistazo.
+
+   El ancho se fija aqui y no con size="lg" porque el "lg" de Bootstrap se queda
+   en 800px, justo por debajo de lo que necesitan dos columnas con sus campos
+   partidos por la mitad.
+
+   Ojo con el selector: reactstrap pone el className del Modal en .modal-dialog,
+   no en el .modal de fuera. Buscar ".product-form-modal .modal-dialog" no
+   encuentra nada y el modal se queda con el ancho por defecto. */
+.product-form-modal {
+  max-width: 980px;
+
+  .modal-body {
+    /* Mas aire que el del tema: son once campos y con su padding responsive
+       quedaban pegados al borde. */
+    padding: 32px 36px 24px;
+
+    /* El cuerpo se desplaza solo si el alto no alcanza, en vez de empujar el
+       pie del modal fuera de la pantalla. */
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: 0 36px 28px;
+  }
+
+  /* Separacion real entre las dos columnas: sin esto el texto de la derecha
+     queda pegado a la linea divisoria. */
+  .product-form-aside {
+    border-left: 1px solid $border-color;
+    padding-left: 36px;
+
+    @media (max-width: 991.98px) {
+      border-left: none;
+      border-top: 1px solid $border-color;
+      padding-left: calc(var(--bs-gutter-x) * 0.5);
+      padding-top: 24px;
+      margin-top: 12px;
+    }
+  }
+
+  .form-label {
+    margin-bottom: 6px;
+  }
+}
+
+/* Recarga con datos ya en pantalla: se atenua en vez de vaciarse, para que la
+   tabla no salte cada vez que se cambia un filtro. */
+.is-refreshing {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+/* Barra de paginacion. El tema trae .pagination de Bootstrap, pero pintada para
+   la tienda: cuadrada, con bordes gruesos y sin sitio para el recuento. */
+.list-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+
+  ul {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .btn {
+    min-width: 34px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+
+    &.active {
+      background-color: var(--theme-color);
+      border-color: var(--theme-color);
+      color: $white;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+    }
+  }
+}
+
+/* El modal de formatos lleva una tabla dentro: con los 500px por defecto de
+   Bootstrap las seis columnas no caben.
+
+   Ojo con el selector: reactstrap pone el className del Modal en .modal-dialog,
+   no en el .modal de fuera. */
+.presentations-modal {
+  max-width: 940px;
+
+  .modal-body {
+    padding: 32px 36px 24px;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: 0 36px 28px;
+  }
+
+  .catalog-table th {
+    background-color: transparent;
+  }
+
+  /* El formulario se despliega bajo la tabla: se separa con un fondo propio
+     para que se lea como un panel aparte y no como otra fila mas. */
+  .presentation-form {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: $light-blue;
+  }
+}
+
+/* Galeria de la ficha del comprador. */
+.product-gallery {
+  .product-gallery-main {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: $light-blue;
+    color: rgba($theme-font-color, 0.45);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .product-gallery-thumbs {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    overflow-x: auto;
+
+    button {
+      flex: 0 0 64px;
+      width: 64px;
+      height: 64px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      overflow: hidden;
+      background: none;
+      cursor: pointer;
+
+      &.active {
+        border-color: var(--theme-color);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+/* La tarjeta del catalogo pasa a ser un enlace: hereda el color del texto para
+   que no se pinte de azul entera. */
+.catalog-card {
+  display: block;
+  color: inherit;
+
+  &:hover {
+    color: inherit;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Panel de catalogo del proveedor
+
+   No se reutiliza .table del tema: esta pensada para el carrito de la tienda
+   —filas altas, bordes en todas las celdas, cabecera gris— y aqui hace falta
+   una tabla de trabajo, densa y legible, que se recorre muchas veces al dia.
+   --------------------------------------------------------------------------- */
+
+.catalog-manager {
+  /* 48px de fila: el tamano "regular" de las tablas de trabajo. A 74px, que es
+     donde estaba, caben cuatro productos en pantalla y hay que rodar para todo. */
+  --row-gap: 10px;
+  --thumb: 40px;
+}
+
+.catalog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  h3 {
+    margin-bottom: 2px;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.catalog-panel {
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $white;
+  overflow: hidden;
+
+  &.is-refreshing {
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+  }
+}
+
+/* Barra de herramientas dentro del panel. Pegada a la tabla y no flotando
+   encima: asi se lee como lo que gobierna la lista, no como un bloque aparte. */
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-bottom: 1px solid $border-color;
+}
+
+/* El buscador no lleva marco propio: el marco ya lo pone el panel, y encajar
+   una caja dentro de otra es lo que hacia que la barra pareciera un formulario
+   en vez de una herramienta. */
+.catalog-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1 1 260px;
+  min-width: 0;
+
+  svg {
+    flex: 0 0 auto;
+    color: rgba($theme-font-color, 0.4);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: $theme-font-color;
+
+    &::placeholder {
+      color: rgba($theme-font-color, 0.42);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.catalog-toolbar-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Los desplegables se ven como botones y no como campos de formulario: son
+   herramientas de la tabla, no datos que se rellenan. */
+.filter-select {
+  height: 34px;
+  padding: 0 30px 0 12px;
+  border: 1px solid $border-color;
+  border-radius: 7px;
+  background-color: $white;
+  color: $theme-font-color;
+  font-size: 13px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23787878' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+
+  &:hover {
+    border-color: rgba($theme-font-color, 0.35);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--theme-color);
+  }
+}
+
+/* Fila de filtros activos. */
+.catalog-active-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-bottom: 1px solid $border-color;
+  background-color: rgba($light-blue, 0.4);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid $border-color;
+  border-radius: 20px;
+  background-color: $white;
+  font-size: 12.5px;
+  color: $theme-font-color;
+  cursor: pointer;
+  max-width: 260px;
+
+  span {
+    white-space: nowrap;
+  }
+
+  svg {
+    color: rgba($theme-font-color, 0.45);
+  }
+
+  &:hover {
+    border-color: #c62828;
+
+    svg {
+      color: #c62828;
+    }
+  }
+}
+
+.filter-clear {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+  color: var(--theme-color);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.catalog-panel-foot {
+  padding: 12px 18px;
+  border-top: 1px solid $border-color;
+}
+
+/* La tabla se desplaza dentro de su panel en pantallas estrechas, en vez de
+   empujar la pagina entera a lo ancho. */
+.catalog-table-scroll {
+  overflow-x: auto;
+}
+
+.catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  /* Sin repartir el ancho, la columna del producto se come la mitad de la tabla
+     y deja las cifras flotando lejos del nombre al que pertenecen. */
+  .col-product {
+    width: 34%;
+  }
+
+  .col-category {
+    width: 14%;
+  }
+
+  .col-price {
+    width: 13%;
+  }
+
+  .col-status {
+    width: 12%;
+  }
+
+  .col-tight {
+    width: 9%;
+  }
+
+  th {
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba($theme-font-color, 0.5);
+    background-color: rgba($light-blue, 0.6);
+    border-bottom: 1px solid $border-color;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: var(--row-gap) 16px;
+    border-bottom: 1px solid rgba($border-color, 0.5);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr {
+    transition: background-color 0.12s ease;
+
+    &:hover {
+      background-color: rgba($light-blue, 0.45);
+    }
+  }
+
+  /* Las cifras a la derecha y con ancho fijo por digito: asi los precios se
+     alinean por la coma y se comparan de un vistazo en vertical. */
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .actions {
+    width: 1%;
+    text-align: right;
+  }
+}
+
+.catalog-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.catalog-thumb {
+  flex: 0 0 var(--thumb);
+  width: var(--thumb);
+  height: var(--thumb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba($border-color, 0.7);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: $light-blue;
+  color: rgba($theme-font-color, 0.35);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.catalog-product-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+
+  strong {
+    font-weight: 600;
+  }
+
+  small {
+    font-size: 12px;
+  }
+}
+
+/* Etiqueta neutra para la categoria: no es un estado ni una accion, de modo que
+   no debe pintarse de color. */
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  background-color: $light-blue;
+  color: rgba($theme-font-color, 0.75);
+  white-space: nowrap;
+}
+
+/* Estado con punto en vez de bloque de color: se lee igual de rapido y no
+   compite con el nombre del producto, que es lo que se busca al recorrer. */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  &.status-success {
+    color: #2e7d32;
+  }
+
+  &.status-neutral {
+    color: #b26a00;
+  }
+
+  &.status-muted {
+    color: rgba($theme-font-color, 0.45);
+  }
+}
+
+/* Acciones: iconos con su contador. Aparecen atenuadas y se afirman al pasar
+   por la fila, para que la tabla no se lea como una parrilla de botones. */
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 9px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: none;
+    color: rgba($theme-font-color, 0.6);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease,
+      border-color 0.12s ease;
+
+    &:hover {
+      background-color: $light-blue;
+      border-color: $border-color;
+      color: var(--theme-color);
+    }
+
+    &.is-danger:hover {
+      color: #c62828;
+      border-color: rgba(#c62828, 0.3);
+      background-color: rgba(#c62828, 0.07);
+    }
+
+    /* Un producto sin imagenes no se ve bien en el catalogo: la cuenta en cero
+       se marca para que salte al recorrer la lista. */
+    &.is-empty {
+      color: #b26a00;
+    }
+
+    /* El que ya es principal se queda encendido y sin interaccion: sirve de
+       indicador, no de accion. */
+    &.is-active {
+      color: var(--theme-color);
+    }
+
+    &:disabled {
+      cursor: default;
+
+      &:not(.is-active) {
+        opacity: 0.35;
+      }
+
+      &:hover {
+        background: none;
+        border-color: transparent;
+        color: inherit;
+      }
+    }
+  }
+}
+
+.catalog-empty {
+  padding: 56px 24px;
+  text-align: center;
+  color: rgba($theme-font-color, 0.55);
+
+  svg {
+    margin-bottom: 14px;
+    color: rgba($theme-font-color, 0.25);
+  }
+
+  h5 {
+    margin-bottom: 6px;
+    color: $theme-font-color;
+    font-weight: 600;
+  }
+
+  p {
+    max-width: 420px;
+    margin: 0 auto 18px;
+    font-size: 14px;
+  }
+}
+
+/* Esqueleto de carga: conserva el alto de la tabla para que el contenido no
+   salte cuando llega. */
+.catalog-skeleton {
+  padding: 8px 16px;
+
+  .catalog-skeleton-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: var(--row-gap) 0;
+    border-bottom: 1px solid rgba($border-color, 0.5);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .sk {
+    display: block;
+    border-radius: 6px;
+    background: linear-gradient(
+      90deg,
+      rgba($light-blue, 0.7) 25%,
+      rgba($light-blue, 1) 37%,
+      rgba($light-blue, 0.7) 63%
+    );
+    background-size: 400% 100%;
+    animation: catalog-skeleton 1.4s ease infinite;
+  }
+
+  .sk-thumb {
+    flex: 0 0 var(--thumb);
+    width: var(--thumb);
+    height: var(--thumb);
+  }
+
+  .sk-line {
+    flex: 1;
+    height: 12px;
+  }
+
+  .sk-short {
+    flex: 0 0 90px;
+    height: 12px;
+  }
+}
+
+@keyframes catalog-skeleton {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Chasis con panel lateral
+
+   Para las areas que son un lugar de trabajo. El fondo de pagina va gris y el
+   contenido en tarjetas blancas: es lo que separa "el sitio" de "lo que estoy
+   mirando", y sin ese contraste todo flota sobre un mismo blanco.
+   --------------------------------------------------------------------------- */
+
+$sidebar-width: 232px;
+/* Contraido caben el icono y su area de pulsacion, nada mas. */
+$sidebar-width-collapsed: 68px;
+$area-bg: #f1f4f9;
+
+.area-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: $area-bg;
+}
+
+.area-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1030;
+  width: $sidebar-width;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
+  border-right: 1px solid rgba($theme-font-color, 0.09);
+}
+
+.area-sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 62px;
+  padding: 0 18px;
+  border-bottom: 1px solid rgba($theme-font-color, 0.07);
+}
+
+/* Flex y no inline: una imagen en linea arrastra el hueco de la linea base y
+   descuadra la altura de la cabecera del panel. */
+.area-sidebar-logo {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+  img {
+    max-width: 140px;
+    height: auto;
+  }
+}
+
+.area-sidebar-close {
+  display: none;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: rgba($theme-font-color, 0.5);
+  cursor: pointer;
+}
+
+/* Boton de contraer. Redondo y discreto: se usa una vez y luego se olvida, de
+   modo que no debe pesar mas que las propias entradas del menu. */
+.area-sidebar-collapse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba($theme-font-color, 0.12);
+  border-radius: 50%;
+  background-color: $white;
+  color: rgba($theme-font-color, 0.55);
+  cursor: pointer;
+  transition:
+    color 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover {
+    color: var(--theme-color);
+    border-color: rgba(#096ac9, 0.4);
+  }
+}
+
+.area-sidebar-nav {
+  flex: 1;
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.area-sidebar-group {
+  margin-bottom: 22px;
+
+  /* Columna explicita: el tema declara `li { display: inline-block }` para todo
+     el documento, de modo que sin esto las entradas fluyen en linea. Expandidas
+     no se notaba —la etiqueta las hacia tan anchas que caia una por fila— pero
+     contraidas se colocaban de dos en dos. */
+  ul {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: block;
+  }
+}
+
+/* El titulo del grupo es una etiqueta, no un enlace: pequeno, en mayusculas y
+   sin peso, para que se lea como separador y no compita con las entradas. */
+.area-sidebar-group-label {
+  display: block;
+  padding: 0 10px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba($theme-font-color, 0.42);
+}
+
+.area-sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 10px;
+  margin-bottom: 2px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: rgba($theme-font-color, 0.72);
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+
+  svg {
+    flex: 0 0 auto;
+    color: rgba($theme-font-color, 0.45);
+    transition: color 0.12s ease;
+  }
+
+  &:hover {
+    background-color: rgba($theme-font-color, 0.04);
+    color: $theme-font-color;
+  }
+
+  /* La activa se marca con fondo y no solo con color: en una lista de ocho, el
+     color por si solo obliga a comparar entradas para saber cual esta encendida. */
+  &.is-active {
+    /* El tono va literal y no derivado de --theme-color: esa variable guarda un
+       hex, y rgba() de CSS no puede desarmarlo para sacarle transparencia. */
+    background-color: rgba(#096ac9, 0.09);
+    color: var(--theme-color);
+    font-weight: 500;
+
+    svg {
+      color: var(--theme-color);
+    }
+  }
+}
+
+.area-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: $sidebar-width;
+  display: flex;
+  flex-direction: column;
+}
+
+.area-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 62px;
+  padding: 0 24px;
+  background-color: $white;
+  border-bottom: 1px solid rgba($theme-font-color, 0.07);
+}
+
+.area-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.area-topbar-menu {
+  display: none;
+  padding: 6px;
+  border: none;
+  background: none;
+  color: $theme-font-color;
+  cursor: pointer;
+}
+
+.area-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  min-width: 0;
+
+  a {
+    display: flex;
+    color: rgba($theme-font-color, 0.5);
+
+    &:hover {
+      color: var(--theme-color);
+    }
+  }
+
+  svg {
+    flex: 0 0 auto;
+    color: rgba($theme-font-color, 0.3);
+  }
+
+  span,
+  strong {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.area-topbar-user {
+  button {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 4px 8px 4px 4px;
+    border: 1px solid transparent;
+    border-radius: 30px;
+    background: none;
+    font-size: 14px;
+    color: $theme-font-color;
+    cursor: pointer;
+
+    &:hover {
+      border-color: rgba($theme-font-color, 0.12);
+      background-color: rgba($theme-font-color, 0.03);
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+/* Iniciales en vez de una foto que no tenemos: da un anclaje visual a la cuenta
+   activa, que es lo que hace falta al probar con varias a la vez. */
+.area-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--theme-color);
+  color: $white;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.area-topbar-name {
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.area-content {
+  flex: 1;
+  padding: 24px;
+}
+
+/* El velo solo existe en movil, donde el panel es un cajon. */
+.area-sidebar-veil {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .area-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+
+    &.is-open {
+      transform: translateX(0);
+    }
+  }
+
+  .area-sidebar-close,
+  .area-topbar-menu {
+    display: block;
+  }
+
+  .area-main {
+    margin-left: 0;
+  }
+
+  .area-sidebar-veil.is-open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1029;
+    background-color: rgba(#000, 0.35);
+  }
+
+  .area-topbar-name,
+  .area-breadcrumb span {
+    display: none;
+  }
+
+  .area-content {
+    padding: 16px;
+  }
+}
+
+/* --- Panel contraido --- */
+
+.area-layout.is-collapsed {
+  .area-sidebar {
+    width: $sidebar-width-collapsed;
+  }
+
+  .area-main {
+    margin-left: $sidebar-width-collapsed;
+  }
+
+  .area-sidebar-brand {
+    /* El boton se coloca debajo del simbolo: uno al lado del otro no caben en
+       68px sin apretarlos contra los bordes. */
+    flex-direction: column;
+    gap: 8px;
+    height: auto;
+    padding: 14px 0;
+  }
+
+  .area-sidebar-nav {
+    padding: 16px 10px;
+  }
+
+  /* Los titulos de grupo se sustituyen por una linea: sin etiquetas que separar
+     siguen haciendo falta los grupos, pero no su nombre recortado. */
+  .area-sidebar-group-label {
+    height: 1px;
+    width: 24px;
+    padding: 0;
+    margin: 0 auto 12px;
+    overflow: hidden;
+    background-color: rgba($theme-font-color, 0.12);
+    text-indent: -999px;
+  }
+
+  /* Contraida, la entrada es un cuadro: centrada, del mismo alto que ancho, y
+     con el fondo de la activa siguiendo esa forma en vez de estirarse a lo
+     ancho del panel. */
+  .area-sidebar-nav a {
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    margin: 0 auto 4px;
+    border-radius: 10px;
+
+    span {
+      display: none;
+    }
+  }
+}
+
+/* En movil el panel es un cajon y siempre va completo: contraerlo ahi no
+   ahorraria nada, porque no ocupa sitio cuando esta cerrado. */
+@media (max-width: 991.98px) {
+  .area-sidebar-collapse {
+    display: none;
+  }
+
+  .area-layout.is-collapsed {
+    .area-sidebar {
+      width: $sidebar-width;
+    }
+
+    .area-main {
+      margin-left: 0;
+    }
+
+    .area-sidebar-brand {
+      flex-direction: row;
+      height: 62px;
+      padding: 0 18px;
+    }
+
+    .area-sidebar-nav a {
+      justify-content: flex-start;
+      padding: 9px 10px;
+
+      span {
+        display: inline;
+      }
+    }
+
+    .area-sidebar-group-label {
+      height: auto;
+      padding: 0 10px 8px;
+      margin: 0;
+      background: none;
+      text-indent: 0;
+      overflow: visible;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Galeria del producto: rejilla de huecos
+
+   Los vacios se dibujan igual que los llenos en vez de esconderse tras un
+   boton. Asi se ve de un vistazo cuantas fotos caben todavia, que es la
+   pregunta de quien esta armando su catalogo a medias.
+   --------------------------------------------------------------------------- */
+
+.gallery-modal {
+  max-width: 760px;
+
+  .modal-body {
+    padding: 30px 34px 20px;
+  }
+
+  .modal-footer {
+    padding: 0 34px 26px;
+    border: none;
+  }
+}
+
+.gallery-hint {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @media (max-width: 575.98px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.gallery-slot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+
+  &.is-filled {
+    border: 1px solid $border-color;
+    background-color: $light-blue;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  /* Mientras una accion viaja, el hueco se atenua y deja de aceptar clics: sin
+     esto se puede pedir dos reordenados seguidos y llegan cruzados. */
+  &.is-busy {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* El vacio es un boton: borde punteado para que se lea como sitio por llenar
+     y no como una foto que no cargo. */
+  &.is-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0;
+    border: 1.5px dashed rgba($theme-font-color, 0.22);
+    background-color: rgba($light-blue, 0.5);
+    color: rgba($theme-font-color, 0.45);
+    font-size: 12.5px;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease,
+      background-color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      border-color: var(--theme-color);
+      background-color: rgba(#096ac9, 0.05);
+      color: var(--theme-color);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+  }
+}
+
+.gallery-badge {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background-color: var(--theme-color);
+  color: $white;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* Las acciones se apoyan en una banda al pie de la foto: sobre la imagen a
+   secas, los iconos se pierden segun lo claro que sea el producto. */
+.gallery-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
+  background: linear-gradient(to top, rgba(#000, 0.62), rgba(#000, 0));
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: rgba($white, 0.88);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($white, 0.22);
+      color: $white;
+    }
+
+    &.is-danger:hover:not(:disabled) {
+      background-color: #c62828;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+}
+
+/* Editor del texto alternativo, bajo la rejilla. */
+.gallery-alt {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 10px;
+  background-color: $light-blue;
+}
+
+/* Cabecera de columna que ordena. Se ve como texto hasta que se pasa por
+   encima: una tabla llena de botones se lee como un formulario. */
+.th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--theme-color);
+  }
+
+  &.is-active {
+    color: var(--theme-color);
+  }
+}
+
+/* Par nombre/valor de una caracteristica. */
+.attribute-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+
+  .form-control {
+    min-width: 0;
+  }
+
+  .attribute-remove {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: rgba($theme-font-color, 0.45);
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(#c62828, 0.08);
+      color: #c62828;
+    }
+  }
+}

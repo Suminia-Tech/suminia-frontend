@@ -1,4 +1,4 @@
-import Footer from '../../ApiData/Footer.json'
+import Footer from '@/_template/ApiData/Footer.json'
 import { NextResponse } from "next/server";
 
 export async function GET() {

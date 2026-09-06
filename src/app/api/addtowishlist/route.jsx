@@ -1,4 +1,4 @@
-import { storeId } from "../../ApiData/serverGlobalVariable";
+import { storeId } from "@/_template/ApiData/serverGlobalVariable";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {

@@ -1,4 +1,4 @@
-import Banner from '../../ApiData/Banner.json'
+import Banner from '@/_template/ApiData/Banner.json'
 import { NextResponse } from "next/server";
 
 export async function GET(req) {

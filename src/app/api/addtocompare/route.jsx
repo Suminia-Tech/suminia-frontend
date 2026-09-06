@@ -1,4 +1,4 @@
-import { compareArr } from "@/app/ApiData/serverGlobalVariable";
+import { compareArr } from "@/_template/ApiData/serverGlobalVariable";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {

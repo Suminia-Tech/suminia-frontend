@@ -1,15 +1,16 @@
 "use client";
-import HomeDeal from "@/Components/Home/HomeDeal";
-import HomeFresh from "@/Components/Home/HomeFresh";
-import HomeSlider from "@/Components/Home/HomeSlider";
-import HomeHurryUp from "@/Components/Home/HomeHurryUp";
-import HomeNewsUpdate from "@/Components/Home/HomeNewsUpdate";
-import HomeOffers from "@/Components/Home/HomeOffers";
-import HomePromo from "@/Components/Home/HomePromo";
-import HomeTopBanner from "@/Components/Home/HomeTopBanner";
-import CommonModel from "@/Components/Element/CommonModel";
-import Layout6 from "@/Layout/Layout6";
-import { getAPIData } from "@/Utils";
+import HomeDeal from "@/_template/Components/Home/HomeDeal";
+import HomeFresh from "@/_template/Components/Home/HomeFresh";
+import HomeSlider from "@/_template/Components/Home/HomeSlider";
+import HomeHurryUp from "@/_template/Components/Home/HomeHurryUp";
+import HomeNewsUpdate from "@/_template/Components/Home/HomeNewsUpdate";
+import HomeOffers from "@/_template/Components/Home/HomeOffers";
+import HomePromo from "@/_template/Components/Home/HomePromo";
+import HomeTopBanner from "@/_template/Components/Home/HomeTopBanner";
+import CommonModel from "@/_template/Components/Element/CommonModel";
+import Layout6 from "@/_template/Layout/Layout6";
+import HomeRedirect from "./HomeRedirect";
+import { getAPIData } from "@/_template/Utils";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -31,6 +32,8 @@ export default function Home() {
 
   return (
     <Layout6 isCategories={true}>
+      {/* Con sesion, cada rol se va a su area; sin ella se queda esta portada. */}
+      <HomeRedirect />
       <HomeSlider mainSlider={mainSlider} />
       <HomeTopBanner bannerData={bannerData} />
       <HomeFresh productData={productData} />

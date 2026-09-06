@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Product from "../../../ApiData/Product.json";
+import Product from "@/_template/ApiData/Product.json";
 
 export async function GET(req,{params}) {
    if (!params) {

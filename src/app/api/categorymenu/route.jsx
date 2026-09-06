@@ -1,4 +1,4 @@
-import CategoryMenu from "../../ApiData/CategoryMenu.json";
+import CategoryMenu from "@/_template/ApiData/CategoryMenu.json";
 import { NextResponse } from "next/server";
 
 export async function GET(req) {

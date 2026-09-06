@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Product from "../../ApiData/Product.json";
+import Product from "@/_template/ApiData/Product.json";
 
 export function GET(req) {
   const wishlistIds = req.nextUrl.searchParams.get("wishlist") ? JSON.parse(req.nextUrl.searchParams.get("wishlist")) : [];

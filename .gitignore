@@ -1,6 +1,11 @@
 node_modules/
 .next/
 .env*
+!.env.example
 .DS_Store
 *.log
 .vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

@@ -1,6 +1,6 @@
-import { compareArr } from "@/app/ApiData/serverGlobalVariable";
+import { compareArr } from "@/_template/ApiData/serverGlobalVariable";
 import { NextResponse } from "next/server";
-import Product from "../../../../ApiData/Product.json";
+import Product from "@/_template/ApiData/Product.json";
 
 export async function DELETE(req, { params }) {
   const { id } = await params;

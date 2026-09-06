@@ -1,0 +1,18 @@
+import React from 'react';
+import { Col } from 'reactstrap';
+import { Collection5 } from '@/_template/Constant';
+import ElementHeader from '../../../Element/ElementHeader';
+
+const Banner5 = ({ bannerData }) => {
+  return (
+    <Col xs='12'>
+      <div className='header-image-contain mb-0 section-b-space'>
+        <ElementHeader title={Collection5} customeclass={'title title1 text-center'} />
+        <section className='home-section pt-3'>
+</section>
+      </div>
+    </Col>
+  );
+};
+
+export default Banner5;
