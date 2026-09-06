@@ -10,8 +10,10 @@ import Providers from "./providers";
    13.0 retirada en la 13.2. Al convivir ambos mecanismos el documento salia
    con dos <title> y dos <link rel="icon">.
 
-   El favicon no se declara aqui: Next genera la etiqueta automaticamente a
-   partir de app/favicon.ico. */
+   Los iconos no se declaran aqui: Next los detecta por convencion de archivo a
+   partir de app/favicon.ico y app/apple-icon.png, y genera sus etiquetas. Por
+   eso no aparecen nombrados en ningun sitio del codigo — y por eso el asterisco
+   rojo de la plantilla sobrevivio tanto tiempo. */
 export const metadata = {
   title: {
     default: "Marketplace Medicamentos",
@@ -21,9 +23,6 @@ export const metadata = {
   description:
     "Marketplace B2B de medicamentos e insumos medicos para clinicas, hospitales, distribuidores y proveedores.",
   manifest: "/manifest.json",
-  icons: {
-    apple: "/2.png",
-  },
 };
 
 export const viewport = {
