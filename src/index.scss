@@ -1060,10 +1060,20 @@ $area-bg: #f1f4f9;
 .area-sidebar-group {
   margin-bottom: 22px;
 
+  /* Columna explicita: el tema declara `li { display: inline-block }` para todo
+     el documento, de modo que sin esto las entradas fluyen en linea. Expandidas
+     no se notaba —la etiqueta las hacia tan anchas que caia una por fila— pero
+     contraidas se colocaban de dos en dos. */
   ul {
+    display: flex;
+    flex-direction: column;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  li {
+    display: block;
   }
 }
 
@@ -1311,16 +1321,24 @@ $area-bg: #f1f4f9;
      siguen haciendo falta los grupos, pero no su nombre recortado. */
   .area-sidebar-group-label {
     height: 1px;
+    width: 24px;
     padding: 0;
-    margin: 0 8px 12px;
+    margin: 0 auto 12px;
     overflow: hidden;
-    background-color: rgba($theme-font-color, 0.09);
+    background-color: rgba($theme-font-color, 0.12);
     text-indent: -999px;
   }
 
+  /* Contraida, la entrada es un cuadro: centrada, del mismo alto que ancho, y
+     con el fondo de la activa siguiendo esa forma en vez de estirarse a lo
+     ancho del panel. */
   .area-sidebar-nav a {
     justify-content: center;
-    padding: 11px 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    margin: 0 auto 4px;
+    border-radius: 10px;
 
     span {
       display: none;

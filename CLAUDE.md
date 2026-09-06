@@ -142,6 +142,11 @@ verificacion de correo— va en `(suminia)/`.
   | Botones | `btn btn-primary`, `btn-full`, `btn-sm` | `components/_button.scss` |
   | Avisos | `alert` del tema | `components/_alert.scss` |
 
+  **Ojo con las reglas globales del tema.** `base/_typography.scss` declara
+  `li { display: inline-block }` para todo el documento, de modo que cualquier lista
+  vertical propia tiene que decir explícitamente que lo es. Se descubrió con el panel
+  lateral contraído, donde los iconos se colocaban de dos en dos.
+
   **Comprobar el alcance antes de copiar una clase.** Muchas del tema solo están
   definidas anidadas dentro de un contenedor y fuera de él no hacen nada:
   `dash-profile` necesita estar dentro de `dashboard-profile`, y `btn-animation` solo
