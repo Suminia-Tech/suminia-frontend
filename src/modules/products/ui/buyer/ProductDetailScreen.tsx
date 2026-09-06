@@ -9,6 +9,7 @@ import { extractErrorMessage } from '@/shared/lib/apiError';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetProductQuery } from '../../api/productsApi';
+import { humanizeAttributeKey, toAttributePairs } from '../../lib/attributes';
 import { formatPrice } from '../../lib/productLabels';
 
 /* Ficha del producto que abre el comprador desde el catalogo.
@@ -53,6 +54,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
   }
 
   const product = data.data;
+  const attributes = toAttributePairs(product.attributes);
   const images = [...product.images].sort((a, b) => a.position - b.position);
   const cover = images[activeImage] ?? images[0] ?? null;
 
@@ -131,6 +133,22 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
                 </li>
               )}
             </ul>
+
+            {/* Las caracteristicas del producto se mezclan con proveedor y
+                categoria en la misma lista: para quien compara, el material o
+                la esterilidad pesan tanto como la marca. */}
+            {attributes.length > 0 && (
+              <ul className='dashboard-profile'>
+                {attributes.map((pair) => (
+                  <li className='dash-profile' key={pair.key}>
+                    <span className='left font-light'>
+                      {humanizeAttributeKey(pair.key)}
+                    </span>
+                    <span className='right'>{pair.value}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
 
             {product.description && (
               <p className='font-light mt-3'>{product.description}</p>

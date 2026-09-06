@@ -63,6 +63,11 @@ export interface Product {
   updatedAt: string;
 }
 
+/* Campos por los que el backend acepta ordenar (ALLOWED_SORT del repositorio).
+   Pedirle cualquier otro responde 400, de modo que se tipa aqui para que la
+   pantalla no pueda inventarse uno. */
+export type SortField = 'name' | 'brand' | 'status' | 'createdAt' | 'updatedAt';
+
 export interface ProductCategory {
   id: string;
   name: string;

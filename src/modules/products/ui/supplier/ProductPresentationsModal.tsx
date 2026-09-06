@@ -35,6 +35,7 @@ const EMPTY_DRAFT = {
   price: '',
   stock: '',
   sku: '',
+  barcode: '',
   contentQuantity: '',
   contentUnit: '',
 };
@@ -47,6 +48,7 @@ const toDraft = (presentation: ProductPresentation): Draft => ({
   price: String(presentation.price),
   stock: String(presentation.stock),
   sku: presentation.sku ?? '',
+  barcode: presentation.barcode ?? '',
   contentQuantity:
     presentation.contentQuantity === null ? '' : String(presentation.contentQuantity),
   contentUnit: presentation.contentUnit ?? '',
@@ -60,6 +62,7 @@ const toPayload = (draft: Draft) => ({
   price: Number(draft.price),
   stock: draft.stock.trim() ? Number(draft.stock) : 0,
   sku: draft.sku.trim() || undefined,
+  barcode: draft.barcode.trim() || undefined,
   contentQuantity: draft.contentQuantity.trim()
     ? Number(draft.contentQuantity)
     : undefined,
@@ -344,12 +347,10 @@ const ProductPresentationsModal = ({
               <Col md='4' className='mb-3'>
                 {field('Unidad', 'contentUnit', { placeholder: 'unidad, mL, g' })}
               </Col>
-              <Col md='4' className='mb-3 d-flex align-items-end'>
-                {/* La cantidad va aparte del empaque para poder comparar el
-                    precio por unidad entre formatos y entre proveedores. */}
-                <small className='font-light'>
-                  Cantidad y unidad permiten comparar el precio por unidad.
-                </small>
+              {/* El codigo de barras identifica el formato en bodega, no el
+                  producto: la caja x 100 y la x 10 llevan uno distinto. */}
+              <Col md='4' className='mb-3'>
+                {field('Código de barras', 'barcode', { placeholder: '7701234567890' })}
               </Col>
             </Row>
 

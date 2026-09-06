@@ -8,6 +8,8 @@ import {
   Layers,
   Package,
   Plus,
+  ChevronDown,
+  ChevronUp,
   Search,
   Trash2,
   X,
@@ -33,7 +35,7 @@ import {
   getPrimaryImage,
   getTotalStock,
 } from '../../lib/productLabels';
-import type { Product, ProductStatus } from '../../model/product.types';
+import type { Product, ProductStatus, SortField } from '../../model/product.types';
 import ProductFormModal from './ProductFormModal';
 import ProductImagesModal from './ProductImagesModal';
 import ProductPresentationsModal from './ProductPresentationsModal';
@@ -54,6 +56,10 @@ export const MyProductsScreen = () => {
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
 
   const [page, setPage] = useState(1);
+  /* Solo los cinco campos que el backend admite en ALLOWED_SORT: pedirle otro
+     responde 400. */
+  const [sort, setSort] = useState<SortField>('updatedAt');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [status, setStatus] = useState<ProductStatus | ''>('');
@@ -83,6 +89,33 @@ export const MyProductsScreen = () => {
     setPage(1);
   };
 
+  /* Pulsar la columna activa invierte el sentido; pulsar otra empieza por el
+     que tiene sentido en ese campo: los textos de la A a la Z, y las fechas por
+     lo mas reciente. */
+  const changeSort = (field: SortField) => {
+    if (field === sort) {
+      setSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSort(field);
+      setSortDirection(field === 'createdAt' || field === 'updatedAt' ? 'desc' : 'asc');
+    }
+    setPage(1);
+  };
+
+  const sortableHeader = (label: string, field: SortField, extra = '') => (
+    <th className={extra || undefined}>
+      <button
+        type='button'
+        className={`th-sort${sort === field ? ' is-active' : ''}`}
+        onClick={() => changeSort(field)}
+      >
+        {label}
+        {sort === field &&
+          (sortDirection === 'asc' ? <ChevronUp size={13} /> : <ChevronDown size={13} />)}
+      </button>
+    </th>
+  );
+
   const { data: categoriesData } = useGetCategoriesQuery(undefined, { skip: !hydrated });
   const categories = categoriesData?.data ?? [];
 
@@ -90,8 +123,8 @@ export const MyProductsScreen = () => {
     {
       page,
       limit: PAGE_SIZE,
-      sort: 'updatedAt',
-      sortDirection: 'desc',
+      sort,
+      sortDirection,
       ...(debouncedSearch ? { search: debouncedSearch } : {}),
       ...(categoryId || status
         ? {
@@ -333,12 +366,15 @@ export const MyProductsScreen = () => {
               <table className='catalog-table'>
                 <thead>
                   <tr>
-                    <th className='col-product'>Producto</th>
+                    {sortableHeader('Producto', 'name', 'col-product')}
                     <th className='col-category'>Categoría</th>
                     <th className='num col-tight'>Formatos</th>
+                    {/* Precio e inventario viven en los formatos, no en el
+                        producto: el backend no puede ordenar por ellos sin
+                        decidir antes cual de los formatos manda. */}
                     <th className='num col-price'>Precio</th>
                     <th className='num col-tight'>Inventario</th>
-                    <th className='col-status'>Estado</th>
+                    {sortableHeader('Estado', 'status', 'col-status')}
                     {(canUpdate || canDelete) && <th className='actions'></th>}
                   </tr>
                 </thead>

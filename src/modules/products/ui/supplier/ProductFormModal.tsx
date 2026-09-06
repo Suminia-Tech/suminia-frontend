@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { Plus, X } from 'react-feather';
 import { Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
@@ -10,6 +11,11 @@ import {
   useGetCategoriesQuery,
   useUpdateProductMutation,
 } from '../../api/productsApi';
+import {
+  fromAttributePairs,
+  toAttributePairs,
+  type AttributePair,
+} from '../../lib/attributes';
 import type { Product, ProductStatus } from '../../model/product.types';
 
 /* Alta y edicion de un producto. La empresa no se pide: el backend la toma de
@@ -78,6 +84,11 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
   const isSaving = isCreating || isUpdating;
 
   const [form, setForm] = useState<FormState>(() => toFormState(product));
+  /* Los atributos van aparte del resto del formulario: son una lista que crece,
+     no un campo. */
+  const [attributes, setAttributes] = useState<AttributePair[]>(() =>
+    toAttributePairs(product?.attributes),
+  );
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -89,6 +100,17 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       setErrors((current) => ({ ...current, [field]: undefined }));
       setGeneralError(null);
     };
+
+  const setAttribute = (index: number, field: keyof AttributePair, value: string) => {
+    setAttributes((current) =>
+      current.map((pair, i) => (i === index ? { ...pair, [field]: value } : pair)),
+    );
+  };
+
+  const addAttribute = () => setAttributes((current) => [...current, { key: '', value: '' }]);
+
+  const removeAttribute = (index: number) =>
+    setAttributes((current) => current.filter((_, i) => i !== index));
 
   const validate = () => {
     const next: Record<string, string> = {};
@@ -122,6 +144,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       brand: form.brand.trim() || undefined,
       manufacturer: form.manufacturer.trim() || undefined,
       description: form.description.trim() || undefined,
+      attributes: fromAttributePairs(attributes),
     };
 
     try {
@@ -143,6 +166,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       }
 
       setForm(toFormState(product));
+      setAttributes(toAttributePairs(product?.attributes));
       setErrors({});
       onClose();
     } catch (error) {
@@ -236,6 +260,48 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   value={form.description}
                   onChange={handleChange('description')}
                 />
+              </div>
+
+              {/* Caracteristicas propias del producto: material y esterilidad
+                  en un insumo, y manana el CUM y el registro INVIMA de un
+                  medicamento. Se guardan en una columna JSONB, de modo que
+                  sumar un tipo no pide una migracion. */}
+              <div className='mb-3'>
+                <label className='form-label font-light'>Características</label>
+                {attributes.map((pair, index) => (
+                  <div className='attribute-row' key={index}>
+                    <input
+                      type='text'
+                      className='form-control'
+                      placeholder='Material'
+                      value={pair.key}
+                      onChange={(event) => setAttribute(index, 'key', event.target.value)}
+                    />
+                    <input
+                      type='text'
+                      className='form-control'
+                      placeholder='Nitrilo'
+                      value={pair.value}
+                      onChange={(event) => setAttribute(index, 'value', event.target.value)}
+                    />
+                    <button
+                      type='button'
+                      className='attribute-remove'
+                      aria-label='Quitar característica'
+                      onClick={() => removeAttribute(index)}
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type='button'
+                  className='btn btn-link p-0 font-light d-inline-flex align-items-center gap-1'
+                  onClick={addAttribute}
+                >
+                  <Plus size={14} />
+                  Agregar característica
+                </button>
               </div>
 
               <div className='mb-3'>

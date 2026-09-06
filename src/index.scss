@@ -1493,3 +1493,59 @@ $area-bg: #f1f4f9;
   border-radius: 10px;
   background-color: $light-blue;
 }
+
+/* Cabecera de columna que ordena. Se ve como texto hasta que se pasa por
+   encima: una tabla llena de botones se lee como un formulario. */
+.th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--theme-color);
+  }
+
+  &.is-active {
+    color: var(--theme-color);
+  }
+}
+
+/* Par nombre/valor de una caracteristica. */
+.attribute-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+
+  .form-control {
+    min-width: 0;
+  }
+
+  .attribute-remove {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: rgba($theme-font-color, 0.45);
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(#c62828, 0.08);
+      color: #c62828;
+    }
+  }
+}
