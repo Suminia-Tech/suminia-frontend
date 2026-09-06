@@ -971,6 +971,8 @@
    --------------------------------------------------------------------------- */
 
 $sidebar-width: 232px;
+/* Contraido caben el icono y su area de pulsacion, nada mas. */
+$sidebar-width-collapsed: 68px;
 $area-bg: #f1f4f9;
 
 .area-layout {
@@ -996,9 +998,18 @@ $area-bg: #f1f4f9;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   height: 62px;
   padding: 0 18px;
   border-bottom: 1px solid rgba($theme-font-color, 0.07);
+}
+
+/* Flex y no inline: una imagen en linea arrastra el hueco de la linea base y
+   descuadra la altura de la cabecera del panel. */
+.area-sidebar-logo {
+  display: flex;
+  align-items: center;
+  min-width: 0;
 
   img {
     max-width: 140px;
@@ -1013,6 +1024,31 @@ $area-bg: #f1f4f9;
   background: none;
   color: rgba($theme-font-color, 0.5);
   cursor: pointer;
+}
+
+/* Boton de contraer. Redondo y discreto: se usa una vez y luego se olvida, de
+   modo que no debe pesar mas que las propias entradas del menu. */
+.area-sidebar-collapse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba($theme-font-color, 0.12);
+  border-radius: 50%;
+  background-color: $white;
+  color: rgba($theme-font-color, 0.55);
+  cursor: pointer;
+  transition:
+    color 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover {
+    color: var(--theme-color);
+    border-color: rgba(#096ac9, 0.4);
+  }
 }
 
 .area-sidebar-nav {
@@ -1244,5 +1280,92 @@ $area-bg: #f1f4f9;
 
   .area-content {
     padding: 16px;
+  }
+}
+
+/* --- Panel contraido --- */
+
+.area-layout.is-collapsed {
+  .area-sidebar {
+    width: $sidebar-width-collapsed;
+  }
+
+  .area-main {
+    margin-left: $sidebar-width-collapsed;
+  }
+
+  .area-sidebar-brand {
+    /* El boton se coloca debajo del simbolo: uno al lado del otro no caben en
+       68px sin apretarlos contra los bordes. */
+    flex-direction: column;
+    gap: 8px;
+    height: auto;
+    padding: 14px 0;
+  }
+
+  .area-sidebar-nav {
+    padding: 16px 10px;
+  }
+
+  /* Los titulos de grupo se sustituyen por una linea: sin etiquetas que separar
+     siguen haciendo falta los grupos, pero no su nombre recortado. */
+  .area-sidebar-group-label {
+    height: 1px;
+    padding: 0;
+    margin: 0 8px 12px;
+    overflow: hidden;
+    background-color: rgba($theme-font-color, 0.09);
+    text-indent: -999px;
+  }
+
+  .area-sidebar-nav a {
+    justify-content: center;
+    padding: 11px 0;
+
+    span {
+      display: none;
+    }
+  }
+}
+
+/* En movil el panel es un cajon y siempre va completo: contraerlo ahi no
+   ahorraria nada, porque no ocupa sitio cuando esta cerrado. */
+@media (max-width: 991.98px) {
+  .area-sidebar-collapse {
+    display: none;
+  }
+
+  .area-layout.is-collapsed {
+    .area-sidebar {
+      width: $sidebar-width;
+    }
+
+    .area-main {
+      margin-left: 0;
+    }
+
+    .area-sidebar-brand {
+      flex-direction: row;
+      height: 62px;
+      padding: 0 18px;
+    }
+
+    .area-sidebar-nav a {
+      justify-content: flex-start;
+      padding: 9px 10px;
+
+      span {
+        display: inline;
+      }
+    }
+
+    .area-sidebar-group-label {
+      height: auto;
+      padding: 0 10px 8px;
+      margin: 0;
+      background: none;
+      text-indent: 0;
+      overflow: visible;
+    }
   }
 }

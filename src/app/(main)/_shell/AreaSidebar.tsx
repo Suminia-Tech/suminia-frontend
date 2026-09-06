@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X } from 'react-feather';
+import { ChevronsLeft, ChevronsRight, X } from 'react-feather';
 
 import { CommonPath } from '@/_template/Constant';
 import { hasPermission } from '@/shared/lib/permissions';
@@ -22,10 +22,20 @@ interface AreaSidebarProps {
   groups: SidebarGroup[];
   homeHref: string;
   isOpen: boolean;
+  /** Contraido a solo iconos. En movil no aplica: alli el panel es un cajon. */
+  isCollapsed: boolean;
   onClose: () => void;
+  onToggleCollapsed: () => void;
 }
 
-const AreaSidebar = ({ groups, homeHref, isOpen, onClose }: AreaSidebarProps) => {
+const AreaSidebar = ({
+  groups,
+  homeHref,
+  isOpen,
+  isCollapsed,
+  onClose,
+  onToggleCollapsed,
+}: AreaSidebarProps) => {
   const pathname = usePathname();
   const user = useAppSelector((state) => state.auth.user);
 
@@ -52,15 +62,28 @@ const AreaSidebar = ({ groups, homeHref, isOpen, onClose }: AreaSidebarProps) =>
 
       <aside className={`area-sidebar${isOpen ? ' is-open' : ''}`}>
         <div className='area-sidebar-brand'>
-          <Link href={homeHref}>
+          <Link href={homeHref} className='area-sidebar-logo'>
+            {/* Contraido se queda el simbolo: el logotipo completo no cabe en
+                68px y encogerlo lo dejaria ilegible. */}
             <Image
-              src={`${CommonPath}/logo.png`}
-              width={150}
-              height={40}
+              src={isCollapsed ? '/assets/svg/icons.svg' : `${CommonPath}/logo.png`}
+              width={isCollapsed ? 30 : 150}
+              height={isCollapsed ? 30 : 40}
               alt='Suminia'
               priority
             />
           </Link>
+
+          <button
+            type='button'
+            className='area-sidebar-collapse'
+            onClick={onToggleCollapsed}
+            title={isCollapsed ? 'Expandir menú' : 'Contraer menú'}
+            aria-label={isCollapsed ? 'Expandir menú' : 'Contraer menú'}
+          >
+            {isCollapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
+          </button>
+
           <button
             type='button'
             className='area-sidebar-close'
@@ -91,10 +114,13 @@ const AreaSidebar = ({ groups, homeHref, isOpen, onClose }: AreaSidebarProps) =>
                         <Link
                           href={item.href}
                           onClick={onClose}
+                          /* El title solo hace falta contraido, que es cuando el
+                             icono viaja sin su etiqueta. */
+                          title={isCollapsed ? item.label : undefined}
                           className={isActive(item.href) ? 'is-active' : undefined}
                         >
                           <Icon size={17} />
-                          {item.label}
+                          <span>{item.label}</span>
                         </Link>
                       </li>
                     );

@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState, useSyncExternalStore, type ReactNode } from 'react';
+
+import { uiPreferences } from '@/shared/lib/uiPreferences';
 
 import AreaSidebar from './AreaSidebar';
 import AreaTopbar from './AreaTopbar';
@@ -25,14 +27,27 @@ interface SidebarShellProps {
 
 const SidebarShell = ({ groups, homeHref, children }: SidebarShellProps) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
+  /* La preferencia vive en localStorage, que el servidor no puede ver.
+     useSyncExternalStore es justo para eso: da una instantanea al servidor
+     —siempre abierto— y otra al navegador, sin un efecto que cambie el estado
+     despues de pintar. */
+  const isCollapsed = useSyncExternalStore(
+    uiPreferences.subscribe,
+    () => uiPreferences.isSidebarCollapsed(),
+    () => false,
+  );
+
+  const toggleCollapsed = () => uiPreferences.setSidebarCollapsed(!isCollapsed);
 
   return (
-    <div className='area-layout'>
+    <div className={`area-layout${isCollapsed ? ' is-collapsed' : ''}`}>
       <AreaSidebar
         groups={groups}
         homeHref={homeHref}
         isOpen={isMenuOpen}
+        isCollapsed={isCollapsed}
         onClose={() => setMenuOpen(false)}
+        onToggleCollapsed={toggleCollapsed}
       />
 
       <div className='area-main'>

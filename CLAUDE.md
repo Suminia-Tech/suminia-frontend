@@ -112,9 +112,11 @@ verificacion de correo— va en `(suminia)/`.
 - **Datos: un solo camino.** RTK Query sobre `shared/api/baseApi.ts`, con
   `injectEndpoints` desde cada módulo. No crear otras instancias de `createApi`, ni usar
   axios o `fetch` sueltos en componentes.
-- **`localStorage` solo en `shared/lib/`.** Hoy lo tocan `tokenStorage.ts` (la sesión)
-  y `cookieConsent.ts` (el aviso de cookies). Ningún otro archivo lo usa: si hace falta
-  persistir algo nuevo, se añade un módulo ahí.
+- **`localStorage` solo en `shared/lib/`.** Hoy lo tocan `tokenStorage.ts` (la sesión),
+  `cookieConsent.ts` (el aviso de cookies) y `uiPreferences.ts` (el panel contraído).
+  Ningún otro archivo lo usa: si hace falta persistir algo nuevo, se añade un módulo ahí.
+  Para leerlo desde un componente, `useSyncExternalStore` en lugar de un efecto: el
+  servidor no ve `localStorage`, y arrancar con otro valor desajusta la hidratación.
 - **Tipar el contrato del backend** en `model/*.types.ts` del módulo. Es la frontera donde
   de verdad se rompen las cosas.
 - **Estado:** usar `useAppDispatch` / `useAppSelector` de `@/store/hooks`, no los de
