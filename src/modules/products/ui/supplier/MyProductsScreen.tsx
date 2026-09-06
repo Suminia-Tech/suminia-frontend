@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import {
+  AlertCircle,
   Edit2,
   Image as ImageIcon,
   Layers,
@@ -9,9 +10,9 @@ import {
   Plus,
   Search,
   Trash2,
+  X,
 } from 'react-feather';
 import { toast } from 'react-toastify';
-import { Col, Row } from 'reactstrap';
 
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -146,6 +147,27 @@ export const MyProductsScreen = () => {
   const imagesProduct = fresh(imagesFor);
   const formatsProduct = fresh(formatsFor);
 
+  const activeFilters = [
+    debouncedSearch && {
+      key: 'search',
+      label: 'Búsqueda',
+      value: debouncedSearch,
+      clear: () => changeSearch(''),
+    },
+    categoryId && {
+      key: 'category',
+      label: 'Categoría',
+      value: categories.find((c) => c.id === categoryId)?.name ?? '',
+      clear: () => changeCategory(''),
+    },
+    status && {
+      key: 'status',
+      label: 'Estado',
+      value: PRODUCT_STATUS_LABEL[status],
+      clear: () => changeStatus(''),
+    },
+  ].filter(Boolean) as { key: string; label: string; value: string; clear: () => void }[];
+
   const clearFilters = () => {
     setSearch('');
     setCategoryId('');
@@ -184,64 +206,75 @@ export const MyProductsScreen = () => {
         </div>
       )}
 
-      <div className='catalog-filters'>
-        <Row className='g-2 align-items-center'>
-          <Col md='5'>
-            <div className='input-with-icon'>
-              <Search size={16} />
-              <input
-                type='search'
-                className='form-control'
-                placeholder='Buscar por nombre, marca o fabricante'
-                value={search}
-                onChange={(event) => changeSearch(event.target.value)}
-              />
-            </div>
-          </Col>
-          <Col md='3'>
+      {/* Un solo panel: barra de filtros, filtros activos y tabla. Antes la barra
+          flotaba en su propia tarjeta y parecia un bloque sin relacion con lo
+          que hay debajo, cuando es exactamente lo que lo gobierna. */}
+      <div className={`catalog-panel${isFetching ? ' is-refreshing' : ''}`}>
+        <div className='catalog-toolbar'>
+          <div className='catalog-search'>
+            <Search size={16} />
+            <input
+              type='search'
+              placeholder='Buscar por nombre, marca o fabricante'
+              value={search}
+              onChange={(event) => changeSearch(event.target.value)}
+            />
+          </div>
+
+          <div className='catalog-toolbar-filters'>
             <select
-              className='form-control'
+              className='filter-select'
+              aria-label='Categoría'
               value={categoryId}
               onChange={(event) => changeCategory(event.target.value)}
             >
-              <option value=''>Todas las categorías</option>
+              <option value=''>Categoría</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
             </select>
-          </Col>
-          <Col md='3'>
+
             <select
-              className='form-control'
+              className='filter-select'
+              aria-label='Estado'
               value={status}
               onChange={(event) => changeStatus(event.target.value as ProductStatus | '')}
             >
-              <option value=''>Todos los estados</option>
+              <option value=''>Estado</option>
               <option value='DRAFT'>Borrador</option>
               <option value='ACTIVE'>Publicado</option>
               <option value='INACTIVE'>Retirado</option>
             </select>
-          </Col>
-          <Col md='1'>
-            {hasFilters && (
+          </div>
+        </div>
+
+        {/* Lo que se esta filtrando ahora, en alto. Un desplegable que ya eligio
+            algo solo lo dice si lo miras; el chip ademas se quita de un clic, sin
+            volver a abrir el menu del que salio. */}
+        {activeFilters.length > 0 && (
+          <div className='catalog-active-filters'>
+            {activeFilters.map((filter) => (
               <button
                 type='button'
-                className='btn btn-link p-0 font-light w-100'
-                onClick={clearFilters}
+                key={filter.key}
+                className='filter-chip'
+                onClick={filter.clear}
               >
-                Limpiar
+                <span className='font-light'>{filter.label}:</span> {filter.value}
+                <X size={13} />
               </button>
-            )}
-          </Col>
-        </Row>
-      </div>
+            ))}
+            <button type='button' className='filter-clear' onClick={clearFilters}>
+              Limpiar todo
+            </button>
+          </div>
+        )}
 
-      {!hydrated || isLoading ? (
-        /* Esqueleto en vez de un "Cargando...": conserva el alto de la tabla, de
-           modo que el contenido no salta cuando llega. */
-        <div className='catalog-panel'>
+        {!hydrated || isLoading ? (
+          /* Esqueleto en vez de un "Cargando...": conserva el alto de la tabla,
+             de modo que el contenido no salta cuando llega. */
           <div className='catalog-skeleton'>
             {Array.from({ length: 6 }).map((_, index) => (
               <div className='catalog-skeleton-row' key={index}>
@@ -251,21 +284,21 @@ export const MyProductsScreen = () => {
               </div>
             ))}
           </div>
-        </div>
-      ) : isError ? (
-        <div className='alert alert-danger'>
-          {extractErrorMessage(error, 'No se pudo cargar el catálogo.')}
-        </div>
-      ) : products.length === 0 ? (
-        <div className='catalog-panel'>
+        ) : isError ? (
           <div className='catalog-empty'>
-            <Package size={34} />
+            <AlertCircle size={30} />
+            <h5>No se pudo cargar el catálogo</h5>
+            <p className='font-light'>
+              {extractErrorMessage(error, 'Vuelve a intentarlo en un momento.')}
+            </p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className='catalog-empty'>
+            <Package size={30} />
             {hasFilters ? (
               <>
                 <h5>Nada coincide con lo que buscas</h5>
-                <p className='font-light'>
-                  Prueba con otro término o quita los filtros.
-                </p>
+                <p className='font-light'>Prueba con otro término o quita los filtros.</p>
                 <button
                   type='button'
                   className='btn btn-outline-secondary rounded-1'
@@ -294,129 +327,133 @@ export const MyProductsScreen = () => {
               </>
             )}
           </div>
-        </div>
-      ) : (
-        /* isFetching sin isLoading es una recarga con datos ya en pantalla: se
-           atenua en vez de vaciarse, para que la tabla no salte al filtrar. */
-        <div className={`catalog-panel${isFetching ? ' is-refreshing' : ''}`}>
-          <table className='catalog-table'>
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Categoría</th>
-                <th className='num'>Formatos</th>
-                <th className='num'>Precio</th>
-                <th className='num'>Inventario</th>
-                <th>Estado</th>
-                {(canUpdate || canDelete) && <th className='actions'></th>}
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => {
-                const image = getPrimaryImage(product);
-                const stock = getTotalStock(product);
-
-                return (
-                  <tr key={product.id}>
-                    <td>
-                      <div className='catalog-product'>
-                        <span className='catalog-thumb'>
-                          {image ? (
-                            /* eslint-disable-next-line @next/next/no-img-element --
-                               las imagenes viven en S3 y next/image exigiria
-                               declarar el dominio del bucket en la configuracion. */
-                            <img src={image.url} alt={image.alt ?? product.name} />
-                          ) : (
-                            <ImageIcon size={18} />
-                          )}
-                        </span>
-                        <span className='catalog-product-text'>
-                          <strong>{product.name}</strong>
-                          <small className='font-light'>
-                            {product.brand ?? product.manufacturer ?? 'Sin marca'}
-                          </small>
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className='chip'>{product.categoryName ?? '—'}</span>
-                    </td>
-                    <td className='num font-light'>{product.presentations.length}</td>
-                    <td className='num'>
-                      <strong>{formatPriceRange(product)}</strong>
-                    </td>
-                    <td className={`num${stock === 0 ? ' text-danger' : ' font-light'}`}>
-                      {stock === 0 ? 'Agotado' : stock}
-                    </td>
-                    <td>
-                      <span className={`status-pill status-${PRODUCT_STATUS_TONE[product.status]}`}>
-                        {PRODUCT_STATUS_LABEL[product.status]}
-                      </span>
-                    </td>
-                    {(canUpdate || canDelete) && (
-                      <td className='actions'>
-                        <div className='row-actions'>
-                          {canUpdate && (
-                            <>
-                              <button
-                                type='button'
-                                title='Editar producto'
-                                aria-label='Editar producto'
-                                onClick={() => openEdit(product)}
-                              >
-                                <Edit2 size={15} />
-                              </button>
-                              {/* El contador va dentro del boton: saber cuantos
-                                  formatos e imagenes tiene cada producto es lo
-                                  que dice cual esta a medio preparar. */}
-                              <button
-                                type='button'
-                                title='Formatos de venta'
-                                aria-label='Formatos de venta'
-                                onClick={() => setFormatsFor(product)}
-                              >
-                                <Layers size={15} />
-                                <span>{product.presentations.length}</span>
-                              </button>
-                              <button
-                                type='button'
-                                title='Imágenes'
-                                aria-label='Imágenes'
-                                className={product.images.length === 0 ? 'is-empty' : undefined}
-                                onClick={() => setImagesFor(product)}
-                              >
-                                <ImageIcon size={15} />
-                                <span>{product.images.length}</span>
-                              </button>
-                            </>
-                          )}
-                          {canDelete && (
-                            <button
-                              type='button'
-                              className='is-danger'
-                              title='Eliminar producto'
-                              aria-label='Eliminar producto'
-                              onClick={() => setPendingDelete(product)}
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
+        ) : (
+          <>
+            <div className='catalog-table-scroll'>
+              <table className='catalog-table'>
+                <thead>
+                  <tr>
+                    <th className='col-product'>Producto</th>
+                    <th className='col-category'>Categoría</th>
+                    <th className='num col-tight'>Formatos</th>
+                    <th className='num col-price'>Precio</th>
+                    <th className='num col-tight'>Inventario</th>
+                    <th className='col-status'>Estado</th>
+                    {(canUpdate || canDelete) && <th className='actions'></th>}
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {products.map((product) => {
+                    const image = getPrimaryImage(product);
+                    const stock = getTotalStock(product);
 
-          {meta && (
-            <div className='catalog-panel-foot'>
-              <Pagination meta={meta} onChange={setPage} label='productos' />
+                    return (
+                      <tr key={product.id}>
+                        <td>
+                          <div className='catalog-product'>
+                            <span className='catalog-thumb'>
+                              {image ? (
+                                /* eslint-disable-next-line @next/next/no-img-element --
+                                   las imagenes viven en S3 y next/image exigiria
+                                   declarar el dominio del bucket en la configuracion. */
+                                <img src={image.url} alt={image.alt ?? product.name} />
+                              ) : (
+                                <ImageIcon size={16} />
+                              )}
+                            </span>
+                            <span className='catalog-product-text'>
+                              <strong>{product.name}</strong>
+                              <small className='font-light'>
+                                {product.brand ?? product.manufacturer ?? 'Sin marca'}
+                              </small>
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className='chip'>{product.categoryName ?? '—'}</span>
+                        </td>
+                        <td className='num font-light'>{product.presentations.length}</td>
+                        <td className='num'>
+                          <strong>{formatPriceRange(product)}</strong>
+                        </td>
+                        <td className={`num${stock === 0 ? ' text-danger' : ' font-light'}`}>
+                          {stock === 0 ? 'Agotado' : stock}
+                        </td>
+                        <td>
+                          <span
+                            className={`status-pill status-${PRODUCT_STATUS_TONE[product.status]}`}
+                          >
+                            {PRODUCT_STATUS_LABEL[product.status]}
+                          </span>
+                        </td>
+                        {(canUpdate || canDelete) && (
+                          <td className='actions'>
+                            <div className='row-actions'>
+                              {canUpdate && (
+                                <>
+                                  <button
+                                    type='button'
+                                    title='Editar producto'
+                                    aria-label='Editar producto'
+                                    onClick={() => openEdit(product)}
+                                  >
+                                    <Edit2 size={15} />
+                                  </button>
+                                  {/* El contador va dentro del boton: saber cuantos
+                                      formatos e imagenes tiene cada producto es lo
+                                      que dice cual esta a medio preparar. */}
+                                  <button
+                                    type='button'
+                                    title='Formatos de venta'
+                                    aria-label='Formatos de venta'
+                                    onClick={() => setFormatsFor(product)}
+                                  >
+                                    <Layers size={15} />
+                                    <span>{product.presentations.length}</span>
+                                  </button>
+                                  <button
+                                    type='button'
+                                    title='Imágenes'
+                                    aria-label='Imágenes'
+                                    className={
+                                      product.images.length === 0 ? 'is-empty' : undefined
+                                    }
+                                    onClick={() => setImagesFor(product)}
+                                  >
+                                    <ImageIcon size={15} />
+                                    <span>{product.images.length}</span>
+                                  </button>
+                                </>
+                              )}
+                              {canDelete && (
+                                <button
+                                  type='button'
+                                  className='is-danger'
+                                  title='Eliminar producto'
+                                  aria-label='Eliminar producto'
+                                  onClick={() => setPendingDelete(product)}
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-          )}
-        </div>
-      )}
+
+            {meta && (
+              <div className='catalog-panel-foot'>
+                <Pagination meta={meta} onChange={setPage} label='productos' />
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {isFormOpen && (
         /* La key remonta el formulario al cambiar de producto: su estado se

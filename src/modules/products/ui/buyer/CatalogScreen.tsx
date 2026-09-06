@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Image as ImageIcon } from 'react-feather';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -68,7 +68,7 @@ export const CatalogScreen = () => {
 
   return (
     <section className='section-b-space'>
-      <Container>
+      <div className='container-fluid-lg'>
         <div className='box-head'>
           <h3>Catálogo</h3>
         </div>
@@ -151,7 +151,7 @@ export const CatalogScreen = () => {
             {meta && <Pagination meta={meta} onChange={setPage} label='productos' />}
           </div>
         )}
-      </Container>
+      </div>
     </section>
   );
 };

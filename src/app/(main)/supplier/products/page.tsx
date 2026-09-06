@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Container } from 'reactstrap';
 
 import { MyProductsScreen } from '@/modules/products';
 
@@ -13,11 +12,11 @@ export const metadata: Metadata = {
 export default function ProductosPage() {
   return (
     <section className='section-b-space'>
-      <Container>
+      <div className='container-fluid-lg'>
         <div className='table-dashboard dashboard'>
           <MyProductsScreen />
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

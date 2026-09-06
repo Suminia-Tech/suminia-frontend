@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 
 import PanelNav from '../../_shell/PanelNav';
 import { BUYER_ACCOUNT_SECTIONS } from '../_nav';
@@ -10,12 +10,12 @@ import { BUYER_ACCOUNT_SECTIONS } from '../_nav';
    ancho completo. */
 const AccountLayout = ({ children }: { children: ReactNode }) => (
   <section className='section-b-space'>
-    <Container>
+    <div className='container-fluid-lg'>
       <Row>
         <PanelNav sections={BUYER_ACCOUNT_SECTIONS} />
         <Col lg='9'>{children}</Col>
       </Row>
-    </Container>
+    </div>
   </section>
 );
 

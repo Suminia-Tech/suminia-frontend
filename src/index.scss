@@ -485,7 +485,10 @@
    --------------------------------------------------------------------------- */
 
 .catalog-manager {
-  --row-gap: 14px;
+  /* 48px de fila: el tamano "regular" de las tablas de trabajo. A 74px, que es
+     donde estaba, caben cuatro productos en pantalla y hay que rodar para todo. */
+  --row-gap: 10px;
+  --thumb: 40px;
 }
 
 .catalog-header {
@@ -508,37 +511,6 @@
   }
 }
 
-.catalog-filters {
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  border: 1px solid $border-color;
-  border-radius: 10px;
-  background-color: $white;
-
-  .form-control {
-    height: 42px;
-  }
-}
-
-/* El icono va dentro del campo, no al lado: un buscador con lupa fuera parece
-   dos controles distintos. */
-.input-with-icon {
-  position: relative;
-
-  svg {
-    position: absolute;
-    top: 50%;
-    left: 13px;
-    transform: translateY(-50%);
-    color: rgba($theme-font-color, 0.45);
-    pointer-events: none;
-  }
-
-  .form-control {
-    padding-left: 38px;
-  }
-}
-
 .catalog-panel {
   border: 1px solid $border-color;
   border-radius: 10px;
@@ -552,14 +524,174 @@
   }
 }
 
+/* Barra de herramientas dentro del panel. Pegada a la tabla y no flotando
+   encima: asi se lee como lo que gobierna la lista, no como un bloque aparte. */
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-bottom: 1px solid $border-color;
+}
+
+/* El buscador no lleva marco propio: el marco ya lo pone el panel, y encajar
+   una caja dentro de otra es lo que hacia que la barra pareciera un formulario
+   en vez de una herramienta. */
+.catalog-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1 1 260px;
+  min-width: 0;
+
+  svg {
+    flex: 0 0 auto;
+    color: rgba($theme-font-color, 0.4);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: $theme-font-color;
+
+    &::placeholder {
+      color: rgba($theme-font-color, 0.42);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.catalog-toolbar-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Los desplegables se ven como botones y no como campos de formulario: son
+   herramientas de la tabla, no datos que se rellenan. */
+.filter-select {
+  height: 34px;
+  padding: 0 30px 0 12px;
+  border: 1px solid $border-color;
+  border-radius: 7px;
+  background-color: $white;
+  color: $theme-font-color;
+  font-size: 13px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23787878' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+
+  &:hover {
+    border-color: rgba($theme-font-color, 0.35);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--theme-color);
+  }
+}
+
+/* Fila de filtros activos. */
+.catalog-active-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-bottom: 1px solid $border-color;
+  background-color: rgba($light-blue, 0.4);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid $border-color;
+  border-radius: 20px;
+  background-color: $white;
+  font-size: 12.5px;
+  color: $theme-font-color;
+  cursor: pointer;
+  max-width: 260px;
+
+  span {
+    white-space: nowrap;
+  }
+
+  svg {
+    color: rgba($theme-font-color, 0.45);
+  }
+
+  &:hover {
+    border-color: #c62828;
+
+    svg {
+      color: #c62828;
+    }
+  }
+}
+
+.filter-clear {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+  color: var(--theme-color);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .catalog-panel-foot {
   padding: 12px 18px;
   border-top: 1px solid $border-color;
 }
 
+/* La tabla se desplaza dentro de su panel en pantallas estrechas, en vez de
+   empujar la pagina entera a lo ancho. */
+.catalog-table-scroll {
+  overflow-x: auto;
+}
+
 .catalog-table {
   width: 100%;
   border-collapse: collapse;
+
+  /* Sin repartir el ancho, la columna del producto se come la mitad de la tabla
+     y deja las cifras flotando lejos del nombre al que pertenecen. */
+  .col-product {
+    width: 34%;
+  }
+
+  .col-category {
+    width: 14%;
+  }
+
+  .col-price {
+    width: 13%;
+  }
+
+  .col-status {
+    width: 12%;
+  }
+
+  .col-tight {
+    width: 9%;
+  }
 
   th {
     padding: 12px 16px;
@@ -612,9 +744,9 @@
 }
 
 .catalog-thumb {
-  flex: 0 0 46px;
-  width: 46px;
-  height: 46px;
+  flex: 0 0 var(--thumb);
+  width: var(--thumb);
+  height: var(--thumb);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -805,9 +937,9 @@
   }
 
   .sk-thumb {
-    flex: 0 0 46px;
-    width: 46px;
-    height: 46px;
+    flex: 0 0 var(--thumb);
+    width: var(--thumb);
+    height: var(--thumb);
   }
 
   .sk-line {

@@ -43,7 +43,7 @@ export const AreaGuard = ({ area, children }: AreaGuardProps) => {
   if (!hydrated) {
     return (
       <section className='section-b-space'>
-        <div className='container'>
+        <div className='container-fluid-lg'>
           <p className='font-light'>Cargando...</p>
         </div>
       </section>

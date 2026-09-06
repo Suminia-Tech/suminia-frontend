@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { ChevronLeft, Image as ImageIcon } from 'react-feather';
-import { Col, Container, Row, Table } from 'reactstrap';
+import { Col, Row, Table } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { useAppSelector } from '@/store/hooks';
@@ -30,9 +30,9 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
   if (!hydrated || isLoading) {
     return (
       <section className='section-b-space'>
-        <Container>
+        <div className='container-fluid-lg'>
           <p className='font-light'>Cargando...</p>
-        </Container>
+        </div>
       </section>
     );
   }
@@ -40,14 +40,14 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
   if (isError || !data) {
     return (
       <section className='section-b-space'>
-        <Container>
+        <div className='container-fluid-lg'>
           <div className='alert alert-danger'>
             {extractErrorMessage(error, 'Este producto no está disponible.')}
           </div>
           <Link href='/buyer/catalog' className='btn btn-primary rounded-1'>
             Volver al catálogo
           </Link>
-        </Container>
+        </div>
       </section>
     );
   }
@@ -63,7 +63,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
 
   return (
     <section className='section-b-space'>
-      <Container>
+      <div className='container-fluid-lg'>
         <Link
           href='/buyer/catalog'
           className='font-light d-inline-flex align-items-center gap-1 mb-3'
@@ -190,7 +190,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
             })}
           </tbody>
         </Table>
-      </Container>
+      </div>
     </section>
   );
 };
