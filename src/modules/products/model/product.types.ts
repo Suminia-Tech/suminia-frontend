@@ -29,6 +29,11 @@ export interface ProductPresentation {
   isDefault: boolean;
 }
 
+/* Debe coincidir con MAX_PRODUCT_IMAGES del backend, que es quien lo hace
+   cumplir: aqui solo sirve para dibujar los huecos que faltan y no ofrecer una
+   subida que va a acabar en 422. */
+export const MAX_PRODUCT_IMAGES = 6;
+
 export interface ProductImage {
   id: string;
   /* Clave del objeto en S3. La usa el backend; las pantallas pintan `url`. */

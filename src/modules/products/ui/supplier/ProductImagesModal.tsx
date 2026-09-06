@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, type ChangeEvent } from 'react';
-import { ArrowLeft, ArrowRight, Star, Trash2, Upload } from 'react-feather';
+import { ArrowLeft, ArrowRight, Plus, Star, Trash2, Type } from 'react-feather';
 import { toast } from 'react-toastify';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
@@ -10,15 +10,18 @@ import { ConfirmModal } from '@/shared/ui';
 
 import { useRemoveImageMutation, useUpdateImageMutation } from '../../api/productsApi';
 import { useImageUpload } from '../../hooks/useImageUpload';
-import type { Product } from '../../model/product.types';
+import { MAX_PRODUCT_IMAGES } from '../../model/product.types';
+import type { Product, ProductImage } from '../../model/product.types';
 
-/* Galeria de un producto. La subida no es un input de archivo corriente: el
-   navegador pide un permiso a nuestra API, manda el archivo directo a S3 y
-   despues confirma. Ese baile vive en useImageUpload; aqui solo se llama
-   upload(file).
+/* Galeria de un producto, en rejilla de seis huecos.
 
-   La imagen principal es la que representa al producto en los listados. Se
-   marca una sola: el backend desmarca la anterior en la misma transaccion. */
+   Los huecos vacios se pintan igual que los llenos en vez de esconderse tras un
+   boton: asi se ve de un vistazo cuantas fotos caben todavia y cuantas faltan,
+   que es la pregunta que se hace un proveedor mirando su catalogo a medias.
+
+   La subida no es un input de archivo corriente: el navegador pide un permiso a
+   nuestra API, manda el archivo directo a S3 y despues confirma. Ese baile vive
+   en useImageUpload; aqui solo se llama upload(file). */
 
 interface ProductImagesModalProps {
   isOpen: boolean;
@@ -30,12 +33,16 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
   const inputRef = useRef<HTMLInputElement>(null);
   const [busyImageId, setBusyImageId] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+  const [editingAlt, setEditingAlt] = useState<string | null>(null);
+  const [altDraft, setAltDraft] = useState('');
 
   const { upload, uploading, error, clearError } = useImageUpload(product.id);
   const [updateImage] = useUpdateImageMutation();
   const [removeImage] = useRemoveImageMutation();
 
   const images = [...product.images].sort((a, b) => a.position - b.position);
+  const freeSlots = Math.max(0, MAX_PRODUCT_IMAGES - images.length);
+  const isFull = freeSlots === 0;
 
   const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -95,6 +102,32 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
     }
   };
 
+  const startAlt = (image: ProductImage) => {
+    setEditingAlt(image.id);
+    setAltDraft(image.alt ?? '');
+  };
+
+  /* El texto alternativo describe la foto para quien no puede verla, y es lo
+     que se lee si la imagen no carga. Se guarda aparte del resto porque se
+     escribe mirando la foto, no en el formulario del producto. */
+  const saveAlt = async () => {
+    if (!editingAlt) return;
+
+    setBusyImageId(editingAlt);
+    try {
+      await updateImage({
+        productId: product.id,
+        imageId: editingAlt,
+        data: { alt: altDraft.trim() },
+      }).unwrap();
+      setEditingAlt(null);
+    } catch (err) {
+      toast.error(extractErrorMessage(err, 'No se pudo guardar la descripción.'));
+    } finally {
+      setBusyImageId(null);
+    }
+  };
+
   /* Borrar quita tambien el archivo de S3, de modo que no hay vuelta atras
      aunque la fila sea una baja logica. */
   const confirmRemove = async () => {
@@ -113,7 +146,12 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
   };
 
   return (
-    <Modal className='add-address-modal' centered isOpen={isOpen} toggle={onClose}>
+    <Modal
+      className='add-address-modal gallery-modal'
+      centered
+      isOpen={isOpen}
+      toggle={onClose}
+    >
       <ModalHeader toggle={onClose}></ModalHeader>
 
       <ModalBody>
@@ -122,73 +160,123 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
         </div>
         <p className='font-light'>{product.name}</p>
 
-        {images.length > 1 && (
-          <p className='font-light'>
-            El orden es el que ve el comprador. La marcada como principal es la que
-            aparece en los listados.
-          </p>
-        )}
+        <p className='font-light gallery-hint'>
+          Hasta {MAX_PRODUCT_IMAGES} imágenes. La primera es la que representa al
+          producto en el catálogo; arrastra el orden con las flechas.
+        </p>
 
-        {images.length === 0 ? (
-          <p className='font-light'>
-            Este producto todavía no tiene imágenes. La primera que subas queda como
-            principal.
-          </p>
-        ) : (
-          <div className='row g-3'>
-            {images.map((image, index) => (
-              <div className='col-6 col-md-4' key={image.id}>
-                <div className='product-image-tile'>
-                  {/* eslint-disable-next-line @next/next/no-img-element -- las
-                      imagenes viven en S3 y next/image exigiria declarar el
-                      dominio del bucket en la configuracion. */}
-                  <img src={image.url} alt={image.alt ?? product.name} />
+        <div className='gallery-grid'>
+          {images.map((image, index) => (
+            <div
+              className={`gallery-slot is-filled${busyImageId === image.id ? ' is-busy' : ''}`}
+              key={image.id}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- las
+                  imagenes viven en S3 y next/image exigiria declarar el dominio
+                  del bucket en la configuracion. */}
+              <img src={image.url} alt={image.alt ?? product.name} />
 
-                  {image.isPrimary && <span className='badge badge-success'>Principal</span>}
+              {image.isPrimary && <span className='gallery-badge'>Principal</span>}
 
-                  <div className='product-image-actions'>
-                    <button
-                      type='button'
-                      className='btn btn-sm'
-                      title='Mover a la izquierda'
-                      disabled={index === 0 || busyImageId === image.id}
-                      onClick={() => move(index, -1)}
-                    >
-                      <ArrowLeft size={14} />
-                    </button>
-                    <button
-                      type='button'
-                      className='btn btn-sm'
-                      title='Mover a la derecha'
-                      disabled={index === images.length - 1 || busyImageId === image.id}
-                      onClick={() => move(index, 1)}
-                    >
-                      <ArrowRight size={14} />
-                    </button>
-                    {!image.isPrimary && (
-                      <button
-                        type='button'
-                        className='btn btn-sm'
-                        title='Marcar como principal'
-                        disabled={busyImageId === image.id}
-                        onClick={() => makePrimary(image.id)}
-                      >
-                        <Star size={14} />
-                      </button>
-                    )}
-                    <button
-                      type='button'
-                      className='btn btn-sm text-danger'
-                      title='Eliminar'
-                      disabled={busyImageId === image.id}
-                      onClick={() => setPendingDelete(image.id)}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
+              <div className='gallery-actions'>
+                <button
+                  type='button'
+                  title='Mover a la izquierda'
+                  aria-label='Mover a la izquierda'
+                  disabled={index === 0 || busyImageId === image.id}
+                  onClick={() => move(index, -1)}
+                >
+                  <ArrowLeft size={13} />
+                </button>
+                <button
+                  type='button'
+                  title='Mover a la derecha'
+                  aria-label='Mover a la derecha'
+                  disabled={index === images.length - 1 || busyImageId === image.id}
+                  onClick={() => move(index, 1)}
+                >
+                  <ArrowRight size={13} />
+                </button>
+                {!image.isPrimary && (
+                  <button
+                    type='button'
+                    title='Marcar como principal'
+                    aria-label='Marcar como principal'
+                    disabled={busyImageId === image.id}
+                    onClick={() => makePrimary(image.id)}
+                  >
+                    <Star size={13} />
+                  </button>
+                )}
+                <button
+                  type='button'
+                  title='Describir la imagen'
+                  aria-label='Describir la imagen'
+                  disabled={busyImageId === image.id}
+                  onClick={() => startAlt(image)}
+                >
+                  <Type size={13} />
+                </button>
+                <button
+                  type='button'
+                  className='is-danger'
+                  title='Eliminar'
+                  aria-label='Eliminar'
+                  disabled={busyImageId === image.id}
+                  onClick={() => setPendingDelete(image.id)}
+                >
+                  <Trash2 size={13} />
+                </button>
               </div>
-            ))}
+            </div>
+          ))}
+
+          {/* Los huecos que faltan, dibujados. El primero es el que dispara la
+              carga; los demas quedan de aviso de cuanto cabe todavia. */}
+          {Array.from({ length: freeSlots }).map((_, index) => (
+            <button
+              type='button'
+              className='gallery-slot is-empty'
+              key={`libre-${index}`}
+              disabled={uploading}
+              onClick={() => inputRef.current?.click()}
+            >
+              <Plus size={20} />
+              <span>{uploading && index === 0 ? 'Subiendo...' : 'Agregar'}</span>
+            </button>
+          ))}
+        </div>
+
+        {editingAlt && (
+          <div className='gallery-alt'>
+            <label className='form-label font-light'>
+              Describe la imagen para quien no puede verla
+            </label>
+            <div className='d-flex gap-2'>
+              <input
+                type='text'
+                className='form-control'
+                placeholder='Tensiómetro digital con brazalete'
+                value={altDraft}
+                maxLength={255}
+                onChange={(event) => setAltDraft(event.target.value)}
+              />
+              <button
+                type='button'
+                className='btn btn-primary rounded-1'
+                disabled={busyImageId === editingAlt}
+                onClick={saveAlt}
+              >
+                Guardar
+              </button>
+              <button
+                type='button'
+                className='btn btn-outline-secondary rounded-1'
+                onClick={() => setEditingAlt(null)}
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         )}
 
@@ -227,22 +315,17 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
         </ConfirmModal>
       )}
 
-      <ModalFooter className='pt-0 text-end d-block'>
+      <ModalFooter className='pt-0 d-flex justify-content-between align-items-center'>
+        <span className='font-light'>
+          {images.length} de {MAX_PRODUCT_IMAGES}
+          {isFull && ' · sin espacio, retira alguna para subir otra'}
+        </span>
         <button
           type='button'
-          className='btn btn-outline-secondary rounded-1 me-2'
+          className='btn btn-outline-secondary rounded-1'
           onClick={onClose}
         >
           Cerrar
-        </button>
-        <button
-          type='button'
-          className='btn btn-primary rounded-1 d-inline-flex align-items-center gap-1'
-          disabled={uploading}
-          onClick={() => inputRef.current?.click()}
-        >
-          <Upload size={16} />
-          {uploading ? 'Subiendo...' : 'Subir imagen'}
         </button>
       </ModalFooter>
     </Modal>

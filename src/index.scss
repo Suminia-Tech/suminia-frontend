@@ -162,57 +162,6 @@
   }
 }
 
-/* Cada imagen de la galeria. La proporcion es fija para que subir fotos de
-   distintos tamaños no descuadre la rejilla. */
-.product-image-tile {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: $light-blue;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .badge {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-  }
-
-  /* Las acciones aparecen al pasar el raton en pantallas con puntero, pero se
-     quedan visibles donde no lo hay: en tactil no existe hover y de otro modo
-     no habria forma de borrar una imagen. */
-  .product-image-actions {
-    position: absolute;
-    right: 4px;
-    bottom: 4px;
-    display: flex;
-    gap: 2px;
-
-    .btn {
-      padding: 4px 6px;
-      line-height: 1;
-      background-color: rgba($white, 0.9);
-      border-radius: 4px;
-    }
-  }
-
-  @media (hover: hover) {
-    .product-image-actions {
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    &:hover .product-image-actions {
-      opacity: 1;
-    }
-  }
-}
-
 /* Menu principal de cada area. La barra de la plantilla (.nav-menu) arrastra el
    desplegable multinivel, el toggle movil y el fondo de la tienda; aqui hacen
    falta cuatro enlaces y nada mas. */
@@ -1386,4 +1335,161 @@ $area-bg: #f1f4f9;
       overflow: visible;
     }
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Galeria del producto: rejilla de huecos
+
+   Los vacios se dibujan igual que los llenos en vez de esconderse tras un
+   boton. Asi se ve de un vistazo cuantas fotos caben todavia, que es la
+   pregunta de quien esta armando su catalogo a medias.
+   --------------------------------------------------------------------------- */
+
+.gallery-modal {
+  max-width: 760px;
+
+  .modal-body {
+    padding: 30px 34px 20px;
+  }
+
+  .modal-footer {
+    padding: 0 34px 26px;
+    border: none;
+  }
+}
+
+.gallery-hint {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @media (max-width: 575.98px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.gallery-slot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+
+  &.is-filled {
+    border: 1px solid $border-color;
+    background-color: $light-blue;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  /* Mientras una accion viaja, el hueco se atenua y deja de aceptar clics: sin
+     esto se puede pedir dos reordenados seguidos y llegan cruzados. */
+  &.is-busy {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* El vacio es un boton: borde punteado para que se lea como sitio por llenar
+     y no como una foto que no cargo. */
+  &.is-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0;
+    border: 1.5px dashed rgba($theme-font-color, 0.22);
+    background-color: rgba($light-blue, 0.5);
+    color: rgba($theme-font-color, 0.45);
+    font-size: 12.5px;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease,
+      background-color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      border-color: var(--theme-color);
+      background-color: rgba(#096ac9, 0.05);
+      color: var(--theme-color);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+  }
+}
+
+.gallery-badge {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background-color: var(--theme-color);
+  color: $white;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* Las acciones se apoyan en una banda al pie de la foto: sobre la imagen a
+   secas, los iconos se pierden segun lo claro que sea el producto. */
+.gallery-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
+  background: linear-gradient(to top, rgba(#000, 0.62), rgba(#000, 0));
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: rgba($white, 0.88);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($white, 0.22);
+      color: $white;
+    }
+
+    &.is-danger:hover:not(:disabled) {
+      background-color: #c62828;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+}
+
+/* Editor del texto alternativo, bajo la rejilla. */
+.gallery-alt {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 10px;
+  background-color: $light-blue;
 }
