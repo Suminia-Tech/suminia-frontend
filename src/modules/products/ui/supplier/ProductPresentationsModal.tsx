@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
-import { ConfirmModal } from '@/shared/ui';
+import { ConfirmModal, SelectWithCustom } from '@/shared/ui';
 
 import {
   useAddPresentationMutation,
@@ -343,15 +343,17 @@ const ProductPresentationsModal = ({
                 <small className='font-light'>Talla, calibre, presentación.</small>
               </Col>
               <Col md='6' className='mb-3'>
-                {field('Empaque', 'packaging', {
-                  placeholder: 'Caja',
-                  list: 'packaging-options',
-                })}
-                <datalist id='packaging-options'>
-                  {PACKAGING_SUGGESTIONS.map((option) => (
-                    <option value={option} key={option} />
-                  ))}
-                </datalist>
+                <label className='form-label font-light'>Empaque</label>
+                <SelectWithCustom
+                  options={PACKAGING_SUGGESTIONS}
+                  value={draft.packaging}
+                  onChange={set('packaging')}
+                  emptyLabel='Selecciona el empaque'
+                  customPlaceholder='Escribe el empaque'
+                />
+                {errors.packaging && (
+                  <small className='text-danger'>{errors.packaging}</small>
+                )}
               </Col>
             </Row>
 
@@ -372,18 +374,17 @@ const ProductPresentationsModal = ({
                 {field('Cantidad', 'contentQuantity', { type: 'number' })}
               </Col>
               <Col md='4' className='mb-3'>
-                {field('Unidad', 'contentUnit', {
-                  placeholder: 'unidad, mL, g',
-                  list: 'content-units',
-                })}
-                {/* Sugerencias, no una lista cerrada: el dominio va a pedir
-                    unidades que hoy no sabemos —viales, ampollas, dosis— y
-                    cerrarla obligaria a tocar el codigo por cada una. */}
-                <datalist id='content-units'>
-                  {CONTENT_UNITS.map((unit) => (
-                    <option value={unit} key={unit} />
-                  ))}
-                </datalist>
+                <label className='form-label font-light'>Unidad</label>
+                <SelectWithCustom
+                  options={CONTENT_UNITS}
+                  value={draft.contentUnit}
+                  onChange={set('contentUnit')}
+                  emptyLabel='Selecciona la unidad'
+                  customPlaceholder='Escribe la unidad'
+                />
+                {errors.contentUnit && (
+                  <small className='text-danger'>{errors.contentUnit}</small>
+                )}
               </Col>
               {/* El codigo de barras identifica el formato en bodega, no el
                   producto: la caja x 100 y la x 10 llevan uno distinto. */}

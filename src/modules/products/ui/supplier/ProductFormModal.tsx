@@ -5,6 +5,7 @@ import { Plus, X } from 'react-feather';
 import { Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
+import { SelectWithCustom } from '@/shared/ui';
 
 import {
   useCreateProductMutation,
@@ -95,6 +96,12 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
   );
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
+
+  const setField = (field: keyof FormState, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setErrors((current) => ({ ...current, [field]: undefined }));
+    setGeneralError(null);
+  };
 
   const handleChange =
     (field: keyof FormState) =>
@@ -354,19 +361,13 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   </Col>
                   <Col sm='6' className='mb-3'>
                     <label className='form-label font-light'>Empaque</label>
-                    <input
-                      type='text'
-                      list='packaging-suggestions'
-                      className='form-control'
-                      placeholder='Caja'
+                    <SelectWithCustom
+                      options={PACKAGING_SUGGESTIONS}
                       value={form.packaging}
-                      onChange={handleChange('packaging')}
+                      onChange={(value) => setField('packaging', value)}
+                      emptyLabel='Selecciona el empaque'
+                      customPlaceholder='Escribe el empaque'
                     />
-                    <datalist id='packaging-suggestions'>
-                      {PACKAGING_SUGGESTIONS.map((option) => (
-                        <option value={option} key={option} />
-                      ))}
-                    </datalist>
                     {errors.packaging && (
                       <small className='text-danger'>{errors.packaging}</small>
                     )}
@@ -431,22 +432,13 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   </Col>
                   <Col sm='6' className='mb-3'>
                     <label className='form-label font-light'>Unidad</label>
-                    <input
-                      type='text'
-                      list='content-units-create'
-                      className='form-control'
-                      placeholder='unidad'
+                    <SelectWithCustom
+                      options={CONTENT_UNITS}
                       value={form.contentUnit}
-                      onChange={handleChange('contentUnit')}
+                      onChange={(value) => setField('contentUnit', value)}
+                      emptyLabel='Selecciona la unidad'
+                      customPlaceholder='Escribe la unidad'
                     />
-                    {/* Sugerencias, no una lista cerrada: el dominio va a pedir
-                        unidades que hoy no sabemos —viales, ampollas, dosis— y
-                        cerrarla obligaria a tocar el codigo por cada una. */}
-                    <datalist id='content-units-create'>
-                      {CONTENT_UNITS.map((unit) => (
-                        <option value={unit} key={unit} />
-                      ))}
-                    </datalist>
                     {errors.contentUnit && (
                       <small className='text-danger'>{errors.contentUnit}</small>
                     )}
