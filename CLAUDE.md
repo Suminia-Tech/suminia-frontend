@@ -90,7 +90,8 @@ app/(main)/(template)/  ← demos de Voxo, se borran por partes
 queda para lo que lee el usuario.
 
 **El primer segmento de la URL es el rol.** Cada area tiene su `layout.tsx`, que monta su
-propio chasis (`_shell/AreaShell`) con su menu y su guarda. Ninguna pantalla pregunta
+propio chasis y su guarda: `_shell/SidebarShell` para las areas de trabajo —panel
+lateral con la navegacion agrupada— y `_shell/AreaShell` para las que se navegan. Ninguna pantalla pregunta
 quien la esta viendo: el rol ya quedo decidido por la ruta.
 
 Una ruta nueva va **dentro del area a la que pertenece**, con URL en kebab-case y sin el

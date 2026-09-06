@@ -103,8 +103,10 @@ app/(main)/buyer/catalog/page.tsx        →  /buyer/catalog
 
 ```
 app/(main)/
-├── _shell/          AreaShell · AreaHeader — el chasis, parametrizado por menu
-├── supplier/        layout + guarda; su cuenta lleva barra lateral
+├── _shell/          dos chasis: SidebarShell para las areas de trabajo
+│                   (panel lateral + barra superior) y AreaShell para las
+│                   que se navegan (cabecera ancha + pie)
+├── supplier/        layout + guarda, con panel lateral agrupado
 ├── buyer/           layout + guarda — catalogo a ancho completo
 ├── admin/           layout + guarda — personal interno de Suminia
 ├── (suminia)/       publico: registro, verificacion, recuperar contrasena

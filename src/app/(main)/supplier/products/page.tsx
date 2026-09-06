@@ -11,12 +11,8 @@ export const metadata: Metadata = {
    precio e inventario y en una columna de nueve se quedaba estrecha. */
 export default function ProductosPage() {
   return (
-    <section className='section-b-space'>
-      <div className='container-fluid-lg'>
-        <div className='table-dashboard dashboard'>
-          <MyProductsScreen />
-        </div>
-      </div>
-    </section>
+    <div className='table-dashboard dashboard'>
+      <MyProductsScreen />
+    </div>
   );
 }

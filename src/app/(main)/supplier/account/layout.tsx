@@ -1,22 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Col, Row } from 'reactstrap';
 
-import PanelNav from '../../_shell/PanelNav';
-import { SUPPLIER_ACCOUNT_SECTIONS } from '../_nav';
-
-/* La cuenta y solo la cuenta lleva barra lateral: el resto del area ocupa el
-   ancho completo. */
-const AccountLayout = ({ children }: { children: ReactNode }) => (
-  <section className='section-b-space'>
-    <div className='container-fluid-lg'>
-      <Row>
-        <PanelNav sections={SUPPLIER_ACCOUNT_SECTIONS} />
-        <Col lg='9'>{children}</Col>
-      </Row>
-    </div>
-  </section>
-);
+/* La cuenta ya no lleva barra lateral propia: sus secciones estan en el panel
+   del area, de modo que tener otra al lado seria navegar dos veces lo mismo. */
+const AccountLayout = ({ children }: { children: ReactNode }) => <>{children}</>;
 
 export default AccountLayout;
