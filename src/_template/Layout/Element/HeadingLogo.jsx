@@ -1,31 +1,42 @@
-import { CommonPath } from "@/_template/Constant";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
+/* El logo de la cabecera.
+
+   Se pinta al tamaño real del archivo y no mas grande. logo.png mide 87x18 y
+   antes se estiraba a 210 de ancho: dos veces y media, que es exactamente lo
+   que se veia borroso. Un mapa de bits no gana detalle al ampliarlo.
+
+   `unoptimized` porque Next reencodea a calidad 75 y en una imagen de 900
+   bytes con texto fino eso se nota: emborrona los bordes de las letras justo
+   donde importa.
+
+   Para enseñarlo mas grande hace falta otro archivo —el mismo logo a 2x o 3x,
+   o vectorial—; con este no hay forma. */
 const HeadingLogo = () => {
   return (
     <div className="brand-logo">
-      <Link href={"/"}>
+      <Link href={"/"} className="d-inline-flex align-items-center gap-2">
+        {/* El icono si es escalable de sobra: viene a 100x102 y aqui se reduce,
+            que es la direccion que no pierde nitidez. */}
         <img
           src="/assets/svg/icons.svg"
-          width={55}
-          height={55}
-          alt="logo-icon"
+          width={34}
+          height={34}
+          alt=""
           className="svg-icon"
-          style={{ marginRight: "10px" }}
         />
         <Image
-          width={210}
-          height={90}
+          width={87}
+          height={18}
           priority
-          src={`${CommonPath}/logo.png`}
-          className="img-fluid"
-          style={{ marginRight: "16px", marginTop: "3px" }}
-          alt="logo"
+          unoptimized
+          src="/assets/images/logo.png"
+          alt="Suminia"
         />
       </Link>
     </div>
   );
 };
+
 export default HeadingLogo;

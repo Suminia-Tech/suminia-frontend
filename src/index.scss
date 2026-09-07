@@ -2141,75 +2141,266 @@ select.form-control,
 /* ---------------------------------------------------------------------------
    Portada
 
-   Sustituye al carrusel de la plantilla —camisetas, camaras, zapatos— por lo
-   que Suminia hace. Sin imagen de fondo a proposito: no hay foto propia que
-   poner, y una de banco de imagenes con medicos sonriendo dice menos que la
-   frase.
+   Sustituye al carrusel de la plantilla. Sin fotografia: no hay imagen propia
+   que poner, y una de banco con medicos sonriendo dice menos que la frase y se
+   reconoce al instante como relleno.
+
+   Lo que sostiene la pagina es el buscador, que es lo primero que hace quien
+   llega a un catalogo.
    --------------------------------------------------------------------------- */
 
 .home-hero {
-  padding: 64px 0 52px;
-  background-color: $light-blue;
+  padding: 76px 0 66px;
+  background:
+    radial-gradient(
+      110% 130% at 50% 0%,
+      rgba(9, 106, 201, 0.09) 0%,
+      rgba(9, 106, 201, 0) 62%
+    ),
+    $light-blue;
+  border-bottom: 1px solid $border-color;
+}
+
+.home-hero-inner {
+  max-width: 780px;
+  margin: 0 auto;
   text-align: center;
 
   h1 {
-    max-width: 720px;
-    margin: 0 auto 14px;
-    font-size: 34px;
+    margin-bottom: 16px;
+    font-size: 40px;
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.22;
+    letter-spacing: -0.015em;
   }
 
-  > div > p {
+  > p {
     max-width: 620px;
-    margin: 0 auto 26px;
-    font-size: 15.5px;
-    color: rgba($theme-font-color, 0.7);
+    margin: 0 auto 30px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba($theme-font-color, 0.68);
   }
 }
 
-.home-hero-actions {
+.home-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  margin-bottom: 20px;
+  border: 1px solid rgba($theme-font-color, 0.1);
+  border-radius: 30px;
+  background-color: rgba($white, 0.75);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--theme-color);
+}
+
+/* Barra unica en vez de campo mas boton sueltos: es un solo gesto, y separarlos
+   hace que el boton parezca otra accion. */
+.home-hero-search {
+  position: relative;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
+  max-width: 660px;
+  margin: 0 auto 16px;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $white;
+  box-shadow: 0 4px 18px rgba($theme-font-color, 0.05);
+
+  > svg {
+    flex: 0 0 auto;
+    color: rgba($theme-font-color, 0.4);
+  }
+
+  .form-control {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .btn {
+    flex: 0 0 auto;
+    padding: 9px 20px;
+  }
+}
+
+.home-hero-links {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+
+  a {
+    color: var(--theme-color);
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    color: rgba($theme-font-color, 0.3);
+  }
+}
+
+/* --- Categorias --- */
+
+.home-categories {
+  padding: 46px 0 6px;
+}
+
+.home-categories-grid {
+  display: flex;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
-.home-claims {
-  padding: 44px 0 8px;
-}
+.home-category {
+  padding: 11px 18px;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  background-color: $white;
+  font-size: 14px;
+  font-weight: 500;
+  color: $theme-font-color;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
 
-.home-claims-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 26px;
-}
-
-.home-claim {
-  svg {
-    margin-bottom: 10px;
+  &:hover {
+    border-color: var(--theme-color);
     color: var(--theme-color);
   }
+}
 
+/* --- Como funciona --- */
+
+.home-steps {
+  padding: 34px 0 10px;
+}
+
+.home-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 28px;
+}
+
+.home-step {
   h4 {
-    margin-bottom: 5px;
-    font-size: 15.5px;
+    margin-bottom: 6px;
+    font-size: 16px;
     font-weight: 600;
   }
 
   p {
     margin: 0;
     font-size: 13.5px;
-    line-height: 1.55;
+    line-height: 1.6;
   }
 }
 
-@media (max-width: 575px) {
-  .home-hero {
-    padding: 44px 0 36px;
+.home-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 13px;
+  border-radius: 50%;
+  background-color: var(--theme-color);
+  color: $white;
+  font-size: 14px;
+  font-weight: 600;
+}
 
-    h1 {
-      font-size: 26px;
+/* --- Para proveedores --- */
+
+.home-suppliers {
+  padding: 46px 0 60px;
+}
+
+.home-suppliers-inner {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 28px 32px;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  background-color: $light-blue;
+
+  > svg {
+    flex: 0 0 auto;
+    color: var(--theme-color);
+  }
+
+  > div {
+    flex: 1;
+  }
+
+  h3 {
+    margin-bottom: 5px;
+    font-size: 19px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    max-width: 620px;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .home-hero {
+    padding: 52px 0 46px;
+  }
+
+  .home-hero-inner h1 {
+    font-size: 28px;
+
+    br {
+      display: none;
     }
+  }
+
+  .home-hero-search {
+    flex-wrap: wrap;
+    padding: 10px;
+
+    .form-control {
+      width: 100%;
+      flex-basis: 100%;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
+
+  .home-suppliers-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 22px;
   }
 }

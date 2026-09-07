@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Lock } from 'react-feather';
 import { Col, Row } from 'reactstrap';
@@ -27,8 +28,15 @@ import { ProductCard } from '../common/ProductCard';
 const PAGE_SIZE = 24;
 
 export const PublicCatalogScreen = () => {
-  const [categoryId, setCategoryId] = useState('');
-  const [search, setSearch] = useState('');
+  /* El buscador de la cabecera y las categorias de la portada llegan aqui por
+     la URL, de modo que hay que leerla: sin esto se navegaba a
+     /catalog?search=amoxicilina y la pantalla mostraba el catalogo entero.
+
+     Solo para el valor inicial. A partir de ahi manda el estado: reaccionar a
+     cada cambio de la URL pelearia con lo que el usuario esta escribiendo. */
+  const params = useSearchParams();
+  const [categoryId, setCategoryId] = useState(() => params.get('categoryId') ?? '');
+  const [search, setSearch] = useState(() => params.get('search') ?? '');
   const [page, setPage] = useState(1);
 
   const debouncedSearch = useDebouncedValue(search);

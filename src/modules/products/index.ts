@@ -13,6 +13,7 @@ export { ProductDetailScreen } from './ui/buyer/ProductDetailScreen';
 export { PublicCatalogScreen } from './ui/public/PublicCatalogScreen';
 export { PublicProductScreen } from './ui/public/PublicProductScreen';
 export { FeaturedProducts } from './ui/public/FeaturedProducts';
+export { CategoryGrid } from './ui/public/CategoryGrid';
 
 export {
   useGetProductsQuery,
