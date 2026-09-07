@@ -39,9 +39,15 @@ export const getPrimaryImage = (product: Product) =>
 /* Rango de precios entre formatos. Un producto con varias presentaciones no
    tiene "un" precio, y mostrar solo el del formato por defecto esconde que la
    caja x100 sale mucho mas barata por unidad. */
-export const formatPriceRange = (product: Product): string => {
-  const prices = product.presentations.map((presentation) => presentation.price);
-  if (prices.length === 0) return 'Sin precio';
+export const formatPriceRange = (product: Product): string | null => {
+  /* Null cuando no llegaron: quien no esta autorizado no recibe ninguno, de
+     modo que no hay rango que componer. Se devuelve null en vez de un texto
+     para que la pantalla decida como pintar el hueco. */
+  const prices = product.presentations
+    .map((presentation) => presentation.price)
+    .filter((price): price is number => price !== null);
+
+  if (prices.length === 0) return null;
 
   const min = Math.min(...prices);
   const max = Math.max(...prices);

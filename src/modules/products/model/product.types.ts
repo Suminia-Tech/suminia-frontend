@@ -34,9 +34,12 @@ export interface ProductPresentation {
   contentQuantity: number | null;
   contentUnit: string | null;
   attributes: unknown;
-  /* Numero, no cadena: el backend convierte el Decimal de Prisma antes de
-     serializar. */
-  price: number;
+  /* Nulo cuando quien pregunta no esta autorizado a verlo: el backend no lo
+     manda. No es que el formato no tenga precio, es que no llega — y por eso no
+     se puede sacar de la respuesta con las herramientas del navegador.
+
+     Autorizado quiere decir con sesion y con la empresa aprobada por Suminia. */
+  price: number | null;
   currency: string;
   stock: number;
   /* Lo que separa vender a empresas de vender al publico: el minimo que el
@@ -110,7 +113,7 @@ export interface MedicineOffer {
   organizationId: string;
   organizationName: string | null;
   brand: string | null;
-  fromPrice: number;
+  fromPrice: number | null;
   currency: string;
   presentationCount: number;
   inStock: boolean;

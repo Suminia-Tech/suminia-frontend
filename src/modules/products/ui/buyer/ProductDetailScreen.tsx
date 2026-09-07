@@ -13,6 +13,7 @@ import { humanizeAttributeKey, toAttributePairs } from '../../lib/attributes';
 import { lowestPrice } from '../../lib/priceTiers';
 import { formatPrice } from '../../lib/productLabels';
 import { taxLabel } from '../../lib/tax';
+import { Price } from '../common/Price';
 
 /* Ficha del producto que abre el comprador desde el catalogo.
 
@@ -258,7 +259,9 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
                     </span>
                     <span className='offer-price'>
                       <small className='font-light'>desde</small>
-                      <strong>{formatPrice(offer.fromPrice, offer.currency)}</strong>
+                      <strong>
+                        <Price value={offer.fromPrice} currency={offer.currency} />
+                      </strong>
                     </span>
                   </Link>
                 </li>
@@ -288,11 +291,15 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
             {product.presentations.map((presentation) => {
               /* Por unidad se calcula sobre el precio mas bajo alcanzable: si
                  hay descuento por volumen, comparar con el base haria parecer
-                 caro un formato que no lo es. */
-              const perUnit = unitPrice(
-                lowestPrice(presentation.price, presentation.priceTiers),
-                presentation.contentQuantity,
-              );
+                 caro un formato que no lo es. Sin precio no hay nada que
+                 dividir. */
+              const perUnit =
+                presentation.price === null
+                  ? null
+                  : unitPrice(
+                      lowestPrice(presentation.price, presentation.priceTiers),
+                      presentation.contentQuantity,
+                    );
 
               return (
                 <tr key={presentation.id}>
@@ -319,7 +326,10 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
                       ` · de ${presentation.orderMultiple} en ${presentation.orderMultiple}`}
                   </td>
                   <td>
-                    {formatPrice(presentation.price, presentation.currency)}
+                    <Price
+                      value={presentation.price}
+                      currency={presentation.currency}
+                    />
                     {/* La escala completa, no solo el precio base: el descuento
                         por volumen es lo que decide la compra en B2B, y
                         esconderlo obliga a preguntar por fuera. */}

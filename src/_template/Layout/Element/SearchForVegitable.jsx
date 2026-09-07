@@ -1,36 +1,59 @@
-import { useEffect, useState } from "react";
-import { Search } from "react-feather";
-import { useDispatch, useSelector } from "react-redux";
-import { Input } from "reactstrap";
-import { getAPIData } from "../../Utils";
-import SearchSuggestion from "./SearchSuggestion";
-import { IS_FOCUS } from "@/_template/ReduxToolkit/Reducers/AllReducer";
+'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search } from 'react-feather';
+import { Input } from 'reactstrap';
+
+/* Buscador de la cabecera publica.
+
+   Antes se traia el catalogo entero de un JSON estatico y filtraba en el
+   navegador, con sugerencias sacadas de productos inventados. Ahora lleva al
+   catalogo real, que es quien sabe buscar —por nombre, principio activo,
+   registro sanitario o CUM— y que ademas pagina.
+
+   No sugiere mientras se escribe: hacerlo bien pide un endpoint publico de
+   sugerencias que hoy no existe, y fingirlo con datos falsos es lo que se
+   estaba quitando. */
 const SearchForVegitable = () => {
-  const dispatch = useDispatch();
-  const { Is_Focus } = useSelector((state) => state.CommonReducer);
-  const [onInputText, setOnInputText] = useState("");
-  const [productData, setProductData] = useState([]);
-  useEffect(() => {
-    getAPIData(`/api/products`).then((res) => {
-      setProductData(res?.data);
-    });
-  }, []);
-  const FilteredData = productData.filter((el) => el.name.toLowerCase().includes(onInputText.toLowerCase()));
-  const handleChange = (e) => {
-    setOnInputText(e.target.value);
-    dispatch(IS_FOCUS(true));
+  const router = useRouter();
+  const [term, setTerm] = useState('');
+
+  const submit = (event) => {
+    event.preventDefault();
+    const query = term.trim();
+    router.push(query ? `/catalog?search=${encodeURIComponent(query)}` : '/catalog');
   };
+
   return (
-    <div className={`search-box1 d-lg-flex d-none align-items-center ${onInputText.length > 0 ? "show" : ""}`} style={{ width: "70%", marginLeft: "24px" }}>
-      <div className="the-basics input-group" style={{ borderRadius: '0.5rem', overflow: 'hidden' }}>
-        <Input type="text" className="form-control typeahead" placeholder="Buscar un producto" onChange={(e) => handleChange(e)} style={{ borderRadius: '0.5rem 0 0 0.5rem', borderRight: 'none' }} />
-        <span className="input-group-text close-search theme-bg-color search-box" style={{ borderRadius: '0 0.5rem 0.5rem 0' }}>
+    <form
+      className='search-box1 d-lg-flex d-none align-items-center'
+      style={{ width: '70%', marginLeft: '24px' }}
+      onSubmit={submit}
+      role='search'
+    >
+      <div
+        className='the-basics input-group'
+        style={{ borderRadius: '0.5rem', overflow: 'hidden' }}
+      >
+        <Input
+          type='search'
+          className='form-control typeahead'
+          placeholder='Buscar un medicamento o insumo'
+          value={term}
+          onChange={(event) => setTerm(event.target.value)}
+          style={{ borderRadius: '0.5rem 0 0 0.5rem', borderRight: 'none' }}
+        />
+        <button
+          type='submit'
+          className='input-group-text close-search theme-bg-color search-box'
+          style={{ borderRadius: '0 0.5rem 0.5rem 0', border: 0 }}
+          aria-label='Buscar'
+        >
           <Search />
-        </span>
+        </button>
       </div>
-      <SearchSuggestion FilteredData={FilteredData} Is_Focus={Is_Focus} />
-    </div>
+    </form>
   );
 };
 

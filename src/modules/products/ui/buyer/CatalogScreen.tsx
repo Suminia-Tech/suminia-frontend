@@ -12,6 +12,7 @@ import { useAppSelector } from '@/store/hooks';
 
 import { useGetCategoriesQuery, useGetProductsQuery } from '../../api/productsApi';
 import { formatPriceRange, getPrimaryImage } from '../../lib/productLabels';
+import { Price } from '../common/Price';
 
 /* Catalogo que navega el comprador.
 
@@ -135,7 +136,11 @@ export const CatalogScreen = () => {
                       <p className='font-light'>
                         {product.organizationName ?? 'Proveedor'}
                       </p>
-                      <strong>{formatPriceRange(product)}</strong>
+                      {/* El rango es null cuando no llego ningun precio: no es
+                          que el producto no tenga, es que no se mandaron. */}
+                      <strong>
+                        {formatPriceRange(product) ?? <Price value={null} />}
+                      </strong>
                       <small className='font-light d-block'>
                         {product.presentations.length === 1
                           ? '1 formato'

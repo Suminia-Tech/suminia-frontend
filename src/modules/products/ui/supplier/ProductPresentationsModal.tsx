@@ -21,6 +21,7 @@ import {
   validateTiers,
 } from '../../lib/priceTiers';
 import { formatPrice } from '../../lib/productLabels';
+import { Price } from '../common/Price';
 import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
 import type { Product, ProductPresentation } from '../../model/product.types';
 
@@ -79,7 +80,8 @@ const readAttribute = (attributes: unknown, key: string): string => {
 const toDraft = (presentation: ProductPresentation): Draft => ({
   variant: readAttribute(presentation.attributes, 'variante'),
   packaging: presentation.packaging,
-  price: String(presentation.price),
+  /* Su dueño siempre lo recibe; el ?? 0 es por el tipo, no por el caso. */
+  price: String(presentation.price ?? 0),
   stock: String(presentation.stock),
   sku: presentation.sku ?? '',
   barcode: presentation.barcode ?? '',
@@ -398,8 +400,14 @@ const ProductPresentationsModal = ({
                       : '—'}
                   </td>
                   <td className='num'>
+                    {/* Su dueño siempre lo ve —lo escribio el—, pero el tipo
+                        admite null porque la misma respuesta sirve a quien no
+                        esta autorizado. El componente cubre los dos casos. */}
                     <strong>
-                      {formatPrice(presentation.price, presentation.currency)}
+                      <Price
+                        value={presentation.price}
+                        currency={presentation.currency}
+                      />
                     </strong>
                     {presentation.priceTiers.length > 0 && (
                       <small className='font-light d-block'>

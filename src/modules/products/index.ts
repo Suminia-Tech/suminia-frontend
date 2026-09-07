@@ -8,6 +8,12 @@ export { MyProductsScreen } from './ui/supplier/MyProductsScreen';
 export { CatalogScreen } from './ui/buyer/CatalogScreen';
 export { ProductDetailScreen } from './ui/buyer/ProductDetailScreen';
 
+/* Las publicas se sirven desde (suminia)/: mismo modulo, otra lectura. Lo que
+   cambia no es la pantalla, es que la respuesta no trae precios. */
+export { PublicCatalogScreen } from './ui/public/PublicCatalogScreen';
+export { PublicProductScreen } from './ui/public/PublicProductScreen';
+export { FeaturedProducts } from './ui/public/FeaturedProducts';
+
 export {
   useGetProductsQuery,
   useGetProductQuery,

@@ -73,6 +73,28 @@ export const productsApi = baseApi.injectEndpoints({
       ],
     }),
 
+    /* El catalogo que se ve sin haber entrado. Va contra /public/products, que
+       en el backend es un controlador propio y sin guardas: lo que Suminia
+       publica al mundo es una lista corta y explicita, no lo que quede de
+       aflojar las guardas de los endpoints de dentro.
+
+       Estas respuestas nunca traen precios. No es que la pantalla los tape: no
+       vienen. */
+    getPublicProducts: builder.query<PaginatedResponse<Product>, DatatableParams | void>({
+      query: (params) => ({
+        url: '/public/products',
+        params: toDatatableQuery(params ?? {}),
+      }),
+    }),
+
+    getPublicProduct: builder.query<ApiResponse<Product>, string>({
+      query: (id) => `/public/products/${id}`,
+    }),
+
+    getPublicCategories: builder.query<ApiResponse<ProductCategory[]>, void>({
+      query: () => '/public/products/categories',
+    }),
+
     getCategories: builder.query<ApiResponse<ProductCategory[]>, void>({
       query: () => '/products/categories',
     }),
@@ -208,6 +230,9 @@ export const productsApi = baseApi.injectEndpoints({
 export const {
   useGetProductsQuery,
   useGetProductQuery,
+  useGetPublicProductsQuery,
+  useGetPublicProductQuery,
+  useGetPublicCategoriesQuery,
   useGetCategoriesQuery,
   useSearchCatalogMedicinesQuery,
   useLazySearchCatalogMedicinesQuery,

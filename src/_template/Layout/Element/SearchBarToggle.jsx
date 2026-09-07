@@ -1,41 +1,53 @@
-import { useEffect, useState } from "react";
-import { Search, X } from "react-feather";
-import { useDispatch, useSelector } from "react-redux";
-import { Input, InputGroup } from "reactstrap";
-import { getAPIData } from "../../Utils";
-import SearchSuggestion from "./SearchSuggestion";
-import { IS_FOCUS, IS_SEARCH } from "@/_template/ReduxToolkit/Reducers/AllReducer";
+'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search } from 'react-feather';
+
+/* El buscador que se despliega en pantallas pequeñas. Como el de la cabecera,
+   lleva al catalogo real en vez de filtrar un JSON estatico. */
 const SearchBarToggle = () => {
-  const dispatch = useDispatch();
-  const { Is_Search, Is_Focus } = useSelector((state) => state.CommonReducer);
-  const [onInputText, setOnInputText] = useState("");
-  const [productData, setProductData] = useState([]);
-  useEffect(() => {
-    getAPIData(`/api/products`).then((res) => setProductData(res?.data));
-  }, []);
-  const FilteredData = productData?.filter((el) => el.name.toLowerCase().includes(onInputText.toLowerCase()));
-  const handleChange = (e) => {
-    setOnInputText(e.target.value);
-    dispatch(IS_FOCUS(true));
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [term, setTerm] = useState('');
+
+  const submit = (event) => {
+    event.preventDefault();
+    const query = term.trim();
+    setOpen(false);
+    router.push(query ? `/catalog?search=${encodeURIComponent(query)}` : '/catalog');
   };
-  const handleClick = () => {
-    dispatch(IS_SEARCH());
-    dispatch(IS_FOCUS(false));
-  };
+
   return (
-    <div className={`search-full${Is_Search ? " open show" : ""}`}>
-      <InputGroup>
-        <span className="input-group-text">
-          <Search className="font-light" />
-        </span>
-        <Input type="text" className="search-type" placeholder="Buscar aquí.." onChange={(e) => handleChange(e)} />
-        <span className="input-group-text close-search" onClick={() => handleClick()}>
-          <X className="font-light" />
-        </span>
-      </InputGroup>
-      <SearchSuggestion FilteredData={FilteredData} Is_Focus={Is_Focus} />
-    </div>
+    <li className='right-nav-list'>
+      <button
+        type='button'
+        className='btn p-0 border-0 bg-transparent'
+        onClick={() => setOpen(!open)}
+        aria-label='Buscar'
+      >
+        <Search />
+      </button>
+
+      {open && (
+        <form className='search-full show' onSubmit={submit} role='search'>
+          <div className='input-group'>
+            <span className='input-group-text'>
+              <Search className='font-light' />
+            </span>
+            <input
+              type='search'
+              className='form-control search-type'
+              placeholder='Buscar un medicamento o insumo'
+              value={term}
+              onChange={(event) => setTerm(event.target.value)}
+              autoFocus
+            />
+          </div>
+        </form>
+      )}
+    </li>
   );
 };
+
 export default SearchBarToggle;

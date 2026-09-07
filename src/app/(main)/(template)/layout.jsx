@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 
-import CartSuccessModal from "@/_template/Components/Element/CartSuccessModal";
 import CommonMobileView from "@/_template/Components/Element/CommonMobileView";
 import CommonModel from "@/_template/Components/Element/CommonModel";
 import ConfirmDeleteModal from "@/_template/Components/Pages/UserDashboard/ConfirmDeleteModal";
@@ -26,7 +25,6 @@ const TemplateLayout = ({ children }) => {
     <>
       {children}
       <Overlay />
-      <CartSuccessModal />
       {!segments.includes("coming_soon") && <CommonMobileView />}
       <SizeModal />
       <CommonModel />

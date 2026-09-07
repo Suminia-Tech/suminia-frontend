@@ -1988,3 +1988,87 @@ select.form-control,
   font-size: 12px;
   color: #d92d20;
 }
+
+/* ---------------------------------------------------------------------------
+   El precio que no se puede ver
+
+   Se difumina una cifra falsa en vez de escribir "precio reservado": que se vea
+   que hay un precio ahi es lo que invita a registrarse, y un texto plano no
+   dice ni que exista. La cifra es inventada — la real no llega al navegador,
+   de modo que aqui no hay nada que descubrir quitando el filtro.
+   --------------------------------------------------------------------------- */
+
+.price-hidden {
+  display: inline-flex;
+  flex-direction: column;
+  cursor: help;
+}
+
+.price-hidden-blur {
+  filter: blur(4.5px);
+  opacity: 0.55;
+  user-select: none;
+  /* Que no se pueda seleccionar ni copiar el numero de mentira: leerlo no
+     revela nada, pero pegarlo en otro sitio confundiria. */
+  pointer-events: none;
+}
+
+.price-hidden-note {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba($theme-font-color, 0.55);
+  white-space: nowrap;
+}
+
+/* Aviso y llamada del catalogo publico. Se explica por que no hay precios antes
+   de que el visitante lo note: encontrarse cifras borrosas sin explicacion se
+   lee como un fallo de la pagina, no como una regla. */
+.public-price-notice {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 16px;
+  margin-bottom: 20px;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  background-color: $light-blue;
+  font-size: 13.5px;
+
+  svg {
+    flex: 0 0 auto;
+    color: var(--theme-color);
+  }
+
+  a {
+    color: var(--theme-color);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+}
+
+.public-price-cta {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $light-blue;
+
+  > svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: var(--theme-color);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 15px;
+  }
+
+  p {
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+}
