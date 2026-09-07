@@ -15,8 +15,20 @@ import { useState, type ChangeEvent } from 'react';
 
 const CUSTOM = '__custom__';
 
+/* Una opcion puede ser una cadena, cuando lo que se guarda y lo que se lee son
+   lo mismo, o un par cuando no: una unidad guarda "mL" y se lee "Mililitro
+   (mL)", porque el simbolo del SI no admite otra escritura pero una lista de
+   simbolos sueltos se lee mal. */
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+const toOption = (option: string | SelectOption): SelectOption =>
+  typeof option === 'string' ? { value: option, label: option } : option;
+
 interface SelectWithCustomProps {
-  options: string[];
+  options: (string | SelectOption)[];
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -36,11 +48,13 @@ const SelectWithCustom = ({
   customPlaceholder = 'Escríbelo',
   id,
 }: SelectWithCustomProps) => {
+  const opciones = options.map(toOption);
+
   /* Un valor que no esta entre las opciones solo puede venir de que alguien lo
      escribio: se abre en modo libre para poder editarlo. Es lo que pasa al
      abrir un formato guardado con un empaque poco comun. */
   const [isCustom, setCustom] = useState(
-    () => value !== '' && !options.includes(value),
+    () => value !== '' && !opciones.some((option) => option.value === value),
   );
 
   const handleSelect = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -67,9 +81,9 @@ const SelectWithCustom = ({
         onChange={handleSelect}
       >
         <option value=''>{emptyLabel}</option>
-        {options.map((option) => (
-          <option value={option} key={option}>
-            {option}
+        {opciones.map((option) => (
+          <option value={option.value} key={option.value}>
+            {option.label}
           </option>
         ))}
         <option value={CUSTOM}>{customLabel}</option>

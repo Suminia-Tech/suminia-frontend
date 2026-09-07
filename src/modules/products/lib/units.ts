@@ -21,18 +21,32 @@ export const PACKAGING_SUGGESTIONS = [
   'Vial',
 ];
 
-export const CONTENT_UNITS = [
-  'unidad',
-  'par',
-  'prueba',
-  'kit',
-  'mL',
-  'L',
-  'mg',
-  'g',
-  'kg',
-  'cm',
-  'm',
+/* Se guarda el simbolo y se enseña el nombre.
+
+   Las dos mitades de la lista no se pueden escribir igual: "unidad" y "par" son
+   palabras, mientras que "mL" y "g" son simbolos del SI cuyas mayusculas son
+   parte de la unidad —"l" no es litro y "G" no es gramo—. Puestos en crudo uno
+   detras de otro, el desplegable parecia escrito sin criterio.
+
+   Enseñando el nombre en el desplegable la lista se lee pareja, y el simbolo
+   entre parentesis dice que es lo que se va a guardar. */
+export interface ContentUnit {
+  value: string;
+  label: string;
+}
+
+export const CONTENT_UNITS: ContentUnit[] = [
+  { value: 'unidad', label: 'Unidad' },
+  { value: 'par', label: 'Par' },
+  { value: 'prueba', label: 'Prueba' },
+  { value: 'kit', label: 'Kit' },
+  { value: 'mL', label: 'Mililitro (mL)' },
+  { value: 'L', label: 'Litro (L)' },
+  { value: 'mg', label: 'Miligramo (mg)' },
+  { value: 'g', label: 'Gramo (g)' },
+  { value: 'kg', label: 'Kilogramo (kg)' },
+  { value: 'cm', label: 'Centímetro (cm)' },
+  { value: 'm', label: 'Metro (m)' },
 ];
 
 /* Misma normalizacion que hace el backend al guardar. Aqui solo sirve para que
@@ -53,7 +67,9 @@ const ALIASES: Record<string, string> = {
   metros: 'm',
 };
 
-const BY_LOWERCASE = new Map(CONTENT_UNITS.map((unit) => [unit.toLowerCase(), unit]));
+const BY_LOWERCASE = new Map(
+  CONTENT_UNITS.map((unit) => [unit.value.toLowerCase(), unit.value]),
+);
 
 export const normalizeUnit = (unit: string): string => {
   const trimmed = unit.trim();
