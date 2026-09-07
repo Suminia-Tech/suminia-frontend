@@ -18,8 +18,9 @@ import {
   type AttributePair,
 } from '../../lib/attributes';
 import { composePresentationName } from '../../lib/presentationName';
+import { MEDICINE_FIELDS, MEDICINE_KEYS } from '../../lib/medicine';
 import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
-import type { Product, ProductStatus } from '../../model/product.types';
+import type { Product, ProductStatus, ProductType } from '../../model/product.types';
 
 /* Alta y edicion de un producto. La empresa no se pide: el backend la toma de
    la sesion de quien crea, de modo que no hay forma de publicar en el catalogo
@@ -53,6 +54,7 @@ const INITIAL = {
   brand: '',
   manufacturer: '',
   description: '',
+  type: 'SUPPLY' as ProductType,
   status: 'DRAFT' as ProductStatus,
   variant: '',
   packaging: '',
@@ -75,6 +77,7 @@ const toFormState = (product?: Product | null): FormState => {
     brand: product.brand ?? '',
     manufacturer: product.manufacturer ?? '',
     description: product.description ?? '',
+    type: product.type,
     status: product.status,
   };
 };
@@ -91,9 +94,25 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
   const [form, setForm] = useState<FormState>(() => toFormState(product));
   /* Los atributos van aparte del resto del formulario: son una lista que crece,
      no un campo. */
+  /* Los atributos se guardan todos en el mismo JSONB, pero se piden en dos
+     sitios: los regulatorios en su bloque, con su etiqueta y su validacion, y
+     el resto como pares libres. Aqui se separan al abrir y se vuelven a juntar
+     al guardar. */
   const [attributes, setAttributes] = useState<AttributePair[]>(() =>
-    toAttributePairs(product?.attributes),
+    toAttributePairs(product?.attributes).filter(
+      (pair) => !MEDICINE_KEYS.includes(pair.key),
+    ),
   );
+
+  const [medicine, setMedicine] = useState<Record<string, string>>(() => {
+    const guardados = toAttributePairs(product?.attributes);
+    return Object.fromEntries(
+      MEDICINE_KEYS.map((key) => [
+        key,
+        guardados.find((pair) => pair.key === key)?.value ?? '',
+      ]),
+    );
+  });
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -112,6 +131,11 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       setGeneralError(null);
     };
 
+  const setMedicineField = (key: string, value: string) => {
+    setMedicine((current) => ({ ...current, [key]: value }));
+    setErrors((current) => ({ ...current, [key]: undefined }));
+  };
+
   const setAttribute = (index: number, field: keyof AttributePair, value: string) => {
     setAttributes((current) =>
       current.map((pair, i) => (i === index ? { ...pair, [field]: value } : pair)),
@@ -127,6 +151,16 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     const next: Record<string, string> = {};
     if (!form.name.trim()) next.name = 'Ingresa el nombre del producto';
     if (!form.categoryId) next.categoryId = 'Selecciona una categoría';
+
+    /* Un medicamento sin sus datos regulatorios no se puede reportar al sistema
+       de salud. El backend lo rechaza igual; aqui se avisa antes de mandar. */
+    if (form.type === 'MEDICINE') {
+      MEDICINE_FIELDS.filter((field) => field.required).forEach((field) => {
+        if (!medicine[field.key]?.trim()) {
+          next[field.key] = `Ingresa ${field.label.toLowerCase()}`;
+        }
+      });
+    }
 
     if (!isEditing) {
       if (!form.packaging.trim()) next.packaging = 'Indica el empaque';
@@ -159,11 +193,19 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     const common = {
       name: form.name.trim(),
       categoryId: form.categoryId,
+      type: form.type,
       status: form.status,
       brand: form.brand.trim() || undefined,
       manufacturer: form.manufacturer.trim() || undefined,
       description: form.description.trim() || undefined,
-      attributes: fromAttributePairs(attributes),
+      attributes: fromAttributePairs([
+        ...attributes,
+        /* Los regulatorios solo viajan si el producto es un medicamento: si
+           alguien lo cambia a insumo, dejan de tener sentido y se van con el. */
+        ...(form.type === 'MEDICINE'
+          ? MEDICINE_KEYS.map((key) => ({ key, value: medicine[key] ?? '' }))
+          : []),
+      ]),
     };
 
     try {
@@ -187,7 +229,11 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       }
 
       setForm(toFormState(product));
-      setAttributes(toAttributePairs(product?.attributes));
+      setAttributes(
+        toAttributePairs(product?.attributes).filter(
+          (pair) => !MEDICINE_KEYS.includes(pair.key),
+        ),
+      );
       setErrors({});
       onClose();
     } catch (error) {
@@ -231,6 +277,20 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   onChange={handleChange('name')}
                 />
                 {errors.name && <small className='text-danger'>{errors.name}</small>}
+              </div>
+
+              {/* El tipo decide que mas se le pide al producto. Va primero
+                  porque cambia el resto del formulario. */}
+              <div className='mb-3'>
+                <label className='form-label font-light'>Tipo</label>
+                <select
+                  className='form-control'
+                  value={form.type}
+                  onChange={handleChange('type')}
+                >
+                  <option value='SUPPLY'>Insumo o dispositivo médico</option>
+                  <option value='MEDICINE'>Medicamento</option>
+                </select>
               </div>
 
               <div className='mb-3'>
@@ -282,6 +342,58 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   onChange={handleChange('description')}
                 />
               </div>
+
+              {/* Datos regulatorios. Solo aplican a un medicamento, de modo
+                  que aparecen con el tipo y no antes: pedirselos a quien vende
+                  guantes seria ruido.
+
+                  Los nombres siguen los del dataset del INVIMA para que cruzar
+                  contra el algun dia no obligue a traducir. */}
+              {form.type === 'MEDICINE' && (
+                <div className='medicine-fields'>
+                  <h5>Datos del INVIMA</h5>
+                  <p className='font-light'>
+                    Sin ellos el medicamento no se puede reportar al sistema de
+                    salud ni identificar sin ambigüedad.
+                  </p>
+
+                  <Row>
+                    {MEDICINE_FIELDS.map((field) => (
+                      <Col sm='6' className='mb-3' key={field.key}>
+                        <label className='form-label font-light'>
+                          {field.label}
+                          {!field.required && ' (opcional)'}
+                        </label>
+                        {field.options ? (
+                          <SelectWithCustom
+                            options={field.options}
+                            value={medicine[field.key] ?? ''}
+                            onChange={(value) => setMedicineField(field.key, value)}
+                            emptyLabel={`Selecciona ${field.label.toLowerCase()}`}
+                            customPlaceholder={`Escribe ${field.label.toLowerCase()}`}
+                          />
+                        ) : (
+                          <input
+                            type='text'
+                            className='form-control'
+                            placeholder={field.placeholder}
+                            value={medicine[field.key] ?? ''}
+                            onChange={(event) =>
+                              setMedicineField(field.key, event.target.value)
+                            }
+                          />
+                        )}
+                        {errors[field.key] ? (
+                          <small className='text-danger'>{errors[field.key]}</small>
+                        ) : (
+                          field.help && <small className='font-light'>{field.help}</small>
+                        )}
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              )}
+
 
               {/* Caracteristicas propias del producto: material y esterilidad
                   en un insumo, y manana el CUM y el registro INVIMA de un

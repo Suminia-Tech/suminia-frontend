@@ -13,6 +13,7 @@ import {
   useRemovePresentationMutation,
   useUpdatePresentationMutation,
 } from '../../api/productsApi';
+import { isValidCum } from '../../lib/medicine';
 import { composePresentationName } from '../../lib/presentationName';
 import { formatPrice } from '../../lib/productLabels';
 import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
@@ -38,6 +39,7 @@ const EMPTY_DRAFT = {
   stock: '',
   sku: '',
   barcode: '',
+  cum: '',
   contentQuantity: '',
   contentUnit: '',
 };
@@ -46,19 +48,20 @@ type Draft = typeof EMPTY_DRAFT;
 
 /* La variante se recupera de los atributos, que es donde la guarda el backend:
    el nombre esta compuesto y no se puede desarmar con fiabilidad. */
-const readVariant = (attributes: unknown): string => {
+const readAttribute = (attributes: unknown, key: string): string => {
   if (!attributes || typeof attributes !== 'object') return '';
-  const value = (attributes as Record<string, unknown>).variante;
+  const value = (attributes as Record<string, unknown>)[key];
   return typeof value === 'string' ? value : '';
 };
 
 const toDraft = (presentation: ProductPresentation): Draft => ({
-  variant: readVariant(presentation.attributes),
+  variant: readAttribute(presentation.attributes, 'variante'),
   packaging: presentation.packaging,
   price: String(presentation.price),
   stock: String(presentation.stock),
   sku: presentation.sku ?? '',
   barcode: presentation.barcode ?? '',
+  cum: readAttribute(presentation.attributes, 'cum'),
   contentQuantity:
     presentation.contentQuantity === null ? '' : String(presentation.contentQuantity),
   contentUnit: presentation.contentUnit ?? '',
@@ -73,6 +76,7 @@ const toPayload = (draft: Draft) => ({
   stock: draft.stock.trim() ? Number(draft.stock) : 0,
   sku: draft.sku.trim() || undefined,
   barcode: draft.barcode.trim() || undefined,
+  cum: draft.cum.trim() || undefined,
   contentQuantity: Number(draft.contentQuantity),
   contentUnit: draft.contentUnit.trim(),
 });
@@ -93,6 +97,12 @@ const validate = (draft: Draft): Record<string, string> => {
   )
     errors.contentQuantity = 'Debe ser mayor que cero';
   if (!draft.contentUnit.trim()) errors.contentUnit = 'Indica la unidad';
+
+  /* El CUM es opcional —solo lo tienen los medicamentos— pero si esta, tiene
+     una forma: expediente-consecutivo. */
+  if (!isValidCum(draft.cum)) {
+    errors.cum = 'Se escribe expediente-consecutivo, como 20048021-41';
+  }
 
   return errors;
 };
@@ -390,6 +400,13 @@ const ProductPresentationsModal = ({
                   producto: la caja x 100 y la x 10 llevan uno distinto. */}
               <Col md='4' className='mb-3'>
                 {field('Código de barras', 'barcode', { placeholder: '7701234567890' })}
+              </Col>
+              {/* El CUM identifica una presentacion comercial, no el
+                  medicamento: el INVIMA asigna un consecutivo por formato. Por
+                  eso se pide aqui y no en el producto. */}
+              <Col md='4' className='mb-3'>
+                {field('CUM', 'cum', { placeholder: '20048021-41' })}
+                <small className='font-light'>Solo para medicamentos.</small>
               </Col>
             </Row>
 

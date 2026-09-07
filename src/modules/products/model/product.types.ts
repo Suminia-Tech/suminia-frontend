@@ -85,6 +85,9 @@ export interface PresentationRequest {
   packaging: string;
   sku?: string;
   barcode?: string;
+  /* Codigo Unico de Medicamento. Va en el formato porque el INVIMA asigna un
+     consecutivo por presentacion comercial. */
+  cum?: string;
   /* Obligatorias y juntas: de ellas sale el precio por unidad, que es lo que
      hace comparable un formato con otro. El backend las exige al crear. */
   contentQuantity: number;

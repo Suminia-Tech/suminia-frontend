@@ -10,6 +10,7 @@ import { useAppSelector } from '@/store/hooks';
 
 import { useGetProductQuery } from '../../api/productsApi';
 import { humanizeAttributeKey, toAttributePairs } from '../../lib/attributes';
+import { MEDICINE_FIELDS, MEDICINE_KEYS } from '../../lib/medicine';
 import { formatPrice } from '../../lib/productLabels';
 
 /* Ficha del producto que abre el comprador desde el catalogo.
@@ -54,12 +55,34 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
   }
 
   const product = data.data;
-  const attributes = toAttributePairs(product.attributes);
+  const todos = toAttributePairs(product.attributes);
+
+  /* Lo regulatorio se enseña aparte y con su etiqueta oficial: para quien compra
+     medicamentos no es "una caracteristica mas", es lo que le dice si el
+     producto sirve para lo que necesita. */
+  const regulatorios = MEDICINE_FIELDS.map((field) => ({
+    label: field.label,
+    value: todos.find((pair) => pair.key === field.key)?.value,
+  })).filter((item) => item.value);
+
+  const attributes = todos.filter((pair) => !MEDICINE_KEYS.includes(pair.key));
   const images = [...product.images].sort((a, b) => a.position - b.position);
   const cover = images[activeImage] ?? images[0] ?? null;
 
   /* Precio por unidad de contenido: es lo que revela que la caja x 100 sale
      mas barata que la de x 10, que a simple vista no se ve. */
+  /* El CUM identifica cada presentacion comercial por separado, de modo que la
+     columna solo aparece si alguna lo trae. */
+  const leerCum = (attributes: unknown): string => {
+    if (!attributes || typeof attributes !== 'object') return '—';
+    const value = (attributes as Record<string, unknown>).cum;
+    return typeof value === 'string' ? value : '—';
+  };
+
+  const tieneCum = product.presentations.some(
+    (presentation) => leerCum(presentation.attributes) !== '—',
+  );
+
   const unitPrice = (price: number, quantity: number | null) =>
     quantity && quantity > 0 ? price / quantity : null;
 
@@ -156,6 +179,22 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
           </Col>
         </Row>
 
+        {regulatorios.length > 0 && (
+          <>
+            <div className='box-head mt-4'>
+              <h3>Información del INVIMA</h3>
+            </div>
+            <ul className='dashboard-profile'>
+              {regulatorios.map((item) => (
+                <li className='dash-profile' key={item.label}>
+                  <span className='left font-light'>{item.label}</span>
+                  <span className='right'>{item.value}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
         <div className='box-head mt-4'>
           <h3>Formatos disponibles</h3>
         </div>
@@ -164,6 +203,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
           <thead>
             <tr>
               <th>Formato</th>
+              {tieneCum && <th>CUM</th>}
               <th>Empaque</th>
               <th>Contenido</th>
               <th>Precio</th>
@@ -186,6 +226,9 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
                       <span className='badge badge-success ms-2'>Principal</span>
                     )}
                   </td>
+                  {tieneCum && (
+                    <td className='font-light'>{leerCum(presentation.attributes)}</td>
+                  )}
                   <td className='font-light'>{presentation.packaging}</td>
                   <td className='font-light'>
                     {presentation.contentQuantity
