@@ -536,10 +536,6 @@
   color: $theme-font-color;
   font-size: 13px;
   cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23787878' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 9px center;
 
   &:hover {
     border-color: rgba($theme-font-color, 0.35);
@@ -1566,5 +1562,33 @@ $area-bg: #f1f4f9;
 
   strong {
     font-size: 15px;
+  }
+}
+
+/* Flecha de los desplegables.
+
+   El tema estiliza .form-select pero nuestros select usan .form-control, que es
+   la clase de los campos de texto: sin flecha se ven identicos a un input y la
+   gente escribe encima esperando teclear, hasta que se les abre la lista.
+
+   La flecha va como imagen de fondo y no como pseudo-elemento porque un select
+   no admite ::after. Se incrusta en el propio CSS para no pedir un archivo mas
+   por una figura de doce bytes. */
+select.form-control,
+.filter-select {
+  appearance: none;
+  cursor: pointer;
+  /* Sitio para la flecha, o el texto de una opcion larga pasa por debajo. */
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23787878' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+
+  /* El tema pone $white al enfocar un .form-control, lo que borraria la flecha
+     al ser tambien una propiedad de background. */
+  &:focus {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23096ac9' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 11px center;
   }
 }
