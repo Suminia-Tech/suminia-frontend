@@ -169,6 +169,9 @@ export interface ProductCategory {
   name: string;
   slug: string;
   position: number;
+  /* Productos publicados y de empresas habilitadas: lo que de verdad se va a
+     encontrar al entrar en ella. */
+  productCount: number;
 }
 
 /* --- Peticiones --- */
