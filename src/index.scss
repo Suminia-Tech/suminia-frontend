@@ -1157,7 +1157,11 @@ $area-bg: #f1f4f9;
 }
 
 .area-topbar-user {
-  button {
+  /* Hijo directo, no descendiente: el DropdownItem de reactstrap tambien es un
+     <button> y vive dentro de este mismo contenedor, de modo que un selector
+     suelto le encajaba encima la pastilla del avatar —borde, radio de 30px y
+     el flex con su gap— y lo dejaba pareciendo un boton mal medido. */
+  > button {
     display: flex;
     align-items: center;
     gap: 9px;
@@ -1176,6 +1180,36 @@ $area-bg: #f1f4f9;
 
     &::after {
       display: none;
+    }
+  }
+
+  .dropdown-menu {
+    min-width: 200px;
+    padding: 5px;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  /* La etiqueta de la cuenta y la accion comparten el mismo margen lateral:
+     con paddings distintos el texto de arriba salia desplazado respecto al de
+     abajo y el menu se veia torcido. */
+  .dropdown-header {
+    padding: 7px 12px;
+    font-size: 12px;
+    color: rgba($theme-font-color, 0.55);
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    border-radius: 7px;
+    font-size: 14px;
+    color: $theme-font-color;
+
+    &:hover,
+    &:focus {
+      background-color: $light-blue;
+      color: $theme-font-color;
     }
   }
 }
