@@ -64,11 +64,15 @@ const AreaSidebar = ({
         <div className='area-sidebar-brand'>
           <Link href={homeHref} className='area-sidebar-logo'>
             {/* Contraido se queda el simbolo: el logotipo completo no cabe en
-                68px y encogerlo lo dejaria ilegible. */}
+                68px y encogerlo lo dejaria ilegible.
+
+                Las medidas respetan la proporcion del archivo (87x18). Antes se
+                pintaba a 150x40, que ademas de ampliarlo casi el doble lo
+                estiraba a lo alto. */}
             <Image
-              src={isCollapsed ? '/assets/svg/icons.svg' : `${CommonPath}/logo.png`}
-              width={isCollapsed ? 30 : 150}
-              height={isCollapsed ? 30 : 40}
+              src={isCollapsed ? '/assets/images/favicon/icon-192.png' : `${CommonPath}/logo.png`}
+              width={isCollapsed ? 28 : 116}
+              height={isCollapsed ? 28 : 24}
               alt='Suminia'
               priority
             />
