@@ -9,6 +9,7 @@ import { SelectWithCustom } from '@/shared/ui';
 
 import {
   useCreateProductMutation,
+  useGetCatalogMedicineQuery,
   useGetCategoriesQuery,
   useUpdateProductMutation,
 } from '../../api/productsApi';
@@ -18,9 +19,17 @@ import {
   type AttributePair,
 } from '../../lib/attributes';
 import { composePresentationName } from '../../lib/presentationName';
-import { MEDICINE_FIELDS, MEDICINE_KEYS } from '../../lib/medicine';
+import { TAX_OPTIONS, defaultTaxCategory } from '../../lib/tax';
 import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
-import type { Product, ProductStatus, ProductType } from '../../model/product.types';
+import type {
+  CatalogMedicine,
+  CatalogMedicineSearchResult,
+  Product,
+  ProductStatus,
+  ProductType,
+  TaxCategory,
+} from '../../model/product.types';
+import CatalogMedicinePicker from './CatalogMedicinePicker';
 
 /* Alta y edicion de un producto. La empresa no se pide: el backend la toma de
    la sesion de quien crea, de modo que no hay forma de publicar en el catalogo
@@ -63,6 +72,10 @@ const INITIAL = {
   sku: '',
   contentQuantity: '',
   contentUnit: '',
+  taxCategory: 'IVA_19' as TaxCategory,
+  /* La presentacion del maestro que ofrece el primer formato. Solo aplica a un
+     medicamento: de ahi sale su CUM. */
+  catalogPresentationId: '',
 };
 
 type FormState = typeof INITIAL;
@@ -79,6 +92,7 @@ const toFormState = (product?: Product | null): FormState => {
     description: product.description ?? '',
     type: product.type,
     status: product.status,
+    taxCategory: product.taxCategory,
   };
 };
 
@@ -93,26 +107,26 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
 
   const [form, setForm] = useState<FormState>(() => toFormState(product));
   /* Los atributos van aparte del resto del formulario: son una lista que crece,
-     no un campo. */
-  /* Los atributos se guardan todos en el mismo JSONB, pero se piden en dos
-     sitios: los regulatorios en su bloque, con su etiqueta y su validacion, y
-     el resto como pares libres. Aqui se separan al abrir y se vuelven a juntar
-     al guardar. */
+     no un campo. Aqui solo quedan los libres —material, esterilidad—: lo
+     regulatorio de un medicamento ya no se escribe, se lee del maestro. */
   const [attributes, setAttributes] = useState<AttributePair[]>(() =>
-    toAttributePairs(product?.attributes).filter(
-      (pair) => !MEDICINE_KEYS.includes(pair.key),
-    ),
+    toAttributePairs(product?.attributes),
   );
 
-  const [medicine, setMedicine] = useState<Record<string, string>>(() => {
-    const guardados = toAttributePairs(product?.attributes);
-    return Object.fromEntries(
-      MEDICINE_KEYS.map((key) => [
-        key,
-        guardados.find((pair) => pair.key === key)?.value ?? '',
-      ]),
-    );
-  });
+  /* El medicamento elegido del maestro. Al editar viene con el producto; al
+     crear lo pone el buscador. */
+  const [catalogMedicine, setCatalogMedicine] = useState<CatalogMedicine | null>(
+    () => product?.catalogMedicine ?? null,
+  );
+
+  /* Sus presentaciones, para poder elegir la que se vende en el primer formato.
+     Se piden solo al crear: al editar, los formatos se gestionan en su propio
+     modal. */
+  const { data: catalogDetail } = useGetCatalogMedicineQuery(
+    catalogMedicine?.id ?? '',
+    { skip: !catalogMedicine || isEditing },
+  );
+  const catalogPresentations = catalogDetail?.data.presentations ?? [];
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -131,9 +145,57 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       setGeneralError(null);
     };
 
-  const setMedicineField = (key: string, value: string) => {
-    setMedicine((current) => ({ ...current, [key]: value }));
-    setErrors((current) => ({ ...current, [key]: undefined }));
+  /* Cambiar de tipo arrastra dos cosas: el enlace al maestro deja de tener
+     sentido en un insumo, y el impuesto que se propone es otro. Se ajustan los
+     dos aqui para que el formulario no quede en un estado que el backend va a
+     rechazar. */
+  const handleTypeChange = (value: ProductType) => {
+    setForm((current) => ({
+      ...current,
+      type: value,
+      taxCategory: defaultTaxCategory(value),
+      catalogPresentationId: '',
+    }));
+    if (value !== 'MEDICINE') setCatalogMedicine(null);
+    setErrors({});
+    setGeneralError(null);
+  };
+
+  /* El INVIMA ya declara cuantas unidades trae la presentacion, de modo que
+     volver a pedirla seria pedir dos veces el mismo dato y dar por bueno que las
+     dos versiones coincidan. Se rellena y se deja editable: la unidad "U" del
+     dataset no siempre es la que el proveedor usa para vender. */
+  const handleCatalogPresentation = (id: string) => {
+    const elegida = catalogPresentations.find(
+      (presentation) => presentation.id === id,
+    );
+
+    setForm((current) => ({
+      ...current,
+      catalogPresentationId: id,
+      contentQuantity: elegida?.cantidad ? String(elegida.cantidad) : current.contentQuantity,
+      contentUnit: elegida?.cantidad ? 'unidad' : current.contentUnit,
+    }));
+    setErrors((current) => ({ ...current, catalogPresentationId: undefined }));
+  };
+
+  const handleCatalogSelect = (medicine: CatalogMedicineSearchResult | null) => {
+    setCatalogMedicine(
+      medicine
+        ? {
+            ...medicine,
+            /* El buscador devuelve lo justo para reconocerlo; el resto de la
+               ficha llega con el detalle y con la respuesta del producto. */
+            expediente: '',
+            fechaVencimiento: null,
+            viasAdministracion: [],
+            descripcionAtc: null,
+            activo: true,
+          }
+        : null,
+    );
+    setForm((current) => ({ ...current, catalogPresentationId: '' }));
+    setErrors((current) => ({ ...current, catalogMedicineId: undefined }));
   };
 
   const setAttribute = (index: number, field: keyof AttributePair, value: string) => {
@@ -152,14 +214,15 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     if (!form.name.trim()) next.name = 'Ingresa el nombre del producto';
     if (!form.categoryId) next.categoryId = 'Selecciona una categoría';
 
-    /* Un medicamento sin sus datos regulatorios no se puede reportar al sistema
-       de salud. El backend lo rechaza igual; aqui se avisa antes de mandar. */
+    /* Un medicamento se elige del maestro: es lo que lo identifica y lo que
+       pone su oferta al lado de las de otros proveedores. El backend lo rechaza
+       igual; aqui se avisa antes de mandar. */
     if (form.type === 'MEDICINE') {
-      MEDICINE_FIELDS.filter((field) => field.required).forEach((field) => {
-        if (!medicine[field.key]?.trim()) {
-          next[field.key] = `Ingresa ${field.label.toLowerCase()}`;
-        }
-      });
+      if (!catalogMedicine) {
+        next.catalogMedicineId = 'Busca y elige el medicamento en el catálogo del INVIMA';
+      } else if (!isEditing && !form.catalogPresentationId) {
+        next.catalogPresentationId = 'Elige la presentación que vas a vender';
+      }
     }
 
     if (!isEditing) {
@@ -198,14 +261,11 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       brand: form.brand.trim() || undefined,
       manufacturer: form.manufacturer.trim() || undefined,
       description: form.description.trim() || undefined,
-      attributes: fromAttributePairs([
-        ...attributes,
-        /* Los regulatorios solo viajan si el producto es un medicamento: si
-           alguien lo cambia a insumo, dejan de tener sentido y se van con el. */
-        ...(form.type === 'MEDICINE'
-          ? MEDICINE_KEYS.map((key) => ({ key, value: medicine[key] ?? '' }))
-          : []),
-      ]),
+      taxCategory: form.taxCategory,
+      /* null y no undefined al quitarlo: undefined significaria "no lo toques"
+         y el enlace se quedaria puesto en un producto que ya no es medicamento. */
+      catalogMedicineId: form.type === 'MEDICINE' ? (catalogMedicine?.id ?? null) : null,
+      attributes: fromAttributePairs(attributes),
     };
 
     try {
@@ -223,17 +283,14 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
               sku: form.sku.trim() || undefined,
               contentQuantity: Number(form.contentQuantity),
               contentUnit: form.contentUnit.trim(),
+              catalogPresentationId: form.catalogPresentationId || undefined,
             },
           ],
         }).unwrap();
       }
 
       setForm(toFormState(product));
-      setAttributes(
-        toAttributePairs(product?.attributes).filter(
-          (pair) => !MEDICINE_KEYS.includes(pair.key),
-        ),
-      );
+      setAttributes(toAttributePairs(product?.attributes));
       setErrors({});
       onClose();
     } catch (error) {
@@ -286,7 +343,9 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                 <select
                   className='form-control'
                   value={form.type}
-                  onChange={handleChange('type')}
+                  onChange={(event) =>
+                    handleTypeChange(event.target.value as ProductType)
+                  }
                 >
                   <option value='SUPPLY'>Insumo o dispositivo médico</option>
                   <option value='MEDICINE'>Medicamento</option>
@@ -343,57 +402,51 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                 />
               </div>
 
-              {/* Datos regulatorios. Solo aplican a un medicamento, de modo
-                  que aparecen con el tipo y no antes: pedirselos a quien vende
-                  guantes seria ruido.
+              {/* Un medicamento no se describe: se elige del maestro del
+                  INVIMA. Aparece con el tipo y no antes, que a quien vende
+                  guantes no le sirve de nada.
 
-                  Los nombres siguen los del dataset del INVIMA para que cruzar
-                  contra el algun dia no obligue a traducir. */}
+                  Lo que se gana no es solo ahorrarle cinco campos: dos
+                  proveedores que eligen la misma ficha quedan enfrentados, y
+                  poder comparar ofertas del mismo medicamento es a lo que el
+                  comprador entra a Suminia. */}
               {form.type === 'MEDICINE' && (
                 <div className='medicine-fields'>
-                  <h5>Datos del INVIMA</h5>
+                  <h5>Medicamento del INVIMA</h5>
                   <p className='font-light'>
-                    Sin ellos el medicamento no se puede reportar al sistema de
-                    salud ni identificar sin ambigüedad.
+                    Búscalo y elígelo: su composición, su forma farmacéutica y su
+                    registro sanitario se toman de ahí, y tu oferta queda junto a
+                    las de los demás proveedores del mismo medicamento.
                   </p>
 
-                  <Row>
-                    {MEDICINE_FIELDS.map((field) => (
-                      <Col sm='6' className='mb-3' key={field.key}>
-                        <label className='form-label font-light'>
-                          {field.label}
-                          {!field.required && ' (opcional)'}
-                        </label>
-                        {field.options ? (
-                          <SelectWithCustom
-                            options={field.options}
-                            value={medicine[field.key] ?? ''}
-                            onChange={(value) => setMedicineField(field.key, value)}
-                            emptyLabel={`Selecciona ${field.label.toLowerCase()}`}
-                            customPlaceholder={`Escribe ${field.label.toLowerCase()}`}
-                          />
-                        ) : (
-                          <input
-                            type='text'
-                            className='form-control'
-                            placeholder={field.placeholder}
-                            value={medicine[field.key] ?? ''}
-                            onChange={(event) =>
-                              setMedicineField(field.key, event.target.value)
-                            }
-                          />
-                        )}
-                        {errors[field.key] ? (
-                          <small className='text-danger'>{errors[field.key]}</small>
-                        ) : (
-                          field.help && <small className='font-light'>{field.help}</small>
-                        )}
-                      </Col>
-                    ))}
-                  </Row>
+                  <CatalogMedicinePicker
+                    selected={catalogMedicine}
+                    onSelect={handleCatalogSelect}
+                    error={errors.catalogMedicineId}
+                  />
                 </div>
               )}
 
+              {/* No se deduce del tipo: los medicamentos estan excluidos, pero
+                  entre los insumos hay gravados al 19%, al 5% y excluidos. Sin
+                  esto no se puede facturar. */}
+              <div className='mb-3'>
+                <label className='form-label font-light'>IVA</label>
+                <select
+                  className='form-control'
+                  value={form.taxCategory}
+                  onChange={handleChange('taxCategory')}
+                >
+                  {TAX_OPTIONS.map((option) => (
+                    <option value={option.value} key={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <small className='font-light'>
+                  {TAX_OPTIONS.find((option) => option.value === form.taxCategory)?.help}
+                </small>
+              </div>
 
               {/* Caracteristicas propias del producto: material y esterilidad
                   en un insumo, y manana el CUM y el registro INVIMA de un
@@ -458,6 +511,37 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   Un producto se vende en uno o varios formatos: caja x 100, talla M,
                   frasco de 500 mL. Empieza con uno y agrega los demás después.
                 </p>
+
+                {/* Que presentacion comercial se vende. De aqui sale el CUM,
+                    que es lo que enfrenta la caja de 30 de un proveedor con la
+                    caja de 30 de otro. */}
+                {form.type === 'MEDICINE' && catalogMedicine && (
+                  <div className='mb-3'>
+                    <label className='form-label font-light'>
+                      Presentación del INVIMA
+                    </label>
+                    <select
+                      className='form-control'
+                      value={form.catalogPresentationId}
+                      onChange={(event) => handleCatalogPresentation(event.target.value)}
+                    >
+                      <option value=''>Selecciona la presentación</option>
+                      {catalogPresentations.map((presentation) => (
+                        <option value={presentation.id} key={presentation.id}>
+                          {presentation.cantidad ? `${presentation.cantidad} · ` : ''}
+                          {presentation.descripcionComercial ?? `CUM ${presentation.cum}`}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.catalogPresentationId ? (
+                      <small className='text-danger'>{errors.catalogPresentationId}</small>
+                    ) : (
+                      <small className='font-light'>
+                        Su CUM identifica lo que vendes y permite compararlo.
+                      </small>
+                    )}
+                  </div>
+                )}
 
                 <Row>
                   <Col sm='6' className='mb-3'>

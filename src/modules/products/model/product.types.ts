@@ -2,13 +2,26 @@
    verdad se rompen las cosas, asi que se tipa explicitamente en vez de dejar
    `any`. */
 
-/* El tipo discrimina la forma de `attributes`. Hoy solo hay insumos; los
-   medicamentos llegan despues y traeran CUM y registro INVIMA. */
+/* Un insumo lo describe su proveedor; un medicamento se elige del maestro del
+   INVIMA y sus datos regulatorios se leen de ahi. */
 export type ProductType = 'SUPPLY' | 'MEDICINE';
+
+/* Los medicamentos estan excluidos de IVA por el articulo 424 del Estatuto
+   Tributario; entre los insumos hay gravados al 19%, al 5% y excluidos, de modo
+   que lo declara el proveedor. Excluido y exento son los dos cero para el
+   comprador, pero solo el exento da derecho a descontar el IVA de los insumos. */
+export type TaxCategory = 'EXCLUIDO' | 'EXENTO' | 'IVA_5' | 'IVA_19';
 
 /* DRAFT es el producto que el proveedor prepara sin exponerlo, ACTIVE el que
    ve el comprador, INACTIVE el retirado sin perder su historico. */
 export type ProductStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+
+/* "A partir de esta cantidad, este precio". Por debajo del primer escalon rige
+   el precio base del formato. */
+export interface PriceTier {
+  minQuantity: number;
+  price: number;
+}
 
 export interface ProductPresentation {
   id: string;
@@ -26,7 +39,81 @@ export interface ProductPresentation {
   price: number;
   currency: string;
   stock: number;
+  /* Lo que separa vender a empresas de vender al publico: el minimo que el
+     proveedor despacha y el multiplo en que empaca. */
+  minOrderQuantity: number;
+  orderMultiple: number;
+  /* Ordenados por cantidad, tal como los devuelve el backend. */
+  priceTiers: PriceTier[];
+  /* La presentacion del maestro que este formato ofrece. El CUM se lee de ahi:
+     no lo teclea el proveedor. */
+  catalogPresentationId: string | null;
+  cum: string | null;
+  catalogDescription: string | null;
   isDefault: boolean;
+}
+
+/* --- El maestro del INVIMA --- */
+
+export interface CatalogPrincipio {
+  nombre: string;
+  cantidad: string | null;
+  unidad: string | null;
+}
+
+export interface CatalogMedicine {
+  id: string;
+  expediente: string;
+  producto: string;
+  titular: string | null;
+  registroSanitario: string;
+  fechaVencimiento: string | null;
+  formaFarmaceutica: string | null;
+  viasAdministracion: string[];
+  atc: string | null;
+  descripcionAtc: string | null;
+  principiosActivos: CatalogPrincipio[];
+  activo: boolean;
+}
+
+/* Una fila del buscador: sin presentaciones, que son decenas por expediente. */
+export interface CatalogMedicineSearchResult {
+  id: string;
+  producto: string;
+  titular: string | null;
+  registroSanitario: string;
+  formaFarmaceutica: string | null;
+  atc: string | null;
+  principiosActivos: CatalogPrincipio[];
+  presentationCount: number;
+}
+
+export interface CatalogPresentation {
+  id: string;
+  cum: string;
+  consecutivo: string;
+  cantidad: number | null;
+  unidad: string | null;
+  descripcionComercial: string | null;
+  muestraMedica: boolean;
+}
+
+export interface CatalogMedicineDetail extends CatalogMedicine {
+  presentations: CatalogPresentation[];
+}
+
+/* La oferta de otro proveedor para el mismo medicamento. Es lo que convierte el
+   catalogo en un mercado: sin esto el comprador ve una ficha y no sabe que hay
+   otras cuatro empresas vendiendo exactamente lo mismo. */
+export interface MedicineOffer {
+  productId: string;
+  organizationId: string;
+  organizationName: string | null;
+  brand: string | null;
+  fromPrice: number;
+  currency: string;
+  presentationCount: number;
+  inStock: boolean;
 }
 
 /* Debe coincidir con MAX_PRODUCT_IMAGES del backend, que es quien lo hace
@@ -56,7 +143,13 @@ export interface Product {
   description: string | null;
   brand: string | null;
   manufacturer: string | null;
+  taxCategory: TaxCategory;
+  catalogMedicineId: string | null;
+  catalogMedicine: CatalogMedicine | null;
   attributes: unknown;
+  /* Cuantas ofertas hay del mismo medicamento, esta incluida. 0 en un insumo,
+     que no tiene maestro por el que agruparse. */
+  offerCount: number;
   presentations: ProductPresentation[];
   images: ProductImage[];
   createdAt: string;
@@ -85,9 +178,9 @@ export interface PresentationRequest {
   packaging: string;
   sku?: string;
   barcode?: string;
-  /* Codigo Unico de Medicamento. Va en el formato porque el INVIMA asigna un
-     consecutivo por presentacion comercial. */
-  cum?: string;
+  /* La presentacion del maestro que este formato ofrece. Obligatoria si el
+     producto es un medicamento: el CUM sale de ahi, no se teclea. */
+  catalogPresentationId?: string | null;
   /* Obligatorias y juntas: de ellas sale el precio por unidad, que es lo que
      hace comparable un formato con otro. El backend las exige al crear. */
   contentQuantity: number;
@@ -95,6 +188,9 @@ export interface PresentationRequest {
   price: number;
   currency?: string;
   stock?: number;
+  minOrderQuantity?: number;
+  orderMultiple?: number;
+  priceTiers?: PriceTier[];
   isDefault?: boolean;
 }
 
@@ -106,6 +202,8 @@ export interface CreateProductRequest {
   description?: string;
   brand?: string;
   manufacturer?: string;
+  catalogMedicineId?: string | null;
+  taxCategory?: TaxCategory;
   attributes?: Record<string, unknown>;
   /* Al menos uno: sin formatos el producto no tiene precio ni inventario, y el
      backend responde 422. */

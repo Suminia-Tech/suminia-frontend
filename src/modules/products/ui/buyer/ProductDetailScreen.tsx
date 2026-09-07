@@ -8,10 +8,11 @@ import { Col, Row, Table } from 'reactstrap';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { useAppSelector } from '@/store/hooks';
 
-import { useGetProductQuery } from '../../api/productsApi';
+import { useGetMedicineOffersQuery, useGetProductQuery } from '../../api/productsApi';
 import { humanizeAttributeKey, toAttributePairs } from '../../lib/attributes';
-import { MEDICINE_FIELDS, MEDICINE_KEYS } from '../../lib/medicine';
+import { lowestPrice } from '../../lib/priceTiers';
 import { formatPrice } from '../../lib/productLabels';
+import { taxLabel } from '../../lib/tax';
 
 /* Ficha del producto que abre el comprador desde el catalogo.
 
@@ -26,6 +27,13 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
   const [activeImage, setActiveImage] = useState(0);
 
   const { data, isLoading, isError, error } = useGetProductQuery(productId, {
+    skip: !hydrated,
+  });
+
+  /* Quien mas vende este mismo medicamento. Es lo que convierte la ficha en una
+     comparacion: sin esto el comprador la lee y no sabe que hay otras cuatro
+     empresas vendiendo exactamente lo mismo, mas barato o con stock. */
+  const { data: offersData } = useGetMedicineOffersQuery(productId, {
     skip: !hydrated,
   });
 
@@ -55,17 +63,9 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
   }
 
   const product = data.data;
-  const todos = toAttributePairs(product.attributes);
-
-  /* Lo regulatorio se enseña aparte y con su etiqueta oficial: para quien compra
-     medicamentos no es "una caracteristica mas", es lo que le dice si el
-     producto sirve para lo que necesita. */
-  const regulatorios = MEDICINE_FIELDS.map((field) => ({
-    label: field.label,
-    value: todos.find((pair) => pair.key === field.key)?.value,
-  })).filter((item) => item.value);
-
-  const attributes = todos.filter((pair) => !MEDICINE_KEYS.includes(pair.key));
+  const attributes = toAttributePairs(product.attributes);
+  const invima = product.catalogMedicine;
+  const offers = offersData?.data ?? [];
   const images = [...product.images].sort((a, b) => a.position - b.position);
   const cover = images[activeImage] ?? images[0] ?? null;
 
@@ -73,15 +73,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
      mas barata que la de x 10, que a simple vista no se ve. */
   /* El CUM identifica cada presentacion comercial por separado, de modo que la
      columna solo aparece si alguna lo trae. */
-  const leerCum = (attributes: unknown): string => {
-    if (!attributes || typeof attributes !== 'object') return '—';
-    const value = (attributes as Record<string, unknown>).cum;
-    return typeof value === 'string' ? value : '—';
-  };
-
-  const tieneCum = product.presentations.some(
-    (presentation) => leerCum(presentation.attributes) !== '—',
-  );
+  const tieneCum = product.presentations.some((presentation) => presentation.cum);
 
   const unitPrice = (price: number, quantity: number | null) =>
     quantity && quantity > 0 ? price / quantity : null;
@@ -155,6 +147,12 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
                   <span className='right'>{product.manufacturer}</span>
                 </li>
               )}
+              {/* Un 19% sobre una compra por volumen no es un detalle: el
+                  comprador necesita saberlo antes de comparar precios. */}
+              <li className='dash-profile'>
+                <span className='left font-light'>IVA</span>
+                <span className='right'>{taxLabel(product.taxCategory)}</span>
+              </li>
             </ul>
 
             {/* Las caracteristicas del producto se mezclan con proveedor y
@@ -179,16 +177,90 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
           </Col>
         </Row>
 
-        {regulatorios.length > 0 && (
+        {/* No lo escribio el proveedor: viene del registro del INVIMA, el mismo
+            para todos los que vendan este medicamento. Para quien compra no es
+            "una caracteristica mas", es lo que le dice si sirve para lo que
+            necesita. */}
+        {invima && (
           <>
             <div className='box-head mt-4'>
               <h3>Información del INVIMA</h3>
             </div>
             <ul className='dashboard-profile'>
-              {regulatorios.map((item) => (
-                <li className='dash-profile' key={item.label}>
-                  <span className='left font-light'>{item.label}</span>
-                  <span className='right'>{item.value}</span>
+              <li className='dash-profile'>
+                <span className='left font-light'>Composición</span>
+                <span className='right'>
+                  {invima.principiosActivos
+                    .map((principio) =>
+                      [principio.nombre, principio.cantidad, principio.unidad]
+                        .filter(Boolean)
+                        .join(' '),
+                    )
+                    .join(' + ')}
+                </span>
+              </li>
+              <li className='dash-profile'>
+                <span className='left font-light'>Registro sanitario</span>
+                <span className='right'>{invima.registroSanitario}</span>
+              </li>
+              {invima.formaFarmaceutica && (
+                <li className='dash-profile'>
+                  <span className='left font-light'>Forma farmacéutica</span>
+                  <span className='right'>{invima.formaFarmaceutica}</span>
+                </li>
+              )}
+              {invima.viasAdministracion.length > 0 && (
+                <li className='dash-profile'>
+                  <span className='left font-light'>Vía de administración</span>
+                  <span className='right'>{invima.viasAdministracion.join(', ')}</span>
+                </li>
+              )}
+              {invima.titular && (
+                <li className='dash-profile'>
+                  <span className='left font-light'>Titular del registro</span>
+                  <span className='right'>{invima.titular}</span>
+                </li>
+              )}
+              {invima.atc && (
+                <li className='dash-profile'>
+                  <span className='left font-light'>Clasificación ATC</span>
+                  <span className='right'>
+                    {invima.atc}
+                    {invima.descripcionAtc ? ` · ${invima.descripcionAtc}` : ''}
+                  </span>
+                </li>
+              )}
+            </ul>
+          </>
+        )}
+
+        {/* La razon de ser del maestro: el mismo medicamento, varios
+            proveedores, un solo sitio para compararlos. */}
+        {offers.length > 0 && (
+          <>
+            <div className='box-head mt-4'>
+              <h3>
+                Otros proveedores de este medicamento
+                <span className='font-light'> · {offers.length}</span>
+              </h3>
+            </div>
+            <ul className='medicine-offers'>
+              {offers.map((offer) => (
+                <li key={offer.productId}>
+                  <Link href={`/buyer/catalog/${offer.productId}`}>
+                    <span className='offer-supplier'>
+                      <strong>{offer.organizationName ?? 'Proveedor'}</strong>
+                      <small className='font-light'>
+                        {offer.presentationCount}{' '}
+                        {offer.presentationCount === 1 ? 'formato' : 'formatos'}
+                        {offer.inStock ? '' : ' · sin existencias'}
+                      </small>
+                    </span>
+                    <span className='offer-price'>
+                      <small className='font-light'>desde</small>
+                      <strong>{formatPrice(offer.fromPrice, offer.currency)}</strong>
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -206,6 +278,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
               {tieneCum && <th>CUM</th>}
               <th>Empaque</th>
               <th>Contenido</th>
+              <th>Pedido mínimo</th>
               <th>Precio</th>
               <th>Precio por unidad</th>
               <th>Disponible</th>
@@ -213,8 +286,11 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
           </thead>
           <tbody>
             {product.presentations.map((presentation) => {
+              /* Por unidad se calcula sobre el precio mas bajo alcanzable: si
+                 hay descuento por volumen, comparar con el base haria parecer
+                 caro un formato que no lo es. */
               const perUnit = unitPrice(
-                presentation.price,
+                lowestPrice(presentation.price, presentation.priceTiers),
                 presentation.contentQuantity,
               );
 
@@ -227,7 +303,7 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
                     )}
                   </td>
                   {tieneCum && (
-                    <td className='font-light'>{leerCum(presentation.attributes)}</td>
+                    <td className='font-light'>{presentation.cum ?? '—'}</td>
                   )}
                   <td className='font-light'>{presentation.packaging}</td>
                   <td className='font-light'>
@@ -235,7 +311,31 @@ export const ProductDetailScreen = ({ productId }: { productId: string }) => {
                       ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
                       : '—'}
                   </td>
-                  <td>{formatPrice(presentation.price, presentation.currency)}</td>
+                  {/* Lo que de verdad se puede pedir, no solo el minimo: con
+                      multiplo 5 el comprador no puede pedir 12. */}
+                  <td className='font-light'>
+                    {presentation.minOrderQuantity}
+                    {presentation.orderMultiple > 1 &&
+                      ` · de ${presentation.orderMultiple} en ${presentation.orderMultiple}`}
+                  </td>
+                  <td>
+                    {formatPrice(presentation.price, presentation.currency)}
+                    {/* La escala completa, no solo el precio base: el descuento
+                        por volumen es lo que decide la compra en B2B, y
+                        esconderlo obliga a preguntar por fuera. */}
+                    {presentation.priceTiers.length > 0 && (
+                      <ul className='tier-list'>
+                        {presentation.priceTiers.map((tier) => (
+                          <li key={tier.minQuantity}>
+                            <span className='font-light'>
+                              desde {tier.minQuantity}
+                            </span>
+                            {formatPrice(tier.price, presentation.currency)}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </td>
                   <td className='font-light'>
                     {perUnit === null
                       ? '—'

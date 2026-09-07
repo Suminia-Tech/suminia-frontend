@@ -7,8 +7,11 @@ import type {
 } from '@/shared/api/types';
 
 import type {
+  CatalogMedicineDetail,
+  CatalogMedicineSearchResult,
   ConfirmImageRequest,
   CreateProductRequest,
+  MedicineOffer,
   PresentationRequest,
   Product,
   ProductCategory,
@@ -42,6 +45,34 @@ export const productsApi = baseApi.injectEndpoints({
 
     /* Las categorias son el vocabulario del marketplace y no cambian mientras
        alguien trabaja, de modo que no hace falta invalidarlas nunca. */
+    /* El maestro del INVIMA. No lleva tags de cache invalidables porque no lo
+       escribe nadie desde la aplicacion: lo sincroniza un script contra el
+       dataset oficial, de modo que dentro de una sesion no cambia. */
+    searchCatalogMedicines: builder.query<
+      ApiResponse<CatalogMedicineSearchResult[]>,
+      string
+    >({
+      query: (search) => ({
+        url: '/products/catalog/medicines',
+        params: { search },
+      }),
+    }),
+
+    /* Las presentaciones van aparte del buscador porque son decenas por
+       medicamento: se piden cuando ya se eligio uno. */
+    getCatalogMedicine: builder.query<ApiResponse<CatalogMedicineDetail>, string>({
+      query: (id) => `/products/catalog/medicines/${id}`,
+    }),
+
+    /* Quien mas vende este mismo medicamento. Es la consulta por la que existe
+       el maestro: sin ella el comprador no puede comparar. */
+    getMedicineOffers: builder.query<ApiResponse<MedicineOffer[]>, string>({
+      query: (productId) => `/products/${productId}/offers`,
+      providesTags: (_result, _error, productId) => [
+        { type: 'Product' as const, id: productId },
+      ],
+    }),
+
     getCategories: builder.query<ApiResponse<ProductCategory[]>, void>({
       query: () => '/products/categories',
     }),
@@ -178,6 +209,10 @@ export const {
   useGetProductsQuery,
   useGetProductQuery,
   useGetCategoriesQuery,
+  useSearchCatalogMedicinesQuery,
+  useLazySearchCatalogMedicinesQuery,
+  useGetCatalogMedicineQuery,
+  useGetMedicineOffersQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,

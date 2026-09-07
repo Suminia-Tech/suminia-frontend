@@ -1624,3 +1624,332 @@ select.form-control,
     font-size: 13px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Buscador del maestro del INVIMA
+
+   Un medicamento se elige, no se describe. La lista tiene que dejar distinguir
+   dos presentaciones que se llaman casi igual, y eso lo hacen el principio
+   activo con su concentracion y el registro sanitario — no el nombre.
+   --------------------------------------------------------------------------- */
+
+.catalog-search-field {
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: rgba($theme-font-color, 0.45);
+    pointer-events: none;
+  }
+
+  .form-control {
+    padding-left: 34px;
+  }
+}
+
+.catalog-search-hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: rgba($theme-font-color, 0.6);
+}
+
+.catalog-results {
+  max-height: 260px;
+  margin: 10px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  background-color: $white;
+
+  /* El tema declara `li { display: inline-block }` para todo el documento, de
+     modo que una lista vertical propia tiene que decirlo explicitamente. */
+  li {
+    display: block;
+
+    + li {
+      border-top: 1px solid $border-color;
+    }
+  }
+
+  button {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 0;
+    background: none;
+    text-align: left;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $light-blue;
+    }
+  }
+}
+
+.catalog-result-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $theme-font-color;
+}
+
+.catalog-result-principios {
+  font-size: 13px;
+  color: var(--theme-color);
+}
+
+.catalog-result-meta {
+  font-size: 12px;
+  color: rgba($theme-font-color, 0.55);
+}
+
+/* Ya elegido. Se enseña la ficha entera y no solo el nombre: lo que confirma
+   que es el correcto es el registro sanitario y la concentracion. */
+.catalog-picked {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  background-color: $white;
+
+  h6 {
+    margin: 6px 0 2px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.catalog-picked-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.catalog-picked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background-color: $light-blue;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--theme-color);
+}
+
+.catalog-picked-principios {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--theme-color);
+}
+
+.catalog-picked-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px 16px;
+  margin: 0;
+
+  dt {
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba($theme-font-color, 0.55);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 13px;
+    color: $theme-font-color;
+  }
+}
+
+.catalog-picked-clear {
+  align-self: flex-start;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: rgba($theme-font-color, 0.5);
+
+  &:hover {
+    background-color: $light-blue;
+    color: $theme-font-color;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Precio por volumen
+
+   La escala se lee como una frase —"desde 50 unidades, a 17.200"— porque es
+   como se piensa al ponerla. Una tabla de dos columnas obligaria a leer la
+   cabecera para saber cual cifra es cual.
+   --------------------------------------------------------------------------- */
+
+.price-tiers {
+  padding: 16px;
+  margin-bottom: 18px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+
+  h6 {
+    margin-bottom: 2px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  > p {
+    margin: 0;
+    font-size: 13px;
+  }
+}
+
+.price-tiers-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.price-tiers-empty {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.price-tiers-list {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+
+    + li {
+      margin-top: 8px;
+    }
+
+    .form-control {
+      width: 110px;
+      flex: 0 0 auto;
+    }
+
+    button {
+      padding: 4px;
+      border: 0;
+      border-radius: 6px;
+      background: none;
+      color: rgba($theme-font-color, 0.5);
+
+      &:hover {
+        background-color: $light-blue;
+        color: #d92d20;
+      }
+    }
+  }
+}
+
+/* La escala en la ficha del comprador, bajo el precio base. */
+.tier-list {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+
+  li {
+    display: flex;
+    gap: 6px;
+    color: rgba($theme-font-color, 0.75);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Ofertas del mismo medicamento
+
+   Es la razon de ser del maestro: puestas una debajo de otra y ordenadas por
+   precio, comparar deja de ser un trabajo.
+   --------------------------------------------------------------------------- */
+
+.medicine-offers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: block;
+
+    + li {
+      margin-top: 8px;
+    }
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    background-color: $white;
+
+    &:hover {
+      border-color: var(--theme-color);
+    }
+  }
+}
+
+.offer-supplier {
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 14px;
+    color: $theme-font-color;
+  }
+
+  small {
+    font-size: 12px;
+  }
+}
+
+.offer-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  small {
+    font-size: 11px;
+  }
+
+  strong {
+    font-size: 15px;
+    color: var(--theme-color);
+  }
+}
+
+/* En la tarjeta del catalogo: se decide en cual entrar mirando la lista. */
+.catalog-card-offers {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background-color: $light-blue;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--theme-color);
+}
+
+.field-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #d92d20;
+}

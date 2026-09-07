@@ -141,6 +141,14 @@ export const CatalogScreen = () => {
                           ? '1 formato'
                           : `${product.presentations.length} formatos`}
                       </small>
+                      {/* Que otros lo vendan se decide mirando la lista, no
+                          entrando a cada ficha: sin esta linea el comprador no
+                          sabe que tiene con que comparar. */}
+                      {product.offerCount > 1 && (
+                        <span className='catalog-card-offers'>
+                          {product.offerCount} proveedores lo venden
+                        </span>
+                      )}
                     </div>
                   </Link>
                 </Col>

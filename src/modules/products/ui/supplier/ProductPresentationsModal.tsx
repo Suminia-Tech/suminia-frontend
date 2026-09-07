@@ -10,14 +10,26 @@ import { ConfirmModal, SelectWithCustom } from '@/shared/ui';
 
 import {
   useAddPresentationMutation,
+  useGetCatalogMedicineQuery,
   useRemovePresentationMutation,
   useUpdatePresentationMutation,
 } from '../../api/productsApi';
-import { isValidCum } from '../../lib/medicine';
 import { composePresentationName } from '../../lib/presentationName';
+import {
+  MAX_PRICE_TIERS,
+  validateOrderQuantities,
+  validateTiers,
+} from '../../lib/priceTiers';
 import { formatPrice } from '../../lib/productLabels';
 import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
 import type { Product, ProductPresentation } from '../../model/product.types';
+
+/* Un escalon a medio escribir: las dos cifras son texto hasta que se guarda,
+   porque un input numerico vacio no es 0 sino "todavia nada". */
+interface TierDraft {
+  minQuantity: string;
+  price: string;
+}
 
 /* Los formatos de venta de un producto: la caja x 100, la talla M, el frasco de
    500 mL. Cada uno tiene su propio precio e inventario, que es lo que de verdad
@@ -39,12 +51,22 @@ const EMPTY_DRAFT = {
   stock: '',
   sku: '',
   barcode: '',
-  cum: '',
+  /* La presentacion del maestro que este formato ofrece. De ahi sale el CUM. */
+  catalogPresentationId: '',
   contentQuantity: '',
   contentUnit: '',
+  minOrderQuantity: '1',
+  orderMultiple: '1',
+  priceTiers: [] as TierDraft[],
 };
 
 type Draft = typeof EMPTY_DRAFT;
+
+/* Los campos de texto, que son los que sabe pintar el ayudante `field`. Los
+   escalones son una lista y se editan aparte. */
+type TextField = {
+  [K in keyof Draft]: Draft[K] extends string ? K : never;
+}[keyof Draft];
 
 /* La variante se recupera de los atributos, que es donde la guarda el backend:
    el nombre esta compuesto y no se puede desarmar con fiabilidad. */
@@ -61,10 +83,16 @@ const toDraft = (presentation: ProductPresentation): Draft => ({
   stock: String(presentation.stock),
   sku: presentation.sku ?? '',
   barcode: presentation.barcode ?? '',
-  cum: readAttribute(presentation.attributes, 'cum'),
+  catalogPresentationId: presentation.catalogPresentationId ?? '',
   contentQuantity:
     presentation.contentQuantity === null ? '' : String(presentation.contentQuantity),
   contentUnit: presentation.contentUnit ?? '',
+  minOrderQuantity: String(presentation.minOrderQuantity),
+  orderMultiple: String(presentation.orderMultiple),
+  priceTiers: presentation.priceTiers.map((tier) => ({
+    minQuantity: String(tier.minQuantity),
+    price: String(tier.price),
+  })),
 });
 
 /* Los opcionales vacios se omiten en vez de mandarse como cadena vacia: el DTO
@@ -76,12 +104,23 @@ const toPayload = (draft: Draft) => ({
   stock: draft.stock.trim() ? Number(draft.stock) : 0,
   sku: draft.sku.trim() || undefined,
   barcode: draft.barcode.trim() || undefined,
-  cum: draft.cum.trim() || undefined,
+  catalogPresentationId: draft.catalogPresentationId || undefined,
   contentQuantity: Number(draft.contentQuantity),
   contentUnit: draft.contentUnit.trim(),
+  minOrderQuantity: Number(draft.minOrderQuantity || 1),
+  orderMultiple: Number(draft.orderMultiple || 1),
+  /* Siempre se manda, aunque este vacio: el backend lo interpreta como
+     "reemplaza la escala por esta", y omitirlo dejaria la anterior puesta al
+     borrar el ultimo escalon. */
+  priceTiers: draft.priceTiers
+    .filter((tier) => tier.minQuantity.trim() && tier.price.trim())
+    .map((tier) => ({
+      minQuantity: Number(tier.minQuantity),
+      price: Number(tier.price),
+    })),
 });
 
-const validate = (draft: Draft): Record<string, string> => {
+const validate = (draft: Draft, isMedicine: boolean): Record<string, string> => {
   const errors: Record<string, string> = {};
   if (!draft.packaging.trim()) errors.packaging = 'Indica el empaque';
   if (!draft.price.trim()) errors.price = 'Ingresa el precio';
@@ -98,11 +137,28 @@ const validate = (draft: Draft): Record<string, string> => {
     errors.contentQuantity = 'Debe ser mayor que cero';
   if (!draft.contentUnit.trim()) errors.contentUnit = 'Indica la unidad';
 
-  /* El CUM es opcional —solo lo tienen los medicamentos— pero si esta, tiene
-     una forma: expediente-consecutivo. */
-  if (!isValidCum(draft.cum)) {
-    errors.cum = 'Se escribe expediente-consecutivo, como 20048021-41';
+  /* Un medicamento vende presentaciones que el INVIMA ya tiene registradas: sin
+     elegir cual, la oferta no se puede comparar con la de nadie. */
+  if (isMedicine && !draft.catalogPresentationId) {
+    errors.catalogPresentationId = 'Elige la presentación del INVIMA';
   }
+
+  const minimo = Number(draft.minOrderQuantity || 1);
+  const multiplo = Number(draft.orderMultiple || 1);
+  const cantidades = validateOrderQuantities(minimo, multiplo);
+  if (cantidades) errors.minOrderQuantity = cantidades;
+
+  const escalones = validateTiers(
+    draft.priceTiers
+      .filter((tier) => tier.minQuantity.trim() && tier.price.trim())
+      .map((tier) => ({
+        minQuantity: Number(tier.minQuantity),
+        price: Number(tier.price),
+      })),
+    Number(draft.price),
+    minimo,
+  );
+  if (escalones) errors.priceTiers = escalones;
 
   return errors;
 };
@@ -126,7 +182,48 @@ const ProductPresentationsModal = ({
   const presentations = product.presentations;
   const isLastOne = presentations.length <= 1;
 
-  const set = (field: keyof Draft) => (value: string) => {
+  /* Las presentaciones del maestro, para poder elegir cual se vende. Solo se
+     piden si el producto es un medicamento: un insumo no tiene maestro. */
+  const isMedicine = Boolean(product.catalogMedicineId);
+  const { data: catalogDetail } = useGetCatalogMedicineQuery(
+    product.catalogMedicineId ?? '',
+    { skip: !isMedicine },
+  );
+  const catalogPresentations = catalogDetail?.data.presentations ?? [];
+
+  /* Las que ya usa otro formato: el backend rechaza repetir un CUM dentro del
+     mismo producto —seria la misma oferta dos veces— y ofrecerlo aqui solo
+     llevaria al error. */
+  const usadas = new Set(
+    presentations
+      .filter((presentation) => presentation.id !== editingId)
+      .map((presentation) => presentation.catalogPresentationId)
+      .filter((id): id is string => Boolean(id)),
+  );
+
+  const setTier = (index: number, key: keyof TierDraft, value: string) => {
+    setDraft((current) => ({
+      ...current,
+      priceTiers: current.priceTiers.map((tier, i) =>
+        i === index ? { ...tier, [key]: value } : tier,
+      ),
+    }));
+    setErrors((current) => ({ ...current, priceTiers: '' }));
+  };
+
+  const addTier = () =>
+    setDraft((current) => ({
+      ...current,
+      priceTiers: [...current.priceTiers, { minQuantity: '', price: '' }],
+    }));
+
+  const removeTier = (index: number) =>
+    setDraft((current) => ({
+      ...current,
+      priceTiers: current.priceTiers.filter((_, i) => i !== index),
+    }));
+
+  const set = (field: TextField) => (value: string) => {
     setDraft((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: '' }));
   };
@@ -155,7 +252,7 @@ const ProductPresentationsModal = ({
   const submit = async (event: FormEvent) => {
     event.preventDefault();
 
-    const validationErrors = validate(draft);
+    const validationErrors = validate(draft, isMedicine);
     if (Object.keys(validationErrors).length > 0) return setErrors(validationErrors);
 
     try {
@@ -216,7 +313,7 @@ const ProductPresentationsModal = ({
 
   const field = (
     label: string,
-    key: keyof Draft,
+    key: TextField,
     props: { type?: string; placeholder?: string; list?: string } = {},
   ) => (
     <>
@@ -257,6 +354,7 @@ const ProductPresentationsModal = ({
                 <th>Formato</th>
                 <th>Empaque</th>
                 <th className='num'>Contenido</th>
+                <th className='num'>Pedido</th>
                 <th className='num'>Precio</th>
                 <th className='num'>Inventario</th>
                 <th className='actions'></th>
@@ -268,8 +366,14 @@ const ProductPresentationsModal = ({
                   <td>
                     <span className='catalog-product-text'>
                       <strong>{presentation.name}</strong>
-                      {presentation.sku && (
-                        <small className='font-light'>{presentation.sku}</small>
+                      {/* El CUM antes que el SKU: el SKU lo pone el proveedor y
+                          solo le sirve a el, el CUM lo reconoce cualquiera. */}
+                      {presentation.cum ? (
+                        <small className='font-light'>CUM {presentation.cum}</small>
+                      ) : (
+                        presentation.sku && (
+                          <small className='font-light'>{presentation.sku}</small>
+                        )
                       )}
                     </span>
                   </td>
@@ -281,10 +385,32 @@ const ProductPresentationsModal = ({
                       ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
                       : '—'}
                   </td>
+                  {/* Minimo y multiplo juntos: son la misma regla —lo que de
+                      verdad se puede pedir— y separarlos en dos columnas obliga
+                      a recomponerla mentalmente. */}
+                  <td className='num font-light'>
+                    {presentation.minOrderQuantity > 1 || presentation.orderMultiple > 1
+                      ? `${presentation.minOrderQuantity}${
+                          presentation.orderMultiple > 1
+                            ? ` · de ${presentation.orderMultiple} en ${presentation.orderMultiple}`
+                            : ''
+                        }`
+                      : '—'}
+                  </td>
                   <td className='num'>
                     <strong>
                       {formatPrice(presentation.price, presentation.currency)}
                     </strong>
+                    {presentation.priceTiers.length > 0 && (
+                      <small className='font-light d-block'>
+                        desde{' '}
+                        {formatPrice(
+                          presentation.priceTiers[presentation.priceTiers.length - 1]
+                            .price,
+                          presentation.currency,
+                        )}
+                      </small>
+                    )}
                   </td>
                   <td
                     className={`num${presentation.stock === 0 ? ' text-danger' : ' font-light'}`}
@@ -401,14 +527,134 @@ const ProductPresentationsModal = ({
               <Col md='4' className='mb-3'>
                 {field('Código de barras', 'barcode', { placeholder: '7701234567890' })}
               </Col>
-              {/* El CUM identifica una presentacion comercial, no el
-                  medicamento: el INVIMA asigna un consecutivo por formato. Por
-                  eso se pide aqui y no en el producto. */}
+              {/* Que presentacion comercial del INVIMA se vende. El CUM sale
+                  de ahi y no se teclea: identifica el envase exacto, y es lo que
+                  enfrenta la caja de 30 de un proveedor con la de otro. */}
+              {isMedicine && (
+                <Col md='8' className='mb-3'>
+                  <label className='form-label font-light'>
+                    Presentación del INVIMA
+                  </label>
+                  <select
+                    className='form-control'
+                    value={draft.catalogPresentationId}
+                    onChange={(event) =>
+                      set('catalogPresentationId')(event.target.value)
+                    }
+                  >
+                    <option value=''>Selecciona la presentación</option>
+                    {catalogPresentations.map((presentation) => (
+                      <option
+                        value={presentation.id}
+                        key={presentation.id}
+                        disabled={usadas.has(presentation.id)}
+                      >
+                        {presentation.cantidad ? `${presentation.cantidad} · ` : ''}
+                        {presentation.descripcionComercial ?? `CUM ${presentation.cum}`}
+                        {usadas.has(presentation.id) ? ' (ya la ofreces)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.catalogPresentationId ? (
+                    <small className='text-danger'>
+                      {errors.catalogPresentationId}
+                    </small>
+                  ) : (
+                    <small className='font-light'>
+                      De aquí sale el CUM de este formato.
+                    </small>
+                  )}
+                </Col>
+              )}
+            </Row>
+
+            {/* Nadie despacha una caja suelta, y casi nadie empaca de uno en
+                uno. Sin esto el comprador arma un pedido que no se le va a
+                despachar, y lo descubre cuando ya esta hecho. */}
+            <Row>
               <Col md='4' className='mb-3'>
-                {field('CUM', 'cum', { placeholder: '20048021-41' })}
-                <small className='font-light'>Solo para medicamentos.</small>
+                {field('Pedido mínimo', 'minOrderQuantity', { type: 'number' })}
+                {errors.minOrderQuantity ? (
+                  <small className='text-danger'>{errors.minOrderQuantity}</small>
+                ) : (
+                  <small className='font-light'>Lo mínimo que despachas.</small>
+                )}
+              </Col>
+              <Col md='4' className='mb-3'>
+                {field('Múltiplo de venta', 'orderMultiple', { type: 'number' })}
+                <small className='font-light'>
+                  Se vende de {draft.orderMultiple || 1} en {draft.orderMultiple || 1}.
+                </small>
               </Col>
             </Row>
+
+            {/* El descuento por cantidad es la negociacion misma en B2B: sin
+                el, acordar el precio de verdad obliga a salirse de Suminia. */}
+            <div className='price-tiers'>
+              <div className='price-tiers-head'>
+                <div>
+                  <h6>Precio por volumen</h6>
+                  <p className='font-light'>
+                    Por debajo del primer escalón se cobra{' '}
+                    {draft.price ? formatPrice(Number(draft.price), 'COP') : 'el precio base'}.
+                  </p>
+                </div>
+                {draft.priceTiers.length < MAX_PRICE_TIERS && (
+                  <button
+                    type='button'
+                    className='btn btn-sm btn-outline-secondary rounded-1 d-inline-flex align-items-center gap-1'
+                    onClick={addTier}
+                  >
+                    <Plus size={14} />
+                    Agregar escalón
+                  </button>
+                )}
+              </div>
+
+              {draft.priceTiers.length === 0 ? (
+                <p className='font-light price-tiers-empty'>
+                  Sin escalones, el precio es el mismo para cualquier cantidad.
+                </p>
+              ) : (
+                <ul className='price-tiers-list'>
+                  {draft.priceTiers.map((tier, index) => (
+                    <li key={index}>
+                      <span className='font-light'>Desde</span>
+                      <input
+                        type='number'
+                        min='2'
+                        className='form-control'
+                        placeholder='50'
+                        value={tier.minQuantity}
+                        onChange={(event) =>
+                          setTier(index, 'minQuantity', event.target.value)
+                        }
+                      />
+                      <span className='font-light'>unidades, a</span>
+                      <input
+                        type='number'
+                        min='0'
+                        className='form-control'
+                        placeholder='17200'
+                        value={tier.price}
+                        onChange={(event) => setTier(index, 'price', event.target.value)}
+                      />
+                      <button
+                        type='button'
+                        onClick={() => removeTier(index)}
+                        aria-label='Quitar escalón'
+                      >
+                        <X size={15} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {errors.priceTiers && (
+                <small className='text-danger'>{errors.priceTiers}</small>
+              )}
+            </div>
 
             {/* El nombre no se escribe: se compone de lo de arriba. Verlo
                 mientras se rellena hace evidente para que sirve cada campo. */}
