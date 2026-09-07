@@ -924,7 +924,10 @@
    mirando", y sin ese contraste todo flota sobre un mismo blanco.
    --------------------------------------------------------------------------- */
 
-$sidebar-width: 232px;
+/* La entrada mas larga —"Mis productos"— necesita unos 164px contando icono,
+   hueco y sangrados. 208 deja aire suficiente sin que el panel se coma ancho
+   que la tabla de productos si aprovecha. */
+$sidebar-width: 208px;
 /* Contraido caben el icono y su area de pulsacion, nada mas. */
 $sidebar-width-collapsed: 68px;
 $area-bg: #f1f4f9;
