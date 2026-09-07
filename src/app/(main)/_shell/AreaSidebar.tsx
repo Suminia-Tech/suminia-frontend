@@ -66,14 +66,20 @@ const AreaSidebar = ({
             {/* Contraido se queda el simbolo: el logotipo completo no cabe en
                 68px y encogerlo lo dejaria ilegible.
 
-                Las medidas respetan la proporcion del archivo (87x18). Antes se
-                pintaba a 150x40, que ademas de ampliarlo casi el doble lo
-                estiraba a lo alto. */}
+                El logotipo se pinta a su tamaño real, 87x18: es lo unico que
+                lo deja nitido, porque ampliarlo aunque sea un tercio ya se nota
+                en un archivo tan pequeño.
+
+                unoptimized porque el optimizador de Next lo reencoda a calidad
+                75 —de 912 bytes a 547— y en un logo con texto de 87px de ancho
+                eso deja artefactos. No hay nada que optimizar en un archivo que
+                ya pesa menos que la peticion. */}
             <Image
               src={isCollapsed ? '/assets/images/favicon/icon-192.png' : `${CommonPath}/logo.png`}
-              width={isCollapsed ? 28 : 116}
-              height={isCollapsed ? 28 : 24}
+              width={isCollapsed ? 26 : 87}
+              height={isCollapsed ? 26 : 18}
               alt='Suminia'
+              unoptimized={!isCollapsed}
               priority
             />
           </Link>
