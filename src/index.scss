@@ -2404,3 +2404,14 @@ select.form-control,
     padding: 22px;
   }
 }
+
+/* El icono del logo giraba sobre su eje cada tres segundos: la plantilla trae
+   esa animacion en su pagina de aterrizaje y la aplica a `.brand-logo`. En un
+   catalogo de medicamentos un logo que da vueltas sin parar no transmite lo que
+   se quiere transmitir, y ademas roba la atencion a lo unico que importa arriba,
+   que es el buscador.
+
+   Se apaga aqui y no en el scss del tema, que no se toca. */
+.brand-logo .svg-icon {
+  animation: none;
+}
