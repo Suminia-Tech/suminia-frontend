@@ -3,9 +3,13 @@ import Link from "next/link";
 
 /* El logo de la cabecera.
 
-   Se pinta al tamaño real del archivo y no mas grande. logo.png mide 87x18 y
-   antes se estiraba a 210 de ancho: dos veces y media, que es exactamente lo
-   que se veia borroso. Un mapa de bits no gana detalle al ampliarlo.
+   logo.png mide 87x18 y antes se estiraba a 210 de ancho: dos veces y media,
+   que es lo que se veia borroso. Aqui va a 130, un punto y medio, que es donde
+   deja de notarse el pixelado y todavia se lee con presencia en la cabecera.
+
+   Con este archivo no se puede mas: un mapa de bits no gana detalle al
+   ampliarlo. Para enseñarlo del tamaño que tenia hace falta el mismo logo a 3x
+   —261x54— o vectorial; entonces solo hay que cambiar estas dos cifras.
 
    `unoptimized` porque Next reencodea a calidad 75 y en una imagen de 900
    bytes con texto fino eso se nota: emborrona los bordes de las letras justo
@@ -27,8 +31,8 @@ const HeadingLogo = () => {
           className="svg-icon"
         />
         <Image
-          width={87}
-          height={18}
+          width={130}
+          height={27}
           priority
           unoptimized
           src="/assets/images/logo.png"

@@ -1,108 +1,75 @@
-import { Btn } from "@/_template/Components/AbstractElements";
-import { Allcategories, CommonPath } from "@/_template/Constant";
-import { getAPIData } from "@/_template/Utils";
-import useWindowDimensions from "@/_template/Utils/useWindowDimensions";
-import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Col, Row } from "reactstrap";
-import CategoryResp from "./CategoryResp";
-import { CATEGORYRESPONSIVE, CLOSEOVERLAY, OVERLAY } from "@/_template/ReduxToolkit/Reducers/ModalReducer";
+'use client';
 
+import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { Btn } from '@/_template/Components/AbstractElements';
+import { Allcategories } from '@/_template/Constant';
+import useWindowDimensions from '@/_template/Utils/useWindowDimensions';
+import {
+  CATEGORYRESPONSIVE,
+  CLOSEOVERLAY,
+  OVERLAY,
+} from '@/_template/ReduxToolkit/Reducers/ModalReducer';
+import { useGetPublicCategoriesQuery } from '@/modules/products';
+
+import CategoryResp from './CategoryResp';
+
+/* El desplegable de categorias de la cabecera.
+
+   Se alimenta de las categorias reales, no del menu de ejemplo de la plantilla
+   —que traia frutas y verduras en tres niveles anidados. Las nuestras son
+   planas: una lista, sin submenus que no existen.
+
+   Cada una lleva al catalogo ya filtrado, que es lo mismo que hace la parrilla
+   de la portada. */
 const AllCategories = ({ isCategories }) => {
   const { width } = useWindowDimensions();
-  const [getCategoryData, setCategoryData] = useState([]);
-  const [isChecked, setIsChecked] = useState("");
-  const [subChild, setSubChild] = useState("");
   const { catergoryResponsive } = useSelector((state) => state.ModalReducer);
   const dispatch = useDispatch();
-  useEffect(() => {
-    getAPIData(`/api/categorymenu`).then((res) => setCategoryData(res?.data));
-  }, []);
+
+  const { data } = useGetPublicCategoriesQuery();
+  const categories = (data?.data ?? []).filter(
+    (category) => category.productCount > 0,
+  );
+
+  const close = () => {
+    if (width < 1200) dispatch(CATEGORYRESPONSIVE());
+    dispatch(CLOSEOVERLAY());
+  };
+
   return (
-    <div className="category-menu">
+    <div className='category-menu'>
       {isCategories && (
         <Btn
           attrBtn={{
-            className: "btn-solid-default btn-spacing toggle-category d-sm-block d-none",
+            className:
+              'btn-solid-default btn-spacing toggle-category d-sm-block d-none',
             onClick: () => {
-              width < 1200 && dispatch(OVERLAY());
+              if (width < 1200) dispatch(OVERLAY());
               dispatch(CATEGORYRESPONSIVE());
             },
           }}
         >
-          {Allcategories} <i className="fas fa-chevron-down d-xl-inline-block d-none"></i>
+          {Allcategories}{' '}
+          <i className='fas fa-chevron-down d-xl-inline-block d-none'></i>
         </Btn>
       )}
-      <div className={`category-dropdown${catergoryResponsive ? " open" : ""}`}>
+
+      <div className={`category-dropdown${catergoryResponsive ? ' open' : ''}`}>
         <CategoryResp />
         <ul>
-          {getCategoryData?.map((menu, i) => {
-            return (
-              <Fragment key={i}>
-                {menu.menuOpen ? (
-                  <li className="submenu">
-                    <a href="#javascript" onClick={() => setIsChecked(menu.title !== isChecked && menu.title)}>
-                      {menu.title}
-                      <span className="according-menu d-xl-none d-block ">{menu.title === isChecked ? "-" : "+"}</span>
-                    </a>
-                    <ul className={`category-mega-menu d-xl-block ${menu.title === isChecked ? "d-block" : "d-none"}`}>
-                      <li>
-                        <Row>
-                          {menu?.children?.map((submenu, i) => {
-                            return (
-                              <Col xl="3" key={i}>
-                                <div className="category-childmenu">
-                                  <div className="title-category">
-                                    <h6 onClick={() => setSubChild(submenu.heading !== subChild && submenu.heading)}>
-                                      {submenu.heading}
-                                      <span className="according-menu d-xl-none d-block">{submenu.heading === subChild ? "-" : "+"}</span>
-                                    </h6>
-                                  </div>
-                                  <ul className={`d-xl-block ${submenu.heading === subChild ? "d-block" : "d-none"}`}>
-                                    {submenu.items.map((megamenu, i) => {
-                                      return (
-                                        <li key={i}>
-                                          <Link
-                                            href={megamenu.path}
-                                            onClick={() => {
-                                              width < 1200 && dispatch(CATEGORYRESPONSIVE());
-                                              dispatch(CLOSEOVERLAY());
-                                            }}
-                                          >
-                                            {megamenu.title}
-                                          </Link>
-                                        </li>
-                                      );
-                                    })}
-                                  </ul>
-                                </div>
-                              </Col>
-                            );
-                          })}
-                        </Row>
-                      </li>
-                    </ul>
-                  </li>
-                ) : (
-                  <li>
-                    <Link
-                      href={menu.path}
-                      onClick={() => {
-                        width < 1200 && dispatch(CATEGORYRESPONSIVE());
-                        dispatch(CLOSEOVERLAY());
-                      }}
-                    >
-                      {menu.title}
-                    </Link>
-                  </li>
-                )}
-              </Fragment>
-            );
-          })}
+          {categories.map((category) => (
+            <li key={category.id}>
+              <Link href={`/catalog?categoryId=${category.id}`} onClick={close}>
+                {category.name}
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </div>
   );
 };
+
 export default AllCategories;

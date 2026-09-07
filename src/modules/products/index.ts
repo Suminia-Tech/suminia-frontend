@@ -16,6 +16,7 @@ export { FeaturedProducts } from './ui/public/FeaturedProducts';
 export { CategoryGrid } from './ui/public/CategoryGrid';
 
 export {
+  useGetPublicCategoriesQuery,
   useGetProductsQuery,
   useGetProductQuery,
   useGetCategoriesQuery,
