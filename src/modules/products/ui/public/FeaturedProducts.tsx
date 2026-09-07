@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Image as ImageIcon } from 'react-feather';
+import { ArrowRight } from 'react-feather';
 import { Col, Row } from 'reactstrap';
 
 import { useGetPublicProductsQuery } from '../../api/productsApi';
-import { formatPriceRange, getPrimaryImage } from '../../lib/productLabels';
-import { Price } from '../common/Price';
+import { ProductCard } from '../common/ProductCard';
 
 /* Los productos que se enseñan en la portada.
 
@@ -48,35 +47,11 @@ export const FeaturedProducts = () => {
         </div>
 
         <Row className='g-3'>
-          {products.map((product) => {
-            const image = getPrimaryImage(product);
-
-            return (
-              <Col key={product.id} xs='6' md='4' lg='3'>
-                <Link href={`/catalog/${product.id}`} className='catalog-card'>
-                  <div className='catalog-card-media'>
-                    {image ? (
-                      /* eslint-disable-next-line @next/next/no-img-element --
-                         las imagenes viven en S3 y next/image exigiria declarar
-                         el dominio del bucket en la configuracion. */
-                      <img src={image.url} alt={image.alt ?? product.name} />
-                    ) : (
-                      <ImageIcon size={22} />
-                    )}
-                  </div>
-                  <div className='catalog-card-body'>
-                    <h5>{product.name}</h5>
-                    <p className='font-light'>
-                      {product.organizationName ?? 'Proveedor'}
-                    </p>
-                    <strong>
-                      {formatPriceRange(product) ?? <Price value={null} />}
-                    </strong>
-                  </div>
-                </Link>
-              </Col>
-            );
-          })}
+          {products.map((product) => (
+            <Col key={product.id} xs='6' md='4' lg='3'>
+              <ProductCard product={product} href={`/catalog/${product.id}`} />
+            </Col>
+          ))}
         </Row>
       </div>
     </section>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Image as ImageIcon, Lock } from 'react-feather';
+import { Lock } from 'react-feather';
 import { Col, Row } from 'reactstrap';
 
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
@@ -13,8 +13,7 @@ import {
   useGetPublicCategoriesQuery,
   useGetPublicProductsQuery,
 } from '../../api/productsApi';
-import { formatPriceRange, getPrimaryImage } from '../../lib/productLabels';
-import { Price } from '../common/Price';
+import { ProductCard } from '../common/ProductCard';
 
 /* El catalogo que se ve sin haber entrado.
 
@@ -116,45 +115,11 @@ export const PublicCatalogScreen = () => {
         ) : (
           <div className={isFetching ? 'is-refreshing' : undefined}>
             <Row className='g-3'>
-              {products.map((product) => {
-                const image = getPrimaryImage(product);
-
-                return (
-                  <Col key={product.id} xs='6' md='4' lg='3'>
-                    <Link href={`/catalog/${product.id}`} className='catalog-card'>
-                      <div className='catalog-card-media'>
-                        {image ? (
-                          /* eslint-disable-next-line @next/next/no-img-element --
-                             las imagenes viven en S3 y next/image exigiria
-                             declarar el dominio del bucket en la configuracion. */
-                          <img src={image.url} alt={image.alt ?? product.name} />
-                        ) : (
-                          <ImageIcon size={22} />
-                        )}
-                      </div>
-                      <div className='catalog-card-body'>
-                        <h5>{product.name}</h5>
-                        <p className='font-light'>
-                          {product.organizationName ?? 'Proveedor'}
-                        </p>
-                        <strong>
-                          {formatPriceRange(product) ?? <Price value={null} />}
-                        </strong>
-                        <small className='font-light d-block'>
-                          {product.presentations.length === 1
-                            ? '1 formato'
-                            : `${product.presentations.length} formatos`}
-                        </small>
-                        {product.offerCount > 1 && (
-                          <span className='catalog-card-offers'>
-                            {product.offerCount} proveedores lo venden
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  </Col>
-                );
-              })}
+              {products.map((product) => (
+                <Col key={product.id} xs='6' md='4' lg='3'>
+                  <ProductCard product={product} href={`/catalog/${product.id}`} />
+                </Col>
+              ))}
             </Row>
 
             {meta && <Pagination meta={meta} onChange={setPage} label='productos' />}

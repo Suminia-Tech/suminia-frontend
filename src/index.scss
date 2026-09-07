@@ -215,37 +215,102 @@
     box-shadow: 0 6px 20px rgba($theme-font-color, 0.08);
   }
 
+  /* En columna y a toda la altura para que el pie se pueda anclar abajo: sin
+     esto un nombre de dos lineas empuja el precio y las tarjetas de una misma
+     fila dejan de alinearse. */
+  display: flex;
+  flex-direction: column;
+
   .catalog-card-media {
+    position: relative;
     aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $light-blue;
+    padding: 10px;
+    background-color: $white;
     color: rgba($theme-font-color, 0.45);
 
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      /* `contain` y no `cover`: son fotos de producto sobre fondo blanco, y
+         recortarlas corta justo los bordes del objeto —el asa del frasco, las
+         ruedas de la camilla— que es lo que deja reconocerlo. */
+      object-fit: contain;
     }
   }
 
+  /* Solo lo llevan los medicamentos. Va sobre la foto y no en el cuerpo para no
+     robarle una linea al texto, que es donde esta la informacion. */
+  .catalog-card-tag {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background-color: var(--theme-color);
+    color: $white;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
   .catalog-card-body {
-    padding: 14px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 13px 14px 14px;
+    border-top: 1px solid $border-color;
 
     h5 {
-      font-size: 15px;
-      margin-bottom: 4px;
+      /* Dos lineas y corta: los nombres de insumos medicos son largos
+         —"Desinfectante de superficies hospitalarias"— y sin tope una tarjeta
+         crece al doble que su vecina. */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 3px;
+      font-size: 14.5px;
+      line-height: 1.35;
     }
 
     p {
-      margin-bottom: 8px;
-      font-size: 13px;
+      margin-bottom: 3px;
+      font-size: 12.5px;
     }
+  }
+
+  .catalog-card-principios {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: var(--theme-color);
+  }
+
+  .catalog-card-supplier {
+    margin-bottom: 0;
+  }
+
+  /* Anclado abajo: es lo que alinea el precio entre tarjetas de distinta
+     altura de titulo. */
+  .catalog-card-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: auto;
+    padding-top: 9px;
 
     strong {
+      font-size: 15px;
       color: var(--theme-color);
     }
+  }
+
+  .catalog-card-meta {
+    font-size: 12px;
   }
 }
 
@@ -2070,5 +2135,81 @@ select.form-control,
   p {
     margin-bottom: 10px;
     font-size: 13px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Portada
+
+   Sustituye al carrusel de la plantilla —camisetas, camaras, zapatos— por lo
+   que Suminia hace. Sin imagen de fondo a proposito: no hay foto propia que
+   poner, y una de banco de imagenes con medicos sonriendo dice menos que la
+   frase.
+   --------------------------------------------------------------------------- */
+
+.home-hero {
+  padding: 64px 0 52px;
+  background-color: $light-blue;
+  text-align: center;
+
+  h1 {
+    max-width: 720px;
+    margin: 0 auto 14px;
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  > div > p {
+    max-width: 620px;
+    margin: 0 auto 26px;
+    font-size: 15.5px;
+    color: rgba($theme-font-color, 0.7);
+  }
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.home-claims {
+  padding: 44px 0 8px;
+}
+
+.home-claims-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 26px;
+}
+
+.home-claim {
+  svg {
+    margin-bottom: 10px;
+    color: var(--theme-color);
+  }
+
+  h4 {
+    margin-bottom: 5px;
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+}
+
+@media (max-width: 575px) {
+  .home-hero {
+    padding: 44px 0 36px;
+
+    h1 {
+      font-size: 26px;
+    }
   }
 }
