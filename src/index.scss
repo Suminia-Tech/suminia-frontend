@@ -90,6 +90,15 @@
    Se invierte: el campo activo queda blanco y con el borde del tema, y los
    bloqueados se marcan de verdad. */
 .form-control {
+  /* El tema da un padding horizontal fluido que a 1920px llega a 30px. Esta
+     pensado para los campos grandes de la tienda —el buscador, la suscripcion—
+     y en un formulario deja el texto flotando lejos del borde.
+
+     Solo se toca el horizontal: el vertical del tema marca la altura de los
+     campos y cambiarlo los descuadraria respecto a los botones. */
+  padding-left: 14px;
+  padding-right: 14px;
+
   &:focus {
     background-color: $white;
     border-color: var(--theme-color);
