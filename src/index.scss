@@ -2142,49 +2142,29 @@ select.form-control,
    Portada
    --------------------------------------------------------------------------- */
 
-.home-banner-section {
-  padding: 22px 0 6px;
+/* El banner de la plantilla mide 850px de alto y empuja el catalogo por debajo
+   del pliegue: en una tienda lo primero que tiene que verse es que hay para
+   comprar. Se recorta a 620, que sigue siendo holgado —el propio tema baja a
+   450 en pantallas medianas y a 350 en las pequeñas, de modo que lo de dentro
+   ya esta pensado para alturas menores que esta. */
+.home-section-6 {
+  height: 620px;
+
+  /* La imagen del poster va aparte y con su propia altura en el tema —850px,
+     la misma que la seccion—, de modo que bajar solo la seccion la recortaria
+     por abajo: hay `overflow: hidden`. Se bajan las dos a la vez. */
+  .poster-image img {
+    height: 620px;
+  }
 }
 
-/* Ancha y baja. La banda anterior de la plantilla media 850px de alto y
-   empujaba el catalogo por debajo del pliegue; en una tienda lo primero que
-   tiene que verse es que hay para comprar. */
-.home-banner {
-  display: flex;
-  align-items: center;
-  min-height: 340px;
-  padding: 40px 56px;
-  border-radius: 14px;
-  overflow: hidden;
-  /* El mismo fondo que ya usaba el banner anterior. Es una acuarela, de modo
-     que aguanta el reescalado a todo lo ancho; una fotografia de producto no
-     lo aguantaria. */
-  background-image: url('/assets/images/vegetable/percentage.jpg');
-  background-size: cover;
-  background-position: center;
-}
+@media (max-width: 1399px) {
+  .home-section-6 {
+    height: 560px;
 
-.home-banner-content {
-  max-width: 540px;
-
-  h1 {
-    margin-bottom: 8px;
-    font-size: 38px;
-    font-weight: 600;
-    line-height: 1.18;
-    letter-spacing: -0.015em;
-  }
-
-  p {
-    margin-bottom: 22px;
-    font-size: 16px;
-    color: rgba($theme-font-color, 0.7);
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 11px 24px;
+    .poster-image img {
+      height: 560px;
+    }
   }
 }
 

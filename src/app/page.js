@@ -1,24 +1,29 @@
 "use client";
 import CommonModel from "@/_template/Components/Element/CommonModel";
+import HomeSlider from "@/_template/Components/Home/HomeSlider";
 import Layout6 from "@/_template/Layout/Layout6";
 import HomeRedirect from "./HomeRedirect";
-import HomeBanner from "./HomeBanner";
 import { CategoryGrid, FeaturedProducts } from "@/modules/products";
-import { useEffect } from "react";
+import { getAPIData } from "@/_template/Utils";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [mainSlider, setMainSlider] = useState([]);
+
   useEffect(() => {
     document.documentElement.style.setProperty("--theme-color", "#096AC9");
+    /* El banner es contenido de Suminia, no de la plantilla: el texto esta
+       escrito en español y habla de medicamentos, y las imagenes se cambiaron
+       por material medico. Sigue leyendose del mismo sitio hasta que haya donde
+       editarlo sin tocar un JSON. */
+    getAPIData(`/api/homeslider`).then((res) => setMainSlider(res?.data ?? []));
   }, []);
 
-  /* Banda, categorias y productos. Sin buscador propio —ya esta en la
-     cabecera— y sin promociones inventadas: lo que la portada tiene que hacer
-     es dejar entrar al catalogo. */
   return (
     <Layout6 isCategories={true}>
       {/* Con sesion, cada rol se va a su area; sin ella se queda esta portada. */}
       <HomeRedirect />
-      <HomeBanner />
+      <HomeSlider mainSlider={mainSlider} />
       <CategoryGrid />
       <FeaturedProducts />
       <CommonModel />
