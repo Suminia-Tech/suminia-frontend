@@ -2147,22 +2147,33 @@ select.form-control,
    comprar. Se recorta a 620, que sigue siendo holgado —el propio tema baja a
    450 en pantallas medianas y a 350 en las pequeñas, de modo que lo de dentro
    ya esta pensado para alturas menores que esta. */
+/* Todo lo de dentro esta colocado en absoluto y con medidas pensadas para los
+   850px originales. Al bajar la seccion, tres cosas se pisan entre si: las
+   redes sociales caen encima de las miniaturas, la imagen llega al borde y las
+   flechas se salen. Se recolocan las cuatro piezas a la vez. */
 .home-section-6 {
   height: 500px;
 
-  /* La imagen del poster va aparte y con su propia altura en el tema —850px,
-     la misma que la seccion—, de modo que bajar solo la seccion la recortaria
-     por abajo: hay `overflow: hidden`. Se bajan las dos a la vez. */
+  /* La imagen lleva su propia altura, tambien de 850. Igualarla a la seccion la
+     dejaba tocando el borde de abajo; se le deja aire, y un margen fijo en vez
+     del 4% del tema, que depende del ancho de la pantalla y hace impredecible
+     donde acaba. */
   .poster-image img {
-    height: 500px;
+    height: 380px;
+    margin: 30px auto 0;
   }
 
-  /* Las flechas del carrusel las coloca el tema a 260px del suelo, que con el
-     banner a 850 quedaban debajo de las miniaturas. Con el banner mas bajo
-     caian justo encima y las tapaban. Van al pie, a la derecha, que es donde no
-     estorban a nada. */
+  /* Las redes estan fijas a 100px del borde. Con el banner a 850 quedaban muy
+     por encima de las miniaturas, que van centradas; a 500 las tocan. Suben. */
+  .right-side-contain {
+    top: 26px;
+  }
+
+  /* Las flechas las coloca el tema a 260px del suelo —debajo de las miniaturas
+     cuando el banner medía 850—. Van al pie: por debajo de las miniaturas, que
+     ahora terminan mas arriba, y sin salirse de la seccion. */
   .classic-arrow-1 .custom-arrow {
-    bottom: 24px;
+    bottom: 14px;
   }
 }
 
@@ -2171,7 +2182,8 @@ select.form-control,
     height: 460px;
 
     .poster-image img {
-      height: 460px;
+      height: 340px;
+      margin-top: 26px;
     }
   }
 }

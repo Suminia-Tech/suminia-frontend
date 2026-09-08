@@ -4,8 +4,8 @@ import Link from "next/link";
 /* El logo de la cabecera.
 
    logo.png mide 87x18 y antes se estiraba a 210 de ancho: dos veces y media,
-   que es lo que se veia borroso. Aqui va a 130, un punto y medio, que es donde
-   deja de notarse el pixelado y todavia se lee con presencia en la cabecera.
+   que es lo que se veia borroso. Aqui va a 105, un cuarto por encima de su tamaño real, que es hasta donde
+   aguanta sin que se note.
 
    Con este archivo no se puede mas: un mapa de bits no gana detalle al
    ampliarlo. Para enseñarlo del tamaño que tenia hace falta el mismo logo a 3x
@@ -31,8 +31,8 @@ const HeadingLogo = () => {
           className="svg-icon"
         />
         <Image
-          width={130}
-          height={27}
+          width={105}
+          height={22}
           priority
           unoptimized
           src="/assets/images/logo.png"
