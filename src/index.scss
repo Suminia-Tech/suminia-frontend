@@ -223,11 +223,12 @@
 
   .catalog-card-media {
     position: relative;
-    aspect-ratio: 1;
+    /* 3:2, la proporcion en que se suben las fotos. Cuadrada dejaba franjas
+       vacias arriba y abajo y la foto salia mas pequeña de lo que podia. */
+    aspect-ratio: 3 / 2;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
     background-color: $white;
     color: rgba($theme-font-color, 0.45);
 
@@ -2275,19 +2276,25 @@ select.form-control,
 
 .product-wrapper {
   .product-box .img-wrapper {
+    /* Fondo blanco y no de color: las fotos de producto son JPEG con su propio
+       fondo blanco opaco, de modo que cualquier color deja ver un rectangulo
+       blanco flotando dentro. El borde da el marco que antes daba el color. */
+    border: 1px solid $border-color;
     border-radius: 10px;
-    background-color: $light-blue;
+    background-color: $white;
+    overflow: hidden;
 
     img,
     .product-box-empty {
-      /* Cuadrada y con la foto entera dentro: sin una proporcion fija cada
-         producto se pinta a su alto natural y la fila queda dentada. Y
-         `contain` en vez de `cover` porque recortar corta justo los bordes del
-         objeto, que es lo que deja reconocerlo. */
+      /* 3:2, que es lo que miden: 1536x1024. En una caja cuadrada la foto
+         ocupaba dos tercios del alto y el resto era relleno. Con la proporcion
+         real llena el marco de lado a lado.
+
+         `contain` y no `cover` para que una foto con otra proporcion no salga
+         recortada por los bordes, que es donde esta lo que la identifica. */
       display: block;
       width: 100%;
-      aspect-ratio: 1;
-      padding: 14px;
+      aspect-ratio: 3 / 2;
       object-fit: contain;
     }
   }
