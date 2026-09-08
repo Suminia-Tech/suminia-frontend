@@ -71,7 +71,7 @@ export const FeaturedProducts = () => {
   if (isLoading || products.length === 0) return null;
 
   return (
-    <section className='section-b-space ratio_asos'>
+    <section className='section-b-space ratio_asos home-products'>
       <div className='container-fluid-lg'>
         <div className='box-head d-flex align-items-center justify-content-between'>
           <h3>Lo último en el catálogo</h3>

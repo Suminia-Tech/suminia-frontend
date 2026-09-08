@@ -2318,8 +2318,15 @@ select.form-control,
   font-size: 12.5px;
 }
 
-/* El titulo quedaba pegado a las imagenes: `box-head` no trae separacion y el
-   carrusel empieza justo debajo. */
+/* Los titulos de la portada piden mas aire que los del tema: alli encabezan un
+   panel y aqui abren una franja entera de la pagina. Los 18px de `box-head` se
+   quedaban cortos, y encima las fotos traen su propio margen blanco, de modo
+   que la separacion real se lee menor de lo que es. */
+.home-categories .box-head,
+.home-products .box-head {
+  margin-bottom: 30px;
+}
+
 .product-wrapper.slide-6 {
-  margin-top: 18px;
+  margin-top: 4px;
 }
