@@ -2154,13 +2154,18 @@ select.form-control,
 .home-section-6 {
   height: 500px;
 
-  /* La imagen lleva su propia altura, tambien de 850. Igualarla a la seccion la
-     dejaba tocando el borde de abajo; se le deja aire, y un margen fijo en vez
-     del 4% del tema, que depende del ancho de la pantalla y hace impredecible
-     donde acaba. */
+  /* La imagen lleva su propia altura, tambien de 850, y un margen del 4% que
+     depende del ancho de la pantalla: asi acababa saliendose de la seccion y
+     recortada por abajo. Se fijan las dos.
+
+     Las cifras salen de medir el archivo: 1059x1430 con un 11% transparente
+     arriba y otro 11% abajo, de modo que la caja solo ocupa el 77% de lo que
+     mida el img. A 470px de alto lo que se ve son 362, y con 16 de margen queda
+     a 69px del borde por arriba y otros 69 por abajo. Poner menos altura —380,
+     como estaba— dejaba la caja en 293px: pequeña y alta. */
   .poster-image img {
-    height: 380px;
-    margin: 30px auto 0;
+    height: 470px;
+    margin: 16px auto 0;
   }
 
   /* Las redes estan fijas a 100px del borde. Con el banner a 850 quedaban muy
@@ -2182,8 +2187,8 @@ select.form-control,
     height: 460px;
 
     .poster-image img {
-      height: 340px;
-      margin-top: 26px;
+      height: 430px;
+      margin-top: 14px;
     }
   }
 }
