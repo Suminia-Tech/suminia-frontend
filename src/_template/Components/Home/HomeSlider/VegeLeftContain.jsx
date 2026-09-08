@@ -1,14 +1,16 @@
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Fragment } from "react";
-import { useSelector } from "react-redux";
-import { Btn } from "../../AbstractElements";
-import { ShopNow } from "@/_template/Constant";
 
+/* El texto del banner.
+
+   Sin oferta ni precio tachado: no hay ninguna promocion, y un "30% OFF" con un
+   precio en dolares al lado promete algo que no se cumple al entrar. Lo que
+   queda es lo que si es cierto.
+
+   El boton lleva al registro y no a la tienda porque sin cuenta aprobada no se
+   ven precios: mandar a alguien al catalogo a descubrirlo por su cuenta es
+   perder al que venia a comprar. El formulario ya arranca en "Comprador". */
 const VegeLeftContain = ({ HomeSliderData }) => {
-  const { symbol, currencyValue } = useSelector(
-    (state) => state.CurrencyReducer,
-  );
-  const router = useRouter();
   return (
     <>
       {HomeSliderData.map((elem, i) => {
@@ -16,10 +18,6 @@ const VegeLeftContain = ({ HomeSliderData }) => {
           <Fragment key={i}>
             <div className="left-side-contain">
               <div className="banner-left">
-                <h4>
-                  {elem.lefttitle}{" "}
-                  <span className="theme-color">{elem.discount}</span>
-                </h4>
                 <h1>
                   {elem.heading} <span>{elem.headingbottom}</span>
                 </h1>
@@ -27,31 +25,16 @@ const VegeLeftContain = ({ HomeSliderData }) => {
                   {elem.bottomtitletop}{" "}
                   <span className="theme-color">{elem.bottomtitlebottom}</span>
                 </p>
-                <h2>
-                  {symbol}
-                  {(elem.price * currencyValue).toFixed(2)}
-                  <span className="theme-color">
-                    <del>
-                      {symbol}
-                      {(elem.mrp * currencyValue).toFixed(2)}
-                    </del>
-                  </span>
-                </h2>
                 <p className="poster-details">{elem.description}</p>
                 <div className="banner-btn-grup">
-                  <Btn
-                    attrBtn={{
-                      className: "btn-solid-default",
-                      onClick: () => router.push("/shop/shop_left_sidebar"),
-                    }}
-                  >
-                    {ShopNow}
-                  </Btn>
+                  <Link href="/register" className="btn btn-solid-default">
+                    Regístrate Ahora
+                  </Link>
                 </div>
               </div>
             </div>
             <div className="right-side-contain">
-              {elem?.socials.map((item, i) => {
+              {elem?.socials?.map((item, i) => {
                 return (
                   <div className="social-image" key={i}>
                     <a href={item.link} target="new">

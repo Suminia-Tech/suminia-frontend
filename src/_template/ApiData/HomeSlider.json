@@ -9,9 +9,25 @@
         "review": "5040 Review",
         "contain": "The international hoodies with excellent durable fabric, not to heavy but simply PERFECT for Indian summer.",
         "price": 49.55,
-        "Size": ["S", "M", "L", "L", "XL"],
-        "Color": ["Black", "White", "Blue", "Gray"],
-        "Qty": [1, 2, 3, 4],
+        "Size": [
+          "S",
+          "M",
+          "L",
+          "L",
+          "XL"
+        ],
+        "Color": [
+          "Black",
+          "White",
+          "Blue",
+          "Gray"
+        ],
+        "Qty": [
+          1,
+          2,
+          3,
+          4
+        ],
         "cart": "Add to cart",
         "share": "share with",
         "social": [
@@ -46,9 +62,25 @@
         "contain": "The international hoodies with excellent durable fabric, not to heavy but simply PERFECT for Indian summer.",
         "price": 89.55,
         "mrp": 100,
-        "Size": ["S", "M", "L", "L", "XL"],
-        "Color": ["Black", "White", "Blue", "Gray"],
-        "Qty": [1, 2, 3, 4],
+        "Size": [
+          "S",
+          "M",
+          "L",
+          "L",
+          "XL"
+        ],
+        "Color": [
+          "Black",
+          "White",
+          "Blue",
+          "Gray"
+        ],
+        "Qty": [
+          1,
+          2,
+          3,
+          4
+        ],
         "cart": "Add to cart",
         "share": "share with",
         "social": [
@@ -82,9 +114,25 @@
         "contain": "The international hoodies with excellent durable fabric, not to heavy but simply PERFECT for Indian summer.",
         "price": 49.55,
         "mrp": 80,
-        "Size": ["S", "M", "L", "L", "XL"],
-        "Color": ["Black", "White", "Blue", "Gray"],
-        "Qty": [1, 2, 3, 4],
+        "Size": [
+          "S",
+          "M",
+          "L",
+          "L",
+          "XL"
+        ],
+        "Color": [
+          "Black",
+          "White",
+          "Blue",
+          "Gray"
+        ],
+        "Qty": [
+          1,
+          2,
+          3,
+          4
+        ],
         "cart": "Add to cart",
         "share": "share with",
         "social": [
@@ -362,14 +410,10 @@
   },
   {
     "type": "vegetables",
-    "lefttitle": "Oferta",
-    "discount": "30% OFF",
     "heading": "Cada Entrega",
     "headingbottom": "Salva Vidas",
-    "bottomtitletop": "ENVÍO GRATIS",
-    "bottomtitlebottom": "EN PEDIDOS +$50",
-    "price": 12.99,
-    "mrp": 18.99,
+    "bottomtitletop": "PROVEEDORES",
+    "bottomtitlebottom": "VERIFICADOS EN COLOMBIA",
     "description": "Medicamentos, insumos y productos médicos de alta calidad al mejor precio.",
     "socials": [
       {

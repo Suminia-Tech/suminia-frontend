@@ -2148,22 +2148,30 @@ select.form-control,
    450 en pantallas medianas y a 350 en las pequeñas, de modo que lo de dentro
    ya esta pensado para alturas menores que esta. */
 .home-section-6 {
-  height: 620px;
+  height: 500px;
 
   /* La imagen del poster va aparte y con su propia altura en el tema —850px,
      la misma que la seccion—, de modo que bajar solo la seccion la recortaria
      por abajo: hay `overflow: hidden`. Se bajan las dos a la vez. */
   .poster-image img {
-    height: 620px;
+    height: 500px;
+  }
+
+  /* Las flechas del carrusel las coloca el tema a 260px del suelo, que con el
+     banner a 850 quedaban debajo de las miniaturas. Con el banner mas bajo
+     caian justo encima y las tapaban. Van al pie, a la derecha, que es donde no
+     estorban a nada. */
+  .classic-arrow-1 .custom-arrow {
+    bottom: 24px;
   }
 }
 
 @media (max-width: 1399px) {
   .home-section-6 {
-    height: 560px;
+    height: 460px;
 
     .poster-image img {
-      height: 560px;
+      height: 460px;
     }
   }
 }
