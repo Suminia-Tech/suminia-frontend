@@ -223,9 +223,9 @@
 
   .catalog-card-media {
     position: relative;
-    /* 3:2, la proporcion en que se suben las fotos. Cuadrada dejaba franjas
-       vacias arriba y abajo y la foto salia mas pequeña de lo que podia. */
-    aspect-ratio: 3 / 2;
+    /* Algo mas alta que el 3:2 en que se suben las fotos, para que les quede
+       aire arriba y abajo. Cuadrada dejaba demasiado y la foto salia pequeña. */
+    aspect-ratio: 4 / 3;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2276,25 +2276,20 @@ select.form-control,
 
 .product-wrapper {
   .product-box .img-wrapper {
-    /* Fondo blanco y no de color: las fotos de producto son JPEG con su propio
-       fondo blanco opaco, de modo que cualquier color deja ver un rectangulo
-       blanco flotando dentro. El borde da el marco que antes daba el color. */
-    border: 1px solid $border-color;
-    border-radius: 10px;
+    /* Solo blanco, sin marco. Las fotos de producto son JPEG con su propio
+       fondo blanco opaco: basta con que la caja sea del mismo blanco para que
+       no se note donde acaba una y empieza la otra. Un borde alrededor vuelve a
+       dibujar el recuadro que se queria quitar. */
     background-color: $white;
-    overflow: hidden;
 
     img,
     .product-box-empty {
-      /* 3:2, que es lo que miden: 1536x1024. En una caja cuadrada la foto
-         ocupaba dos tercios del alto y el resto era relleno. Con la proporcion
-         real llena el marco de lado a lado.
-
-         `contain` y no `cover` para que una foto con otra proporcion no salga
-         recortada por los bordes, que es donde esta lo que la identifica. */
+      /* La caja algo mas alta que las fotos, que son 3:2 —1536x1024—, para que
+         les quede aire arriba y abajo en vez de tocar el borde. Como los dos
+         fondos son blancos, ese aire no se ve: solo separa. */
       display: block;
       width: 100%;
-      aspect-ratio: 3 / 2;
+      aspect-ratio: 4 / 3;
       object-fit: contain;
     }
   }
