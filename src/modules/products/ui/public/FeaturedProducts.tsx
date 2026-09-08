@@ -82,31 +82,33 @@ export const FeaturedProducts = () => {
         <div className='product-wrapper slide-6'>
           <Slider {...CAROUSEL}>
             {products.map((product) => {
-              const images = [...product.images].sort(
-                (a, b) => a.position - b.position,
-              );
+              const image =
+                product.images.find((item) => item.isPrimary) ??
+                [...product.images].sort((a, b) => a.position - b.position)[0];
               const href = `/catalog/${product.id}`;
               const formatos = product.presentations.slice(0, MAX_TAGS);
 
               return (
                 <div key={product.id}>
                   <div className='product-box'>
+                    {/* Una sola imagen. `hover-image` del tema no intercambia
+                        dos al pasar por encima —es un velo decorativo—, de modo
+                        que pintar la segunda solo la apilaba debajo y partia la
+                        fila en dos. */}
                     <div className='img-wrapper hover-image'>
                       <Link href={href}>
-                        {/* Dos imagenes: la segunda es la que el tema enseña al
-                            pasar por encima. Con una sola no hay efecto, y
-                            tampoco pasa nada. */}
-                        {images.slice(0, 2).map((image) => (
+                        {image ? (
                           /* eslint-disable-next-line @next/next/no-img-element --
                              las imagenes viven en S3 y next/image exigiria
                              declarar el dominio del bucket en la configuracion. */
                           <img
-                            key={image.id}
                             src={image.url}
-                            className='img-fluid bg-img'
+                            className='img-fluid'
                             alt={image.alt ?? product.name}
                           />
-                        ))}
+                        ) : (
+                          <span className='product-box-empty' />
+                        )}
                       </Link>
 
                       {product.type === 'MEDICINE' && (
@@ -127,6 +129,12 @@ export const FeaturedProducts = () => {
                       <Link href={href} className='font-default'>
                         <h5>{product.name}</h5>
                       </Link>
+
+                      {/* Quien lo vende. En un marketplace no es un detalle:
+                          es la mitad de lo que se esta mirando. */}
+                      <p className='font-light product-box-supplier'>
+                        {product.organizationName ?? 'Proveedor'}
+                      </p>
 
                       {formatos.length > 0 && (
                         <ul className='size-box'>

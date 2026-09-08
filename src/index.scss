@@ -2264,3 +2264,60 @@ select.form-control,
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 }
+
+/* ---------------------------------------------------------------------------
+   El carrusel de productos de la portada
+
+   Usa las clases del tema —.product-box, .size-box— pero sus imagenes vienen de
+   S3 y no del sistema de proporciones de la plantilla, que necesita una clase
+   propia y un padding calculado. Se les da aqui la caja que les falta.
+   --------------------------------------------------------------------------- */
+
+.product-wrapper {
+  .product-box .img-wrapper {
+    border-radius: 10px;
+    background-color: $light-blue;
+
+    img,
+    .product-box-empty {
+      /* Cuadrada y con la foto entera dentro: sin una proporcion fija cada
+         producto se pinta a su alto natural y la fila queda dentada. Y
+         `contain` en vez de `cover` porque recortar corta justo los bordes del
+         objeto, que es lo que deja reconocerlo. */
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      padding: 14px;
+      object-fit: contain;
+    }
+  }
+
+  .product-details {
+    h3 {
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+
+    h5 {
+      font-size: 14.5px;
+      line-height: 1.35;
+      /* Dos lineas y corta: los nombres de insumos son largos y sin tope una
+         tarjeta crece al doble que su vecina. */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+}
+
+.product-box-supplier {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+}
+
+/* El titulo quedaba pegado a las imagenes: `box-head` no trae separacion y el
+   carrusel empieza justo debajo. */
+.product-wrapper.slide-6 {
+  margin-top: 18px;
+}
