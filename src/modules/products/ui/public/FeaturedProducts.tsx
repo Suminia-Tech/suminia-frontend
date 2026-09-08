@@ -16,11 +16,16 @@ const CAROUSEL = {
   arrows: false,
   infinite: true,
   speed: 500,
-  slidesToShow: 6,
+  /* Una tarjeta menos por fila que en el carrusel de la plantilla. La foto ya
+     ocupa todo el ancho de su tarjeta, de modo que la unica forma de que se vea
+     mas grande es que quepan menos: con cinco en vez de seis cada una gana un
+     20%. Aqui interesa que se reconozca el producto mas que que se vean muchos
+     de golpe. */
+  slidesToShow: 5,
   slidesToScroll: 1,
   responsive: [
-    { breakpoint: 1630, settings: { slidesToShow: 5 } },
-    { breakpoint: 1200, settings: { slidesToShow: 4 } },
+    { breakpoint: 1630, settings: { slidesToShow: 4 } },
+    { breakpoint: 1200, settings: { slidesToShow: 3 } },
     { breakpoint: 992, settings: { slidesToShow: 3 } },
     { breakpoint: 705, settings: { slidesToShow: 2 } },
   ],
