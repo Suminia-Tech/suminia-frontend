@@ -20,18 +20,21 @@ import { useGetPublicCategoriesQuery } from '../../api/productsApi';
    en una categoria y encontrarla vacia es la clase de cosa que se paga en
    confianza, y ese numero lo evita antes del clic. */
 
-/* Los mismos ajustes del carrusel del proyecto, con una ficha menos por tramo
-   para que cada una se vea mas grande. Se copian aqui en vez de importarlos de
-   _template: un modulo no debe depender de codigo en cuarentena. */
+/* Cuatro por vista y no las seis del carrusel original: son ilustraciones, y a
+   seis salen tan pequeñas que deja de distinguirse que dibujan. Cada ficha pasa
+   de 268 a 338px.
+
+   Se copian aqui en vez de importarlos de _template: un modulo no debe depender
+   de codigo en cuarentena. */
 const CAROUSEL = {
   dots: true,
   arrows: false,
   infinite: true,
   speed: 500,
-  slidesToShow: 5,
+  slidesToShow: 4,
   slidesToScroll: 1,
   responsive: [
-    { breakpoint: 1630, settings: { slidesToShow: 4 } },
+    { breakpoint: 1630, settings: { slidesToShow: 3 } },
     { breakpoint: 1200, settings: { slidesToShow: 3 } },
     { breakpoint: 705, settings: { slidesToShow: 2 } },
   ],
@@ -99,7 +102,13 @@ export const CategoryGrid = () => {
                           className='front-img bg-size'
                           style={{
                             backgroundImage: `url(${ICON_PATH}/${category.slug}.svg)`,
-                            backgroundSize: 'cover',
+                            /* Un punto por encima de `cover`. Los SVG traen
+                               su propio margen dentro del lienzo, de modo que
+                               a `cover` justo el dibujo se queda corto en una
+                               ficha grande; al 115% se acerca al borde sin
+                               llegar a recortarse, porque lo que se recorta es
+                               ese margen. */
+                            backgroundSize: '115%',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
                           }}
