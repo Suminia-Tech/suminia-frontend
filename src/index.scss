@@ -2271,7 +2271,11 @@ select.form-control,
    propia y un padding calculado. Se les da aqui la caja que les falta.
    --------------------------------------------------------------------------- */
 
-.product-wrapper {
+/* Acotado a la seccion de productos y no a cualquier `.product-wrapper`: el
+   carrusel de categorias tambien lleva esa clase —la necesita para sus puntos—
+   y estas reglas se le colaban encima, tapandole el verde de `.product-box6`
+   con blanco y encogiendole el dibujo al meterlo en una caja 4:3. */
+.home-products .product-wrapper {
   .product-box .img-wrapper {
     /* Solo blanco, sin marco. Las fotos de producto son JPEG con su propio
        fondo blanco opaco: basta con que la caja sea del mismo blanco para que
@@ -2324,7 +2328,7 @@ select.form-control,
   margin-bottom: 30px;
 }
 
-.product-wrapper.slide-6 {
+.home-products .product-wrapper.slide-6 {
   margin-top: 4px;
 }
 
