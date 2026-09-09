@@ -2282,12 +2282,17 @@ select.form-control,
 
     img,
     .product-box-empty {
-      /* La caja algo mas alta que las fotos, que son 3:2 —1536x1024—, para que
-         les quede aire arriba y abajo en vez de tocar el borde. Como los dos
-         fondos son blancos, ese aire no se ve: solo separa. */
+      /* La caja a 3:2, la proporcion en que se suben las fotos —1536x1024—, de
+         modo que la imagen la llena entera. A 4:3 sobraba un 11% de alto que se
+         iba en franjas vacias arriba y abajo, y la foto se veia mas pequeña de
+         lo que podia dentro del mismo recuadro.
+
+         Sigue en `contain` y no `cover`: recortar cortaria justo los bordes del
+         objeto —el asa del frasco, las ruedas de la camilla—, que es lo que deja
+         reconocerlo. */
       display: block;
       width: 100%;
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 3 / 2;
       object-fit: contain;
     }
   }

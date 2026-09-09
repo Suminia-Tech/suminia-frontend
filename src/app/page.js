@@ -24,8 +24,8 @@ export default function Home() {
       {/* Con sesion, cada rol se va a su area; sin ella se queda esta portada. */}
       <HomeRedirect />
       <HomeSlider mainSlider={mainSlider} />
-      <CategoryGrid />
       <FeaturedProducts />
+      <CategoryGrid />
       <CommonModel />
     </Layout6>
   );
