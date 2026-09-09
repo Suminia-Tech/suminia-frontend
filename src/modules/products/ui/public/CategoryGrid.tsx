@@ -77,23 +77,30 @@ export const CategoryGrid = () => {
                       className='product-box product-box6'
                     >
                       <div className='img-wrapper squre-image'>
-                        <div className='front-img'>
-                          {/* eslint-disable-next-line @next/next/no-img-element --
-                              son SVG estaticos servidos desde /public; next/image no
-                              aporta nada sobre un vectorial de un kilobyte y ademas
-                              lo rasterizaria. */}
-                          <img
-                            className='img-fluid bg-img'
-                            src={`${ICON_PATH}/${category.slug}.svg`}
-                            alt=''
-                            loading='lazy'
-                            onError={(event) => {
-                              /* Sin dibujo, la ficha se queda con su nombre y su
-                                 cuenta. Es mejor que el icono roto del navegador. */
-                              event.currentTarget.style.visibility = 'hidden';
-                            }}
-                          />
-                        </div>
+                        {/* El dibujo va de fondo y no en un <img>, que es lo que
+                            hacia el carrusel original: su componente de imagen
+                            detecta la clase `bg-img`, esconde la etiqueta y pasa
+                            el archivo al fondo del padre con `cover`, añadiendole
+                            `bg-size`. Esa clase, dentro de `ratio_90`, crea la
+                            caja con `padding-top: 93%`.
+
+                            De ahi salia el tamaño: el dibujo llena la ficha
+                            entera. Pintarlo como <img> lo dejaba a su tamaño
+                            natural y con margenes que no existian.
+
+                            Se hace aqui de forma declarativa en vez de con el
+                            efecto que usa la plantilla: mismo resultado, sin
+                            depender de codigo en cuarentena y sin un render de
+                            mas. */}
+                        <div
+                          className='front-img bg-size'
+                          style={{
+                            backgroundImage: `url(${ICON_PATH}/${category.slug}.svg)`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                          }}
+                        />
                       </div>
 
                       <div className='product-detail'>

@@ -2205,30 +2205,11 @@ select.form-control,
    .product-box6: no se repiten aqui. Lo unico que hace falta es que el dibujo
    acompañe al ancho de la ficha —con `img-fluid` a secas se quedaria en sus
    180px naturales y flotaria a la izquierda— y algo de aire alrededor. */
+/* El tamaño, el fondo y el espaciado de las fichas los pone el tema —
+   `.product-box6`, `.bg-size` dentro de `ratio_90`, `.product-detail`—, de modo
+   que aqui no hay nada. Lo unico que falta es el aire entre una ficha y la
+   siguiente, que slick no pone. */
 .home-categories-slider {
-  .front-img {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 11%;
-  }
-
-  .front-img img {
-    width: 100%;
-    height: auto;
-  }
-
-  .product-detail h5 {
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  /* El tema deja 30px entre el recuadro y el nombre, que con la ficha mas
-     pequeña que la suya queda desproporcionado. */
-  .product-detail {
-    margin-top: 16px;
-  }
-
   .slick-slide > div {
     padding: 0 9px;
   }
