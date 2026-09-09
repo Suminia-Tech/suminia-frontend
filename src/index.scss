@@ -2196,11 +2196,10 @@ select.form-control,
 
 /* --- Categorias --- */
 
-/* El aire de la cabecera lo pone `.title` del tema, que escala con el ancho de
-   la pantalla. Aqui solo la separacion de la franja de arriba. */
-.home-categories {
-  padding: 54px 0 10px;
-}
+/* Nada de padding vertical aqui. El tema se lo da a todo `<section>` en su
+   reset —80px arriba, bajando por tramos hasta 30 en movil—, y las dos
+   secciones de la portada son `<section>`. Fijarlo a 54px era pisar ese ritmo y
+   descuadrarlas respecto al resto de la pagina. */
 
 /* El recuadro verde y la ausencia de esquinas redondeadas vienen del tema, de
    .product-box6: no se repiten aqui. Lo unico que hace falta es que el dibujo
