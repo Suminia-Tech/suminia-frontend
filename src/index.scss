@@ -2202,8 +2202,12 @@ select.form-control,
 
 .home-categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 20px 16px;
+  /* `auto-fit` y no `auto-fill`: el segundo crea tantas columnas como quepan
+     aunque sobren vacias, y con siete categorias dejaba una franja muerta a la
+     derecha. `auto-fit` colapsa las que no se usan y reparte el ancho entre las
+     que hay, que ademas es lo que las hace grandes. */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 22px 18px;
 }
 
 .home-category {
@@ -2234,8 +2238,10 @@ select.form-control,
   justify-content: center;
   width: 100%;
   aspect-ratio: 4 / 3;
-  margin-bottom: 10px;
-  padding: 16%;
+  margin-bottom: 12px;
+  /* Poco margen: el dibujo es lo que se mira, y con 16% quedaba nadando en el
+     recuadro. */
+  padding: 9%;
   border-radius: 10px;
   background-color: #f0f7ef;
   transition: box-shadow 0.15s ease;
