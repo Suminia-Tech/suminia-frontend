@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Slider from 'react-slick';
-import { Container, Row } from 'reactstrap';
+
 
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
 
@@ -54,18 +54,16 @@ export const CategoryGrid = () => {
 
   if (isLoading || categories.length === 0) return null;
 
+  /* El contenedor ancho del proyecto y no el `Container` de Bootstrap, que se
+     queda en 1400px: con cinco fichas por fila eso deja franjas muertas a los
+     lados en cuanto la pantalla es grande, y cada ficha sale mas estrecha de lo
+     que podria. Este ocupa el ancho entero menos su padding, de modo que las
+     fichas crecen con la pantalla.
+
+     `ratio_90` se queda: es lo que le da a la ficha su proporcion. */
   return (
-    /* La misma envoltura que traia el carrusel de categorias del proyecto:
-       `ratio_90` y un Container de 1400px, no el ancho completo. De ahi salia el
-       tamaño de las fichas, y cambiarlo por `container-fluid-lg` era lo que las
-       descuadraba. */
     <section className='ratio_90 home-categories'>
-      <Container>
-        {/* Sin `Col` dentro del `Row`, como el original: una columna añade 12px
-            de padding a cada lado que estrechan la ficha sin que nadie los
-            pida. */}
-        <Row>
-          <div className='w-100'>
+      <div className='container-fluid-lg'>
             {/* Cabecera centrada con su subtitulo, como las demas secciones del
                 tema: `.title.title-2` trae su propio margen inferior, que
                 escala con el ancho de la pantalla. */}
@@ -102,13 +100,7 @@ export const CategoryGrid = () => {
                           className='front-img bg-size'
                           style={{
                             backgroundImage: `url(${ICON_PATH}/${category.slug}.svg)`,
-                            /* Un punto por encima de `cover`. Los SVG traen
-                               su propio margen dentro del lienzo, de modo que
-                               a `cover` justo el dibujo se queda corto en una
-                               ficha grande; al 115% se acerca al borde sin
-                               llegar a recortarse, porque lo que se recorta es
-                               ese margen. */
-                            backgroundSize: '115%',
+                            backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
                           }}
@@ -126,11 +118,9 @@ export const CategoryGrid = () => {
                     </Link>
                   </div>
                 ))}
-              </Slider>
-            </div>
-          </div>
-        </Row>
-      </Container>
+          </Slider>
+        </div>
+      </div>
     </section>
   );
 };
