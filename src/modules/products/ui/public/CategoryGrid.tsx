@@ -18,11 +18,10 @@ const CAROUSEL = {
   infinite: false,
   autoplay: true,
   speed: 500,
-  slidesToShow: 6,
+  slidesToShow: 5,
   slidesToScroll: 1,
   responsive: [
-    { breakpoint: 1630, settings: { slidesToShow: 5 } },
-    { breakpoint: 1367, settings: { slidesToShow: 4 } },
+    { breakpoint: 1630, settings: { slidesToShow: 4 } },
     { breakpoint: 1200, settings: { slidesToShow: 3 } },
     { breakpoint: 705, settings: { slidesToShow: 2 } },
   ],
