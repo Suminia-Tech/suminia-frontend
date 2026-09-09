@@ -2350,3 +2350,19 @@ select.form-control,
 .product-wrapper.slide-6 {
   margin-top: 4px;
 }
+
+/* La fila de edicion de una categoria. Se edita en linea y no en un modal: son
+   tres campos y la lista entera cabe en pantalla, de modo que abrir una ventana
+   encima para cambiar un nombre seria mas ceremonia que trabajo. */
+.category-form-row {
+  background-color: $light-blue;
+
+  td {
+    vertical-align: top;
+  }
+
+  .form-control {
+    height: 36px;
+    font-size: 13.5px;
+  }
+}

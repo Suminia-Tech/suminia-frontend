@@ -174,6 +174,17 @@ export interface ProductCategory {
   productCount: number;
 }
 
+export interface CreateCategoryRequest {
+  name: string;
+  /* Si no viaja, el backend lo deriva del nombre. */
+  slug?: string;
+  position?: number;
+}
+
+export type UpdateCategoryRequest = Partial<CreateCategoryRequest> & {
+  state?: boolean;
+};
+
 /* --- Peticiones --- */
 
 export interface PresentationRequest {

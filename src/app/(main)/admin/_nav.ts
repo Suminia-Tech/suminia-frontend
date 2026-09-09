@@ -5,7 +5,8 @@ import type { PanelSection } from '../_shell/PanelNav';
    es aprobar y vigilar las empresas de los dos lados del marketplace. */
 export const ADMIN_NAV: AreaNavItem[] = [
   { label: 'MI CUENTA', href: '/admin/account' },
-  { label: 'PROVEEDORES', href: '/admin/supplieres' },
+  { label: 'PROVEEDORES', href: '/admin/suppliers' },
+  { label: 'CATEGORÍAS', href: '/admin/categories' },
 ];
 
 /* Sin "Mi empresa" ni "Mi equipo": el personal interno no pertenece a ninguna

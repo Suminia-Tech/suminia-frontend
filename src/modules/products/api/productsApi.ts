@@ -10,11 +10,13 @@ import type {
   CatalogMedicineDetail,
   CatalogMedicineSearchResult,
   ConfirmImageRequest,
+  CreateCategoryRequest,
   CreateProductRequest,
   MedicineOffer,
   PresentationRequest,
   Product,
   ProductCategory,
+  UpdateCategoryRequest,
   UpdateImageRequest,
   UpdatePresentationRequest,
   UpdateProductRequest,
@@ -95,8 +97,38 @@ export const productsApi = baseApi.injectEndpoints({
       query: () => '/public/products/categories',
     }),
 
+    createCategory: builder.mutation<
+      ApiResponse<ProductCategory>,
+      CreateCategoryRequest
+    >({
+      query: (data) => ({
+        url: '/products/categories',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'CATEGORIES' }],
+    }),
+
+    updateCategory: builder.mutation<
+      ApiResponse<ProductCategory>,
+      { id: string; data: UpdateCategoryRequest }
+    >({
+      query: ({ id, data }) => ({
+        url: `/products/categories/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'CATEGORIES' }],
+    }),
+
+    deleteCategory: builder.mutation<ApiResponse<void>, string>({
+      query: (id) => ({ url: `/products/categories/${id}`, method: 'DELETE' }),
+      invalidatesTags: [{ type: 'Product', id: 'CATEGORIES' }],
+    }),
+
     getCategories: builder.query<ApiResponse<ProductCategory[]>, void>({
       query: () => '/products/categories',
+      providesTags: [{ type: 'Product', id: 'CATEGORIES' }],
     }),
 
     createProduct: builder.mutation<ApiResponse<Product>, CreateProductRequest>({
@@ -233,6 +265,9 @@ export const {
   useGetPublicProductsQuery,
   useGetPublicProductQuery,
   useGetPublicCategoriesQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
   useGetCategoriesQuery,
   useSearchCatalogMedicinesQuery,
   useLazySearchCatalogMedicinesQuery,

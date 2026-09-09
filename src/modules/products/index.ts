@@ -7,6 +7,7 @@
 export { MyProductsScreen } from './ui/supplier/MyProductsScreen';
 export { CatalogScreen } from './ui/buyer/CatalogScreen';
 export { ProductDetailScreen } from './ui/buyer/ProductDetailScreen';
+export { CategoriesScreen } from './ui/admin/CategoriesScreen';
 
 /* Las publicas se sirven desde (suminia)/: mismo modulo, otra lectura. Lo que
    cambia no es la pantalla, es que la respuesta no trae precios. */
