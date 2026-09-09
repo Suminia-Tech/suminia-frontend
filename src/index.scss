@@ -2196,18 +2196,22 @@ select.form-control,
 
 /* --- Categorias --- */
 
+/* Separada del banner: la seccion arrancaba pegada a el y las dos franjas se
+   leian como una sola. */
 .home-categories {
-  padding: 34px 0 10px;
+  padding: 54px 0 10px;
 }
 
-.home-categories-grid {
-  display: grid;
-  /* `auto-fit` y no `auto-fill`: el segundo crea tantas columnas como quepan
-     aunque sobren vacias, y con siete categorias dejaba una franja muerta a la
-     derecha. `auto-fit` colapsa las que no se usan y reparte el ancho entre las
-     que hay, que ademas es lo que las hace grandes. */
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 22px 18px;
+/* El carrusel reparte el ancho el solo; lo unico que hace falta es el aire
+   entre una ficha y la siguiente, que slick no pone. */
+.home-categories-slider {
+  .slick-slide > div {
+    padding: 0 9px;
+  }
+
+  .slick-list {
+    margin: 0 -9px;
+  }
 }
 
 .home-category {
@@ -2224,6 +2228,12 @@ select.form-control,
   &:hover .home-category-name {
     color: var(--theme-color);
   }
+}
+
+/* Los puntos del carrusel, con aire por arriba para que no toquen las fichas. */
+.home-categories-slider .slick-dots {
+  position: static;
+  margin-top: 22px;
 }
 
 /* El recuadro verde que ya tenia el carrusel de categorias: el mismo tono con

@@ -1,8 +1,32 @@
 'use client';
 
 import Link from 'next/link';
+import Slider from 'react-slick';
 
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
+
+/* Carrusel y no rejilla, como estaba antes de que lo rehiciera. En rejilla las
+   siete caben de una vez y salen pequeñas; mostrando cinco cada una ocupa la
+   mitad mas de ancho, que en una ilustracion se nota.
+
+   Los mismos ajustes que traia el del proyecto pero con una ficha menos en cada
+   tramo, que es lo que las deja del tamaño que tenian. Se copian aqui en vez de
+   importarlos de _template: un modulo no debe depender de codigo en cuarentena. */
+const CAROUSEL = {
+  dots: true,
+  arrows: false,
+  infinite: false,
+  autoplay: true,
+  speed: 500,
+  slidesToShow: 6,
+  slidesToScroll: 1,
+  responsive: [
+    { breakpoint: 1630, settings: { slidesToShow: 5 } },
+    { breakpoint: 1367, settings: { slidesToShow: 4 } },
+    { breakpoint: 1200, settings: { slidesToShow: 3 } },
+    { breakpoint: 705, settings: { slidesToShow: 2 } },
+  ],
+};
 
 /* Las categorias del catalogo, como puertas de entrada a la portada.
 
@@ -37,37 +61,41 @@ export const CategoryGrid = () => {
           <h3>Comprar por categoría</h3>
         </div>
 
-        <div className='home-categories-grid'>
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/catalog?categoryId=${category.id}`}
-              className='home-category'
-            >
-              <span className='home-category-icon'>
-                {/* eslint-disable-next-line @next/next/no-img-element -- son SVG
-                    estaticos servidos desde /public; next/image no aporta nada
-                    sobre un vectorial de un kilobyte y ademas lo rasterizaria. */}
-                <img
-                  src={`${ICON_PATH}/${category.slug}.svg`}
-                  alt=''
-                  loading='lazy'
-                  onError={(event) => {
-                    /* Sin dibujo, la tarjeta se queda con su nombre y su cuenta.
-                       Es mejor que el icono roto del navegador. */
-                    event.currentTarget.style.display = 'none';
-                  }}
-                />
-              </span>
+        <div className='home-categories-slider'>
+          <Slider {...CAROUSEL}>
+            {categories.map((category) => (
+              <div key={category.id}>
+                <Link
+                  href={`/catalog?categoryId=${category.id}`}
+                  className='home-category'
+                >
+                  <span className='home-category-icon'>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- son
+                        SVG estaticos servidos desde /public; next/image no
+                        aporta nada sobre un vectorial de un kilobyte y ademas lo
+                        rasterizaria. */}
+                    <img
+                      src={`${ICON_PATH}/${category.slug}.svg`}
+                      alt=''
+                      loading='lazy'
+                      onError={(event) => {
+                        /* Sin dibujo, la tarjeta se queda con su nombre y su
+                           cuenta. Es mejor que el icono roto del navegador. */
+                        event.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </span>
 
-              <span className='home-category-name'>{category.name}</span>
-              <span className='home-category-count'>
-                {category.productCount === 1
-                  ? '1 producto'
-                  : `${category.productCount} productos`}
-              </span>
-            </Link>
-          ))}
+                  <span className='home-category-name'>{category.name}</span>
+                  <span className='home-category-count'>
+                    {category.productCount === 1
+                      ? '1 producto'
+                      : `${category.productCount} productos`}
+                  </span>
+                </Link>
+              </div>
+            ))}
+          </Slider>
         </div>
       </div>
     </section>
