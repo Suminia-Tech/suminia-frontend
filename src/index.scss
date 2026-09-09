@@ -2210,12 +2210,16 @@ select.form-control,
    que aqui no hay nada. Lo unico que falta es el aire entre una ficha y la
    siguiente, que slick no pone. */
 .home-categories-slider {
+  /* La separacion entre fichas se descuenta del ancho de cada una, de modo que
+     cuanto mas se pone, mas pequeñas salen. El original no llevaba ninguna y
+     las fichas se tocaban; seis pixeles bastan para separarlas sin comerse el
+     tamaño. */
   .slick-slide > div {
-    padding: 0 9px;
+    padding: 0 6px;
   }
 
   .slick-list {
-    margin: 0 -9px;
+    margin: 0 -6px;
   }
 }
 

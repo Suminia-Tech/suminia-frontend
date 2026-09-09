@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Slider from 'react-slick';
-import { Col, Container, Row } from 'reactstrap';
+import { Container, Row } from 'reactstrap';
 
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
 
@@ -58,8 +58,11 @@ export const CategoryGrid = () => {
        descuadraba. */
     <section className='ratio_90 home-categories'>
       <Container>
+        {/* Sin `Col` dentro del `Row`, como el original: una columna añade 12px
+            de padding a cada lado que estrechan la ficha sin que nadie los
+            pida. */}
         <Row>
-          <Col xs='12'>
+          <div className='w-100'>
             {/* Cabecera centrada con su subtitulo, como las demas secciones del
                 tema: `.title.title-2` trae su propio margen inferior, que
                 escala con el ancho de la pantalla. */}
@@ -116,7 +119,7 @@ export const CategoryGrid = () => {
                 ))}
               </Slider>
             </div>
-          </Col>
+          </div>
         </Row>
       </Container>
     </section>
