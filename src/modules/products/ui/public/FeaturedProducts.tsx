@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight } from 'react-feather';
 import Slider from 'react-slick';
+import { Col, Container, Row } from 'reactstrap';
 
 import { useGetPublicProductsQuery } from '../../api/productsApi';
 import { Price } from '../common/Price';
@@ -71,91 +71,94 @@ export const FeaturedProducts = () => {
   if (isLoading || products.length === 0) return null;
 
   return (
-    <section className='section-b-space ratio_asos home-products'>
-      <div className='container-fluid-lg'>
-        <div className='box-head d-flex align-items-center justify-content-between'>
-          <h3>Lo último en el catálogo</h3>
-          <Link
-            href='/catalog'
-            className='font-light d-inline-flex align-items-center gap-1'
-          >
-            Ver todo
-            <ArrowRight size={15} />
-          </Link>
-        </div>
+    /* La misma envoltura que traia el carrusel de productos del proyecto: a
+       ancho completo y sin padding lateral, de modo que las fichas llegan al
+       borde. Con `container-fluid-lg` quedaban metidas hacia dentro. */
+    <section className='ratio_asos home-products'>
+      <Container fluid className='p-sm-0'>
+        <Row className='m-0'>
+          <Col sm='12' className='p-0'>
+            {/* Cabecera centrada con su subtitulo, la del tema. `.title.title-2`
+                trae su propio margen inferior, que escala con el ancho. */}
+            <div className='title title-2 text-center'>
+              <h2>Solo Para Ti</h2>
+              <h5 className='text-color'>Nuestros Productos</h5>
+            </div>
 
-        <div className='product-wrapper slide-6'>
-          <Slider {...CAROUSEL}>
-            {products.map((product) => {
-              const image =
-                product.images.find((item) => item.isPrimary) ??
-                [...product.images].sort((a, b) => a.position - b.position)[0];
-              const href = `/catalog/${product.id}`;
-              const formatos = product.presentations.slice(0, MAX_TAGS);
+            <div className='product-wrapper slide-6'>
+              <Slider {...CAROUSEL}>
+                {products.map((product) => {
+                  const image =
+                    product.images.find((item) => item.isPrimary) ??
+                    [...product.images].sort((a, b) => a.position - b.position)[0];
+                  const href = `/catalog/${product.id}`;
+                  const formatos = product.presentations.slice(0, MAX_TAGS);
 
-              return (
-                <div key={product.id}>
-                  <div className='product-box'>
-                    {/* Una sola imagen. `hover-image` del tema no intercambia
-                        dos al pasar por encima —es un velo decorativo—, de modo
-                        que pintar la segunda solo la apilaba debajo y partia la
-                        fila en dos. */}
-                    <div className='img-wrapper hover-image'>
-                      <Link href={href}>
-                        {image ? (
-                          /* eslint-disable-next-line @next/next/no-img-element --
-                             las imagenes viven en S3 y next/image exigiria
-                             declarar el dominio del bucket en la configuracion. */
-                          <img
-                            src={image.url}
-                            className='img-fluid'
-                            alt={image.alt ?? product.name}
-                          />
-                        ) : (
-                          <span className='product-box-empty' />
-                        )}
-                      </Link>
+                  return (
+                    <div key={product.id}>
+                      <div className='product-box'>
+                        {/* Una sola imagen. `hover-image` del tema no intercambia
+                            dos al pasar por encima —es un velo decorativo—, de modo
+                            que pintar la segunda solo la apilaba debajo y partia la
+                            fila en dos. */}
+                        <div className='img-wrapper hover-image'>
+                          <Link href={href}>
+                            {image ? (
+                              /* eslint-disable-next-line @next/next/no-img-element --
+                                 las imagenes viven en S3 y next/image exigiria
+                                 declarar el dominio del bucket en la configuracion. */
+                              <img
+                                src={image.url}
+                                className='img-fluid'
+                                alt={image.alt ?? product.name}
+                              />
+                            ) : (
+                              <span className='product-box-empty' />
+                            )}
+                          </Link>
 
-                      {product.type === 'MEDICINE' && (
-                        <div className='label-block'>
-                          <span className='label label-theme'>Medicamento</span>
+                          {product.type === 'MEDICINE' && (
+                            <div className='label-block'>
+                              <span className='label label-theme'>Medicamento</span>
+                            </div>
+                          )}
                         </div>
-                      )}
+
+                        <div className='product-details text-center'>
+                          <h3 className='theme-color'>
+                            <Price
+                              value={product.presentations[0]?.price ?? null}
+                              currency={product.presentations[0]?.currency}
+                            />
+                          </h3>
+
+                          <Link href={href} className='font-default'>
+                            <h5>{product.name}</h5>
+                          </Link>
+
+                          {/* Quien lo vende. En un marketplace no es un detalle:
+                              es la mitad de lo que se esta mirando. */}
+                          <p className='font-light product-box-supplier'>
+                            {product.organizationName ?? 'Proveedor'}
+                          </p>
+
+                          {formatos.length > 0 && (
+                            <ul className='size-box'>
+                              {formatos.map((presentation) => (
+                                <li key={presentation.id}>{presentation.name}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
                     </div>
-
-                    <div className='product-details text-center'>
-                      <h3 className='theme-color'>
-                        <Price
-                          value={product.presentations[0]?.price ?? null}
-                          currency={product.presentations[0]?.currency}
-                        />
-                      </h3>
-
-                      <Link href={href} className='font-default'>
-                        <h5>{product.name}</h5>
-                      </Link>
-
-                      {/* Quien lo vende. En un marketplace no es un detalle:
-                          es la mitad de lo que se esta mirando. */}
-                      <p className='font-light product-box-supplier'>
-                        {product.organizationName ?? 'Proveedor'}
-                      </p>
-
-                      {formatos.length > 0 && (
-                        <ul className='size-box'>
-                          {formatos.map((presentation) => (
-                            <li key={presentation.id}>{presentation.name}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </Slider>
-        </div>
-      </div>
+                  );
+                })}
+              </Slider>
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </section>
   );
 };

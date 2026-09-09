@@ -2196,8 +2196,8 @@ select.form-control,
 
 /* --- Categorias --- */
 
-/* Separada del banner: la seccion arrancaba pegada a el y las dos franjas se
-   leian como una sola. */
+/* El aire de la cabecera lo pone `.title` del tema, que escala con el ancho de
+   la pantalla. Aqui solo la separacion de la franja de arriba. */
 .home-categories {
   padding: 54px 0 10px;
 }
@@ -2319,18 +2319,9 @@ select.form-control,
   font-size: 12.5px;
 }
 
-/* Los titulos de la portada piden mas aire que los del tema: alli encabezan un
-   panel y aqui abren una franja entera de la pagina. Los 18px de `box-head` se
-   quedaban cortos, y encima las fotos traen su propio margen blanco, de modo
-   que la separacion real se lee menor de lo que es. */
-.home-categories .box-head,
-.home-products .box-head {
-  margin-bottom: 30px;
-}
-
-.home-products .product-wrapper.slide-6 {
-  margin-top: 4px;
-}
+/* Nada aqui: la separacion entre la cabecera y el carrusel la pone `.title` del
+   tema —un margen que escala con el ancho— y era justo lo que se estaba
+   reinventando con `box-head`. */
 
 /* La fila de edicion de una categoria. Se edita en linea y no en un modal: son
    tres campos y la lista entera cabe en pantalla, de modo que abrir una ventana

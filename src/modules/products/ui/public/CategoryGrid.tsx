@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Slider from 'react-slick';
+import { Col, Container, Row } from 'reactstrap';
 
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
 
@@ -51,54 +52,66 @@ export const CategoryGrid = () => {
   if (isLoading || categories.length === 0) return null;
 
   return (
-    <section className='home-categories'>
-      <div className='container-fluid-lg'>
-        <div className='box-head'>
-          <h3>Comprar por categoría</h3>
-        </div>
+    /* La misma envoltura que traia el carrusel de categorias del proyecto:
+       `ratio_90` y un Container de 1400px, no el ancho completo. De ahi salia el
+       tamaño de las fichas, y cambiarlo por `container-fluid-lg` era lo que las
+       descuadraba. */
+    <section className='ratio_90 home-categories'>
+      <Container>
+        <Row>
+          <Col xs='12'>
+            {/* Cabecera centrada con su subtitulo, como las demas secciones del
+                tema: `.title.title-2` trae su propio margen inferior, que
+                escala con el ancho de la pantalla. */}
+            <div className='title title-2 text-center'>
+              <h2>Nuestras Categorías</h2>
+              <h5 className='text-color'>Comprar por categoría</h5>
+            </div>
 
-        <div className='product-wrapper home-categories-slider'>
-          <Slider {...CAROUSEL}>
-            {categories.map((category) => (
-              <div key={category.id}>
-                <Link
-                  href={`/catalog?categoryId=${category.id}`}
-                  className='product-box product-box6'
-                >
-                  <div className='img-wrapper squre-image'>
-                    <div className='front-img'>
-                      {/* eslint-disable-next-line @next/next/no-img-element --
-                          son SVG estaticos servidos desde /public; next/image no
-                          aporta nada sobre un vectorial de un kilobyte y ademas
-                          lo rasterizaria. */}
-                      <img
-                        className='img-fluid bg-img'
-                        src={`${ICON_PATH}/${category.slug}.svg`}
-                        alt=''
-                        loading='lazy'
-                        onError={(event) => {
-                          /* Sin dibujo, la ficha se queda con su nombre y su
-                             cuenta. Es mejor que el icono roto del navegador. */
-                          event.currentTarget.style.visibility = 'hidden';
-                        }}
-                      />
-                    </div>
-                  </div>
+            <div className='product-wrapper slide-6 home-categories-slider'>
+              <Slider {...CAROUSEL}>
+                {categories.map((category) => (
+                  <div key={category.id}>
+                    <Link
+                      href={`/catalog?categoryId=${category.id}`}
+                      className='product-box product-box6'
+                    >
+                      <div className='img-wrapper squre-image'>
+                        <div className='front-img'>
+                          {/* eslint-disable-next-line @next/next/no-img-element --
+                              son SVG estaticos servidos desde /public; next/image no
+                              aporta nada sobre un vectorial de un kilobyte y ademas
+                              lo rasterizaria. */}
+                          <img
+                            className='img-fluid bg-img'
+                            src={`${ICON_PATH}/${category.slug}.svg`}
+                            alt=''
+                            loading='lazy'
+                            onError={(event) => {
+                              /* Sin dibujo, la ficha se queda con su nombre y su
+                                 cuenta. Es mejor que el icono roto del navegador. */
+                              event.currentTarget.style.visibility = 'hidden';
+                            }}
+                          />
+                        </div>
+                      </div>
 
-                  <div className='product-detail'>
-                    <h5>{category.name}</h5>
-                    <span className='font-light home-category-count'>
-                      {category.productCount === 1
-                        ? '1 producto'
-                        : `${category.productCount} productos`}
-                    </span>
+                      <div className='product-detail'>
+                        <h5>{category.name}</h5>
+                        <span className='font-light home-category-count'>
+                          {category.productCount === 1
+                            ? '1 producto'
+                            : `${category.productCount} productos`}
+                        </span>
+                      </div>
+                    </Link>
                   </div>
-                </Link>
-              </div>
-            ))}
-          </Slider>
-        </div>
-      </div>
+                ))}
+              </Slider>
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </section>
   );
 };
