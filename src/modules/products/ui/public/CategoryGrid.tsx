@@ -20,9 +20,8 @@ import { useGetPublicCategoriesQuery } from '../../api/productsApi';
    en una categoria y encontrarla vacia es la clase de cosa que se paga en
    confianza, y ese numero lo evita antes del clic. */
 
-/* Cuatro por vista y no las seis del carrusel original: son ilustraciones, y a
-   seis salen tan pequeñas que deja de distinguirse que dibujan. Cada ficha pasa
-   de 268 a 338px.
+/* Cinco por vista. El carrusel original enseñaba seis, pero el ancho de la fila
+   es otro y a seis las ilustraciones dejan de distinguirse.
 
    Se copian aqui en vez de importarlos de _template: un modulo no debe depender
    de codigo en cuarentena. */
@@ -31,10 +30,10 @@ const CAROUSEL = {
   arrows: false,
   infinite: true,
   speed: 500,
-  slidesToShow: 4,
+  slidesToShow: 5,
   slidesToScroll: 1,
   responsive: [
-    { breakpoint: 1630, settings: { slidesToShow: 3 } },
+    { breakpoint: 1630, settings: { slidesToShow: 4 } },
     { breakpoint: 1200, settings: { slidesToShow: 3 } },
     { breakpoint: 705, settings: { slidesToShow: 2 } },
   ],

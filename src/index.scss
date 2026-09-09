@@ -2209,6 +2209,19 @@ select.form-control,
    `.product-box6`, `.bg-size` dentro de `ratio_90`, `.product-detail`—, de modo
    que aqui no hay nada. Lo unico que falta es el aire entre una ficha y la
    siguiente, que slick no pone. */
+/* Con cinco fichas fijas, lo unico que puede hacerlas mas grandes es que la
+   fila abarque mas ancho. El contenedor del proyecto deja 112px a cada lado, que
+   para una parrilla de ilustraciones es mucho: aqui se recorta a 72 y las
+   fichas se quedan con esos 80px repartidos entre las cinco.
+
+   Solo en el tramo ancho. Por debajo de 1460 el contenedor ya baja su padding
+   por su cuenta y no hay nada que recortar. */
+@media (min-width: 1461px) {
+  .home-categories .container-fluid-lg {
+    padding: 0 72px;
+  }
+}
+
 .home-categories-slider {
   /* La separacion entre fichas se descuenta del ancho de cada una, de modo que
      cuanto mas se pone, mas pequeñas salen. El original no llevaba ninguna y
