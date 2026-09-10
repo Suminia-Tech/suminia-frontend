@@ -2160,7 +2160,11 @@ select.form-control,
    Va en `margin` y no en `padding`: el fondo verde llega hasta el borde del
    elemento, de modo que con padding se estiraria en vez de dejar aire. */
 .home-section-6 {
-  height: 500px;
+  /* El bloque de texto va centrado y a altura completa, y su titular crece con
+     el ancho de la pantalla: en una pantalla ancha llenaba casi los 500px y el
+     boton quedaba rozando el borde de abajo. Se le dan 560 ahi, y 500 en cuanto
+     el titular deja de crecer. */
+  height: 560px;
   margin-bottom: calc(0.9375vw + 2px);
 
   /* La imagen lleva su propia altura, tambien de 850, y un margen del 4% que
@@ -2188,6 +2192,12 @@ select.form-control,
      ahora terminan mas arriba, y sin salirse de la seccion. */
   .classic-arrow-1 .custom-arrow {
     bottom: 14px;
+  }
+}
+
+@media (max-width: 1630px) {
+  .home-section-6 {
+    height: 500px;
   }
 }
 

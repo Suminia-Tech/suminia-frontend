@@ -5,9 +5,11 @@ const HomeNav = ({ nav1, slider2 }) => {
   return (
     <Slider
       {...HomeNavSlider}
-      /* Mas bajas que las 290 originales: el banner ya no mide 850 y hay que
-       dejar sitio debajo para las flechas del carrusel. */
-    style={{ height: 230, overflow: "hidden" }}
+      /* Las 290 originales. Recortarlas para dejar sitio a las flechas recortaba
+       tambien la primera miniatura: son tres de unos 97px y con `overflow:
+       hidden` lo que no cabe se corta. El sitio para las flechas sale del alto
+       del banner, no de aqui. */
+    style={{ height: 290, overflow: "hidden" }}
       className="slider-nav image-show slider-thumbnail"
       asNavFor={nav1}
       ref={(slider) => (slider2.current = slider)}
