@@ -73,8 +73,12 @@ export const FeaturedProducts = () => {
   return (
     /* La misma envoltura que traia el carrusel de productos del proyecto: a
        ancho completo y sin padding lateral, de modo que las fichas llegan al
-       borde. Con `container-fluid-lg` quedaban metidas hacia dentro. */
-    <section className='ratio_asos section-b-space home-products'>
+       borde. Con `container-fluid-lg` quedaban metidas hacia dentro.
+
+       Sin `section-b-space`: no es la ultima seccion, y el cierre por abajo se
+       sumaba a los 80px de apertura de la siguiente, dejando ese hueco al doble
+       que el de arriba. Lo lleva solo la de categorias, que da al pie. */
+    <section className='ratio_asos home-products'>
       <Container fluid className='p-sm-0'>
         <Row className='m-0'>
           <Col sm='12' className='p-0'>

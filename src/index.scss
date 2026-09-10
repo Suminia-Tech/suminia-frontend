@@ -2230,12 +2230,28 @@ select.form-control,
   }
 }
 
-/* Los puntos del carrusel solo llevan margen por arriba, de modo que por debajo
-   quedan pegados a lo que siga —el titulo de la seccion siguiente, o la linea
-   del pie—. Se les da el mismo aire por los dos lados. */
+/* Los puntos del carrusel traen unos 18px por arriba y ninguno por abajo, de
+   modo que quedan pegados a las fichas por un lado y a lo que siga por el otro.
+   Se les da aire por los dos, mas por arriba, que es donde se pegaban. */
 .home-products .slick-dots,
 .home-categories-slider .slick-dots {
+  margin-top: calc(1.875vw + 12px);
   margin-bottom: calc(0.9375vw + 2px);
+}
+
+/* Los textos de la ficha de categoria. El h5 del tema y el tamaño por defecto
+   se quedan cortos para una ficha que ronda los 300px. */
+.home-categories-slider {
+  .product-detail h5 {
+    font-size: 17.5px;
+    font-weight: 600;
+  }
+
+  .home-category-count {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+  }
 }
 
 .home-categories-slider {
@@ -2320,7 +2336,7 @@ select.form-control,
     }
 
     h5 {
-      font-size: 14.5px;
+      font-size: 16.5px;
       line-height: 1.35;
       /* Dos lineas y corta: los nombres de insumos son largos y sin tope una
          tarjeta crece al doble que su vecina. */
@@ -2333,8 +2349,8 @@ select.form-control,
 }
 
 .product-box-supplier {
-  margin: 2px 0 0;
-  font-size: 12.5px;
+  margin: 3px 0 0;
+  font-size: 14px;
 }
 
 /* Nada aqui: la separacion entre la cabecera y el carrusel la pone `.title` del
