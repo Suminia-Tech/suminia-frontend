@@ -61,7 +61,7 @@ export const CategoryGrid = () => {
 
      `ratio_90` se queda: es lo que le da a la ficha su proporcion. */
   return (
-    <section className='ratio_90 home-categories'>
+    <section className='ratio_90 section-b-space home-categories'>
       <div className='container-fluid-lg'>
             {/* Cabecera centrada con su subtitulo, como las demas secciones del
                 tema: `.title.title-2` trae su propio margen inferior, que

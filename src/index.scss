@@ -2222,6 +2222,14 @@ select.form-control,
   }
 }
 
+/* Los puntos del carrusel solo llevan margen por arriba, de modo que por debajo
+   quedan pegados a lo que siga —el titulo de la seccion siguiente, o la linea
+   del pie—. Se les da el mismo aire por los dos lados. */
+.home-products .slick-dots,
+.home-categories-slider .slick-dots {
+  margin-bottom: calc(0.9375vw + 2px);
+}
+
 .home-categories-slider {
   /* La separacion entre fichas se descuenta del ancho de cada una, de modo que
      cuanto mas se pone, mas pequeñas salen. El original no llevaba ninguna y
