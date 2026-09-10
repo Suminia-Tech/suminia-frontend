@@ -2152,8 +2152,16 @@ select.form-control,
    850px originales. Al bajar la seccion, tres cosas se pisan entre si: las
    redes sociales caen encima de las miniaturas, la imagen llega al borde y las
    flechas se salen. Se recolocan las cuatro piezas a la vez. */
+/* El banner tampoco cierra por abajo, de modo que "Solo Para Ti" quedaba a
+   80px de el mientras el titulo de categorias tiene 98 —los 80 de la seccion
+   mas el margen de los puntos del carrusel de arriba—. Se le da esa diferencia
+   para que los tres huecos midan lo mismo.
+
+   Va en `margin` y no en `padding`: el fondo verde llega hasta el borde del
+   elemento, de modo que con padding se estiraria en vez de dejar aire. */
 .home-section-6 {
   height: 500px;
+  margin-bottom: calc(0.9375vw + 2px);
 
   /* La imagen lleva su propia altura, tambien de 850, y un margen del 4% que
      depende del ancho de la pantalla: asi acababa saliendose de la seccion y
