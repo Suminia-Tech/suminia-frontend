@@ -52,9 +52,10 @@ const CAROUSEL = {
    reciente al menos demuestra que el catalogo esta vivo. */
 const HOW_MANY = 12;
 
-/* Dos etiquetas como maximo: es lo que caben sin partir la tarjeta, y son las
-   que el propio carrusel de la plantilla mostraba. */
-const MAX_TAGS = 2;
+/* Un formato como maximo, para dejarle sitio a la categoria. Casi todos los
+   productos tienen uno solo, de modo que la ficha enseñaba una etiqueta sola y
+   la fila quedaba coja. */
+const MAX_FORMATS = 1;
 
 export const FeaturedProducts = () => {
   const { data, isLoading } = useGetPublicProductsQuery({
@@ -96,7 +97,7 @@ export const FeaturedProducts = () => {
                     product.images.find((item) => item.isPrimary) ??
                     [...product.images].sort((a, b) => a.position - b.position)[0];
                   const href = `/catalog/${product.id}`;
-                  const formatos = product.presentations.slice(0, MAX_TAGS);
+                  const formatos = product.presentations.slice(0, MAX_FORMATS);
 
                   return (
                     <div key={product.id}>
@@ -146,8 +147,16 @@ export const FeaturedProducts = () => {
                             {product.organizationName ?? 'Proveedor'}
                           </p>
 
-                          {formatos.length > 0 && (
+                          {(product.categoryName || formatos.length > 0) && (
                             <ul className='size-box'>
+                              {/* La categoria primero: dice de que clase de
+                                  cosa se trata, y el formato despues, que dice
+                                  en que se vende. Antes solo iba el formato y
+                                  casi todos los productos tienen uno, de modo
+                                  que quedaba una etiqueta suelta. */}
+                              {product.categoryName && (
+                                <li>{product.categoryName}</li>
+                              )}
                               {formatos.map((presentation) => (
                                 <li key={presentation.id}>{presentation.name}</li>
                               ))}
