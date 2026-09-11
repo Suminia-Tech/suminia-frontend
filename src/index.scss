@@ -2433,9 +2433,20 @@ select.form-control,
      archivos. */
   --suminia-radio-busqueda: 12px;
 
+  /* La altura la fija esta variable para los tres, campo incluido. Darsela solo
+     a los botones y dejar que el campo siguiera calculando la suya a partir del
+     padding dejaba dos cuentas distintas que coincidian por poco: bastaba un
+     zoom del navegador, u otro ancho, para que una redondeara antes que la otra
+     y el boton asomara un pixel por arriba y otro por abajo. Con un solo valor
+     no hay nada que pueda desajustarse.
+
+     El numero es el que ya tenia el campo: su padding fluido mas la linea de
+     texto de 14px y los dos bordes. */
+  --suminia-alto-control: calc(39px + (51 - 39) * ((100vw - 320px) / (1920 - 320)));
+
   .toggle-category,
   .cart-dropdown > .btn {
-    height: calc(39px + (51 - 39) * ((100vw - 320px) / (1920 - 320)));
+    height: var(--suminia-alto-control);
     padding-top: 0;
     padding-bottom: 0;
     border-radius: var(--suminia-radio-busqueda);
@@ -2443,10 +2454,17 @@ select.form-control,
 
   .search-box1 {
     .the-basics {
+      height: var(--suminia-alto-control);
+
       /* El recorte deja que las esquinas del campo y del boton sigan la curva
          del grupo sin tener que repetirla en cada uno. */
       border-radius: var(--suminia-radio-busqueda);
       overflow: hidden;
+    }
+
+    .form-control,
+    .close-search {
+      height: 100%;
     }
 
     .form-control {
