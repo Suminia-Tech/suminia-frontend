@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Slider from 'react-slick';
 import { Col, Container, Row } from 'reactstrap';
 
-import { useGetPublicProductsQuery } from '../../api/productsApi';
+import { useCatalogProducts } from '../../hooks/useCatalogProducts';
 import { Price } from '../common/Price';
 
 /* Los mismos ajustes que usa el carrusel de la plantilla. Se copian aqui en vez
@@ -58,7 +58,7 @@ const HOW_MANY = 12;
 const MAX_FORMATS = 1;
 
 export const FeaturedProducts = () => {
-  const { data, isLoading } = useGetPublicProductsQuery({
+  const { data, isLoading } = useCatalogProducts({
     page: 1,
     limit: HOW_MANY,
     sort: 'createdAt',

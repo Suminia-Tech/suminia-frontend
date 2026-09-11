@@ -38,10 +38,22 @@ export const getUserArea = (user: User | null | undefined): Area | null => {
 export const belongsToArea = (user: User | null | undefined, area: Area): boolean =>
   getUserArea(user) === area;
 
-/* A donde cae cada quien al iniciar sesion, y que hace la raiz del sitio.
-   Sin rol reconocido se queda en la portada publica: es preferible a mandarlo
-   a un area donde la guarda lo va a rebotar. */
+/* A donde cae cada quien al iniciar sesion.
+
+   El comprador se queda en la tienda, que es la misma que ve un visitante: la
+   cabecera con su buscador, sus categorias y su carrito, el banner y el
+   catalogo. Lo unico que cambia al entrar es que, si su empresa esta aprobada,
+   aparecen los precios. Mandarlo a un area propia le quitaba justo eso —el
+   chasis del area no monta la fila de tienda— y lo dejaba con una pantalla
+   parecida a la del proveedor, que es un panel de trabajo y no un sitio donde
+   comprar.
+
+   El proveedor y el personal de Suminia si tienen area propia: lo suyo es
+   administrar, no navegar.
+
+   Sin rol reconocido tambien se queda en la portada: es preferible a mandarlo a
+   un area donde la guarda lo va a rebotar. */
 export const getHomePath = (user: User | null | undefined): string => {
   const area = getUserArea(user);
-  return area ? `/${area}` : '/';
+  return area === 'supplier' || area === 'admin' ? `/${area}` : '/';
 };

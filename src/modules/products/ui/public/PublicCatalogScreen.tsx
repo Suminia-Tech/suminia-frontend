@@ -9,11 +9,10 @@ import { Col, Row } from 'reactstrap';
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { Pagination } from '@/shared/ui';
+import { useAppSelector } from '@/store/hooks';
 
-import {
-  useGetPublicCategoriesQuery,
-  useGetPublicProductsQuery,
-} from '../../api/productsApi';
+import { useGetPublicCategoriesQuery } from '../../api/productsApi';
+import { useCatalogProducts } from '../../hooks/useCatalogProducts';
 import { ProductCard } from '../common/ProductCard';
 
 /* El catalogo que se ve sin haber entrado.
@@ -28,6 +27,7 @@ import { ProductCard } from '../common/ProductCard';
 const PAGE_SIZE = 24;
 
 export const PublicCatalogScreen = () => {
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   /* El buscador de la cabecera y las categorias de la portada llegan aqui por
      la URL, de modo que hay que leerla: sin esto se navegaba a
      /catalog?search=amoxicilina y la pantalla mostraba el catalogo entero.
@@ -54,7 +54,7 @@ export const PublicCatalogScreen = () => {
   const { data: categoriesData } = useGetPublicCategoriesQuery();
   const categories = categoriesData?.data ?? [];
 
-  const { data, isLoading, isFetching, isError, error } = useGetPublicProductsQuery({
+  const { data, isLoading, isFetching, isError, error } = useCatalogProducts({
     page,
     limit: PAGE_SIZE,
     sort: 'name',
@@ -75,14 +75,20 @@ export const PublicCatalogScreen = () => {
 
         {/* Se dice por que no hay precios antes de que el visitante lo note, no
             despues: encontrarse cifras borrosas sin explicacion se lee como un
-            fallo de la pagina. */}
-        <div className='public-price-notice'>
-          <Lock size={15} />
-          <span>
-            Los precios son visibles para empresas registradas y aprobadas.{' '}
-            <Link href='/register'>Registra la tuya</Link> para verlos.
-          </span>
-        </div>
+            fallo de la pagina.
+
+            Solo a quien no ha entrado: al que ya tiene sesion y espera
+            aprobacion se lo cuenta la franja de arriba, con su situacion
+            concreta, y repetirlo aqui seria decirle dos veces lo mismo. */}
+        {!isAuthenticated && (
+          <div className='public-price-notice'>
+            <Lock size={15} />
+            <span>
+              Los precios son visibles para empresas registradas y aprobadas.{' '}
+              <Link href='/register'>Registra la tuya</Link> para verlos.
+            </span>
+          </div>
+        )}
 
         <Row className='mb-4 g-2'>
           <Col md='7'>

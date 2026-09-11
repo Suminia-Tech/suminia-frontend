@@ -2382,3 +2382,34 @@ select.form-control,
     font-size: 13.5px;
   }
 }
+
+/* Franja de cuenta en revision. Va arriba del todo y en amarillo: no es un
+   error —no hay nada que arreglar— pero tampoco es una pagina normal, y quien
+   entra tiene que enterarse sin buscarla. */
+.pending-notice {
+  padding: 11px 0;
+  background-color: #fdf4e3;
+  border-bottom: 1px solid #f2e0bd;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  svg {
+    flex: 0 0 auto;
+    color: #a97a17;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #6b4e0d;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}

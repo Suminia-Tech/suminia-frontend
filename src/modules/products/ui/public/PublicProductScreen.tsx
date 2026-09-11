@@ -6,8 +6,10 @@ import { ChevronLeft, Image as ImageIcon, Lock } from 'react-feather';
 import { Col, Row, Table } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { useAppSelector } from '@/store/hooks';
 
-import { useGetPublicProductQuery } from '../../api/productsApi';
+import { useGetMedicineOffersQuery } from '../../api/productsApi';
+import { useCatalogProduct } from '../../hooks/useCatalogProducts';
 import { humanizeAttributeKey, toAttributePairs } from '../../lib/attributes';
 import { taxLabel } from '../../lib/tax';
 import { Price } from '../common/Price';
@@ -23,7 +25,15 @@ import { Price } from '../common/Price';
    tampoco habria nada que comparar. */
 export const PublicProductScreen = ({ productId }: { productId: string }) => {
   const [activeImage, setActiveImage] = useState(0);
-  const { data, isLoading, isError, error } = useGetPublicProductQuery(productId);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const { data, isLoading, isError, error } = useCatalogProduct(productId);
+
+  /* Quien mas vende este mismo medicamento. Solo con sesion: el endpoint la
+     exige, y sin precios la comparacion no diria nada de todas formas. */
+  const { data: offersData } = useGetMedicineOffersQuery(productId, {
+    skip: !isAuthenticated,
+  });
+  const offers = offersData?.data ?? [];
 
   if (isLoading) {
     return (
@@ -159,6 +169,41 @@ export const PublicProductScreen = ({ productId }: { productId: string }) => {
             </div>
           </Col>
         </Row>
+
+        {/* La razon de ser del maestro: el mismo medicamento, varios
+            proveedores, un solo sitio para compararlos. */}
+        {offers.length > 0 && (
+          <>
+            <div className='box-head mt-4'>
+              <h3>
+                Otros proveedores de este medicamento
+                <span className='font-light'> · {offers.length}</span>
+              </h3>
+            </div>
+            <ul className='medicine-offers'>
+              {offers.map((offer) => (
+                <li key={offer.productId}>
+                  <Link href={`/catalog/${offer.productId}`}>
+                    <span className='offer-supplier'>
+                      <strong>{offer.organizationName ?? 'Proveedor'}</strong>
+                      <small className='font-light'>
+                        {offer.presentationCount}{' '}
+                        {offer.presentationCount === 1 ? 'formato' : 'formatos'}
+                        {offer.inStock ? '' : ' · sin existencias'}
+                      </small>
+                    </span>
+                    <span className='offer-price'>
+                      <small className='font-light'>desde</small>
+                      <strong>
+                        <Price value={offer.fromPrice} currency={offer.currency} />
+                      </strong>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
 
         {invima && (
           <>

@@ -5,8 +5,6 @@
    administra su catalogo y el comprador lo navega, que son dos trabajos
    distintos aunque lean el mismo endpoint. */
 export { MyProductsScreen } from './ui/supplier/MyProductsScreen';
-export { CatalogScreen } from './ui/buyer/CatalogScreen';
-export { ProductDetailScreen } from './ui/buyer/ProductDetailScreen';
 export { CategoriesScreen } from './ui/admin/CategoriesScreen';
 
 /* Las publicas se sirven desde (suminia)/: mismo modulo, otra lectura. Lo que

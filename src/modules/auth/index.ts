@@ -2,6 +2,7 @@
    internas (../model, ../api, ../ui): solo lo que se exporta aqui. */
 
 export { AuthInitializer } from './ui/AuthInitializer';
+export { PendingApprovalNotice } from './ui/PendingApprovalNotice';
 export { AreaGuard } from './ui/AreaGuard';
 export { default as LoginModal } from './ui/LoginModal';
 export { default as RegisterSection } from './ui/RegisterSection';
