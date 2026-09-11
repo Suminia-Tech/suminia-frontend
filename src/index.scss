@@ -2413,3 +2413,24 @@ select.form-control,
     font-weight: 600;
   }
 }
+
+/* Los tres controles de la barra de busqueda salian de alturas distintas: a
+   1354px el desplegable de categorias media 39px y el campo y el carrito 47.
+   Y ademas cada uno crecia a su ritmo, asi que igualarlos a un numero fijo no
+   bastaba: entre 1100 y 1920px el campo iba de 45 a 51 y el carrito de 43 a 54.
+
+   El campo se dimensiona con el padding fluido de `.form-control` mas su linea
+   de texto, y los botones con el de `.btn-spacing`; el del carrito estira aun
+   mas porque lleva dentro un icono de 24px y el de categorias solo texto.
+
+   Se les da a los dos botones la altura que ya tenia el campo —misma formula,
+   de modo que siguen escalando juntos— y su padding pasa a ser solo horizontal.
+   Un `button` centra su contenido por si solo cuando se le fija la altura. */
+.navbar-searchbar {
+  .toggle-category,
+  .cart-dropdown > .btn {
+    height: calc(39px + (51 - 39) * ((100vw - 320px) / (1920 - 320)));
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
