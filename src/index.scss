@@ -2427,10 +2427,38 @@ select.form-control,
    de modo que siguen escalando juntos— y su padding pasa a ser solo horizontal.
    Un `button` centra su contenido por si solo cuando se le fija la altura. */
 .navbar-searchbar {
+  /* El radio del tema para los botones es 0.5rem. Aqui se redondea un poco mas,
+     y de un solo sitio: el campo llevaba los suyos en estilos en linea, que
+     ganan a cualquier hoja y obligaban a cambiar el mismo numero en dos
+     archivos. */
+  --suminia-radio-busqueda: 12px;
+
   .toggle-category,
   .cart-dropdown > .btn {
     height: calc(39px + (51 - 39) * ((100vw - 320px) / (1920 - 320)));
     padding-top: 0;
     padding-bottom: 0;
+    border-radius: var(--suminia-radio-busqueda);
+  }
+
+  .search-box1 {
+    .the-basics {
+      /* El recorte deja que las esquinas del campo y del boton sigan la curva
+         del grupo sin tener que repetirla en cada uno. */
+      border-radius: var(--suminia-radio-busqueda);
+      overflow: hidden;
+    }
+
+    .form-control {
+      border-right: none;
+      border-radius: var(--suminia-radio-busqueda) 0 0
+        var(--suminia-radio-busqueda);
+    }
+
+    .close-search {
+      border: 0;
+      border-radius: 0 var(--suminia-radio-busqueda)
+        var(--suminia-radio-busqueda) 0;
+    }
   }
 }

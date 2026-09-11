@@ -32,22 +32,17 @@ const SearchForVegitable = () => {
       onSubmit={submit}
       role='search'
     >
-      <div
-        className='the-basics input-group'
-        style={{ borderRadius: '0.5rem', overflow: 'hidden' }}
-      >
+      <div className='the-basics input-group'>
         <Input
           type='search'
           className='form-control typeahead'
           placeholder='Buscar un medicamento o insumo'
           value={term}
           onChange={(event) => setTerm(event.target.value)}
-          style={{ borderRadius: '0.5rem 0 0 0.5rem', borderRight: 'none' }}
         />
         <button
           type='submit'
           className='input-group-text close-search theme-bg-color search-box'
-          style={{ borderRadius: '0 0.5rem 0.5rem 0', border: 0 }}
           aria-label='Buscar'
         >
           <Search />
