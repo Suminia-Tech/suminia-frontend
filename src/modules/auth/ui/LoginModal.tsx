@@ -8,7 +8,7 @@ import { Input, Modal, ModalBody, ModalHeader } from 'reactstrap';
 
 import { CLOSELOGINMODAL, LOGINMODAL } from '@/_template/ReduxToolkit/Reducers/ModalReducer';
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PasswordToggle, SubmitButton } from '@/shared/ui';
+import { LoadingOverlay, PasswordToggle, SubmitButton } from '@/shared/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 import { useLoginMutation } from '../api/authApi';
@@ -39,9 +39,21 @@ const LoginModal = () => {
       toast.dismiss();
       dispatch(CLOSELOGINMODAL());
       setPassword('');
-      /* Cada rol aterriza en su area. Antes todos caian en /account, que era
-         la misma pantalla para proveedor, comprador y personal interno. */
-      router.push(getHomePath(session.data.user));
+
+      const destino = getHomePath(session.data.user);
+
+      /* Se confirma siempre, y no solo cuando hay a donde ir.
+
+         El comprador se queda en la tienda, de modo que si entra desde la
+         propia portada el `push` no cambia de pagina y el modal simplemente
+         desaparece: sin esto, la unica señal de que la sesion empezo es el
+         nombre en la esquina, que hay que ir a buscar. */
+      toast.success(
+        `${authLabels.welcomeBack}, ${session.data.user.name.split(' ')[0]}`,
+        { toastId: 'login-ok' },
+      );
+
+      router.push(destino);
     } catch (err) {
       /* El mensaje se muestra dentro del modal ademas de en el toast: el aviso
          flotante desaparece solo y es facil pasarlo por alto justo cuando hace
@@ -54,6 +66,10 @@ const LoginModal = () => {
   };
 
   return (
+    <>
+      {/* Sobre el modal mientras se comprueban las credenciales: es el mismo
+          velo que se ve al abrir la tienda, de modo que la espera se reconoce. */}
+      <LoadingOverlay isOpen={isLoading} />
     <Modal className='login-modal' toggle={toggle} isOpen={loginModal} centered={true}>
       <div className='modal-content'>
         <ModalHeader toggle={toggle}></ModalHeader>
@@ -130,6 +146,7 @@ const LoginModal = () => {
         </ModalBody>
       </div>
     </Modal>
+    </>
   );
 };
 

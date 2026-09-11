@@ -5,6 +5,7 @@ export const authLabels = {
   login: 'Iniciar sesión',
   loginTitle: 'Iniciar sesión',
   loggingIn: 'Ingresando...',
+  welcomeBack: 'Hola',
   forgotYourPassword: '¿Olvidaste tu contraseña?',
   notAMember: '¿No eres miembro?',
   signUpNow: 'Regístrate ahora',
