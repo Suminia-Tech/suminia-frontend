@@ -6,6 +6,7 @@ import type { PanelSection } from '../_shell/PanelNav';
 export const ADMIN_NAV: AreaNavItem[] = [
   { label: 'MI CUENTA', href: '/admin/account' },
   { label: 'PROVEEDORES', href: '/admin/suppliers' },
+  { label: 'COMPRADORES', href: '/admin/buyers' },
   { label: 'CATEGORÍAS', href: '/admin/categories' },
 ];
 

@@ -6,6 +6,9 @@ export { MyCompanyScreen } from './ui/supplier/MyCompanyScreen';
 export { SupplierSummaryScreen } from './ui/supplier/SupplierSummaryScreen';
 export { SupplierDetailScreen } from './ui/supplier/SupplierDetailScreen';
 
+export { BuyersScreen } from './ui/buyer/BuyersScreen';
+export { BuyerDetailScreen } from './ui/buyer/BuyerDetailScreen';
+
 export { default as organizationsReducer } from './model/organizationsSlice';
 
 export {
@@ -22,3 +25,4 @@ export type {
   OrganizationType,
 } from './model/organization.types';
 export type { Supplier, UpdateSupplierRequest } from './model/supplier.types';
+export type { Buyer, UpdateBuyerRequest } from './model/buyer.types';
