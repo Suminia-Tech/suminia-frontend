@@ -25,6 +25,7 @@ import { Price } from '../common/Price';
    tampoco habria nada que comparar. */
 export const PublicProductScreen = ({ productId }: { productId: string }) => {
   const [activeImage, setActiveImage] = useState(0);
+  const hydrated = useAppSelector((state) => state.auth.hydrated);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { data, isLoading, isError, error } = useCatalogProduct(productId);
 
@@ -114,59 +115,84 @@ export const PublicProductScreen = ({ productId }: { productId: string }) => {
               <h3>{product.name}</h3>
             </div>
 
-            <ul className='dashboard-profile'>
-              <li className='dash-profile'>
-                <span className='left font-light'>Proveedor</span>
-                <span className='right'>{product.organizationName ?? '—'}</span>
-              </li>
-              <li className='dash-profile'>
-                <span className='left font-light'>Categoría</span>
-                <span className='right'>{product.categoryName ?? '—'}</span>
-              </li>
-              {product.brand && (
-                <li className='dash-profile'>
-                  <span className='left font-light'>Marca</span>
-                  <span className='right'>{product.brand}</span>
+            <div className='dashboard-profile'>
+              <ul className='dash-profile'>
+                <li>
+                  <div className='left'>
+                    <h6 className='font-light'>Proveedor</h6>
+                  </div>
+                  <div className='right'>
+                    <h6>{product.organizationName ?? '—'}</h6>
+                  </div>
                 </li>
-              )}
-              <li className='dash-profile'>
-                <span className='left font-light'>IVA</span>
-                <span className='right'>{taxLabel(product.taxCategory)}</span>
-              </li>
-            </ul>
-
-            {attributes.length > 0 && (
-              <ul className='dashboard-profile'>
+                <li>
+                  <div className='left'>
+                    <h6 className='font-light'>Categoría</h6>
+                  </div>
+                  <div className='right'>
+                    <h6>{product.categoryName ?? '—'}</h6>
+                  </div>
+                </li>
+                {product.brand && (
+                  <li>
+                    <div className='left'>
+                      <h6 className='font-light'>Marca</h6>
+                    </div>
+                    <div className='right'>
+                      <h6>{product.brand}</h6>
+                    </div>
+                  </li>
+                )}
+                <li>
+                  <div className='left'>
+                    <h6 className='font-light'>IVA</h6>
+                  </div>
+                  <div className='right'>
+                    <h6>{taxLabel(product.taxCategory)}</h6>
+                  </div>
+                </li>
                 {attributes.map((pair) => (
-                  <li className='dash-profile' key={pair.key}>
-                    <span className='left font-light'>
-                      {humanizeAttributeKey(pair.key)}
-                    </span>
-                    <span className='right'>{pair.value}</span>
+                  <li key={pair.key}>
+                    <div className='left'>
+                      <h6 className='font-light'>
+                        {humanizeAttributeKey(pair.key)}
+                      </h6>
+                    </div>
+                    <div className='right'>
+                      <h6>{pair.value}</h6>
+                    </div>
                   </li>
                 ))}
               </ul>
-            )}
+            </div>
 
             {product.description && (
               <p className='font-light mt-3'>{product.description}</p>
             )}
 
             {/* La llamada va aqui, junto a lo que falta, y no al final de la
-                pagina: es donde el visitante se topa con que no ve el precio. */}
-            <div className='public-price-cta'>
-              <Lock size={17} />
-              <div>
-                <strong>¿Necesitas el precio?</strong>
-                <p className='font-light'>
-                  Registra tu empresa y, una vez aprobada, verás los precios de
-                  todos los proveedores y podrás compararlos.
-                </p>
-                <Link href='/register' className='btn btn-primary rounded-1 btn-sm'>
-                  Registrar mi empresa
-                </Link>
+                pagina: es donde el visitante se topa con que no ve el precio.
+
+                Solo para quien no ha entrado. A quien ya tiene sesion y espera
+                aprobacion se lo cuenta la franja de arriba, y pedirle que
+                registre la empresa que acaba de registrar no tiene sentido.
+                Espera a `hydrated` porque la sesion se lee de localStorage, que
+                el servidor no ve. */}
+            {hydrated && !isAuthenticated && (
+              <div className='public-price-cta'>
+                <Lock size={17} />
+                <div>
+                  <strong>¿Necesitas el precio?</strong>
+                  <p className='font-light'>
+                    Registra tu empresa y, en cuanto quede aprobada, verás los
+                    precios y podrás pedir.
+                  </p>
+                  <Link href='/register' className='btn btn-primary rounded-1 btn-sm'>
+                    Registrar mi empresa
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
           </Col>
         </Row>
 
@@ -210,42 +236,64 @@ export const PublicProductScreen = ({ productId }: { productId: string }) => {
             <div className='box-head mt-4'>
               <h3>Información del INVIMA</h3>
             </div>
-            <ul className='dashboard-profile'>
-              <li className='dash-profile'>
-                <span className='left font-light'>Composición</span>
-                <span className='right'>
-                  {invima.principiosActivos
-                    .map((principio) =>
-                      [principio.nombre, principio.cantidad, principio.unidad]
-                        .filter(Boolean)
-                        .join(' '),
-                    )
-                    .join(' + ')}
-                </span>
-              </li>
-              <li className='dash-profile'>
-                <span className='left font-light'>Registro sanitario</span>
-                <span className='right'>{invima.registroSanitario}</span>
-              </li>
-              {invima.formaFarmaceutica && (
-                <li className='dash-profile'>
-                  <span className='left font-light'>Forma farmacéutica</span>
-                  <span className='right'>{invima.formaFarmaceutica}</span>
+            <div className='dashboard-profile'>
+              <ul className='dash-profile'>
+                <li>
+                  <div className='left'>
+                    <h6 className='font-light'>Composición</h6>
+                  </div>
+                  <div className='right'>
+                    <h6>
+                      {invima.principiosActivos
+                        .map((principio) =>
+                          [principio.nombre, principio.cantidad, principio.unidad]
+                            .filter(Boolean)
+                            .join(' '),
+                        )
+                        .join(' + ')}
+                    </h6>
+                  </div>
                 </li>
-              )}
-              {invima.viasAdministracion.length > 0 && (
-                <li className='dash-profile'>
-                  <span className='left font-light'>Vía de administración</span>
-                  <span className='right'>{invima.viasAdministracion.join(', ')}</span>
+                <li>
+                  <div className='left'>
+                    <h6 className='font-light'>Registro sanitario</h6>
+                  </div>
+                  <div className='right'>
+                    <h6>{invima.registroSanitario}</h6>
+                  </div>
                 </li>
-              )}
-              {invima.titular && (
-                <li className='dash-profile'>
-                  <span className='left font-light'>Titular del registro</span>
-                  <span className='right'>{invima.titular}</span>
-                </li>
-              )}
-            </ul>
+                {invima.formaFarmaceutica && (
+                  <li>
+                    <div className='left'>
+                      <h6 className='font-light'>Forma farmacéutica</h6>
+                    </div>
+                    <div className='right'>
+                      <h6>{invima.formaFarmaceutica}</h6>
+                    </div>
+                  </li>
+                )}
+                {invima.viasAdministracion.length > 0 && (
+                  <li>
+                    <div className='left'>
+                      <h6 className='font-light'>Vía de administración</h6>
+                    </div>
+                    <div className='right'>
+                      <h6>{invima.viasAdministracion.join(', ')}</h6>
+                    </div>
+                  </li>
+                )}
+                {invima.titular && (
+                  <li>
+                    <div className='left'>
+                      <h6 className='font-light'>Titular del registro</h6>
+                    </div>
+                    <div className='right'>
+                      <h6>{invima.titular}</h6>
+                    </div>
+                  </li>
+                )}
+              </ul>
+            </div>
           </>
         )}
 

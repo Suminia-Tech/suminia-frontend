@@ -27,6 +27,11 @@ import { ProductCard } from '../common/ProductCard';
 const PAGE_SIZE = 24;
 
 export const PublicCatalogScreen = () => {
+  /* El aviso de precios si espera a `hydrated`, aunque el listado no: la sesion
+     se lee de localStorage, que el servidor no ve. Sin esperar, el servidor
+     mandaba el aviso y el navegador de alguien con sesion pintaba la fila sin
+     el, y React tiraba toda la pantalla abajo para rehacerla. */
+  const hydrated = useAppSelector((state) => state.auth.hydrated);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   /* El buscador de la cabecera y las categorias de la portada llegan aqui por
      la URL, de modo que hay que leerla: sin esto se navegaba a
@@ -80,7 +85,7 @@ export const PublicCatalogScreen = () => {
             Solo a quien no ha entrado: al que ya tiene sesion y espera
             aprobacion se lo cuenta la franja de arriba, con su situacion
             concreta, y repetirlo aqui seria decirle dos veces lo mismo. */}
-        {!isAuthenticated && (
+        {hydrated && !isAuthenticated && (
           <div className='public-price-notice'>
             <Lock size={15} />
             <span>
