@@ -2,7 +2,6 @@
 import { store } from "@/store";
 import { usePathname } from "next/navigation";
 import { Provider } from "react-redux";
-import { ToastContainer } from "react-toastify";
 import React, { useEffect } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
@@ -52,16 +51,6 @@ const RootLayout = ({ children }) => {
     <Provider store={store}>
       <ErrorBoundary>
         {children}
-        {/* pauseOnFocusLoss desactivado a proposito: con el valor por defecto,
-            salir de la pestana congela el temporizador y los avisos se quedan
-            en pantalla indefinidamente, incluso sobre una sesion ya iniciada. */}
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          pauseOnFocusLoss={false}
-          closeOnClick
-          newestOnTop
-        />
       </ErrorBoundary>
     </Provider>
   );

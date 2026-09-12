@@ -2,7 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+  type FormEvent,
+} from 'react';
 import { toast } from 'react-toastify';
 import { Input, Modal, ModalBody, ModalHeader } from 'reactstrap';
 
@@ -15,11 +21,32 @@ import { useLoginMutation } from '../api/authApi';
 import { getHomePath } from '../lib/area';
 import { authLabels } from '../lib/labels';
 
+/* Lo que dura el velo como minimo despues de entrar, en milisegundos.
+
+   Es el mismo segundo que el tema deja su animacion al abrir la tienda, de modo
+   que la entrada se reconoce como la misma espera y no como un parpadeo. */
+const ENTRADA_MINIMA = 1000;
+
 const LoginModal = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { loginModal } = useAppSelector((state) => state.ModalReducer);
   const [login, { isLoading }] = useLoginMutation();
+  /* El velo no se levanta cuando responde el servidor sino cuando ya hay algo
+     que mirar. Al proveedor y al administrador los lleva a su area, y esa
+     navegacion tarda: `useTransition` avisa de cuando termina. El comprador se
+     queda en la tienda, de modo que ahi no hay navegacion ninguna y sin el
+     minimo el velo seria un destello. */
+  const [entrando, setEntrando] = useState(false);
+  const [navegando, startTransition] = useTransition();
+  const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (temporizador.current) clearTimeout(temporizador.current);
+    },
+    [],
+  );
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,18 +69,23 @@ const LoginModal = () => {
 
       const destino = getHomePath(session.data.user);
 
-      /* Se confirma siempre, y no solo cuando hay a donde ir.
+      setEntrando(true);
+      startTransition(() => router.push(destino));
 
-         El comprador se queda en la tienda, de modo que si entra desde la
-         propia portada el `push` no cambia de pagina y el modal simplemente
-         desaparece: sin esto, la unica señal de que la sesion empezo es el
-         nombre en la esquina, que hay que ir a buscar. */
-      toast.success(
-        `${authLabels.welcomeBack}, ${session.data.user.name.split(' ')[0]}`,
-        { toastId: 'login-ok' },
-      );
+      /* El saludo sale al retirarse el velo, no debajo de el: anunciarlo antes
+         lo deja tapado durante toda la espera.
 
-      router.push(destino);
+         Se confirma siempre, y no solo cuando hay a donde ir. El comprador se
+         queda en la tienda, de modo que si entra desde la propia portada la
+         pagina no cambia: sin esto, la unica señal de que la sesion empezo es
+         el nombre en la esquina, que hay que ir a buscar. */
+      temporizador.current = setTimeout(() => {
+        setEntrando(false);
+        toast.success(
+          `${authLabels.welcomeBack}, ${session.data.user.name.split(' ')[0]}`,
+          { toastId: 'login-ok' },
+        );
+      }, ENTRADA_MINIMA);
     } catch (err) {
       /* El mensaje se muestra dentro del modal ademas de en el toast: el aviso
          flotante desaparece solo y es facil pasarlo por alto justo cuando hace
@@ -69,7 +101,7 @@ const LoginModal = () => {
     <>
       {/* Sobre el modal mientras se comprueban las credenciales: es el mismo
           velo que se ve al abrir la tienda, de modo que la espera se reconoce. */}
-      <LoadingOverlay isOpen={isLoading} />
+      <LoadingOverlay isOpen={isLoading || entrando || navegando} />
     <Modal className='login-modal' toggle={toggle} isOpen={loginModal} centered={true}>
       <div className='modal-content'>
         <ModalHeader toggle={toggle}></ModalHeader>
