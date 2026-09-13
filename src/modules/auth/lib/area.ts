@@ -57,3 +57,15 @@ export const getHomePath = (user: User | null | undefined): string => {
   const area = getUserArea(user);
   return area === 'supplier' || area === 'admin' ? `/${area}` : '/';
 };
+
+/* La cuenta de cada quien. Existe para las tres areas, tambien para el
+   comprador, que no tiene panel propio pero si empresa, equipo y perfil que
+   consultar.
+
+   Sin ella el menu de la cabecera mandaba a `getHomePath`, que para el
+   comprador es la portada: pulsar "Mi cuenta" recargaba la tienda y parecia que
+   el enlace estuviera roto. */
+export const getAccountPath = (user: User | null | undefined): string | null => {
+  const area = getUserArea(user);
+  return area ? `/${area}/account` : null;
+};

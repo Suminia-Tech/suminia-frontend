@@ -20,5 +20,5 @@ export { default as authReducer } from './model/authSlice';
 
 export type { OrganizationType, Role, RoleName, User } from './model/auth.types';
 
-export { getUserArea, belongsToArea, getHomePath } from './lib/area';
+export { getUserArea, belongsToArea, getHomePath, getAccountPath } from './lib/area';
 export type { Area } from './lib/area';

@@ -9,6 +9,7 @@ import AddToHome from "./AddToHome";
 import ThreeBarToggle from "./ThreeBarToggle";
 import { getAPIData } from "@/_template/Utils";
 import { OVERLAY, TOPMENUTOGGLE } from "@/_template/ReduxToolkit/Reducers/ModalReducer";
+import { getAccountPath, useAuth } from "@/modules/auth";
 
 const NavBar = ({ customClass }) => {
   const { t } = useTranslation("common");
@@ -18,6 +19,11 @@ const NavBar = ({ customClass }) => {
   const [childMenuActive, setChildMenuActive] = useState();
   const { overlay, TopMenuToggle } = useSelector((state) => state.ModalReducer);
   const dispatch = useDispatch();
+  /* La cuenta va en esta barra y no solo en el desplegable de la esquina: es
+     donde el comprador la busca, junto a TIENDA y BLOG. Solo aparece con sesion
+     iniciada, que es cuando lleva a algun sitio. */
+  const { user, isAuthenticated } = useAuth();
+  const accountPath = getAccountPath(user);
   useEffect(() => {
     getAPIData("/api/header").then((res) => setHeaderData(res?.data));
   }, []);
@@ -137,6 +143,13 @@ const NavBar = ({ customClass }) => {
               </li>
             );
           })}
+          {isAuthenticated && accountPath && (
+            <li>
+              <Link href={accountPath} className="nav-link menu-title">
+                MI CUENTA
+              </Link>
+            </li>
+          )}
           <AddToHome />
         </ul>
       </div>

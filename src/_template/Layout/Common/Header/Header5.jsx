@@ -9,7 +9,7 @@ import SearchBarWithBgColor from '@/_template/Layout/Element/SearchBarWithBgColo
 import ItemCart from '@/_template/Layout/Element/ItemCart';
 import NavBar from '@/_template/Layout/Element/NavBar';
 import { useAuth } from '@/modules/auth';
-import { getAccountLabel, getHomePath } from '@/modules/auth';
+import { getAccountLabel, getAccountPath } from '@/modules/auth';
 import { LOGINMODAL } from '@/_template/ReduxToolkit/Reducers/ModalReducer';
 import { useDispatch } from 'react-redux';
 
@@ -69,10 +69,12 @@ const Header5 = ({ noStyle, isCategories }) => {
                             <i className='fas fa-chevron-down ms-1'></i>
                           </DropdownToggle>
                           <DropdownMenu end>
-                            {/* Cada rol tiene su propia area: /supplier, /buyer
-                                o /admin. Este header solo lo usan ya las paginas de la
-                                plantilla, que se iran borrando. */}
-                            <DropdownItem href={getHomePath(user)}>{getAccountLabel(user)}</DropdownItem>
+                            {/* A la cuenta, no a la portada del area: para el
+                                comprador `getHomePath` es la tienda, de modo que
+                                esta entrada recargaba la misma pagina. */}
+                            {getAccountPath(user) && (
+                              <DropdownItem href={getAccountPath(user)}>{getAccountLabel(user)}</DropdownItem>
+                            )}
                             <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>

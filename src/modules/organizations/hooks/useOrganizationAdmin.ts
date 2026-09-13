@@ -9,6 +9,7 @@ import {
   useReactivateBuyerMutation,
   useRejectBuyerMutation,
   useSuspendBuyerMutation,
+  useUpdateBuyerMutation,
 } from '../api/buyersApi';
 import {
   useApproveSupplierMutation,
@@ -17,6 +18,7 @@ import {
   useReactivateSupplierMutation,
   useRejectSupplierMutation,
   useSuspendSupplierMutation,
+  useUpdateSupplierMutation,
 } from '../api/suppliersApi';
 
 /* Proveedores y compradores se administran igual: el mismo listado, los mismos
@@ -94,6 +96,20 @@ export const useOrganizationDecisions = (kind: OrganizationKind) => {
   ].some((state) => state.isLoading);
 
   return { approve, reject, suspend, reactivate, isBusy };
+};
+
+/* Guardar los datos de la empresa. La usa "Mi empresa", que es la misma
+   pantalla para los dos lados: cambia el endpoint, no lo que se edita. */
+export const useOrganizationUpdate = (kind: OrganizationKind) => {
+  const esProveedor = kind === 'supplier';
+
+  const [updateSupplier, supplierState] = useUpdateSupplierMutation();
+  const [updateBuyer, buyerState] = useUpdateBuyerMutation();
+
+  return {
+    update: esProveedor ? updateSupplier : updateBuyer,
+    isSaving: esProveedor ? supplierState.isLoading : buyerState.isLoading,
+  };
 };
 
 /* Como se llama cada lado en pantalla. Vive junto a los hooks para que añadir

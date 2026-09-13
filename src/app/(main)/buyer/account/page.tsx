@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 
-/* Sin pantalla de resumen todavia: el backend no expone /buyers, de modo que no
-   hay datos de empresa que mostrar. Entra por el perfil. */
+/* Lo primero que busca quien entra aqui es en que va su solicitud, sobre todo
+   mientras no esta aprobada. */
 export default function CuentaPage() {
-  redirect('/buyer/account/profile');
+  redirect('/buyer/account/company');
 }
