@@ -2171,14 +2171,18 @@ select.form-control,
      depende del ancho de la pantalla: asi acababa saliendose de la seccion y
      recortada por abajo. Se fijan las dos.
 
-     Las cifras salen de medir el archivo: 1059x1430 con un 11% transparente
-     arriba y otro 11% abajo, de modo que la caja solo ocupa el 77% de lo que
-     mida el img. A 470px de alto lo que se ve son 362, y con 16 de margen queda
-     a 69px del borde por arriba y otros 69 por abajo. Poner menos altura —380,
-     como estaba— dejaba la caja en 293px: pequeña y alta. */
+     Las cifras salen de medir el archivo: 1059x1430 con un 11,3% transparente
+     arriba y un 11,5% abajo, de modo que la caja solo ocupa el 77% de lo que
+     mida el img. A 500px de alto lo que se ve son 385, y con 24 de margen la
+     caja arranca a 80px del borde. El img se sale por abajo, pero lo que
+     sobresale es transparente y la seccion recorta con `overflow: hidden`.
+
+     Va mas abajo que centrada a proposito: el bloque de texto de la izquierda
+     llega hasta el boton, bastante mas abajo que la caja, y con la imagen
+     centrada los dos lados no se miraban a la cara. */
   .poster-image img {
-    height: 470px;
-    margin: 16px auto 0;
+    height: 500px;
+    margin: 24px auto 0;
   }
 
   /* Las redes estan fijas a 100px del borde. Con el banner a 850 quedaban muy
@@ -2189,9 +2193,13 @@ select.form-control,
 
   /* Las flechas las coloca el tema a 260px del suelo —debajo de las miniaturas
      cuando el banner medía 850—. Van al pie: por debajo de las miniaturas, que
-     ahora terminan mas arriba, y sin salirse de la seccion. */
+     ahora terminan mas arriba, y sin salirse de la seccion.
+
+     Se miden contra el carrusel y no contra la seccion, de modo que cada vez
+     que crece la imagen bajan con ella y la seccion las recorta. De ahi que el
+     numero no sea 14: son los 14 del suelo mas lo que el carrusel sobresale. */
   .classic-arrow-1 .custom-arrow {
-    bottom: 14px;
+    bottom: 44px;
   }
 }
 
@@ -2206,8 +2214,8 @@ select.form-control,
     height: 460px;
 
     .poster-image img {
-      height: 430px;
-      margin-top: 14px;
+      height: 460px;
+      margin-top: 22px;
     }
   }
 }
