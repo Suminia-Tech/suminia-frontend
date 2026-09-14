@@ -2160,10 +2160,14 @@ select.form-control,
    Va en `margin` y no en `padding`: el fondo verde llega hasta el borde del
    elemento, de modo que con padding se estiraria en vez de dejar aire. */
 .home-section-6 {
-  /* El bloque de texto va centrado y a altura completa, y su titular crece con
-     el ancho de la pantalla: en una pantalla ancha llenaba casi los 500px y el
-     boton quedaba rozando el borde de abajo. Se le dan 560 ahi, y 500 en cuanto
-     el titular deja de crecer. */
+  /* 560 y no los 850 del tema, que dejaban un banner de pantalla completa. El
+     bloque de texto va centrado y a altura completa, y su titular crece con el
+     ancho: con menos de 560 el boton acaba rozando el borde de abajo en una
+     pantalla ancha.
+
+     Antes bajaba a 500 por debajo de 1630px, donde el titular deja de crecer.
+     Se quito: la caja de la imagen necesita ese alto para no salirse, y el
+     texto lo unico que gana es aire. */
   height: 560px;
   margin-bottom: calc(0.9375vw + 2px);
 
@@ -2173,16 +2177,17 @@ select.form-control,
 
      Las cifras salen de medir el archivo: 1059x1430 con un 11,3% transparente
      arriba y un 11,5% abajo, de modo que la caja solo ocupa el 77% de lo que
-     mida el img. A 500px de alto lo que se ve son 385, y con 24 de margen la
-     caja arranca a 80px del borde. El img se sale por abajo, pero lo que
-     sobresale es transparente y la seccion recorta con `overflow: hidden`.
+     mida el img. A 545px de alto lo que se ve son 420, y con 40 de margen la
+     caja arranca a 102 del borde y termina a 38 del suelo. El img se sale por
+     abajo, pero lo que sobresale es transparente y la seccion lo recorta con
+     su `overflow: hidden`.
 
      Va mas abajo que centrada a proposito: el bloque de texto de la izquierda
      llega hasta el boton, bastante mas abajo que la caja, y con la imagen
      centrada los dos lados no se miraban a la cara. */
   .poster-image img {
-    height: 500px;
-    margin: 24px auto 0;
+    height: 545px;
+    margin: 40px auto 0;
   }
 
   /* Las redes estan fijas a 100px del borde. Con el banner a 850 quedaban muy
@@ -2203,19 +2208,13 @@ select.form-control,
   }
 }
 
-@media (max-width: 1630px) {
-  .home-section-6 {
-    height: 500px;
-  }
-}
-
 @media (max-width: 1399px) {
   .home-section-6 {
-    height: 460px;
+    height: 500px;
 
     .poster-image img {
-      height: 460px;
-      margin-top: 22px;
+      height: 495px;
+      margin-top: 34px;
     }
   }
 }
