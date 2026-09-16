@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
 import { ChevronLeft, Image as ImageIcon, Lock } from 'react-feather';
 import { Col, Row, Table } from 'reactstrap';
 
@@ -23,7 +23,33 @@ import { Price } from '../common/Price';
 
    No hay lista de otros proveedores: ese endpoint pide sesion, y sin precios
    tampoco habria nada que comparar. */
-export const PublicProductScreen = ({ productId }: { productId: string }) => {
+/* La compra la pone el modulo del carrito, que products no puede importar: un
+   modulo nunca importa otro. Entra como componente desde la pagina, que si
+   puede ver los dos, y el tipo se describe con datos sueltos para que ninguno
+   de los dos lados tenga que conocer los tipos del otro. */
+export interface BuyableFormatProps {
+  formats: {
+    presentationId: string;
+    name: string;
+    packaging: string;
+    price: number | null;
+    currency: string;
+    minOrderQuantity: number;
+    orderMultiple: number;
+    stock: number;
+    priceTiers: { minQuantity: number; price: number }[];
+  }[];
+}
+
+interface PublicProductScreenProps {
+  productId: string;
+  BuyBox?: ComponentType<BuyableFormatProps>;
+}
+
+export const PublicProductScreen = ({
+  productId,
+  BuyBox,
+}: PublicProductScreenProps) => {
   const [activeImage, setActiveImage] = useState(0);
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -178,6 +204,22 @@ export const PublicProductScreen = ({ productId }: { productId: string }) => {
                 registre la empresa que acaba de registrar no tiene sentido.
                 Espera a `hydrated` porque la sesion se lee de localStorage, que
                 el servidor no ve. */}
+            {BuyBox && (
+              <BuyBox
+                formats={product.presentations.map((presentation) => ({
+                  presentationId: presentation.id,
+                  name: presentation.name,
+                  packaging: presentation.packaging,
+                  price: presentation.price,
+                  currency: presentation.currency,
+                  minOrderQuantity: presentation.minOrderQuantity,
+                  orderMultiple: presentation.orderMultiple,
+                  stock: presentation.stock,
+                  priceTiers: presentation.priceTiers ?? [],
+                }))}
+              />
+            )}
+
             {hydrated && !isAuthenticated && (
               <div className='public-price-cta'>
                 <Lock size={17} />

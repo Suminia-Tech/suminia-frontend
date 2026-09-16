@@ -2487,3 +2487,329 @@ select.form-control,
     }
   }
 }
+
+/* --- Carrito --- */
+
+/* El selector de cantidad. El tema trae `qty-box`, pero es solo un campo
+   numerico suelto y anidado dentro de sus propias pantallas: sin botones, que
+   es justo lo que hace falta aqui para moverse de multiplo en multiplo. */
+.cart-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  overflow: hidden;
+
+  button {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 0;
+    background-color: $light-blue;
+    color: $theme-font-color;
+    transition: all 0.3s;
+
+    &:hover:not(:disabled) {
+      background-color: var(--theme-color);
+      color: $white;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+
+  .form-control {
+    width: 62px;
+    height: 36px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 0;
+    text-align: center;
+    font-size: 14px;
+
+    /* Las flechas del campo numerico sobran: subirian de uno en uno, que es
+       justo la cantidad que el proveedor no despacha. */
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+/* La caja de compra de la ficha. Comparte el marco del aviso de precios —el
+   mismo recuadro azul claro— porque ocupan el mismo sitio y solo se ve uno de
+   los dos: la caja a quien puede comprar, el aviso a quien no. */
+.buy-box {
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $light-blue;
+
+  .form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
+
+  .form-control {
+    background-color: $white;
+  }
+
+  small {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 12.5px;
+  }
+}
+
+.buy-box-field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.buy-box-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 12px;
+  margin-bottom: 12px;
+  border-top: 1px solid $border-color;
+
+  strong {
+    font-size: 20px;
+  }
+}
+
+.buy-box-base {
+  margin-left: 6px;
+  opacity: 0.6;
+}
+
+/* Lo que falta para el siguiente escalon. Es la unica forma de que el descuento
+   por cantidad sirva de algo: si no se ve, nadie pide mas. */
+.buy-box-tier {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--theme-color);
+}
+
+.buy-box-link {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 13.5px;
+}
+
+/* El numerito sobre el carrito de la cabecera. */
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background-color: $white;
+  color: var(--theme-color);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+.cart-empty {
+  padding: 40px 0;
+  text-align: center;
+
+  p {
+    margin-bottom: 16px;
+  }
+}
+
+/* El resumen acompaña a los grupos en pantalla ancha y se va debajo cuando no
+   cabe: es lo ultimo que se mira, no lo primero. */
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 991px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cart-group {
+  /* El tema le da 80px de padding arriba a todo `<section>` en su reset, y cada
+     grupo lo es: sin esto salia una franja en blanco encima del nombre del
+     proveedor. */
+  padding: 0;
+  margin-bottom: 20px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cart-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: $light-blue;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  span {
+    font-size: 13px;
+  }
+}
+
+.cart-lines {
+  margin: 0;
+  padding: 0;
+}
+
+/* `li { display: inline-block }` es global en el tema, de modo que cualquier
+   lista vertical propia tiene que decir que lo es. */
+.cart-line {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 120px auto 110px 32px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid $border-color;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    row-gap: 10px;
+  }
+}
+
+.cart-line-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  background-color: $white;
+  color: $font-dark;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+.cart-line-name {
+  a {
+    display: block;
+    color: $theme-font-color;
+    font-weight: 500;
+
+    &:hover {
+      color: var(--theme-color);
+    }
+  }
+
+  small {
+    display: block;
+    font-size: 12.5px;
+  }
+}
+
+.cart-line-unit {
+  font-size: 14px;
+
+  small {
+    display: block;
+    font-size: 12px;
+  }
+}
+
+.cart-line-tier {
+  color: var(--theme-color);
+}
+
+.cart-line-total {
+  font-weight: 600;
+  text-align: right;
+}
+
+.cart-line-remove {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: $font-dark;
+
+  &:hover:not(:disabled) {
+    color: #d32f2f;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.cart-group-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid $border-color;
+}
+
+.cart-summary {
+  padding: 16px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $light-blue;
+
+  .box-head {
+    margin-bottom: 12px;
+
+    h3 {
+      font-size: 16px;
+    }
+  }
+}
+
+.cart-summary-lines {
+  margin: 0 0 14px;
+  padding: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+}
+
+.cart-summary-total {
+  padding-top: 10px !important;
+  border-top: 1px solid $border-color;
+  font-size: 16px !important;
+
+  strong {
+    font-size: 19px;
+  }
+}
+
+.cart-summary-note {
+  margin-bottom: 12px;
+  font-size: 12.5px;
+}
