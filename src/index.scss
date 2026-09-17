@@ -3346,3 +3346,11 @@ select.form-control,
 .order-cancel {
   min-width: 320px;
 }
+
+/* La nota de cuando se consigna, debajo del desglose del proveedor. */
+.order-payout-note {
+  max-width: 340px;
+  margin: 8px 0 0 auto;
+  font-size: 12.5px;
+  text-align: right;
+}

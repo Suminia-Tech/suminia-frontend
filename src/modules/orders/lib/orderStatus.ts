@@ -48,6 +48,24 @@ export const buyerCanCancel = (status: OrderStatus): boolean =>
 export const buyerCanConfirmDelivery = (status: OrderStatus): boolean =>
   status === 'SHIPPED';
 
+/** El proveedor decide sobre lo que todavia no ha mirado. */
+export const supplierCanDecide = (status: OrderStatus): boolean =>
+  status === 'PLACED';
+
+/** Despacha lo que ya acepto. */
+export const supplierCanShip = (status: OrderStatus): boolean =>
+  status === 'CONFIRMED';
+
+/* Y puede echarse atras de lo confirmado mientras no haya salido. Con motivo:
+   el comprador conto con esa mercancia. */
+export const supplierCanCancel = (status: OrderStatus): boolean =>
+  status === 'CONFIRMED';
+
+/* Tambien puede darlo por entregado: a veces tiene la firma del transportador
+   antes de que el comprador entre a confirmarlo. */
+export const supplierCanConfirmDelivery = (status: OrderStatus): boolean =>
+  status === 'SHIPPED';
+
 /* El recorrido que se dibuja en la ficha. Los estados que matan el pedido no
    entran: no son un paso mas, son el final. */
 export const ORDER_TIMELINE: OrderStatus[] = [

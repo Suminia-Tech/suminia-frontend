@@ -1,4 +1,12 @@
-import { Briefcase, Home, Package, Shield, User, Users } from 'react-feather';
+import {
+  Briefcase,
+  Clipboard,
+  Home,
+  Package,
+  Shield,
+  User,
+  Users,
+} from 'react-feather';
 
 import type { SidebarGroup } from '../_shell/sidebar.types';
 
@@ -9,6 +17,12 @@ import type { SidebarGroup } from '../_shell/sidebar.types';
    Nada de la tienda B2C —categorias, buscador, carrito— porque un proveedor
    vende, no compra. */
 export const SUPPLIER_SIDEBAR: SidebarGroup[] = [
+  /* Los pedidos primero: es lo que el proveedor abre cada dia, y el catalogo
+     se toca cuando cambia algo. */
+  {
+    label: 'Ventas',
+    items: [{ label: 'Pedidos', href: '/supplier/orders', icon: Clipboard }],
+  },
   {
     label: 'Catálogo',
     items: [{ label: 'Mis productos', href: '/supplier/products', icon: Package }],

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 
-import { BuyerOrderDetailScreen } from '@/modules/orders';
+import { SupplierOrderDetailScreen } from '@/modules/orders';
 
 export const metadata: Metadata = {
   title: 'Pedido',
-  description: 'Detalle de tu pedido.',
+  description: 'Detalle de un pedido que te hicieron.',
 };
 
 export default async function PedidoPage({
@@ -15,7 +15,7 @@ export default async function PedidoPage({
   const { id } = await params;
   return (
     <div className='dashboard-profile'>
-      <BuyerOrderDetailScreen orderId={id} />
+      <SupplierOrderDetailScreen orderId={id} />
     </div>
   );
 }
