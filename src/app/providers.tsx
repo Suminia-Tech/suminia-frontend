@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 
-import { AuthInitializer, LoginModal } from '@/modules/auth';
+import { AuthInitializer, LoginModal, SessionOverlay } from '@/modules/auth';
 import { store } from '@/store';
 
 export default function Providers({ children }: { children: ReactNode }) {
@@ -13,6 +13,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       <AuthInitializer />
       {children}
       <LoginModal />
+      <SessionOverlay />
       {/* Aqui y no en (main): la portada cuelga de app/page.js, fuera de ese
           grupo, de modo que en la tienda no habia contenedor y ningun aviso
           llegaba a pintarse. El de bienvenida se lanzaba y se perdia, y por eso

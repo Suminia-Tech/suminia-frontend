@@ -5,6 +5,7 @@ export { AuthInitializer } from './ui/AuthInitializer';
 export { PendingApprovalNotice } from './ui/PendingApprovalNotice';
 export { AreaGuard } from './ui/AreaGuard';
 export { default as LoginModal } from './ui/LoginModal';
+export { SessionOverlay } from './ui/SessionOverlay';
 export { default as RegisterSection } from './ui/RegisterSection';
 export { default as ForgotPasswordSection } from './ui/ForgotPasswordSection';
 export { ResetPasswordScreen } from './ui/ResetPasswordScreen';

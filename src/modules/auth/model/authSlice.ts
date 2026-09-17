@@ -12,6 +12,7 @@ const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   hydrated: false,
+  loggingOut: false,
 };
 
 const authSlice = createSlice({
@@ -35,8 +36,23 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
     },
+    /* El velo de cerrar sesion. Va en el estado y no dentro del componente que
+       tiene el boton porque ese componente desaparece al cerrar —la cabecera
+       del area, el panel del proveedor— y se llevaria el velo con el. */
+    logoutStarted: (state) => {
+      state.loggingOut = true;
+    },
+    logoutFinished: (state) => {
+      state.loggingOut = false;
+    },
   },
 });
 
-export const { hydrate, setCredentials, logout } = authSlice.actions;
+export const {
+  hydrate,
+  setCredentials,
+  logout,
+  logoutStarted,
+  logoutFinished,
+} = authSlice.actions;
 export default authSlice.reducer;

@@ -19,13 +19,8 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 import { useLoginMutation } from '../api/authApi';
 import { getHomePath } from '../lib/area';
+import { SESSION_FEEDBACK_MS } from '../lib/session';
 import { authLabels } from '../lib/labels';
-
-/* Lo que dura el velo como minimo despues de entrar, en milisegundos.
-
-   Es el mismo segundo que el tema deja su animacion al abrir la tienda, de modo
-   que la entrada se reconoce como la misma espera y no como un parpadeo. */
-const ENTRADA_MINIMA = 1000;
 
 const LoginModal = () => {
   const dispatch = useAppDispatch();
@@ -85,7 +80,7 @@ const LoginModal = () => {
           `${authLabels.welcomeBack}, ${session.data.user.name.split(' ')[0]}`,
           { toastId: 'login-ok' },
         );
-      }, ENTRADA_MINIMA);
+      }, SESSION_FEEDBACK_MS);
     } catch (err) {
       /* El mensaje se muestra dentro del modal ademas de en el toast: el aviso
          flotante desaparece solo y es facil pasarlo por alto justo cuando hace

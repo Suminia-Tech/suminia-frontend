@@ -43,6 +43,10 @@ export interface AuthState {
      para que el HTML del servidor y el del cliente coincidan, asi que sin esta
      bandera las pantallas privadas parpadean como "no autenticado". */
   hydrated: boolean;
+  /* Mientras se cierra la sesion. Cerrar es instantaneo —se borra localStorage y
+     ya— y sin esta bandera no hay nada que enseñar: la pantalla cambia de golpe
+     y queda la duda de si se cerro. */
+  loggingOut: boolean;
 }
 
 /* --- Peticiones --- */
