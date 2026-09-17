@@ -10,6 +10,7 @@ export { BuyersScreen } from './ui/buyer/BuyersScreen';
 export { BuyerDetailScreen } from './ui/buyer/BuyerDetailScreen';
 export { BuyerCompanyScreen } from './ui/buyer/MyCompanyScreen';
 export { DeliveryLocationsScreen } from './ui/common/DeliveryLocationsScreen';
+export { DeliveryLocationPicker } from './ui/common/DeliveryLocationPicker';
 
 export { default as organizationsReducer } from './model/organizationsSlice';
 

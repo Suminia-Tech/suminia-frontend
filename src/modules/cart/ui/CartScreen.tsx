@@ -272,9 +272,20 @@ export const CartScreen = () => {
           </p>
         )}
 
+        {/* Deshabilitado si algun proveedor no llega a su minimo: dejar pulsar
+            para que el servidor lo rechace seria pasear al comprador. */}
+        <Link
+          href='/checkout'
+          className={`btn btn-primary btn-full${
+            cart.groups.some((group) => !group.meetsMinimum) ? ' disabled' : ''
+          }`}
+        >
+          Continuar
+        </Link>
+
         <button
           type='button'
-          className='btn btn-outline-danger btn-sm btn-full'
+          className='btn btn-outline-danger btn-sm btn-full mt-2'
           disabled={ocupado}
           onClick={() =>
             ejecuta(() => clearCart().unwrap(), 'No se pudo vaciar el carrito.')

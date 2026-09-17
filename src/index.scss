@@ -2998,3 +2998,351 @@ select.form-control,
   font-size: 12.5px;
   color: #6b4e0d;
 }
+
+/* --- Confirmar pedido --- */
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 991px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.checkout-side {
+  padding: 16px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background-color: $light-blue;
+}
+
+/* Las sedes como tarjetas y no como un desplegable: la direccion y el horario
+   son lo que se compara al elegir, y en un `<select>` no caben. */
+.location-choices {
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    background-color: $white;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--theme-color);
+    }
+
+    &.is-chosen {
+      border-color: var(--theme-color);
+      box-shadow: 0 0 0 1px var(--theme-color);
+    }
+
+    input {
+      margin-top: 3px;
+      flex: 0 0 auto;
+    }
+
+    > span {
+      display: block;
+    }
+
+    small {
+      display: block;
+      font-size: 12.5px;
+    }
+  }
+}
+
+.checkout-summary {
+  margin-bottom: 14px;
+}
+
+.checkout-group {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid $border-color;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+}
+
+.checkout-group-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+
+  h4 {
+    margin: 0 0 6px;
+    font-size: 14.5px;
+  }
+}
+
+.checkout-lines {
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 3px 0;
+    font-size: 13px;
+  }
+}
+
+.checkout-note {
+  margin: 12px 0;
+  font-size: 12.5px;
+}
+
+.checkout-back {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 13.5px;
+}
+
+/* --- Pedidos --- */
+
+.orders-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  button {
+    padding: 6px 14px;
+    border: 1px solid $border-color;
+    border-radius: 20px;
+    background-color: $white;
+    font-size: 13px;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--theme-color);
+    }
+
+    &.is-chosen {
+      border-color: var(--theme-color);
+      background-color: var(--theme-color);
+      color: $white;
+    }
+  }
+}
+
+.orders-empty {
+  padding: 40px 0;
+  text-align: center;
+  color: $font-dark;
+
+  p {
+    margin: 12px 0 16px;
+  }
+}
+
+.orders-list {
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 120px;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 16px;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    background-color: $white;
+    color: $theme-font-color;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--theme-color);
+    }
+
+    @media (max-width: 767px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+}
+
+.orders-line-main {
+  display: flex;
+  flex-direction: column;
+
+  small {
+    font-size: 12.5px;
+  }
+}
+
+.orders-number {
+  font-weight: 700;
+  color: var(--theme-color);
+}
+
+.orders-supplier {
+  font-weight: 500;
+}
+
+.orders-total {
+  text-align: right;
+}
+
+.order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.order-hint {
+  margin-bottom: 16px;
+  font-size: 13.5px;
+}
+
+.order-locked {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+/* El recorrido del pedido. Horizontal en pantalla ancha, vertical cuando no
+   cabe: cuatro pasos apretados no se leen. */
+.order-timeline {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 1;
+    font-size: 13px;
+    color: $font-dark;
+
+    &.is-done {
+      color: $theme-font-color;
+
+      .order-timeline-dot {
+        border-color: var(--theme-color);
+        background-color: var(--theme-color);
+        color: $white;
+      }
+    }
+
+    small {
+      display: block;
+      font-size: 11.5px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+}
+
+.order-timeline-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: 2px solid $border-color;
+  border-radius: 50%;
+}
+
+.order-items {
+  margin: 0 0 14px;
+  padding: 0;
+
+  li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 110px;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    @media (max-width: 767px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+
+  strong {
+    text-align: right;
+  }
+}
+
+.order-item-name {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+
+  small {
+    font-size: 12.5px;
+    font-weight: 400;
+  }
+}
+
+.order-item-qty {
+  font-size: 13.5px;
+  color: $font-dark;
+}
+
+.order-totals {
+  max-width: 340px;
+  margin-left: auto;
+}
+
+.order-delivery {
+  padding: 14px 16px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+}
+
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid $border-color;
+}
+
+.order-cancel {
+  min-width: 320px;
+}
