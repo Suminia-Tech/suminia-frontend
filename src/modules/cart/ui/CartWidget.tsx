@@ -13,31 +13,41 @@ import { useCanBuy } from '../hooks/useCanBuy';
 
    A quien no puede comprar no se le enseña un carrito vacio sino nada: un
    visitante no tiene donde meter productos, y un carrito a cero solo ocupa
-   sitio y promete algo que no existe todavia. */
+   sitio y promete algo que no existe todavia.
+
+   Sin el total. Lo llevaba la plantilla —$0.00 pintado en la cabecera— y no lo
+   hace ningun marketplace: lo que se consulta de un vistazo es cuantas cosas
+   hay, no cuanto suman. El precio ademas crece con el pedido y descuadra la
+   fila entera. */
 export const CartWidget = () => {
   const { canBuy, hydrated } = useCanBuy();
   const { data } = useGetCartQuery(undefined, { skip: !hydrated || !canBuy });
 
   if (!hydrated || !canBuy) return null;
 
-  const cart = data?.data;
-  const total = cart
-    ? new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: cart.currency,
-        maximumFractionDigits: 0,
-      }).format(cart.total)
-    : '—';
+  const cuantos = data?.data.itemCount ?? 0;
 
   return (
     <li className='onhover-dropdown cart-dropdown'>
-      <Link href='/cart' className='btn btn-solid-default btn-spacing'>
-        <ShoppingCart className='pe-sm-2' />
-        <span>{total}</span>
-        {Boolean(cart?.itemCount) && (
-          <span className='cart-badge'>{cart?.itemCount}</span>
-        )}
+      <Link
+        href='/cart'
+        className='btn btn-solid-default btn-spacing'
+        aria-label={
+          cuantos === 0
+            ? 'Mi carrito, vacío'
+            : `Mi carrito, ${cuantos} ${cuantos === 1 ? 'producto' : 'productos'}`
+        }
+      >
+        <ShoppingCart />
       </Link>
+      {/* Fuera del boton y no dentro: `.btn` recorta con `overflow: hidden`, de
+          modo que ahi dentro la esquina redondeada se come el numero.
+          `aria-hidden` porque la cuenta ya va dicha en el `aria-label`. */}
+      {cuantos > 0 && (
+        <span className='cart-badge' aria-hidden='true'>
+          {cuantos}
+        </span>
+      )}
     </li>
   );
 };

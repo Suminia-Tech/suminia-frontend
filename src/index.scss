@@ -2606,20 +2606,70 @@ select.form-control,
   font-size: 13.5px;
 }
 
-/* El numerito sobre el carrito de la cabecera. */
+/* El carrito de la cabecera: solo el icono, cuadrado como el boton de buscar
+   que tiene al lado. El total lo llevaba la plantilla y se quito —ningun
+   marketplace lo pone ahi, y ademas ensanchaba la fila segun creciera el
+   pedido—. */
+.navbar-searchbar {
+  .cart-dropdown {
+    position: relative;
+  }
+
+  .cart-dropdown > .btn {
+    /* Es un enlace, no un boton: un `<a>` con altura fija no centra su
+       contenido por si solo como si hace un `<button>`, y ademas hereda el
+       color de enlace del tema en vez del blanco del boton solido —de ahi que
+       el icono saliera negro sobre el azul—. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--suminia-alto-control);
+    padding-left: 0;
+    padding-right: 0;
+    color: $white;
+
+    &:hover,
+    &:focus {
+      color: $white;
+    }
+
+    /* El icono aparte del enlace: el tema pinta de oscuro los `svg` que cuelgan
+       de un `li a` de desplegable (components/_dropdown.scss), y como el icono
+       trae `stroke="currentColor"`, ese color es el que acaba usando. Poner
+       blanco solo en el enlace no bastaba. */
+    svg {
+      color: $white;
+    }
+  }
+}
+
+/* El numerito va sobre la esquina del boton, y fuera de el: `.btn` recorta con
+   `overflow: hidden`.
+
+   En otro color que el boton, no en el azul del tema: la mitad del circulo cae
+   sobre el boton y la otra mitad sobre la cabecera blanca, de modo que azul
+   sobre azul lo hacia desaparecer y blanco lo habria borrado en la otra mitad.
+   El aro blanco lo despega del boton. */
 .cart-badge {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  min-width: 18px;
-  padding: 0 4px;
-  border-radius: 9px;
-  background-color: $white;
-  color: var(--theme-color);
+  top: -6px;
+  right: -7px;
+  /* Por encima del boton: el tema le da `z-index: 1` a `.btn`, de modo que sin
+     esto el boton se pinta encima y del circulo solo se ve el trozo que
+     sobresale —parecia un circulo cortado—. */
+  z-index: 2;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border: 2px solid $white;
+  border-radius: 11px;
+  background-color: #e03a2f;
+  color: $white;
   font-size: 11px;
-  font-weight: 600;
-  line-height: 18px;
+  font-weight: 700;
+  line-height: 17px;
   text-align: center;
+  pointer-events: none;
 }
 
 .cart-empty {
