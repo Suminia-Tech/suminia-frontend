@@ -23,12 +23,18 @@ export interface OrganizationFormValues {
   phone: string;
   address: string;
   city: string;
+  /* Solo lo manda el proveedor. Cadena vacia significa "sin minimo", que no es
+     lo mismo que cero: cero seria exigir un minimo de nada. */
+  minOrderValue: string;
 }
 
 interface OrganizationFormProps {
   organization: Organization;
   isSaving: boolean;
   onSubmit: (values: OrganizationFormValues) => void;
+  /* El minimo por pedido solo aparece del lado del proveedor: es lo que exige
+     para despachar, y en un comprador no significaria nada. */
+  showSupplierFields?: boolean;
 }
 
 const toValues = (organization: Organization): OrganizationFormValues => ({
@@ -37,12 +43,15 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   phone: organization.phone ?? '',
   address: organization.address ?? '',
   city: organization.city ?? '',
+  minOrderValue:
+    organization.minOrderValue === null ? '' : String(organization.minOrderValue),
 });
 
 const OrganizationForm = ({
   organization,
   isSaving,
   onSubmit,
+  showSupplierFields = false,
 }: OrganizationFormProps) => {
   /* El estado inicial se toma una sola vez. Para recoger los datos frescos tras
      guardar, quien renderiza este formulario le pasa una `key` que cambia con
@@ -143,6 +152,33 @@ const OrganizationForm = ({
           />
         </Col>
       </Row>
+
+      {showSupplierFields && (
+        <>
+          <div className='box-head'>
+            <h3>Condiciones de despacho</h3>
+          </div>
+          <Row>
+            <Col md='6' className='mb-3'>
+              <label className='form-label'>Pedido mínimo</label>
+              <input
+                type='number'
+                min={0}
+                step={1000}
+                className='form-control'
+                placeholder='Sin mínimo'
+                value={values.minOrderValue}
+                onChange={handleChange('minOrderValue')}
+              />
+              <small className='font-light'>
+                Lo menos que despachas por pedido, sumado antes de IVA. Déjalo
+                vacío si no exiges mínimo. Es distinto del pedido mínimo de cada
+                formato, que se fija en el producto.
+              </small>
+            </Col>
+          </Row>
+        </>
+      )}
 
       <button type='submit' className='btn btn-primary btn-sm mt-3' disabled={isSaving}>
         {isSaving ? 'Guardando...' : 'Guardar cambios'}

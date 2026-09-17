@@ -41,6 +41,14 @@ export interface CartSupplierGroup {
   subtotal: number;
   tax: number;
   total: number;
+
+  /* Lo menos que este proveedor despacha. Null es "sin minimo", y entonces
+     `meetsMinimum` es true: no hay nada que alcanzar.
+
+     Se mide contra el subtotal y no contra el total: el IVA no es plata del
+     proveedor. */
+  minOrderValue: number | null;
+  meetsMinimum: boolean;
 }
 
 export interface Cart {

@@ -2921,3 +2921,30 @@ select.form-control,
     font-size: 13px;
   }
 }
+
+/* El aviso de pedido minimo, en el grupo del proveedor al que le falta. */
+.cart-group-min {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 0;
+  border-top: 1px solid $border-color;
+  background-color: #fdf4e3;
+  font-size: 13.5px;
+  color: #6b4e0d;
+
+  svg {
+    flex: 0 0 auto;
+    color: #a97a17;
+  }
+}
+
+.cart-summary-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  color: #6b4e0d;
+}

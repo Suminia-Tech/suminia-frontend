@@ -75,6 +75,16 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
         data: {
           name: values.name.trim(),
           email: values.email.trim(),
+          /* Solo del proveedor, y vacio significa quitarlo: por eso null
+             explicito y no omitir el campo. */
+          ...(kind === 'supplier'
+            ? {
+                minOrderValue:
+                  values.minOrderValue.trim() === ''
+                    ? null
+                    : Number(values.minOrderValue),
+              }
+            : {}),
           // Cadena vacia significa "sin dato": el backend acepta null para
           // limpiar el campo, pero rechaza "" en los que valida formato.
           phone: values.phone.trim() || null,
@@ -175,6 +185,7 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
             organization={organization}
             isSaving={isSaving}
             onSubmit={handleSubmit}
+            showSupplierFields={kind === 'supplier'}
           />
         ) : (
           /* Sin organization:update los datos se muestran en la misma lista

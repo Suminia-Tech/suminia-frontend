@@ -15,4 +15,7 @@ export interface UpdateSupplierRequest {
   phone?: string | null;
   address?: string | null;
   city?: string | null;
+  /* Solo del proveedor: es lo que exige para despachar. null lo quita, y por eso
+     se acepta null y no basta con omitirlo. */
+  minOrderValue?: number | null;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Image as ImageIcon, Trash2 } from 'react-feather';
+import { AlertCircle, Image as ImageIcon, Trash2 } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -215,6 +215,21 @@ export const CartScreen = () => {
               ))}
             </ul>
 
+            {/* El minimo del proveedor se avisa en su grupo y no al final:
+                es lo que le falta a ese pedido, no al carrito entero, y
+                enterarse al confirmar obliga a volver atras. */}
+            {!group.meetsMinimum && group.minOrderValue !== null && (
+              <p className='cart-group-min'>
+                <AlertCircle size={15} />
+                Este proveedor despacha desde{' '}
+                {pesos(group.minOrderValue, cart.currency)}. Te faltan{' '}
+                <strong>
+                  {pesos(group.minOrderValue - group.subtotal, cart.currency)}
+                </strong>
+                .
+              </p>
+            )}
+
             <footer className='cart-group-foot'>
               <span className='font-light'>Subtotal {group.organizationName}</span>
               <strong>{pesos(group.subtotal, cart.currency)}</strong>
@@ -242,6 +257,13 @@ export const CartScreen = () => {
             <strong>{pesos(cart.total, cart.currency)}</strong>
           </li>
         </ul>
+
+        {cart.groups.some((group) => !group.meetsMinimum) && (
+          <p className='cart-summary-warn'>
+            <AlertCircle size={14} />
+            Algún proveedor no llega a su pedido mínimo.
+          </p>
+        )}
 
         {cart.groups.length > 1 && (
           <p className='cart-summary-note font-light'>
