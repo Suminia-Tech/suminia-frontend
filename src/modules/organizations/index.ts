@@ -9,6 +9,7 @@ export { SupplierDetailScreen } from './ui/supplier/SupplierDetailScreen';
 export { BuyersScreen } from './ui/buyer/BuyersScreen';
 export { BuyerDetailScreen } from './ui/buyer/BuyerDetailScreen';
 export { BuyerCompanyScreen } from './ui/buyer/MyCompanyScreen';
+export { DeliveryLocationsScreen } from './ui/common/DeliveryLocationsScreen';
 
 export { default as organizationsReducer } from './model/organizationsSlice';
 
@@ -27,3 +28,5 @@ export type {
 } from './model/organization.types';
 export type { Supplier, UpdateSupplierRequest } from './model/supplier.types';
 export type { Buyer, UpdateBuyerRequest } from './model/buyer.types';
+export type { DeliveryLocation } from './model/deliveryLocation.types';
+export { useGetDeliveryLocationsQuery } from './api/deliveryLocationsApi';

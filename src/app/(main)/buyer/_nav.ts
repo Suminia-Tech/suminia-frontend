@@ -4,6 +4,7 @@ import type { PanelSection } from '../_shell/PanelNav';
    su navegacion es la de la tienda, la misma que ve cualquiera. */
 export const BUYER_ACCOUNT_SECTIONS: PanelSection[] = [
   { label: 'Mi empresa', href: '/buyer/account/company' },
+  { label: 'Sedes de entrega', href: '/buyer/account/locations' },
   {
     /* Un operador no puede listar el equipo: ofrecerselo solo le daria un 403. */
     label: 'Mi equipo',
