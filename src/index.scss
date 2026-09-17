@@ -3262,10 +3262,35 @@ select.form-control,
       display: block;
       font-size: 11.5px;
     }
+
+    /* El tramo hasta el paso siguiente. Va como pseudoelemento del paso que lo
+       empieza y estira con `flex: 1`, de modo que los cuatro quedan repartidos
+       sin tener que medir nada. El ultimo no lleva: no va a ninguna parte. */
+    &:not(:last-child)::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      margin-right: 8px;
+      background-color: $border-color;
+    }
+
+    /* Un tramo esta recorrido cuando el paso al que lleva ya se dio, no cuando
+       se dio el que lo empieza: de un pedido confirmado, el tramo hacia
+       "despachado" todavia no se ha andado. */
+    &:has(+ .is-done)::after {
+      background-color: var(--theme-color);
+    }
   }
 
   @media (max-width: 767px) {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    /* En columna el tramo no une nada: estiraria hacia el lado. */
+    li:not(:last-child)::after {
+      display: none;
+    }
   }
 }
 
