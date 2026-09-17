@@ -1,4 +1,4 @@
-import type { Organization } from './organization.types';
+import type { BankAccountType, Organization } from './organization.types';
 
 /* Un proveedor es una Organization con type = SUPPLIER. El backend lo expone
    como dominio propio en /suppliers, de modo que aqui se le da nombre propio
@@ -18,4 +18,11 @@ export interface UpdateSupplierRequest {
   /* Solo del proveedor: es lo que exige para despachar. null lo quita, y por eso
      se acepta null y no basta con omitirlo. */
   minOrderValue?: number | null;
+  /* Los cinco de la cuenta viajan juntos: el backend rechaza media cuenta.
+     Nulos en los cinco la quitan. */
+  bankName?: string | null;
+  bankAccountType?: BankAccountType | null;
+  bankAccountNumber?: string | null;
+  bankAccountHolder?: string | null;
+  bankAccountHolderTaxId?: string | null;
 }

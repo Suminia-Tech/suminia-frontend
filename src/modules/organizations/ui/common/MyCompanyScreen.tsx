@@ -76,13 +76,26 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           name: values.name.trim(),
           email: values.email.trim(),
           /* Solo del proveedor, y vacio significa quitarlo: por eso null
-             explicito y no omitir el campo. */
+             explicito y no omitir el campo.
+
+             Los cinco de la cuenta van siempre juntos, tal y como los exige el
+             backend: o los cinco con valor, o los cinco nulos. */
           ...(kind === 'supplier'
             ? {
                 minOrderValue:
                   values.minOrderValue.trim() === ''
                     ? null
                     : Number(values.minOrderValue),
+                bankName: values.bankName.trim() || null,
+                bankAccountType:
+                  (values.bankAccountType.trim() as
+                    | 'AHORROS'
+                    | 'CORRIENTE'
+                    | '') || null,
+                bankAccountNumber: values.bankAccountNumber.trim() || null,
+                bankAccountHolder: values.bankAccountHolder.trim() || null,
+                bankAccountHolderTaxId:
+                  values.bankAccountHolderTaxId.trim() || null,
               }
             : {}),
           // Cadena vacia significa "sin dato": el backend acepta null para

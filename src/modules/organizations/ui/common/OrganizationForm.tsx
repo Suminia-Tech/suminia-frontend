@@ -26,6 +26,13 @@ export interface OrganizationFormValues {
   /* Solo lo manda el proveedor. Cadena vacia significa "sin minimo", que no es
      lo mismo que cero: cero seria exigir un minimo de nada. */
   minOrderValue: string;
+
+  /* La cuenta a donde se le consigna. Tambien solo del proveedor. */
+  bankName: string;
+  bankAccountType: string;
+  bankAccountNumber: string;
+  bankAccountHolder: string;
+  bankAccountHolderTaxId: string;
 }
 
 interface OrganizationFormProps {
@@ -45,6 +52,11 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   city: organization.city ?? '',
   minOrderValue:
     organization.minOrderValue === null ? '' : String(organization.minOrderValue),
+  bankName: organization.bankName ?? '',
+  bankAccountType: organization.bankAccountType ?? '',
+  bankAccountNumber: organization.bankAccountNumber ?? '',
+  bankAccountHolder: organization.bankAccountHolder ?? '',
+  bankAccountHolderTaxId: organization.bankAccountHolderTaxId ?? '',
 });
 
 const OrganizationForm = ({
@@ -62,7 +74,8 @@ const OrganizationForm = ({
   );
 
   const handleChange =
-    (field: keyof OrganizationFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof OrganizationFormValues) =>
+    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { value } = event.target;
       setValues((current) => ({ ...current, [field]: value }));
     };
@@ -175,6 +188,69 @@ const OrganizationForm = ({
                 vacío si no exiges mínimo. Es distinto del pedido mínimo de cada
                 formato, que se fija en el producto.
               </small>
+            </Col>
+          </Row>
+
+          <div className='box-head'>
+            <h3>Cuenta para recibir pagos</h3>
+          </div>
+          <p className='font-light'>
+            A donde Suminia te consigna lo que te corresponde de cada pedido. Va
+            entera o vacía: media cuenta la rechaza el banco el día del pago.
+          </p>
+          <Row>
+            <Col md='6' className='mb-3'>
+              <label className='form-label'>Banco</label>
+              <input
+                type='text'
+                className='form-control'
+                placeholder='Bancolombia'
+                value={values.bankName}
+                onChange={handleChange('bankName')}
+              />
+            </Col>
+            <Col md='6' className='mb-3'>
+              <label className='form-label'>Tipo de cuenta</label>
+              <select
+                className='form-control'
+                value={values.bankAccountType}
+                onChange={handleChange('bankAccountType')}
+              >
+                <option value=''>Sin definir</option>
+                <option value='AHORROS'>Ahorros</option>
+                <option value='CORRIENTE'>Corriente</option>
+              </select>
+            </Col>
+            <Col md='6' className='mb-3'>
+              <label className='form-label'>Número de cuenta</label>
+              <input
+                type='text'
+                className='form-control'
+                value={values.bankAccountNumber}
+                onChange={handleChange('bankAccountNumber')}
+              />
+            </Col>
+            <Col md='6' className='mb-3'>
+              <label className='form-label'>Titular</label>
+              <input
+                type='text'
+                className='form-control'
+                value={values.bankAccountHolder}
+                onChange={handleChange('bankAccountHolder')}
+              />
+              <small className='font-light'>
+                Puede no ser la razón social: el banco valida el nombre contra el
+                documento.
+              </small>
+            </Col>
+            <Col md='6' className='mb-3'>
+              <label className='form-label'>NIT o cédula del titular</label>
+              <input
+                type='text'
+                className='form-control'
+                value={values.bankAccountHolderTaxId}
+                onChange={handleChange('bankAccountHolderTaxId')}
+              />
             </Col>
           </Row>
         </>
