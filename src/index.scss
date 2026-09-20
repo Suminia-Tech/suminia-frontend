@@ -2249,6 +2249,15 @@ select.form-control,
    Va en `margin` y no en `padding`: el fondo verde llega hasta el borde del
    elemento, de modo que con padding se estiraria en vez de dejar aire. */
 .home-section-6 {
+  /* El fondo era una acuarela verde de la demo de fruteria —percentage.jpg— y
+     era el ultimo verde que quedaba en la portada. Es la misma imagen con el
+     tono girado 92 grados, que es donde ese verde cae en el turquesa de la
+     marca; se probaron varios angulos midiendo el tono dominante del resultado.
+
+     Se recolorea en vez de sustituirse por un degradado plano porque la textura
+     de acuarela es la que le da profundidad a la franja. */
+  background-image: url("/assets/images/suminia/fondo-banner.jpg");
+
   /* 560 y no los 850 del tema, que dejaban un banner de pantalla completa. El
      bloque de texto va centrado y a altura completa, y su titular crece con el
      ancho: con menos de 560 el boton acaba rozando el borde de abajo en una
@@ -2295,6 +2304,28 @@ select.form-control,
   .classic-arrow-1 .custom-arrow {
     bottom: 44px;
   }
+
+  /* El velo que tapa la miniatura activa del carrusel venia del tema en `$veg1`
+     —el #51983c de la demo de fruteria— y era el ultimo verde de la portada.
+     Pasa al azul marino del logo, que es el que acompaña al turquesa.
+
+     Se escribe con `color-mix` y no con `rgba()` porque el marino vive en una
+     variable CSS, y `rgba()` no sabe descomponer lo que hay dentro de un
+     `var()`. El 70% de opacidad es el que traia el tema: deja ver la foto.
+
+     El mismo velo verde cubre el panel de texto por debajo de 575px, donde el
+     tema lo usa de fondo para que el titular se lea sobre la acuarela. Va en su
+     propia media query: en pantalla ancha ese panel no lleva fondo, y pintarlo
+     siempre le pondria una caja marina al titular de la portada. */
+  .slider-nav .poster-img .overlay-color {
+    background-color: color-mix(in srgb, var(--suminia-navy) 70%, transparent);
+  }
+
+  @media (max-width: 575px) {
+    .left-side-contain .banner-left {
+      background-color: color-mix(in srgb, var(--suminia-navy) 70%, transparent);
+    }
+  }
 }
 
 @media (max-width: 1399px) {
@@ -2306,6 +2337,14 @@ select.form-control,
       margin-top: 34px;
     }
   }
+}
+
+/* El fondo de las fichas de categoria venia del tema: `$light-demo-6`, un
+   #f0f8f0 que es verde palido, heredado de la demo de fruteria. Se cambia por
+   el mismo tono pero de la marca —el turquesa claro rebajado— para que las
+   fichas y los dibujos que llevan dentro hablen el mismo idioma. */
+.home-categories .product-box6 .img-wrapper {
+  background-color: #eff8f9;
 }
 
 /* --- Categorias --- */
@@ -2457,6 +2496,19 @@ select.form-control,
 .product-box-supplier {
   margin: 3px 0 0;
   font-size: 14px;
+}
+
+/* Las etiquetas de categoria y formato de cada ficha venian con un #f0f7ef del
+   tema —verde palido, otra herencia de la demo de fruteria—. Se les da el mismo
+   color pero en el tono de la marca: se conservan la luminosidad (95%) y la
+   saturacion (33%) del original y solo se gira el tono a los 195 grados del
+   azul de Suminia, de modo que la etiqueta pesa en la ficha exactamente lo que
+   pesaba antes.
+
+   El selector repite la cadena del tema —`.product-box .product-details`— y no
+   se queda en `.size-box li` porque con menos especificidad pierde. */
+.product-box .product-details .size-box li {
+  background-color: #eff5f7;
 }
 
 /* Nada aqui: la separacion entre la cabecera y el carrusel la pone `.title` del
