@@ -11,12 +11,16 @@ import Providers from "./providers";
    con dos <title> y dos <link rel="icon">.
 
    Los iconos no se declaran aqui: Next los detecta por convencion de archivo a
-   partir de app/favicon.ico y app/apple-icon.png, y genera sus etiquetas. Por
-   eso no aparecen nombrados en ningun sitio del codigo — y por eso el asterisco
-   rojo de la plantilla sobrevivio tanto tiempo. */
+   partir de app/favicon.ico, app/icon.svg y app/apple-icon.png, y genera sus
+   etiquetas. Por eso no aparecen nombrados en ningun sitio del codigo — y por
+   eso el asterisco rojo de la plantilla sobrevivio tanto tiempo.
+
+   Un favicon suelto en public/ no hace nada: solo cuentan estos tres archivos.
+   El icon.svg lo prefieren los navegadores modernos —escala a cualquier
+   tamaño—; el .ico queda para los que piden /favicon.ico a secas. */
 export const metadata = {
   title: {
-    default: "Marketplace Medicamentos",
+    default: "Suminia",
     // Las paginas solo declaran su nombre: "Registrarse" -> "Registrarse | Suminia"
     template: "%s | Suminia",
   },
