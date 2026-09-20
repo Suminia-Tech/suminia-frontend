@@ -115,21 +115,43 @@ export const BuyBox = ({ formats }: { formats: BuyableFormat[] }) => {
 
   return (
     <div className='buy-box'>
-      {disponibles.length > 1 && (
-        <label className='buy-box-field'>
+      {/* Los formatos se eligen en fichas y no en un desplegable. En B2B el
+          formato es la compra —la caja de 100 y la de 50 son dos productos con
+          precio y existencias propios— y dentro de un `select` hay que abrirlo
+          para saber cuales hay. En fichas se ven todos de una vez y se comparan
+          los precios sin tocar nada.
+
+          Con un solo formato no hay nada que elegir: se dice cual es y ya. */}
+      {disponibles.length > 1 ? (
+        <div className='buy-box-field'>
           <span className='form-label'>Formato</span>
-          <select
-            className='form-control'
-            value={formato.presentationId}
-            onChange={(event) => cambiarFormato(event.target.value)}
-          >
+          <ul className='buy-box-formats'>
             {disponibles.map((f) => (
-              <option key={f.presentationId} value={f.presentationId}>
-                {f.name} · {f.packaging} · {pesos(f.price as number, f.currency)}
-              </option>
+              <li key={f.presentationId}>
+                <button
+                  type='button'
+                  aria-pressed={f.presentationId === formato.presentationId}
+                  className={
+                    f.presentationId === formato.presentationId
+                      ? 'active'
+                      : undefined
+                  }
+                  onClick={() => cambiarFormato(f.presentationId)}
+                >
+                  <span className='buy-box-format-name'>{f.name}</span>
+                  <span className='buy-box-format-price'>
+                    {pesos(f.price as number, f.currency)}
+                  </span>
+                </button>
+              </li>
             ))}
-          </select>
-        </label>
+          </ul>
+        </div>
+      ) : (
+        <p className='buy-box-single'>
+          <span className='font-light'>Formato</span>
+          <strong>{formato.name}</strong>
+        </p>
       )}
 
       <div className='buy-box-field'>

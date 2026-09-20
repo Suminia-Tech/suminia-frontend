@@ -2,7 +2,16 @@
 
 import Link from 'next/link';
 import { useState, type ComponentType } from 'react';
-import { ChevronLeft, Image as ImageIcon, Lock } from 'react-feather';
+import {
+  ChevronLeft,
+  FileText,
+  Image as ImageIcon,
+  Lock,
+  Package,
+  Percent,
+  ShieldOff,
+  Truck,
+} from 'react-feather';
 import { Col, Row, Table } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -10,7 +19,8 @@ import { useAppSelector } from '@/store/hooks';
 
 import { useGetMedicineOffersQuery } from '../../api/productsApi';
 import { useCatalogProduct } from '../../hooks/useCatalogProducts';
-import { humanizeAttributeKey, toAttributePairs } from '../../lib/attributes';
+import { humanizeAttributeKey, toDisplayPairs } from '../../lib/attributes';
+import { formatPrice } from '../../lib/productLabels';
 import { taxLabel } from '../../lib/tax';
 import { Price } from '../common/Price';
 
@@ -66,7 +76,15 @@ export const PublicProductScreen = ({
     return (
       <section className='section-b-space'>
         <div className='container-fluid-lg'>
-          <p className='font-light'>Cargando...</p>
+          <div className='product-detail-skeleton' aria-hidden='true'>
+            <div className='product-detail-skeleton-media' />
+            <div className='product-detail-skeleton-lines'>
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+          <span className='visually-hidden'>Cargando el producto</span>
         </div>
       </section>
     );
@@ -88,10 +106,29 @@ export const PublicProductScreen = ({
   }
 
   const product = data.data;
-  const attributes = toAttributePairs(product.attributes);
+  const attributes = toDisplayPairs(product.attributes);
   const invima = product.catalogMedicine;
   const images = [...product.images].sort((a, b) => a.position - b.position);
   const cover = images[activeImage] ?? images[0] ?? null;
+  const presentations = product.presentations;
+  const conCum = presentations.some((p) => p.cum);
+
+  /* El encabezado enseña desde cuanto sale, no el precio de un formato
+     concreto: son varios y con reglas distintas, y elegir uno por el comprador
+     seria decidir por el. El detalle lo da la caja de compra, que es donde se
+     elige de verdad. */
+  const precios = presentations
+    .map((p) => p.price)
+    .filter((price): price is number => price !== null);
+  const desde = precios.length > 0 ? Math.min(...precios) : null;
+  const variosPrecios = new Set(precios).size > 1;
+  const moneda = presentations[0]?.currency ?? 'COP';
+
+  const enStock = presentations.some((p) => p.stock > 0);
+  const pedidoMinimo = presentations.reduce(
+    (min, p) => Math.min(min, p.minOrderQuantity),
+    Number.POSITIVE_INFINITY,
+  );
 
   return (
     <section className='section-b-space'>
@@ -104,8 +141,8 @@ export const PublicProductScreen = ({
           Volver al catálogo
         </Link>
 
-        <Row className='g-4'>
-          <Col lg='5'>
+        <Row className='g-4 g-lg-5'>
+          <Col lg='6'>
             <div className='product-gallery'>
               <div className='product-gallery-main'>
                 {cover ? (
@@ -124,6 +161,8 @@ export const PublicProductScreen = ({
                     <button
                       type='button'
                       key={image.id}
+                      aria-label={`Ver la imagen ${index + 1} de ${images.length}`}
+                      aria-pressed={index === activeImage}
                       className={index === activeImage ? 'active' : undefined}
                       onClick={() => setActiveImage(index)}
                     >
@@ -136,252 +175,311 @@ export const PublicProductScreen = ({
             </div>
           </Col>
 
-          <Col lg='7'>
-            <div className='box-head'>
-              <h3>{product.name}</h3>
-            </div>
-
-            <div className='dashboard-profile'>
-              <ul className='dash-profile'>
-                <li>
-                  <div className='left'>
-                    <h6 className='font-light'>Proveedor</h6>
-                  </div>
-                  <div className='right'>
-                    <h6>{product.organizationName ?? '—'}</h6>
-                  </div>
-                </li>
-                <li>
-                  <div className='left'>
-                    <h6 className='font-light'>Categoría</h6>
-                  </div>
-                  <div className='right'>
-                    <h6>{product.categoryName ?? '—'}</h6>
-                  </div>
-                </li>
-                {product.brand && (
-                  <li>
-                    <div className='left'>
-                      <h6 className='font-light'>Marca</h6>
-                    </div>
-                    <div className='right'>
-                      <h6>{product.brand}</h6>
-                    </div>
-                  </li>
+          <Col lg='6'>
+            <div className='product-detail'>
+              <div className='product-detail-tags'>
+                {product.categoryName && (
+                  <Link
+                    href={`/catalog?categoryId=${product.categoryId}`}
+                    className='product-detail-category'
+                  >
+                    {product.categoryName}
+                  </Link>
                 )}
+                <span
+                  className={`product-detail-stock${enStock ? '' : ' is-out'}`}
+                >
+                  {enStock ? 'Disponible' : 'Sin existencias'}
+                </span>
+              </div>
+
+              <h1 className='product-detail-title'>{product.name}</h1>
+
+              <p className='product-detail-supplier'>
+                Vendido por{' '}
+                <strong>{product.organizationName ?? 'Proveedor'}</strong>
+                {product.brand && (
+                  <>
+                    {' · '}
+                    <span className='font-light'>Marca {product.brand}</span>
+                  </>
+                )}
+              </p>
+
+              {/* El precio arriba, pegado al titulo, como en cualquier ficha de
+                  producto. Quien no puede verlo encuentra en su lugar la cifra
+                  difuminada de `Price`, que dice que existe sin decir cual. */}
+              <div className='product-detail-price'>
+                {desde !== null ? (
+                  <>
+                    {variosPrecios && (
+                      <span className='product-detail-price-from'>desde</span>
+                    )}
+                    <strong>{formatPrice(desde, moneda)}</strong>
+                    <span className='font-light'>
+                      {taxLabel(product.taxCategory)}
+                    </span>
+                  </>
+                ) : (
+                  <Price value={null} currency={moneda} />
+                )}
+              </div>
+
+              {product.description && (
+                <p className='product-detail-description font-light'>
+                  {product.description}
+                </p>
+              )}
+
+              {/* La llamada va aqui, junto a lo que falta, y no al final de la
+                  pagina: es donde el visitante se topa con que no ve el precio.
+
+                  Solo para quien no ha entrado. A quien ya tiene sesion y espera
+                  aprobacion se lo cuenta la franja de arriba, y pedirle que
+                  registre la empresa que acaba de registrar no tiene sentido.
+                  Espera a `hydrated` porque la sesion se lee de localStorage, que
+                  el servidor no ve. */}
+              {BuyBox && (
+                <BuyBox
+                  formats={presentations.map((presentation) => ({
+                    presentationId: presentation.id,
+                    name: presentation.name,
+                    packaging: presentation.packaging,
+                    price: presentation.price,
+                    currency: presentation.currency,
+                    minOrderQuantity: presentation.minOrderQuantity,
+                    orderMultiple: presentation.orderMultiple,
+                    stock: presentation.stock,
+                    priceTiers: presentation.priceTiers ?? [],
+                  }))}
+                />
+              )}
+
+              {hydrated && !isAuthenticated && (
+                <div className='public-price-cta'>
+                  <Lock size={17} />
+                  <div>
+                    <strong>¿Necesitas el precio?</strong>
+                    <p className='font-light'>
+                      Registra tu empresa y, en cuanto quede aprobada, verás los
+                      precios y podrás pedir.
+                    </p>
+                    <Link
+                      href='/register'
+                      className='btn btn-primary rounded-1 btn-sm'
+                    >
+                      Registrar mi empresa
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Las tres cosas que en B2B se preguntan siempre antes de pedir y
+                  que hoy habia que ir a buscar a la tabla del pie. */}
+              <ul className='product-detail-perks'>
                 <li>
-                  <div className='left'>
-                    <h6 className='font-light'>IVA</h6>
-                  </div>
-                  <div className='right'>
-                    <h6>{taxLabel(product.taxCategory)}</h6>
-                  </div>
+                  <Percent size={16} />
+                  <span>{taxLabel(product.taxCategory)}</span>
                 </li>
-                {attributes.map((pair) => (
-                  <li key={pair.key}>
-                    <div className='left'>
-                      <h6 className='font-light'>
-                        {humanizeAttributeKey(pair.key)}
-                      </h6>
-                    </div>
-                    <div className='right'>
-                      <h6>{pair.value}</h6>
-                    </div>
-                  </li>
-                ))}
+                <li>
+                  <Package size={16} />
+                  <span>
+                    {presentations.length}{' '}
+                    {presentations.length === 1 ? 'formato' : 'formatos'} de venta
+                  </span>
+                </li>
+                <li>
+                  <Truck size={16} />
+                  <span>
+                    {Number.isFinite(pedidoMinimo) && pedidoMinimo > 1
+                      ? `Pedido mínimo ${pedidoMinimo}`
+                      : 'Sin pedido mínimo'}
+                  </span>
+                </li>
               </ul>
             </div>
-
-            {product.description && (
-              <p className='font-light mt-3'>{product.description}</p>
-            )}
-
-            {/* La llamada va aqui, junto a lo que falta, y no al final de la
-                pagina: es donde el visitante se topa con que no ve el precio.
-
-                Solo para quien no ha entrado. A quien ya tiene sesion y espera
-                aprobacion se lo cuenta la franja de arriba, y pedirle que
-                registre la empresa que acaba de registrar no tiene sentido.
-                Espera a `hydrated` porque la sesion se lee de localStorage, que
-                el servidor no ve. */}
-            {BuyBox && (
-              <BuyBox
-                formats={product.presentations.map((presentation) => ({
-                  presentationId: presentation.id,
-                  name: presentation.name,
-                  packaging: presentation.packaging,
-                  price: presentation.price,
-                  currency: presentation.currency,
-                  minOrderQuantity: presentation.minOrderQuantity,
-                  orderMultiple: presentation.orderMultiple,
-                  stock: presentation.stock,
-                  priceTiers: presentation.priceTiers ?? [],
-                }))}
-              />
-            )}
-
-            {hydrated && !isAuthenticated && (
-              <div className='public-price-cta'>
-                <Lock size={17} />
-                <div>
-                  <strong>¿Necesitas el precio?</strong>
-                  <p className='font-light'>
-                    Registra tu empresa y, en cuanto quede aprobada, verás los
-                    precios y podrás pedir.
-                  </p>
-                  <Link href='/register' className='btn btn-primary rounded-1 btn-sm'>
-                    Registrar mi empresa
-                  </Link>
-                </div>
-              </div>
-            )}
           </Col>
         </Row>
 
-        {/* La razon de ser del maestro: el mismo medicamento, varios
-            proveedores, un solo sitio para compararlos. */}
-        {offers.length > 0 && (
-          <>
-            <div className='box-head mt-4'>
-              <h3>
-                Otros proveedores de este medicamento
-                <span className='font-light'> · {offers.length}</span>
-              </h3>
-            </div>
-            <ul className='medicine-offers'>
-              {offers.map((offer) => (
-                <li key={offer.productId}>
-                  <Link href={`/catalog/${offer.productId}`}>
-                    <span className='offer-supplier'>
-                      <strong>{offer.organizationName ?? 'Proveedor'}</strong>
-                      <small className='font-light'>
-                        {offer.presentationCount}{' '}
-                        {offer.presentationCount === 1 ? 'formato' : 'formatos'}
-                        {offer.inStock ? '' : ' · sin existencias'}
-                      </small>
+        {/* Todo lo que describe al producto, debajo y a lo ancho. Arriba va lo
+            que hace falta para decidir la compra; aqui, lo que hace falta para
+            comprobar que es el producto correcto. */}
+        <div className='product-detail-sheet'>
+          {(attributes.length > 0 || product.brand) && (
+            <section className='product-detail-block'>
+              <div className='box-head'>
+                <h3>Especificaciones</h3>
+              </div>
+              <ul className='spec-list'>
+                {product.brand && (
+                  <li>
+                    <span className='font-light'>Marca</span>
+                    <span>{product.brand}</span>
+                  </li>
+                )}
+                {product.manufacturer && (
+                  <li>
+                    <span className='font-light'>Fabricante</span>
+                    <span>{product.manufacturer}</span>
+                  </li>
+                )}
+                {attributes.map((pair) => (
+                  <li key={pair.key}>
+                    <span className='font-light'>
+                      {humanizeAttributeKey(pair.key)}
                     </span>
-                    <span className='offer-price'>
-                      <small className='font-light'>desde</small>
-                      <strong>
-                        <Price value={offer.fromPrice} currency={offer.currency} />
-                      </strong>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+                    <span>{pair.value}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-        {invima && (
-          <>
-            <div className='box-head mt-4'>
-              <h3>Información del INVIMA</h3>
-            </div>
-            <div className='dashboard-profile'>
-              <ul className='dash-profile'>
+          {invima && (
+            <section className='product-detail-block'>
+              <div className='box-head'>
+                <h3>
+                  <FileText size={18} className='me-2' />
+                  Información del INVIMA
+                </h3>
+              </div>
+              <ul className='spec-list'>
                 <li>
-                  <div className='left'>
-                    <h6 className='font-light'>Composición</h6>
-                  </div>
-                  <div className='right'>
-                    <h6>
-                      {invima.principiosActivos
-                        .map((principio) =>
-                          [principio.nombre, principio.cantidad, principio.unidad]
-                            .filter(Boolean)
-                            .join(' '),
-                        )
-                        .join(' + ')}
-                    </h6>
-                  </div>
+                  <span className='font-light'>Composición</span>
+                  <span>
+                    {invima.principiosActivos
+                      .map((principio) =>
+                        [principio.nombre, principio.cantidad, principio.unidad]
+                          .filter(Boolean)
+                          .join(' '),
+                      )
+                      .join(' + ')}
+                  </span>
                 </li>
                 <li>
-                  <div className='left'>
-                    <h6 className='font-light'>Registro sanitario</h6>
-                  </div>
-                  <div className='right'>
-                    <h6>{invima.registroSanitario}</h6>
-                  </div>
+                  <span className='font-light'>Registro sanitario</span>
+                  <span>{invima.registroSanitario}</span>
                 </li>
                 {invima.formaFarmaceutica && (
                   <li>
-                    <div className='left'>
-                      <h6 className='font-light'>Forma farmacéutica</h6>
-                    </div>
-                    <div className='right'>
-                      <h6>{invima.formaFarmaceutica}</h6>
-                    </div>
+                    <span className='font-light'>Forma farmacéutica</span>
+                    <span>{invima.formaFarmaceutica}</span>
                   </li>
                 )}
                 {invima.viasAdministracion.length > 0 && (
                   <li>
-                    <div className='left'>
-                      <h6 className='font-light'>Vía de administración</h6>
-                    </div>
-                    <div className='right'>
-                      <h6>{invima.viasAdministracion.join(', ')}</h6>
-                    </div>
+                    <span className='font-light'>Vía de administración</span>
+                    <span>{invima.viasAdministracion.join(', ')}</span>
                   </li>
                 )}
                 {invima.titular && (
                   <li>
-                    <div className='left'>
-                      <h6 className='font-light'>Titular del registro</h6>
-                    </div>
-                    <div className='right'>
-                      <h6>{invima.titular}</h6>
-                    </div>
+                    <span className='font-light'>Titular del registro</span>
+                    <span>{invima.titular}</span>
                   </li>
                 )}
               </ul>
+            </section>
+          )}
+
+          <section className='product-detail-block'>
+            <div className='box-head'>
+              <h3>Formatos de venta</h3>
             </div>
-          </>
-        )}
 
-        <div className='box-head mt-4'>
-          <h3>Formatos disponibles</h3>
+            <Table responsive className='align-middle format-table'>
+              <thead>
+                <tr>
+                  <th>Formato</th>
+                  {conCum && <th>CUM</th>}
+                  <th>Empaque</th>
+                  <th>Contenido</th>
+                  <th>Pedido mínimo</th>
+                  <th>Existencias</th>
+                  <th className='text-end'>Precio</th>
+                </tr>
+              </thead>
+              <tbody>
+                {presentations.map((presentation) => (
+                  <tr key={presentation.id}>
+                    <td>
+                      <strong>{presentation.name}</strong>
+                    </td>
+                    {conCum && (
+                      <td className='font-light'>{presentation.cum ?? '—'}</td>
+                    )}
+                    <td className='font-light'>{presentation.packaging}</td>
+                    <td className='font-light'>
+                      {presentation.contentQuantity
+                        ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
+                        : '—'}
+                    </td>
+                    <td className='font-light'>
+                      {presentation.minOrderQuantity}
+                      {presentation.orderMultiple > 1 &&
+                        ` · de ${presentation.orderMultiple} en ${presentation.orderMultiple}`}
+                    </td>
+                    <td className='font-light'>
+                      {presentation.stock > 0 ? (
+                        presentation.stock
+                      ) : (
+                        <span className='format-table-out'>
+                          <ShieldOff size={13} /> agotado
+                        </span>
+                      )}
+                    </td>
+                    <td className='text-end'>
+                      <Price
+                        value={presentation.price}
+                        currency={presentation.currency}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </section>
+
+          {/* La razon de ser del maestro: el mismo medicamento, varios
+              proveedores, un solo sitio para compararlos. */}
+          {offers.length > 0 && (
+            <section className='product-detail-block'>
+              <div className='box-head'>
+                <h3>
+                  Otros proveedores de este medicamento
+                  <span className='font-light'> · {offers.length}</span>
+                </h3>
+              </div>
+              <ul className='medicine-offers'>
+                {offers.map((offer) => (
+                  <li key={offer.productId}>
+                    <Link href={`/catalog/${offer.productId}`}>
+                      <span className='offer-supplier'>
+                        <strong>{offer.organizationName ?? 'Proveedor'}</strong>
+                        <small className='font-light'>
+                          {offer.presentationCount}{' '}
+                          {offer.presentationCount === 1
+                            ? 'formato'
+                            : 'formatos'}
+                          {offer.inStock ? '' : ' · sin existencias'}
+                        </small>
+                      </span>
+                      <span className='offer-price'>
+                        <small className='font-light'>desde</small>
+                        <strong>
+                          <Price
+                            value={offer.fromPrice}
+                            currency={offer.currency}
+                          />
+                        </strong>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
-
-        <Table responsive className='align-middle'>
-          <thead>
-            <tr>
-              <th>Formato</th>
-              {product.presentations.some((p) => p.cum) && <th>CUM</th>}
-              <th>Empaque</th>
-              <th>Contenido</th>
-              <th>Pedido mínimo</th>
-              <th>Precio</th>
-            </tr>
-          </thead>
-          <tbody>
-            {product.presentations.map((presentation) => (
-              <tr key={presentation.id}>
-                <td>{presentation.name}</td>
-                {product.presentations.some((p) => p.cum) && (
-                  <td className='font-light'>{presentation.cum ?? '—'}</td>
-                )}
-                <td className='font-light'>{presentation.packaging}</td>
-                <td className='font-light'>
-                  {presentation.contentQuantity
-                    ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
-                    : '—'}
-                </td>
-                <td className='font-light'>
-                  {presentation.minOrderQuantity}
-                  {presentation.orderMultiple > 1 &&
-                    ` · de ${presentation.orderMultiple} en ${presentation.orderMultiple}`}
-                </td>
-                <td>
-                  <Price
-                    value={presentation.price}
-                    currency={presentation.currency}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
       </div>
     </section>
   );

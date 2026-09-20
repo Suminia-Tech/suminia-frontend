@@ -533,50 +533,371 @@
 
 /* Galeria de la ficha del comprador. */
 .product-gallery {
+  position: sticky;
+  top: 20px;
+
   .product-gallery-main {
-    aspect-ratio: 1;
+    /* 4:3, la proporcion en que se suben las fotos. Antes era cuadrada, y en
+       una columna ancha eso son 600px de alto para una imagen que no los
+       necesita: dejaba media pantalla vacia al lado del texto. */
+    aspect-ratio: 4 / 3;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 16px;
+    border: 1px solid $border-color;
     border-radius: 12px;
     overflow: hidden;
-    background-color: $light-blue;
+    background-color: $white;
     color: rgba($theme-font-color, 0.45);
 
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      /* `contain` y no `cover`: recortar una foto de catalogo corta justo los
+         bordes del objeto —el asa del frasco, las ruedas de la camilla—, que
+         es lo que deja reconocerlo. Es la misma razon que en la portada. */
+      object-fit: contain;
     }
   }
 
   .product-gallery-thumbs {
     display: flex;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 12px;
     overflow-x: auto;
 
     button {
-      flex: 0 0 64px;
-      width: 64px;
-      height: 64px;
-      padding: 0;
-      border: 2px solid transparent;
+      flex: 0 0 72px;
+      width: 72px;
+      height: 72px;
+      padding: 6px;
+      border: 1px solid $border-color;
       border-radius: 8px;
       overflow: hidden;
-      background: none;
+      background-color: $white;
       cursor: pointer;
+      transition: border-color 0.2s ease;
+
+      &:hover {
+        border-color: rgba(var(--theme-color-rgb), 0.5);
+      }
 
       &.active {
         border-color: var(--theme-color);
+        box-shadow: 0 0 0 1px var(--theme-color);
       }
 
       img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
       }
     }
+  }
+}
+
+/* Los dos colores de estado. Son los de Bootstrap, que es lo que ya pintan
+   `bg-success` y `text-danger` en el resto de la aplicacion: el tema de Voxo no
+   trae variables de exito ni de error —solo un `$green` (#009c00) de semaforo
+   que no se usa en ningun sitio—, y tener dos verdes distintos para lo mismo
+   segun la pantalla es como empiezan las paletas a desmontarse. */
+$estado-ok: #198754;
+$estado-error: #dc3545;
+
+/* ---------------------------------------------------------------------------
+   La ficha de producto
+
+   Sigue el orden de la ficha del tema —categoria, titulo, precio, descripcion,
+   compra— porque es el orden en que se mira una: primero que es, luego cuanto
+   cuesta, luego si es el correcto. Lo que cambia es el contenido, que en B2B no
+   es talla y color sino formato de venta, IVA y pedido minimo.
+
+   Las clases del tema no se reutilizan aqui. `.cloth-details-size`,
+   `.details-image-concept` y `.border-product` solo estan definidas dentro de
+   `.details-items`, de modo que habria que envolverlo todo en ese contenedor
+   para heredar tres reglas, y `.cloth-details-size` ademas centra el texto por
+   debajo de 767px —correcto en una tienda de ropa, no en una hoja de datos—.
+   Se copian sus medidas, que es lo que hace que se parezcan.
+   --------------------------------------------------------------------------- */
+.product-detail {
+  .product-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .product-detail-category {
+    padding: 4px 12px;
+    border-radius: 30px;
+    background-color: $light-blue;
+    color: var(--theme-color);
+    font-size: 13px;
+    font-weight: 500;
+
+    &:hover {
+      background-color: rgba(var(--theme-color-rgb), 0.12);
+      color: var(--theme-color);
+    }
+  }
+
+  .product-detail-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $estado-ok;
+
+    &::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    &.is-out {
+      color: $estado-error;
+    }
+  }
+
+  /* El titulo crece con el ancho igual que el del tema —de 20 a 25px entre 320
+     y 1920— pero arranca mas arriba: ahi es un `h2` dentro de una columna
+     estrecha, y aqui es el `h1` de la pagina. */
+  .product-detail-title {
+    margin-bottom: 8px;
+    font-size: calc(22px + (30 - 22) * ((100vw - 320px) / (1920 - 320)));
+    line-height: 1.25;
+    color: $black1;
+    /* El tema pone `capitalize` en todo `h1`, de modo que el nombre salia
+       "Guantes De Examen De Nitrilo". Un nombre de producto llega del proveedor
+       ya escrito y hay que respetarlo tal cual: aqui pasan por delante marcas,
+       siglas y unidades —"Alcohol antiseptico 70% v/v", "Equipo de venoclisis
+       macrogotero"— que una regla de estilo no puede recapitalizar sin
+       estropear alguna. */
+    text-transform: none;
+  }
+
+  .product-detail-supplier {
+    margin-bottom: 14px;
+    font-size: 14.5px;
+
+    strong {
+      font-weight: 600;
+      color: var(--theme-color);
+    }
+  }
+
+  /* El precio, con el tamaño de `.price-detail` del tema. */
+  .product-detail-price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px dashed $border-color;
+
+    strong {
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1;
+      color: $black1;
+    }
+
+    .product-detail-price-from,
+    .font-light {
+      font-size: 14px;
+    }
+
+    /* La cifra difuminada de `Price` viene pensada para una celda de tabla. */
+    .price-hidden-blur {
+      font-size: 26px;
+      font-weight: 600;
+    }
+  }
+
+  .product-detail-description {
+    margin-bottom: 0;
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+
+  /* Lo que en B2B se pregunta siempre antes de pedir. Va debajo de la compra y
+     no encima: son datos de apoyo, no la decision. */
+  .product-detail-perks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    padding: 16px 0 0;
+    margin: 18px 0 0;
+    border-top: 1px dashed $border-color;
+
+    li {
+      /* El tema declara `li { display: inline-block }` para todo el documento,
+         de modo que una fila con iconos alineados hay que pedirla. */
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13.5px;
+      color: $font-dark;
+
+      svg {
+        flex: 0 0 auto;
+        color: var(--theme-color);
+      }
+    }
+  }
+}
+
+/* La hoja de datos: todo lo que describe al producto, debajo y a lo ancho.
+   Arriba va lo que hace falta para decidir la compra; aqui, lo que hace falta
+   para comprobar que es el producto correcto. */
+.product-detail-sheet {
+  margin-top: 50px;
+
+  .product-detail-block {
+    /* El reset del tema le da 80px de padding vertical a todo `<section>`, y
+       estos bloques lo son. Sin quitarlo quedan 160px entre uno y otro y la
+       hoja se lee como cuatro paginas sueltas. */
+    padding: 0;
+  }
+
+  .product-detail-block + .product-detail-block {
+    margin-top: 40px;
+  }
+
+  .box-head h3 {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Lista de especificaciones a dos columnas. No usa `dashboard-profile` del
+   tema, que pinta una fila por dato y a pantalla completa: con quince atributos
+   cortos deja una columna de texto y medio metro de blanco a la derecha. */
+.spec-list {
+  display: grid;
+  /* Dos columnas como tope, no `auto-fill`. Con `auto-fill` una pantalla de
+     1400px saca cuatro, y entonces cada pareja mide 320px con la etiqueta a la
+     izquierda y el valor pegado al borde derecho: se leen como ocho datos
+     sueltos en vez de como una ficha tecnica. */
+  grid-template-columns: 1fr;
+  gap: 0 48px;
+  margin: 0;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  li {
+    /* Etiqueta y valor en dos columnas fijas, no separados a los extremos. En
+       una columna de 800px, `space-between` deja medio metro entre "Material" y
+       "Nitrilo" y hay que seguir la linea con el dedo para saber cual va con
+       cual. Asi el valor empieza siempre a la misma altura y se lee en vertical
+       como lo que es, una ficha tecnica. */
+    display: grid;
+    grid-template-columns: minmax(110px, 40%) 1fr;
+    align-items: baseline;
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid $border-color;
+    font-size: 14.5px;
+
+    > span:last-child {
+      font-weight: 500;
+    }
+  }
+}
+
+/* La tabla de formatos. La del tema esta pensada para el carrito —filas altas,
+   bordes en todas las celdas— y aqui hace falta que se lea de un vistazo cual
+   conviene. */
+.format-table {
+  thead th {
+    padding-bottom: 12px;
+    border-bottom: 1px solid $border-color;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: $font-dark;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 14px 12px 14px 0;
+    border-bottom: 1px solid $border-color;
+    font-size: 14.5px;
+    vertical-align: middle;
+  }
+
+  .format-table-out {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: $estado-error;
+  }
+}
+
+/* Mientras llega el producto. Un "Cargando..." suelto en una pagina vacia no
+   dice cuanto falta ni que va a aparecer; el esqueleto ocupa el sitio de la
+   ficha, de modo que al llegar los datos nada salta. */
+.product-detail-skeleton {
+  display: flex;
+  gap: 40px;
+
+  @media (max-width: 991px) {
+    flex-direction: column;
+  }
+
+  .product-detail-skeleton-media {
+    flex: 0 0 45%;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+  }
+
+  .product-detail-skeleton-lines {
+    flex: 1;
+    padding-top: 10px;
+
+    span {
+      display: block;
+      height: 18px;
+      margin-bottom: 14px;
+      border-radius: 4px;
+
+      &:first-child { width: 45%; height: 30px; }
+      &:nth-child(2) { width: 70%; }
+      &:nth-child(3) { width: 30%; }
+    }
+  }
+
+  .product-detail-skeleton-media,
+  .product-detail-skeleton-lines span {
+    background: linear-gradient(
+      90deg,
+      $light-blue 25%,
+      rgba(var(--theme-color-rgb), 0.09) 50%,
+      $light-blue 75%
+    );
+    background-size: 400% 100%;
+    animation: suminia-esqueleto 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes suminia-esqueleto {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-detail-skeleton-media,
+  .product-detail-skeleton-lines span {
+    animation: none;
   }
 }
 
@@ -2712,6 +3033,83 @@ select.form-control,
 .buy-box-field {
   display: block;
   margin-bottom: 14px;
+}
+
+/* Las fichas de formato. Copian la caja del selector de talla del tema
+   —`.addeffect-section .size-box li`: mismo radio de 5px, mismo fondo
+   `$light-blue`— pero no se reutiliza porque alli la ficha mide 35x35 fijos,
+   pensada para una S o una XL. Aqui dentro va "Talla S · Caja x 100" y su
+   precio, de modo que la ficha tiene que crecer con lo que lleva.
+
+   El activo va en el azul de la marca y no en el negro del tema: en el resto
+   de la aplicacion lo elegido se pinta de azul —el borde de la miniatura de la
+   galeria, sin ir mas lejos— y aqui no hay razon para romperlo. */
+.buy-box-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+
+  li {
+    /* `li { display: inline-block }` es global en el tema: una rejilla de
+       fichas que crecen hay que pedirla. */
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 150px;
+  }
+
+  button {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    padding: 9px 14px;
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    background-color: $white;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: rgba(var(--theme-color-rgb), 0.55);
+    }
+
+    &.active {
+      border-color: var(--theme-color);
+      /* El segundo borde va en sombra y no en `border-width`: subir el grosor
+         a 2px mueve el contenido un pixel y las fichas bailan al elegirlas. */
+      box-shadow: inset 0 0 0 1px var(--theme-color);
+    }
+  }
+
+  .buy-box-format-name {
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: $theme-font-color;
+  }
+
+  .buy-box-format-price {
+    font-size: 13px;
+    color: var(--theme-color);
+    font-weight: 600;
+  }
+}
+
+/* Con un solo formato no hay nada que elegir. Se dice cual es, en una linea. */
+.buy-box-single {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  font-size: 14px;
+
+  strong {
+    text-align: right;
+    font-weight: 500;
+  }
 }
 
 .buy-box-total {

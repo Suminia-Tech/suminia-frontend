@@ -28,6 +28,33 @@ export const toAttributePairs = (attributes: unknown): AttributePair[] => {
     .map(([key, value]) => ({ key, value: String(value) }));
 };
 
+/* Los mismos pares, pero para leerlos.
+
+   `toAttributePairs` no sirve para pintar: lo usa tambien el formulario del
+   proveedor, que los edita y los devuelve al backend con `fromAttributePairs`,
+   de modo que ahi el valor tiene que seguir siendo el que se escribio. Si esa
+   funcion tradujera los booleanos, el proveedor guardaria la cadena "Si" donde
+   habia un `true`.
+
+   De ahi que la traduccion viva aparte. En la ficha del comprador un `false`
+   crudo se leia "Esteril  false", que es lo que escribiria un volcado de la
+   base de datos, no una ficha de producto. */
+export const toDisplayPairs = (attributes: unknown): AttributePair[] => {
+  if (!attributes || typeof attributes !== 'object' || Array.isArray(attributes)) {
+    return [];
+  }
+
+  return Object.entries(attributes as Record<string, unknown>)
+    .filter(
+      ([, value]) =>
+        typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean',
+    )
+    .map(([key, value]) => ({
+      key,
+      value: typeof value === 'boolean' ? (value ? 'Sí' : 'No') : String(value),
+    }));
+};
+
 /* De vuelta al objeto que espera el backend. Descarta los pares a medio
    escribir: una clave vacia no se puede consultar y solo ensucia el JSONB. */
 export const fromAttributePairs = (
@@ -51,7 +78,34 @@ export const fromAttributePairs = (
 const isAcronym = (word: string): boolean =>
   word.length >= 2 && word === word.toUpperCase() && /[A-Z]/.test(word);
 
+/* Las claves las teclea el proveedor en un campo libre y casi siempre sin
+   tildes, porque es mas comodo y porque nunca penso que se fueran a publicar.
+   Las que se repiten en este catalogo se escriben bien al pintarlas.
+
+   Es una lista corta a proposito: solo lo que de verdad aparece. Lo que no
+   este cae en el humanizador generico, que es lo que habia. */
+const SPELLINGS: Record<string, string> = {
+  esteril: 'Estéril',
+  libredelatex: 'Libre de látex',
+  volumen: 'Volumen',
+  presentacion: 'Presentación',
+  concentracion: 'Concentración',
+  composicion: 'Composición',
+  dimensiones: 'Dimensiones',
+  capacidad: 'Capacidad',
+  formafarmaceutica: 'Forma farmacéutica',
+  viaadministracion: 'Vía de administración',
+  unidadmedida: 'Unidad de medida',
+  desechable: 'Desechable',
+  reutilizable: 'Reutilizable',
+  biodegradable: 'Biodegradable',
+  entrepanos: 'Entrepaños',
+};
+
 export const humanizeAttributeKey = (key: string): string => {
+  const conocida = SPELLINGS[key.toLowerCase().replace(/[\s_-]+/g, '')];
+  if (conocida) return conocida;
+
   const words = key
     .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
     .replace(/[_-]+/g, ' ')
