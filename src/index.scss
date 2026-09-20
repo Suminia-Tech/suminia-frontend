@@ -531,12 +531,37 @@
   }
 }
 
-/* Galeria de la ficha del comprador. */
+/* Galeria de la ficha del comprador.
+
+   Las miniaturas van en columna a la izquierda, que es como las pone la ficha
+   del tema: alli es un `Col lg='2'` junto a un `Col lg='10'` con `order-lg-2`,
+   de modo que la imagen grande va primera en el marcado y segunda en pantalla.
+   Aqui se hace igual pero con flex, porque asi la tira puede caerse debajo en
+   una pantalla estrecha sin cambiar el marcado.
+
+   Debajo se perdian: una tira de 72px al pie de una imagen de 400 parece el
+   final de la pagina, no un carrusel, y con dos fotos nadie cae en que la
+   segunda existe. En columna estan a la altura de la imagen y se leen como lo
+   que son, las otras vistas del mismo producto.
+
+   La imagen grande va primera en el marcado a proposito: es el contenido, y la
+   tira es navegacion sobre ella. */
 .product-gallery {
   position: sticky;
   top: 20px;
+  display: flex;
+  gap: 12px;
+
+  /* Debajo de 576px la tira pasa a una fila bajo la imagen: en un telefono una
+     columna de miniaturas se come un cuarto del ancho de la foto. */
+  @media (max-width: 575px) {
+    flex-direction: column;
+  }
 
   .product-gallery-main {
+    flex: 1;
+    min-width: 0;
+    order: 2;
     /* 4:3, la proporcion en que se suben las fotos. Antes era cuadrada, y en
        una columna ancha eso son 600px de alto para una imagen que no los
        necesita: dejaba media pantalla vacia al lado del texto. */
@@ -562,15 +587,29 @@
   }
 
   .product-gallery-thumbs {
+    /* Una sexta parte del ancho, la misma proporcion que el 2 de 12 del tema. */
+    flex: 0 0 84px;
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    margin-top: 12px;
-    overflow-x: auto;
+    order: 1;
+    /* Con mas fotos de las que caben al lado de la imagen, la tira se desliza
+       en vez de estirar la galeria por debajo del bloque de compra. */
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    @media (max-width: 575px) {
+      flex: 0 0 auto;
+      flex-direction: row;
+      order: 2;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
 
     button {
-      flex: 0 0 72px;
-      width: 72px;
-      height: 72px;
+      flex: 0 0 84px;
+      width: 84px;
+      height: 84px;
       padding: 6px;
       border: 1px solid $border-color;
       border-radius: 8px;
