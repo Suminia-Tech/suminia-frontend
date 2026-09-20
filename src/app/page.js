@@ -12,7 +12,6 @@ export default function Home() {
   const [mainSlider, setMainSlider] = useState([]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--theme-color", "#096AC9");
     /* El banner es contenido de Suminia, no de la plantilla: el texto esta
        escrito en español y habla de medicamentos, y las imagenes se cambiaron
        por material medico. Sigue leyendose del mismo sitio hasta que haya donde

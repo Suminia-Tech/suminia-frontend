@@ -1,5 +1,96 @@
 @import "../public/assets/scss/app.scss";
 
+/* ===== La paleta de Suminia =====
+
+   Del manual de marca: un color solido y un degradado.
+
+     Marino    #0d2e5c
+     Turquesa  #077fad -> #00c8ca -> #077fad
+
+   Manda el turquesa en lo interactivo —botones, enlaces, estados activos— y el
+   marino en textos y superficies oscuras. Es como el manual se usa a si mismo:
+   sus laminas tienen fondo marino con botones y subrayados turquesa. Poner el
+   marino en los botones dejaria la interfaz casi negra.
+
+   El turquesa claro no es color de interfaz: sobre blanco da 2,08:1 de
+   contraste, que no alcanza ni para texto grande. Solo vive dentro del
+   degradado y sobre el marino, donde sube a 6,47:1.
+
+   Va aqui y no en el tema porque es de Suminia, no de la plantilla. Este
+   archivo se carga despues, de modo que su `:root` gana. */
+:root {
+  --theme-color: #077fad;
+  /* Los mismos componentes en RGB, para poder sacarles transparencia: `rgba()`
+     no sabe desarmar un hex guardado en una variable, y sin esto cada tono
+     translucido habria que escribirlo a mano —que es como el azul viejo acabo
+     repetido en cuatro sitios—. */
+  --theme-color-rgb: 7, 127, 173;
+
+  --suminia-navy: #0d2e5c;
+  --suminia-teal-light: #00c8ca;
+  --suminia-gradient: linear-gradient(
+    90deg,
+    #077fad 0%,
+    #00c8ca 50%,
+    #077fad 100%
+  );
+}
+
+/* El boton primario llevaba el azul de Bootstrap escrito a mano —#0d6efd— en
+   vez del color del tema. Se parecia lo bastante al azul viejo como para que no
+   se notara, pero son 27 botones de la aplicacion con un color que no es de la
+   marca: confirmar un pedido, añadir al carrito, aprobar una empresa.
+
+   Se corrige aqui y no en el tema, que es de la plantilla. Los tonos de hover y
+   de pulsado se oscurecen sobre el mismo color en vez de escribir otros dos
+   hex, para que no haya tres sitios que actualizar en el proximo cambio. */
+.btn-primary {
+  background-color: var(--theme-color);
+  border-color: var(--theme-color);
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:first-child:active,
+  &.active {
+    background-color: color-mix(in srgb, var(--theme-color) 86%, #000);
+    border-color: color-mix(in srgb, var(--theme-color) 80%, #000);
+    color: $white;
+  }
+
+  &:disabled,
+  &.disabled {
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+  }
+}
+
+/* Las etiquetas de estado.
+
+   `bg-primary` y `bg-info` son los azules de Bootstrap, no los de la marca, y
+   el de `bg-info` ademas es ilegible: #0dcaf0 con texto blanco da 1,96:1 de
+   contraste, cuando el minimo para leer es 4,5. Eso venia de antes.
+
+   El recorrido queda contado por el color: amarillo lo que espera, turquesa lo
+   aceptado, marino lo que va en camino, verde lo entregado. */
+.badge {
+  &.bg-primary {
+    background-color: var(--theme-color) !important;
+  }
+
+  &.bg-info {
+    background-color: var(--suminia-navy) !important;
+    color: $white !important;
+  }
+
+  /* El amarillo de Bootstrap con el texto blanco que trae la etiqueta por
+     defecto da 1,6:1: no se lee. Con el marino encima sube a 7,8:1. Afecta a
+     "Pedido hecho" y a las empresas pendientes de aprobacion. */
+  &.bg-warning {
+    color: var(--suminia-navy) !important;
+  }
+}
+
 /* El formulario de login se reutiliza dentro de un modal: conserva los estilos
    anidados de .login-section pero anula las propiedades de pagina completa. */
 /* El registro pide los datos de la empresa ademas de los del administrador, de
@@ -1070,7 +1161,7 @@ $area-bg: #f1f4f9;
 
   &:hover {
     color: var(--theme-color);
-    border-color: rgba(#096ac9, 0.4);
+    border-color: rgba(var(--theme-color-rgb), 0.4);
   }
 }
 
@@ -1139,9 +1230,7 @@ $area-bg: #f1f4f9;
   /* La activa se marca con fondo y no solo con color: en una lista de ocho, el
      color por si solo obliga a comparar entradas para saber cual esta encendida. */
   &.is-active {
-    /* El tono va literal y no derivado de --theme-color: esa variable guarda un
-       hex, y rgba() de CSS no puede desarmarlo para sacarle transparencia. */
-    background-color: rgba(#096ac9, 0.09);
+    background-color: rgba(var(--theme-color-rgb), 0.09);
     color: var(--theme-color);
     font-weight: 500;
 
@@ -1527,7 +1616,7 @@ $area-bg: #f1f4f9;
 
     &:hover:not(:disabled) {
       border-color: var(--theme-color);
-      background-color: rgba(#096ac9, 0.05);
+      background-color: rgba(var(--theme-color-rgb), 0.05);
       color: var(--theme-color);
     }
 
@@ -1700,7 +1789,7 @@ select.form-control,
   /* El tema pone $white al enfocar un .form-control, lo que borraria la flecha
      al ser tambien una propiedad de background. */
   &:focus {
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23096ac9' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23077fad' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 11px center;
   }
@@ -3378,4 +3467,18 @@ select.form-control,
   margin: 8px 0 0 auto;
   font-size: 12.5px;
   text-align: right;
+}
+
+/* El simbolo y el logotipo de la cabecera van casi tocandose: son una sola
+   marca, y el `gap-2` de Bootstrap —8px— los separaba lo suficiente para que
+   se leyeran como dos cosas.
+
+   El logotipo lleva ademas un pelin de correccion optica: el archivo trae aire
+   a la izquierda de la S, y sin esto el hueco real es mayor que el declarado. */
+.brand-logo-link {
+  gap: 2px;
+
+  img:last-child {
+    margin-left: -2px;
+  }
 }
