@@ -3,6 +3,7 @@ import CommonModel from "@/_template/Components/Element/CommonModel";
 import HomeSlider from "@/_template/Components/Home/HomeSlider";
 import Layout6 from "@/_template/Layout/Layout6";
 import HomeRedirect from "./HomeRedirect";
+import HomeNews from "./HomeNews";
 import { PendingApprovalNotice } from "@/modules/auth";
 import { CategoryGrid, CategoryShowcase, FeaturedProducts } from "@/modules/products";
 import { getAPIData } from "@/_template/Utils";
@@ -28,6 +29,7 @@ export default function Home() {
       <FeaturedProducts />
       <CategoryGrid />
       <CategoryShowcase />
+      <HomeNews />
       <CommonModel />
     </Layout6>
   );

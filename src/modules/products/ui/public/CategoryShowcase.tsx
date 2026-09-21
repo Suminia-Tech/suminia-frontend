@@ -62,7 +62,6 @@ export const CategoryShowcase = () => {
       title='El Catálogo Completo'
       subtitle='Elige una categoría'
       products={products}
-      withBottomSpace
     >
       {/* Las pestañas van entre el titulo y las fichas, que es donde se buscan:
           debajo del titulo se leen como parte de el, y encima habrian quedado

@@ -558,6 +558,34 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Las noticias del sector, al pie de la portada
+   --------------------------------------------------------------------------- */
+
+/* El velo de la caja de la fecha. El tema lo pinta con un degradado verde
+   —de rgb(161,245,161) a rgb(38,106,11)—, otra herencia de la demo de
+   fruteria, y es lo unico de esta seccion que no era ya de Suminia. Pasa al
+   degradado de la marca, el mismo que esta declarado arriba en la paleta.
+
+   Va en el `::after`, que es donde el tema lo pone: el `.blog-date` de encima
+   solo coloca la caja, y el color vive en su pseudoelemento. */
+.home-news .product-style-4 .blog-header .blog-image .blog-date.gradient-color::after {
+  background: var(--suminia-gradient);
+}
+
+/* El resumen del articulo. `brand-name` del tema es para un nombre de marca
+   —una linea corta— y aqui lleva dos frases: sin tope, una tarjeta crece mas
+   que su vecina y la fila deja de alinearse. */
+.home-news-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------------------
    Las pestañas de categoria del segundo carrusel de la portada
 
    Son botones y no enlaces: cambian lo que enseña el carrusel sin salir de la
