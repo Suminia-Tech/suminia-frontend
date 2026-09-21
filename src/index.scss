@@ -229,13 +229,70 @@ textarea.form-control {
   padding-right: 34px;
 }
 
-.login-modal {
-  /* Sin overflow:hidden: el boton de cierre del tema se posiciona fuera
-     del contenido (top/right negativos) y quedaria recortado. */
-  .modal-content {
-    border-radius: var(--suminia-radio-caja);
-  }
+/* ---------------------------------------------------------------------------
+   Los modales
 
+   Los seis del proyecto —acceso, confirmar, producto, imagenes, formatos y
+   miembro— montan la cabecera igual, `<ModalHeader toggle>` sin titulo, de modo
+   que todos heredaban el mismo problema y se arregla una vez.
+
+   El tema saca el boton de cierre del modal con `top` y `right` negativos: lo
+   deja flotando sobre la pagina, por encima del marco y en el area del menu, y
+   en el modal del proveedor se salia ademas por la derecha. Ahi no se lee como
+   parte del dialogo, sino como una aspa suelta encima de todo. Es tambien un
+   cuadrado de 70px con 6px de radio, fuera del estandar.
+
+   Se trae a la esquina de dentro, se hace redondo y se le da un fondo al pasar
+   por encima, que es lo unico que faltaba para que se entienda que se pulsa.
+   --------------------------------------------------------------------------- */
+.modal-content {
+  border-radius: var(--suminia-radio-caja);
+  /* Con el cierre ya dentro, nada tiene que desbordar el marco. */
+  overflow: hidden;
+}
+
+.modal-header {
+  position: relative;
+  min-height: 0;
+  padding: 0;
+  border: none;
+
+  /* Una cabecera con titulo si necesita su sitio; la que va vacia solo esta
+     para colgar el boton de cierre. */
+  &:not(:empty) .modal-title {
+    padding: 18px 56px 0 26px;
+  }
+}
+
+/* La cadena repetida no es por gusto. Los modales del proyecto toman prestadas
+   clases de la plantilla para heredar su aspecto —`add-address-modal`,
+   `delete-account-modal`— y con ellas viene
+   `.add-address-modal .modal-content .modal-header .btn-close`, cuatro clases
+   que le devuelven los 54px y los -50 de fuera. Aqui van cinco. */
+.modal.show .modal-content .modal-header .btn-close,
+.modal .modal-content .modal-header .btn-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--suminia-radio-control);
+  background-color: transparent;
+  color: $font-dark;
+  opacity: 1;
+  z-index: 2;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: $light-blue;
+    color: $theme-font-color;
+  }
+}
+
+.login-modal {
   .modal-body {
     padding: 0;
   }
@@ -252,6 +309,20 @@ textarea.form-control {
     .box {
       box-shadow: none;
       border-radius: var(--suminia-radio-caja);
+      /* El tema deja el contenido pegado al borde. En la pagina de registro no
+         se nota porque la caja es ancha; aqui, a 500px, la barra azul del
+         titulo tocaba el marco. */
+      padding-left: 30px;
+      padding-right: 30px;
+
+      /* La cornisa. El tema apila un rectangulo blanco al 60% diez pixeles por
+         encima de la caja, para que parezca una hoja sobre otra. Sobre el fondo
+         claro de la pagina de registro funciona; aqui, con el velo oscuro
+         detras, ese blanco translucido se lee como una franja gris asomando por
+         encima del modal, y parece que algo se pinto mal. */
+      &::before {
+        display: none;
+      }
     }
   }
 }

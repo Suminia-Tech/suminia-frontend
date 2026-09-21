@@ -97,9 +97,12 @@ const LoginModal = () => {
       {/* Sobre el modal mientras se comprueban las credenciales: es el mismo
           velo que se ve al abrir la tienda, de modo que la espera se reconoce. */}
       <LoadingOverlay isOpen={isLoading || entrando || navegando} />
+    {/* Sin un `.modal-content` propio: reactstrap ya pinta uno, y el que habia
+        aqui dentro era un segundo recuadro blanco con su mismo radio, un pixel
+        mas pequeño y pegado al de fuera. No se veia, pero duplicaba el marco y
+        confundia cualquier regla escrita contra `.modal-content`. */}
     <Modal className='login-modal' toggle={toggle} isOpen={loginModal} centered={true}>
-      <div className='modal-content'>
-        <ModalHeader toggle={toggle}></ModalHeader>
+      <ModalHeader toggle={toggle}></ModalHeader>
         <ModalBody>
           <div className='login-section'>
             <div className='materialContainer'>
@@ -171,7 +174,6 @@ const LoginModal = () => {
             </div>
           </div>
         </ModalBody>
-      </div>
     </Modal>
     </>
   );
