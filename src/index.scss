@@ -48,15 +48,22 @@
      boton de 32px y para el buscador de 47 sin tener que calcular nada. Escribir
      `50%` no sirve: en un rectangulo daria una elipse.
 
-     `caja` es lo que contiene cosas: tarjetas, paneles, avisos, modales. Ahi la
-     pastilla no vale —una tarjeta de producto con los lados redondos se lee
-     como un boton gigante— y lo que hace falta es que todas midan lo mismo.
+     `caja` es lo que contiene cosas: tarjetas, paneles y avisos. Ahi la pastilla
+     no vale —una tarjeta de producto con los lados redondos se lee como un
+     boton gigante— y lo que hace falta es que todas midan lo mismo.
+
+     `modal` existe aparte porque el radio tiene que crecer con la superficie.
+     Los mismos 16px que redondean un aviso de 44px de alto son casi una esquina
+     recta en un dialogo de 500x490: la curva ocupa un 3% del lado y el ojo la
+     lee como un rectangulo. Un solo numero para las dos cosas obliga a elegir
+     entre un aviso con forma de pastilla y un modal cuadrado.
 
      Las miniaturas se quedan en 8px, sin token. Son fotos dentro de una caja y
      tienen que leerse por dentro de ella: con el mismo radio que su contenedor
      el marco desaparece. */
   --suminia-radio-control: 999px;
-  --suminia-radio-caja: 12px;
+  --suminia-radio-caja: 16px;
+  --suminia-radio-modal: 28px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -246,7 +253,7 @@ textarea.form-control {
    por encima, que es lo unico que faltaba para que se entienda que se pulsa.
    --------------------------------------------------------------------------- */
 .modal-content {
-  border-radius: var(--suminia-radio-caja);
+  border-radius: var(--suminia-radio-modal);
   /* Con el cierre ya dentro, nada tiene que desbordar el marco. */
   overflow: hidden;
 }
@@ -308,7 +315,9 @@ textarea.form-control {
 
     .box {
       box-shadow: none;
-      border-radius: var(--suminia-radio-caja);
+      /* La del marco que la contiene: con un radio menor asomaria una esquina
+         blanca por dentro de la curva del modal. */
+      border-radius: var(--suminia-radio-modal);
       /* El tema deja el contenido pegado al borde. En la pagina de registro no
          se nota porque la caja es ancha; aqui, a 500px, la barra azul del
          titulo tocaba el marco. */
