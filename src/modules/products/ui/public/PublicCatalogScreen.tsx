@@ -7,8 +7,9 @@ import { Lock } from 'react-feather';
 import { Col, Row } from 'reactstrap';
 
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
+import { useMounted } from '@/shared/hooks/useMounted';
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { Pagination } from '@/shared/ui';
+import { Breadcrumbs, Pagination } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
@@ -27,10 +28,22 @@ import { ProductCard } from '../common/ProductCard';
 const PAGE_SIZE = 24;
 
 export const PublicCatalogScreen = () => {
-  /* El aviso de precios si espera a `hydrated`, aunque el listado no: la sesion
-     se lee de localStorage, que el servidor no ve. Sin esperar, el servidor
-     mandaba el aviso y el navegador de alguien con sesion pintaba la fila sin
-     el, y React tiraba toda la pantalla abajo para rehacerla. */
+  /* El aviso de precios no lo puede pintar el servidor: depende de la sesion,
+     que se lee de localStorage y el servidor no ve. Hacen falta las dos
+     condiciones.
+
+     `mounted` es lo que garantiza que el primer render del navegador coincida
+     con lo que mando el servidor. `hydrated` por si solo no bastaba: lo
+     enciende un efecto de `AuthInitializer`, que esta arriba del arbol, y esta
+     pantalla cuelga de un `<Suspense>` —lo necesita por `useSearchParams`—, de
+     modo que al reanudarse ya valia `true` y React encontraba el aviso donde el
+     servidor habia puesto la fila de filtros. Tiraba el trozo entero y lo
+     rehacia, con un error de hidratacion en consola en cada carga.
+
+     `hydrated` sigue haciendo falta, pero por otra razon: sin el, entre el
+     montaje y la lectura de la sesion se le enseñaria el aviso de "registrate"
+     a alguien que ya tiene cuenta. */
+  const mounted = useMounted();
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   /* El buscador de la cabecera y las categorias de la portada llegan aqui por
@@ -74,6 +87,10 @@ export const PublicCatalogScreen = () => {
   return (
     <section className='section-b-space'>
       <div className='container-fluid-lg'>
+        <Breadcrumbs
+          steps={[{ label: 'Inicio', href: '/' }, { label: 'Catálogo' }]}
+        />
+
         <div className='box-head'>
           <h3>Catálogo</h3>
         </div>
@@ -85,7 +102,7 @@ export const PublicCatalogScreen = () => {
             Solo a quien no ha entrado: al que ya tiene sesion y espera
             aprobacion se lo cuenta la franja de arriba, con su situacion
             concreta, y repetirlo aqui seria decirle dos veces lo mismo. */}
-        {hydrated && !isAuthenticated && (
+        {mounted && hydrated && !isAuthenticated && (
           <div className='public-price-notice'>
             <Lock size={15} />
             <span>

@@ -531,6 +531,79 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   El aire de arriba de las pantallas de tienda
+
+   El tema le da 70px de padding vertical a `.section-b-space`, que es el ritmo
+   de la portada: secciones una detras de otra, cada una un bloque, y ese aire
+   es lo que las separa. Pegada al menu, en cambio, la primera seccion de una
+   pagina interior arranca en el vacio —70px entre "HOME TIENDA BLOG" y el
+   primer texto, sin nada en medio—.
+
+   Se corta a 24, que es lo que hace falta para que el menu y el contenido no se
+   toquen. Abajo se deja el aire del tema: ahi si separa del pie.
+
+   Va en el chasis y no en cada pantalla porque son cuatro —catalogo, ficha,
+   carrito y confirmacion— y el ritmo entre ellas tiene que ser el mismo.
+   --------------------------------------------------------------------------- */
+.store-page > section.section-b-space {
+  padding-top: 24px;
+}
+
+/* El rastro de la tienda. Discreto a proposito: es orientacion, no contenido, y
+   compite con el titulo que tiene justo debajo. */
+.suminia-breadcrumbs {
+  margin-bottom: 14px;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    margin: 0;
+  }
+
+  li {
+    /* `li { display: inline-block }` es global en el tema: la fila con los
+       separadores centrados hay que pedirla. */
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: $font-dark;
+  }
+
+  a {
+    color: $font-dark;
+
+    &:hover {
+      color: var(--theme-color);
+    }
+  }
+
+  /* El tramo actual. El nombre del producto puede ser largo, y como no se parte
+     en varias lineas hay que ponerle un tope o se sale de la pantalla.
+
+     El tope es el menor de los dos: 46 caracteres, que es lo que se lee de un
+     vistazo, y el ancho de lo que lo contiene. Solo con `ch` un nombre corto en
+     un telefono estrecho seguiria desbordando, porque `ch` no sabe nada del
+     ancho disponible. */
+  [aria-current='page'] {
+    color: $theme-font-color;
+    font-weight: 500;
+    max-width: min(46ch, 100%);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  svg {
+    flex: 0 0 auto;
+    opacity: 0.45;
+  }
+}
+
 /* Galeria de la ficha del comprador.
 
    Las miniaturas van en columna a la izquierda, que es como las pone la ficha

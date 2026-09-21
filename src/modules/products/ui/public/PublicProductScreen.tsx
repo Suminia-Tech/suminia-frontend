@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState, type ComponentType } from 'react';
 import {
-  ChevronLeft,
   FileText,
   Image as ImageIcon,
   Lock,
@@ -14,7 +13,9 @@ import {
 } from 'react-feather';
 import { Col, Row, Table } from 'reactstrap';
 
+import { useMounted } from '@/shared/hooks/useMounted';
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { Breadcrumbs } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetMedicineOffersQuery } from '../../api/productsApi';
@@ -61,6 +62,7 @@ export const PublicProductScreen = ({
   BuyBox,
 }: PublicProductScreenProps) => {
   const [activeImage, setActiveImage] = useState(0);
+  const mounted = useMounted();
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const { data, isLoading, isError, error } = useCatalogProduct(productId);
@@ -133,13 +135,24 @@ export const PublicProductScreen = ({
   return (
     <section className='section-b-space'>
       <div className='container-fluid-lg'>
-        <Link
-          href='/catalog'
-          className='font-light d-inline-flex align-items-center gap-1 mb-3'
-        >
-          <ChevronLeft size={16} />
-          Volver al catálogo
-        </Link>
+        {/* Las migas en vez del "Volver al catalogo" que habia: dicen de donde
+            se sale y tambien donde se esta, que es lo que le faltaba a quien
+            llega aqui desde un buscador y no desde el catalogo. */}
+        <Breadcrumbs
+          steps={[
+            { label: 'Inicio', href: '/' },
+            { label: 'Catálogo', href: '/catalog' },
+            ...(product.categoryName
+              ? [
+                  {
+                    label: product.categoryName,
+                    href: `/catalog?categoryId=${product.categoryId}`,
+                  },
+                ]
+              : []),
+            { label: product.name },
+          ]}
+        />
 
         <Row className='g-4 g-lg-5'>
           <Col lg='6'>
@@ -237,8 +250,11 @@ export const PublicProductScreen = ({
                   Solo para quien no ha entrado. A quien ya tiene sesion y espera
                   aprobacion se lo cuenta la franja de arriba, y pedirle que
                   registre la empresa que acaba de registrar no tiene sentido.
-                  Espera a `hydrated` porque la sesion se lee de localStorage, que
-                  el servidor no ve. */}
+                  Espera a `mounted` y a `hydrated`, no solo al segundo: la
+                  sesion se lee de localStorage, que el servidor no ve, y
+                  `hydrated` puede llegar encendido al primer render si por
+                  encima hay una frontera de Suspense. Es lo que le pasaba al
+                  catalogo. */}
               {BuyBox && (
                 <BuyBox
                   formats={presentations.map((presentation) => ({
@@ -255,7 +271,7 @@ export const PublicProductScreen = ({
                 />
               )}
 
-              {hydrated && !isAuthenticated && (
+              {mounted && hydrated && !isAuthenticated && (
                 <div className='public-price-cta'>
                   <Lock size={17} />
                   <div>

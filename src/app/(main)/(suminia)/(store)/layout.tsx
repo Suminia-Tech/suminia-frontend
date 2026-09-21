@@ -22,7 +22,11 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
   return (
     <Layout6 isCategories={true}>
       <PendingApprovalNotice />
-      {children}
+      {/* El aire de arriba se ajusta desde aqui para las cuatro pantallas a la
+          vez. El tema le da 70px de padding a `.section-b-space`, que es el
+          ritmo de las secciones de la portada —una detras de otra, cada una un
+          bloque—; pegado al menu deja la pagina empezando en el vacio. */}
+      <div className='store-page'>{children}</div>
     </Layout6>
   );
 }

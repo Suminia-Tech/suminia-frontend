@@ -1,3 +1,5 @@
+export { default as Breadcrumbs } from './Breadcrumbs';
+export type { BreadcrumbStep } from './Breadcrumbs';
 export { default as ConfirmModal } from './ConfirmModal';
 export { default as LoadingOverlay } from './LoadingOverlay';
 export { default as Pagination } from './Pagination';
