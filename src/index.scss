@@ -540,14 +540,21 @@
    pagina interior arranca en el vacio —70px entre "HOME TIENDA BLOG" y el
    primer texto, sin nada en medio—.
 
-   Se corta a 24, que es lo que hace falta para que el menu y el contenido no se
-   toquen. Abajo se deja el aire del tema: ahi si separa del pie.
+   Se corta a 10, y no mas, porque el menu ya pone 20px por debajo de su texto:
+   los 24 de antes daban 45px entre "INICIO" y la primera linea de la pagina,
+   dos textos pequeños separados por un vacio que no dice nada. Con 10 quedan
+   31, y las migas se leen como lo que viene despues del menu.
+
+   El hueco entre las migas y el titulo es menor a proposito —14px—: asi el
+   titulo se agrupa con su rastro y el par entero se separa del menu.
+
+   Abajo se deja el aire del tema: ahi si separa del pie.
 
    Va en el chasis y no en cada pantalla porque son cuatro —catalogo, ficha,
    carrito y confirmacion— y el ritmo entre ellas tiene que ser el mismo.
    --------------------------------------------------------------------------- */
 .store-page > section.section-b-space {
-  padding-top: 24px;
+  padding-top: 10px;
 }
 
 /* El rastro de la tienda. Discreto a proposito: es orientacion, no contenido, y
@@ -561,6 +568,12 @@
     align-items: center;
     gap: 2px 6px;
     margin: 0;
+    /* El sangrado de lista, que aqui sobra. Un `<ol>` trae 32px de
+       `padding-left` para dejarle sitio a los numeros, y con ellos quitados lo
+       unico que hacia era arrancar las migas 32px mas a la derecha que el
+       titulo y la galeria que vienen justo debajo. */
+    padding-left: 0;
+    list-style: none;
   }
 
   li {
