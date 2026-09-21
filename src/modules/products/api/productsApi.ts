@@ -27,6 +27,27 @@ import type {
    quien pregunta. Un proveedor recibe el suyo completo, con borradores; los
    demas solo lo publicado por empresas habilitadas. Aqui no hay que hacer nada
    distinto para cada caso. */
+/* El catalogo publico no entiende el filtro generico.
+
+   Los endpoints de dentro reciben `filter[campo]=valor`, que es lo que arma
+   `toDatatableQuery` y lo que espera el FilterValidationPipe. El controlador
+   publico no lo usa a proposito: acepta la categoria como parametro suelto para
+   no abrir al mundo un filtro que acepta varios campos. Es una decision del
+   backend, y razonable; lo que faltaba era que el cliente la respetara.
+
+   Sin esto, `/catalog` mandaba `filter[categoryId]`, el controlador lo ignoraba
+   y devolvia el catalogo entero: elegir una categoria sin haber entrado no
+   filtraba nada, y se leia como que el selector estaba roto. */
+const toPublicQuery = (params: DatatableParams) => {
+  const { filter, ...resto } = params;
+  const { categoryId, ...otros } = filter ?? {};
+
+  return {
+    ...toDatatableQuery({ ...resto, filter: otros }),
+    ...(categoryId ? { categoryId: String(categoryId) } : {}),
+  };
+};
+
 export const productsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query<PaginatedResponse<Product>, DatatableParams | void>({
@@ -75,7 +96,7 @@ export const productsApi = baseApi.injectEndpoints({
       ],
     }),
 
-    /* El catalogo que se ve sin haber entrado. Va contra /public/products, que
+/* El catalogo que se ve sin haber entrado. Va contra /public/products, que
        en el backend es un controlador propio y sin guardas: lo que Suminia
        publica al mundo es una lista corta y explicita, no lo que quede de
        aflojar las guardas de los endpoints de dentro.
@@ -85,7 +106,7 @@ export const productsApi = baseApi.injectEndpoints({
     getPublicProducts: builder.query<PaginatedResponse<Product>, DatatableParams | void>({
       query: (params) => ({
         url: '/public/products',
-        params: toDatatableQuery(params ?? {}),
+        params: toPublicQuery(params ?? {}),
       }),
     }),
 

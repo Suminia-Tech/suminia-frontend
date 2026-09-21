@@ -60,8 +60,12 @@ export const CategoryGrid = () => {
      fichas crecen con la pantalla.
 
      `ratio_90` se queda: es lo que le da a la ficha su proporcion. */
+  /* Sin `section-b-space`: el tema le da a todo `<section>` su apertura por
+     arriba, y el cierre por abajo solo hace falta en la ultima, que es la que
+     da al pie. Lo llevaba esta cuando lo era; ahora debajo va el carrusel por
+     categoria, y dejarselo sumaba su cierre a la apertura de aquel. */
   return (
-    <section className='ratio_90 section-b-space home-categories'>
+    <section className='ratio_90 home-categories'>
       <div className='container-fluid-lg'>
             {/* Cabecera centrada con su subtitulo, como las demas secciones del
                 tema: `.title.title-2` trae su propio margen inferior, que

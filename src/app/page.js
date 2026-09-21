@@ -4,7 +4,7 @@ import HomeSlider from "@/_template/Components/Home/HomeSlider";
 import Layout6 from "@/_template/Layout/Layout6";
 import HomeRedirect from "./HomeRedirect";
 import { PendingApprovalNotice } from "@/modules/auth";
-import { CategoryGrid, FeaturedProducts } from "@/modules/products";
+import { CategoryGrid, CategoryShowcase, FeaturedProducts } from "@/modules/products";
 import { getAPIData } from "@/_template/Utils";
 import { useEffect, useState } from "react";
 
@@ -27,6 +27,7 @@ export default function Home() {
       <HomeSlider mainSlider={mainSlider} />
       <FeaturedProducts />
       <CategoryGrid />
+      <CategoryShowcase />
       <CommonModel />
     </Layout6>
   );
