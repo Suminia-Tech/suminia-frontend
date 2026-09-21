@@ -263,7 +263,7 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
               />
               <button
                 type='button'
-                className='btn btn-primary rounded-1'
+                className='btn btn-primary'
                 disabled={busyImageId === editingAlt}
                 onClick={saveAlt}
               >
@@ -271,7 +271,7 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
               </button>
               <button
                 type='button'
-                className='btn btn-outline-secondary rounded-1'
+                className='btn btn-outline-secondary'
                 onClick={() => setEditingAlt(null)}
               >
                 Cancelar
@@ -322,7 +322,7 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
         </span>
         <button
           type='button'
-          className='btn btn-outline-secondary rounded-1'
+          className='btn btn-outline-secondary'
           onClick={onClose}
         >
           Cerrar

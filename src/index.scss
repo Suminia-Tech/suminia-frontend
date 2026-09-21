@@ -34,6 +34,91 @@
     #00c8ca 50%,
     #077fad 100%
   );
+
+  /* ===== Los radios =====
+
+     Dos formas y una excepcion, en vez de los trece valores sueltos que habia
+     —3, 4, 5, 6, 7, 8, 10, 11, 12, 18, 20, 30— repartidos entre el tema y las
+     pantallas segun quien escribiera cada una.
+
+     `control` es una pastilla: todo lo que se pulsa o se escribe dentro
+     —botones, campos, desplegables, etiquetas elegibles, el selector de
+     cantidad—. El valor es deliberadamente absurdo: el navegador recorta el
+     radio a la mitad del lado corto, de modo que un mismo numero vale para un
+     boton de 32px y para el buscador de 47 sin tener que calcular nada. Escribir
+     `50%` no sirve: en un rectangulo daria una elipse.
+
+     `caja` es lo que contiene cosas: tarjetas, paneles, avisos, modales. Ahi la
+     pastilla no vale —una tarjeta de producto con los lados redondos se lee
+     como un boton gigante— y lo que hace falta es que todas midan lo mismo.
+
+     Las miniaturas se quedan en 8px, sin token. Son fotos dentro de una caja y
+     tienen que leerse por dentro de ella: con el mismo radio que su contenedor
+     el marco desaparece. */
+  --suminia-radio-control: 999px;
+  --suminia-radio-caja: 12px;
+}
+
+/* ---------------------------------------------------------------------------
+   Los controles, en pastilla
+
+   El tema deja los botones en 0.5rem y los campos en el 4px por defecto de
+   Bootstrap, que es el "medio cuadrado" del que venia casi todo. Se pasan al
+   token, y con ellos las piezas que no tienen regla propia en este archivo.
+
+   Va aqui arriba, antes que el resto, para que cualquier regla de mas abajo que
+   necesite otra cosa —una esquina recta donde dos controles se pegan— pueda
+   pisarlo sin pelearse por especificidad.
+   --------------------------------------------------------------------------- */
+.btn,
+.form-control,
+.form-select,
+select.form-control,
+textarea.form-control,
+.input-group > .form-control,
+.badge,
+.status-pill {
+  border-radius: var(--suminia-radio-control);
+}
+
+/* Las etiquetas de la ficha de producto. El tema les da 3px, que a 24px de alto
+   es practicamente una esquina recta. */
+.product-box .product-details .size-box li {
+  border-radius: var(--suminia-radio-control);
+}
+
+/* Las pantallas de acceso y registro se escapaban del estandar: el tema les fija
+   el radio desde `.login-section .materialContainer`, que gana por
+   especificidad a las reglas de arriba. Se repite la cadena para empatarla.
+
+   Son las dos formas de siempre: el panel es una caja y el boton de enviar se
+   pulsa. */
+.login-section .materialContainer .box,
+.login-section .materialContainer .overbox,
+.contact-section .materialContainer .box {
+  border-radius: var(--suminia-radio-caja);
+}
+
+.login-section .materialContainer .button.login button {
+  border-radius: var(--suminia-radio-control);
+}
+
+/* Los avisos del tema van en 6px y el boton de subir en 5, los dos fuera del
+   estandar. El aviso es una caja; el de subir se pulsa, y ademas es cuadrado,
+   de modo que la pastilla lo deja redondo. */
+.alert {
+  border-radius: var(--suminia-radio-caja);
+}
+
+.tap-to-top {
+  border-radius: var(--suminia-radio-control);
+}
+
+/* Un area de texto en pastilla no funciona: el radio se recorta a la mitad del
+   lado corto, y con varias lineas de alto las esquinas se comen la primera y la
+   ultima. Se queda en la caja. */
+textarea.form-control {
+  border-radius: var(--suminia-radio-caja);
 }
 
 /* El boton primario llevaba el azul de Bootstrap escrito a mano —#0d6efd— en
@@ -148,7 +233,7 @@
   /* Sin overflow:hidden: el boton de cierre del tema se posiciona fuera
      del contenido (top/right negativos) y quedaria recortado. */
   .modal-content {
-    border-radius: 18px;
+    border-radius: var(--suminia-radio-caja);
   }
 
   .modal-body {
@@ -166,7 +251,7 @@
 
     .box {
       box-shadow: none;
-      border-radius: 18px;
+      border-radius: var(--suminia-radio-caja);
     }
   }
 }
@@ -297,7 +382,7 @@
 .catalog-card {
   height: 100%;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   overflow: hidden;
   background-color: $white;
   transition: box-shadow 0.2s ease;
@@ -340,7 +425,7 @@
     top: 8px;
     left: 8px;
     padding: 2px 8px;
-    border-radius: 20px;
+    border-radius: var(--suminia-radio-control);
     background-color: var(--theme-color);
     color: $white;
     font-size: 10.5px;
@@ -485,7 +570,7 @@
   .btn {
     min-width: 34px;
     border: 1px solid $border-color;
-    border-radius: 6px;
+    border-radius: var(--suminia-radio-control);
 
     &.active {
       background-color: var(--theme-color);
@@ -526,7 +611,7 @@
   .presentation-form {
     margin-top: 20px;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: var(--suminia-radio-caja);
     background-color: $light-blue;
   }
 }
@@ -610,7 +695,7 @@
     gap: 7px;
     padding: 7px 16px;
     border: 1px solid $border-color;
-    border-radius: 30px;
+    border-radius: var(--suminia-radio-control);
     background-color: $white;
     color: $theme-font-color;
     font-size: 14px;
@@ -634,7 +719,7 @@
      pulsar. Es el mismo criterio que ya siguen las fichas de encima. */
   .category-tabs-count {
     padding: 1px 7px;
-    border-radius: 20px;
+    border-radius: var(--suminia-radio-control);
     background-color: $light-blue;
     color: $font-dark;
     font-size: 12px;
@@ -765,7 +850,7 @@
     justify-content: center;
     padding: 16px;
     border: 1px solid $border-color;
-    border-radius: 12px;
+    border-radius: var(--suminia-radio-caja);
     overflow: hidden;
     background-color: $white;
     color: rgba($theme-font-color, 0.45);
@@ -864,7 +949,7 @@ $estado-error: #dc3545;
 
   .product-detail-category {
     padding: 4px 12px;
-    border-radius: 30px;
+    border-radius: var(--suminia-radio-control);
     background-color: $light-blue;
     color: var(--theme-color);
     font-size: 13px;
@@ -1090,7 +1175,7 @@ $estado-error: #dc3545;
   .product-detail-skeleton-media {
     flex: 0 0 45%;
     aspect-ratio: 4 / 3;
-    border-radius: 12px;
+    border-radius: var(--suminia-radio-caja);
   }
 
   .product-detail-skeleton-lines {
@@ -1182,7 +1267,7 @@ $estado-error: #dc3545;
 
 .catalog-panel {
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $white;
   overflow: hidden;
 
@@ -1251,7 +1336,7 @@ $estado-error: #dc3545;
   height: 34px;
   padding: 0 30px 0 12px;
   border: 1px solid $border-color;
-  border-radius: 7px;
+  border-radius: var(--suminia-radio-control);
   background-color: $white;
   color: $theme-font-color;
   font-size: 13px;
@@ -1284,7 +1369,7 @@ $estado-error: #dc3545;
   gap: 6px;
   padding: 4px 9px;
   border: 1px solid $border-color;
-  border-radius: 20px;
+  border-radius: var(--suminia-radio-control);
   background-color: $white;
   font-size: 12.5px;
   color: $theme-font-color;
@@ -1447,7 +1532,7 @@ $estado-error: #dc3545;
 .chip {
   display: inline-block;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--suminia-radio-control);
   font-size: 12px;
   background-color: $light-blue;
   color: rgba($theme-font-color, 0.75);
@@ -1497,7 +1582,7 @@ $estado-error: #dc3545;
     gap: 5px;
     padding: 7px 9px;
     border: 1px solid transparent;
-    border-radius: 7px;
+    border-radius: var(--suminia-radio-control);
     background: none;
     color: rgba($theme-font-color, 0.6);
     font-size: 12px;
@@ -1763,7 +1848,7 @@ $area-bg: #f1f4f9;
   gap: 11px;
   padding: 9px 10px;
   margin-bottom: 2px;
-  border-radius: 8px;
+  border-radius: var(--suminia-radio-control);
   font-size: 14px;
   color: rgba($theme-font-color, 0.72);
   transition:
@@ -1876,7 +1961,7 @@ $area-bg: #f1f4f9;
     gap: 9px;
     padding: 4px 8px 4px 4px;
     border: 1px solid transparent;
-    border-radius: 30px;
+    border-radius: var(--suminia-radio-control);
     background: none;
     font-size: 14px;
     color: $theme-font-color;
@@ -1912,7 +1997,7 @@ $area-bg: #f1f4f9;
 
   .dropdown-item {
     padding: 8px 12px;
-    border-radius: 7px;
+    border-radius: var(--suminia-radio-control);
     font-size: 14px;
     color: $theme-font-color;
 
@@ -2039,7 +2124,7 @@ $area-bg: #f1f4f9;
     height: 40px;
     padding: 0;
     margin: 0 auto 4px;
-    border-radius: 10px;
+    border-radius: var(--suminia-radio-control);
 
     span {
       display: none;
@@ -2128,7 +2213,7 @@ $area-bg: #f1f4f9;
 .gallery-slot {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   overflow: hidden;
 
   &.is-filled {
@@ -2186,7 +2271,7 @@ $area-bg: #f1f4f9;
   top: 7px;
   left: 7px;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--suminia-radio-control);
   background-color: var(--theme-color);
   color: $white;
   font-size: 10.5px;
@@ -2214,7 +2299,7 @@ $area-bg: #f1f4f9;
     height: 26px;
     padding: 0;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--suminia-radio-control);
     background: none;
     color: rgba($white, 0.88);
     cursor: pointer;
@@ -2242,7 +2327,7 @@ $area-bg: #f1f4f9;
 .gallery-alt {
   margin-top: 18px;
   padding: 16px;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $light-blue;
 }
 
@@ -2290,7 +2375,7 @@ $area-bg: #f1f4f9;
     height: 32px;
     padding: 0;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--suminia-radio-control);
     background: none;
     color: rgba($theme-font-color, 0.45);
     cursor: pointer;
@@ -2312,7 +2397,7 @@ $area-bg: #f1f4f9;
   flex-wrap: wrap;
   padding: 10px 14px;
   margin-bottom: 16px;
-  border-radius: 8px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $white;
   border: 1px dashed $border-color;
 
@@ -2355,7 +2440,7 @@ select.form-control,
 .medicine-fields {
   padding: 18px;
   margin-bottom: 18px;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $light-blue;
 
   h5 {
@@ -2407,7 +2492,7 @@ select.form-control,
   overflow-y: auto;
   list-style: none;
   border: 1px solid $border-color;
-  border-radius: 8px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $white;
 
   /* El tema declara `li { display: inline-block }` para todo el documento, de
@@ -2461,7 +2546,7 @@ select.form-control,
   gap: 10px;
   padding: 14px 16px;
   border: 1px solid $border-color;
-  border-radius: 8px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $white;
 
   h6 {
@@ -2481,7 +2566,7 @@ select.form-control,
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--suminia-radio-control);
   background-color: $light-blue;
   font-size: 11px;
   font-weight: 600;
@@ -2517,7 +2602,7 @@ select.form-control,
   align-self: flex-start;
   padding: 4px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--suminia-radio-control);
   background: none;
   color: rgba($theme-font-color, 0.5);
 
@@ -2539,7 +2624,7 @@ select.form-control,
   padding: 16px;
   margin-bottom: 18px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
 
   h6 {
     margin-bottom: 2px;
@@ -2588,7 +2673,7 @@ select.form-control,
     button {
       padding: 4px;
       border: 0;
-      border-radius: 6px;
+      border-radius: var(--suminia-radio-control);
       background: none;
       color: rgba($theme-font-color, 0.5);
 
@@ -2641,7 +2726,7 @@ select.form-control,
     gap: 16px;
     padding: 12px 16px;
     border: 1px solid $border-color;
-    border-radius: 8px;
+    border-radius: var(--suminia-radio-caja);
     background-color: $white;
 
     &:hover {
@@ -2684,7 +2769,7 @@ select.form-control,
   display: inline-block;
   margin-top: 6px;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--suminia-radio-control);
   background-color: $light-blue;
   font-size: 11px;
   font-weight: 600;
@@ -2739,7 +2824,7 @@ select.form-control,
   padding: 11px 16px;
   margin-bottom: 20px;
   border: 1px solid $border-color;
-  border-radius: 8px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $light-blue;
   font-size: 13.5px;
 
@@ -2761,7 +2846,7 @@ select.form-control,
   padding: 16px;
   margin-top: 20px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $light-blue;
 
   > svg {
@@ -3129,11 +3214,11 @@ select.form-control,
    de modo que siguen escalando juntos— y su padding pasa a ser solo horizontal.
    Un `button` centra su contenido por si solo cuando se le fija la altura. */
 .navbar-searchbar {
-  /* El radio del tema para los botones es 0.5rem. Aqui se redondea un poco mas,
-     y de un solo sitio: el campo llevaba los suyos en estilos en linea, que
-     ganan a cualquier hoja y obligaban a cambiar el mismo numero en dos
-     archivos. */
-  --suminia-radio-busqueda: 12px;
+  /* El radio de la fila de busqueda, de un solo sitio: el campo llevaba los
+     suyos en estilos en linea, que ganan a cualquier hoja y obligaban a cambiar
+     el mismo numero en dos archivos. Apunta al token de control, de modo que
+     la cabecera sigue el mismo estandar que el resto. */
+  --suminia-radio-busqueda: var(--suminia-radio-control);
 
   /* La altura la fija esta variable para los tres, campo incluido. Darsela solo
      a los botones y dejar que el campo siguiera calculando la suya a partir del
@@ -3192,7 +3277,7 @@ select.form-control,
   display: inline-flex;
   align-items: stretch;
   border: 1px solid $border-color;
-  border-radius: 8px;
+  border-radius: var(--suminia-radio-control);
   overflow: hidden;
 
   button {
@@ -3243,7 +3328,7 @@ select.form-control,
   padding: 16px;
   margin-top: 20px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $light-blue;
 
   .form-label {
@@ -3298,7 +3383,7 @@ select.form-control,
     width: 100%;
     padding: 9px 14px;
     border: 1px solid $border-color;
-    border-radius: 5px;
+    border-radius: var(--suminia-radio-control);
     background-color: $white;
     text-align: left;
     cursor: pointer;
@@ -3434,7 +3519,7 @@ select.form-control,
   height: 21px;
   padding: 0 5px;
   border: 2px solid $white;
-  border-radius: 11px;
+  border-radius: var(--suminia-radio-control);
   background-color: #e03a2f;
   color: $white;
   font-size: 11px;
@@ -3473,7 +3558,7 @@ select.form-control,
   padding: 0;
   margin-bottom: 20px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   overflow: hidden;
 }
 
@@ -3597,7 +3682,7 @@ select.form-control,
 .cart-summary {
   padding: 16px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $light-blue;
 
   .box-head {
@@ -3650,7 +3735,7 @@ select.form-control,
   padding: 16px;
   margin-bottom: 12px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $white;
 }
 
@@ -3672,7 +3757,7 @@ select.form-control,
 
 .location-default {
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--suminia-radio-control);
   background-color: var(--theme-color);
   color: $white;
   font-size: 11px;
@@ -3689,7 +3774,7 @@ select.form-control,
   > button:not([class]) {
     padding: 6px;
     border: 0;
-    border-radius: 6px;
+    border-radius: var(--suminia-radio-control);
     background: none;
     color: $font-dark;
 
@@ -3787,7 +3872,7 @@ select.form-control,
 .checkout-side {
   padding: 16px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
   background-color: $light-blue;
 }
 
@@ -3808,7 +3893,7 @@ select.form-control,
     gap: 10px;
     padding: 12px 14px;
     border: 1px solid $border-color;
-    border-radius: 10px;
+    border-radius: var(--suminia-radio-caja);
     background-color: $white;
     cursor: pointer;
     transition: all 0.2s;
@@ -3900,7 +3985,7 @@ select.form-control,
   button {
     padding: 6px 14px;
     border: 1px solid $border-color;
-    border-radius: 20px;
+    border-radius: var(--suminia-radio-control);
     background-color: $white;
     font-size: 13px;
     transition: all 0.2s;
@@ -3943,7 +4028,7 @@ select.form-control,
     align-items: center;
     padding: 14px 16px;
     border: 1px solid $border-color;
-    border-radius: 10px;
+    border-radius: var(--suminia-radio-caja);
     background-color: $white;
     color: $theme-font-color;
     transition: all 0.2s;
@@ -4127,7 +4212,7 @@ select.form-control,
 .order-delivery {
   padding: 14px 16px;
   border: 1px solid $border-color;
-  border-radius: 10px;
+  border-radius: var(--suminia-radio-caja);
 }
 
 .order-actions {

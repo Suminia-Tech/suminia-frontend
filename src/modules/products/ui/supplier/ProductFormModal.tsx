@@ -666,7 +666,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       <ModalFooter className='pt-0 text-end d-block'>
         <button
           type='button'
-          className='btn btn-outline-secondary rounded-1 me-2'
+          className='btn btn-outline-secondary me-2'
           onClick={onClose}
         >
           Cancelar
@@ -674,7 +674,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
         <button
           type='submit'
           form={FORM_ID}
-          className='btn btn-primary rounded-1'
+          className='btn btn-primary'
           disabled={isSaving}
         >
           {isSaving ? 'Guardando...' : isEditing ? 'Guardar cambios' : 'Crear producto'}

@@ -46,7 +46,7 @@ const ConfirmModal = ({
     <ModalFooter className='d-block text-center pt-0 pb-4 border-0'>
       <button
         type='button'
-        className='btn btn-outline-secondary rounded-1 me-2'
+        className='btn btn-outline-secondary me-2'
         onClick={onClose}
         disabled={isLoading}
       >
@@ -54,7 +54,7 @@ const ConfirmModal = ({
       </button>
       <button
         type='button'
-        className='btn btn-danger rounded-1'
+        className='btn btn-danger'
         onClick={onConfirm}
         disabled={isLoading}
       >

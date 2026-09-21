@@ -190,7 +190,7 @@ export const CategoriesScreen = () => {
           {!isNew && !editingId && (
             <button
               type='button'
-              className='btn btn-primary rounded-1 btn-sm d-inline-flex align-items-center gap-1'
+              className='btn btn-primary btn-sm d-inline-flex align-items-center gap-1'
               onClick={startCreate}
             >
               <Plus size={15} />

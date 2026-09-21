@@ -223,7 +223,7 @@ export const MyProductsScreen = () => {
         {canCreate && (
           <button
             type='button'
-            className='btn btn-primary rounded-1 d-inline-flex align-items-center gap-2'
+            className='btn btn-primary d-inline-flex align-items-center gap-2'
             onClick={openCreate}
           >
             <Plus size={16} />
@@ -334,7 +334,7 @@ export const MyProductsScreen = () => {
                 <p className='font-light'>Prueba con otro término o quita los filtros.</p>
                 <button
                   type='button'
-                  className='btn btn-outline-secondary rounded-1'
+                  className='btn btn-outline-secondary'
                   onClick={clearFilters}
                 >
                   Limpiar filtros
@@ -350,7 +350,7 @@ export const MyProductsScreen = () => {
                 {canCreate && (
                   <button
                     type='button'
-                    className='btn btn-primary rounded-1 d-inline-flex align-items-center gap-2'
+                    className='btn btn-primary d-inline-flex align-items-center gap-2'
                     onClick={openCreate}
                   >
                     <Plus size={16} />

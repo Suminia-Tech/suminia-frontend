@@ -135,7 +135,7 @@ export const HomeNews = () => (
                     </p>
                     <Link
                       href={`/blog/blog_details?id=${articulo.id}`}
-                      className='btn btn-primary btn-sm rounded-1'
+                      className='btn btn-primary btn-sm'
                     >
                       Leer más
                     </Link>

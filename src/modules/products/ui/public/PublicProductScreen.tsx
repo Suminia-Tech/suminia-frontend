@@ -99,7 +99,7 @@ export const PublicProductScreen = ({
           <div className='alert alert-danger'>
             {extractErrorMessage(error, 'Este producto no está disponible.')}
           </div>
-          <Link href='/catalog' className='btn btn-primary rounded-1'>
+          <Link href='/catalog' className='btn btn-primary'>
             Volver al catálogo
           </Link>
         </div>
@@ -282,7 +282,7 @@ export const PublicProductScreen = ({
                     </p>
                     <Link
                       href='/register'
-                      className='btn btn-primary rounded-1 btn-sm'
+                      className='btn btn-primary btn-sm'
                     >
                       Registrar mi empresa
                     </Link>

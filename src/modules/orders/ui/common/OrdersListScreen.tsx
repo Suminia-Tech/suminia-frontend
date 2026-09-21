@@ -125,7 +125,7 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
           {/* Al comprador se le ofrece el catalogo; al proveedor no, que el
               pedido no depende de el. */}
           {side === 'buyer' && (
-            <Link href='/catalog' className='btn btn-primary rounded-1'>
+            <Link href='/catalog' className='btn btn-primary'>
               Ir al catálogo
             </Link>
           )}

@@ -176,7 +176,7 @@ const MemberFormModal = ({
       <ModalFooter className='pt-0 text-end d-block'>
         <button
           type='button'
-          className='btn btn-outline-secondary rounded-1 me-2'
+          className='btn btn-outline-secondary me-2'
           onClick={onClose}
         >
           Cancelar
@@ -184,7 +184,7 @@ const MemberFormModal = ({
         <button
           type='submit'
           form={FORM_ID}
-          className='btn btn-primary rounded-1'
+          className='btn btn-primary'
           disabled={isLoading}
         >
           {isLoading ? 'Creando...' : 'Crear miembro'}
