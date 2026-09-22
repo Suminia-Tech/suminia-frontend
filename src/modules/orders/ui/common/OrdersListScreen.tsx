@@ -6,7 +6,7 @@ import { Package } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
-import { Pagination } from '@/shared/ui';
+import { PageHeader, Pagination } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetOrdersQuery } from '../../api/ordersApi';
@@ -31,15 +31,17 @@ export type OrderSide = 'buyer' | 'supplier';
 
 const COPY: Record<
   OrderSide,
-  { titulo: string; vacio: string; basePath: string }
+  { titulo: string; descripcion: string; vacio: string; basePath: string }
 > = {
   buyer: {
     titulo: 'Mis pedidos',
+    descripcion: 'Lo que has pedido y en qué va cada entrega.',
     vacio: 'Todavía no has hecho ningún pedido.',
     basePath: '/buyer/account/orders',
   },
   supplier: {
     titulo: 'Pedidos recibidos',
+    descripcion: 'Lo que te han pedido y lo que falta por despachar.',
     vacio: 'Todavía no te han hecho ningún pedido.',
     basePath: '/supplier/orders',
   },
@@ -96,9 +98,7 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
 
   return (
     <>
-      <div className='box-head'>
-        <h3>{copy.titulo}</h3>
-      </div>
+      <PageHeader title={copy.titulo} description={copy.descripcion} />
 
       <div className='orders-filter'>
         {ESTADOS.map((estado) => (

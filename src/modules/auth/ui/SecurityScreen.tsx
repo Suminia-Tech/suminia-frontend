@@ -2,10 +2,9 @@
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { toast } from 'react-toastify';
-import { Col, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
-import { PasswordField } from '@/shared/ui';
+import { PageHeader, Panel, PasswordField } from '@/shared/ui';
 import { STRONG_PASSWORD_HINT, isStrongPassword } from '@/shared/lib/validators';
 
 import { useChangePasswordMutation } from '../api/authApi';
@@ -61,57 +60,75 @@ export const SecurityScreen = () => {
 
   return (
     <>
-      <div className='box-head'>
-        <h3>Seguridad</h3>
-      </div>
-
-      {generalError && <div className='alert alert-danger'>{generalError}</div>}
+      <PageHeader
+        title='Seguridad'
+        description='La contraseña de tu cuenta. Cambiarla no cierra la sesión en los demás dispositivos.'
+      />
 
       <form onSubmit={handleSubmit} noValidate>
-        <Row>
-          <Col md='6' className='mb-3'>
-            <label className='form-label'>Contraseña actual</label>
-            <PasswordField
-              value={form.currentPassword}
-              onChange={handleChange('currentPassword')}
-              autoComplete='current-password'
-            />
-            {errors.currentPassword && (
-              <small className='text-danger'>{errors.currentPassword}</small>
-            )}
-          </Col>
-        </Row>
+        <Panel
+          narrow
+          title='Cambiar la contraseña'
+          description='Pedimos la actual para comprobar que eres tú quien la cambia.'
+          footer={
+            <button type='submit' className='btn btn-primary' disabled={isLoading}>
+              {isLoading ? 'Guardando...' : 'Cambiar contraseña'}
+            </button>
+          }
+        >
+          {generalError && <div className='alert alert-danger'>{generalError}</div>}
 
-        <Row>
-          <Col md='6' className='mb-3'>
-            <label className='form-label'>Contraseña nueva</label>
-            <PasswordField
-              value={form.newPassword}
-              onChange={handleChange('newPassword')}
-              autoComplete='new-password'
-            />
-            {errors.newPassword ? (
-              <small className='text-danger'>{errors.newPassword}</small>
-            ) : (
-              <small className='font-light'>{STRONG_PASSWORD_HINT}</small>
-            )}
-          </Col>
-          <Col md='6' className='mb-3'>
-            <label className='form-label'>Confirmar contraseña nueva</label>
-            <PasswordField
-              value={form.confirmPassword}
-              onChange={handleChange('confirmPassword')}
-              autoComplete='new-password'
-            />
-            {errors.confirmPassword && (
-              <small className='text-danger'>{errors.confirmPassword}</small>
-            )}
-          </Col>
-        </Row>
+          <div className='form-grid'>
+            {/* La actual ocupa su propia fila: no es parte del par que se
+                escribe dos veces, y ponerla al lado invitaba a confundirlas. */}
+            <div className='form-grid-full'>
+              <label className='form-label' htmlFor='seguridad-actual'>
+                Contraseña actual
+              </label>
+              <PasswordField
+                id='seguridad-actual'
+                value={form.currentPassword}
+                onChange={handleChange('currentPassword')}
+                autoComplete='current-password'
+              />
+              {errors.currentPassword && (
+                <small className='text-danger'>{errors.currentPassword}</small>
+              )}
+            </div>
 
-        <button type='submit' className='btn btn-primary btn-sm mt-2' disabled={isLoading}>
-          {isLoading ? 'Guardando...' : 'Cambiar contraseña'}
-        </button>
+            <div>
+              <label className='form-label' htmlFor='seguridad-nueva'>
+                Contraseña nueva
+              </label>
+              <PasswordField
+                id='seguridad-nueva'
+                value={form.newPassword}
+                onChange={handleChange('newPassword')}
+                autoComplete='new-password'
+              />
+              {errors.newPassword ? (
+                <small className='text-danger'>{errors.newPassword}</small>
+              ) : (
+                <small className='font-light'>{STRONG_PASSWORD_HINT}</small>
+              )}
+            </div>
+
+            <div>
+              <label className='form-label' htmlFor='seguridad-confirmar'>
+                Confirmar contraseña nueva
+              </label>
+              <PasswordField
+                id='seguridad-confirmar'
+                value={form.confirmPassword}
+                onChange={handleChange('confirmPassword')}
+                autoComplete='new-password'
+              />
+              {errors.confirmPassword && (
+                <small className='text-danger'>{errors.confirmPassword}</small>
+              )}
+            </div>
+          </div>
+        </Panel>
       </form>
     </>
   );

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Col, Row } from 'reactstrap';
+
+import { Panel } from '@/shared/ui';
 
 import { formatTaxId } from '../../lib/taxId';
 import type { Organization } from '../../model/organization.types';
@@ -87,178 +88,204 @@ const OrganizationForm = ({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <div className='box-head'>
-        <h3>Datos legales</h3>
-      </div>
-      <Row className='mb-4'>
-        <Col md='6' className='mb-3'>
-          <label className='form-label'>NIT</label>
-          <input
-            type='text'
-            className='form-control'
-            value={formatTaxId(organization.taxId)}
-            disabled
-            readOnly
-          />
-          <small className='font-light'>Solo Suminia puede modificarlo</small>
-        </Col>
-        <Col md='6' className='mb-3'>
-          <label className='form-label'>Razón social</label>
-          <input
-            type='text'
-            className='form-control'
-            value={organization.legalName}
-            disabled
-            readOnly
-          />
-          <small className='font-light'>Solo Suminia puede modificarlo</small>
-        </Col>
-      </Row>
+      {/* Un panel por asunto, y cada uno dice para que sirve lo que pide. Antes
+          eran cuatro `box-head` sobre el fondo gris, con los campos flotando
+          debajo: el formulario no tenia ni principio ni final, y nada ataba un
+          grupo de campos a su titulo. */}
+      <Panel
+        title='Datos legales'
+        description='Los fijó Suminia al verificar tu empresa y no se editan desde aquí.'
+      >
+        <div className='form-grid'>
+          <div>
+            <label className='form-label' htmlFor='empresa-nit'>NIT</label>
+            <input
+              id='empresa-nit'
+              type='text'
+              className='form-control'
+              value={formatTaxId(organization.taxId)}
+              disabled
+              readOnly
+            />
+          </div>
+          <div>
+            <label className='form-label' htmlFor='empresa-razon'>Razón social</label>
+            <input
+              id='empresa-razon'
+              type='text'
+              className='form-control'
+              value={organization.legalName}
+              disabled
+              readOnly
+            />
+          </div>
+        </div>
+      </Panel>
 
-      <div className='box-head'>
-        <h3>Datos de contacto</h3>
-      </div>
-      <Row>
-        <Col md='6' className='mb-3'>
-          <label className='form-label'>Nombre comercial</label>
-          <input
-            type='text'
-            className='form-control'
-            value={values.name}
-            onChange={handleChange('name')}
-          />
-        </Col>
-        <Col md='6' className='mb-3'>
-          <label className='form-label'>Correo de contacto</label>
-          <input
-            type='email'
-            className='form-control'
-            value={values.email}
-            onChange={handleChange('email')}
-          />
-        </Col>
-        <Col md='6' className='mb-3'>
-          <label className='form-label'>Teléfono</label>
-          <input
-            type='text'
-            className='form-control'
-            value={values.phone}
-            onChange={handleChange('phone')}
-          />
-        </Col>
-        <Col md='6' className='mb-3'>
-          <label className='form-label'>Ciudad</label>
-          <input
-            type='text'
-            className='form-control'
-            value={values.city}
-            onChange={handleChange('city')}
-          />
-        </Col>
-        <Col md='12' className='mb-3'>
-          <label className='form-label'>Dirección</label>
-          <input
-            type='text'
-            className='form-control'
-            value={values.address}
-            onChange={handleChange('address')}
-          />
-        </Col>
-      </Row>
+      <Panel
+        title='Datos de contacto'
+        description='Con esto te encuentran los compradores y te llegan los avisos de cada pedido.'
+      >
+        <div className='form-grid'>
+          <div>
+            <label className='form-label' htmlFor='empresa-nombre'>Nombre comercial</label>
+            <input
+              id='empresa-nombre'
+              type='text'
+              className='form-control'
+              value={values.name}
+              onChange={handleChange('name')}
+            />
+          </div>
+          <div>
+            <label className='form-label' htmlFor='empresa-correo'>Correo de contacto</label>
+            <input
+              id='empresa-correo'
+              type='email'
+              className='form-control'
+              value={values.email}
+              onChange={handleChange('email')}
+            />
+          </div>
+          <div>
+            <label className='form-label' htmlFor='empresa-telefono'>Teléfono</label>
+            <input
+              id='empresa-telefono'
+              type='text'
+              className='form-control'
+              value={values.phone}
+              onChange={handleChange('phone')}
+            />
+          </div>
+          <div>
+            <label className='form-label' htmlFor='empresa-ciudad'>Ciudad</label>
+            <input
+              id='empresa-ciudad'
+              type='text'
+              className='form-control'
+              value={values.city}
+              onChange={handleChange('city')}
+            />
+          </div>
+          <div className='form-grid-full'>
+            <label className='form-label' htmlFor='empresa-direccion'>Dirección</label>
+            <input
+              id='empresa-direccion'
+              type='text'
+              className='form-control'
+              value={values.address}
+              onChange={handleChange('address')}
+            />
+          </div>
+        </div>
+      </Panel>
 
       {showSupplierFields && (
         <>
-          <div className='box-head'>
-            <h3>Condiciones de despacho</h3>
-          </div>
-          <Row>
-            <Col md='6' className='mb-3'>
-              <label className='form-label'>Pedido mínimo</label>
-              <input
-                type='number'
-                min={0}
-                step={1000}
-                className='form-control'
-                placeholder='Sin mínimo'
-                value={values.minOrderValue}
-                onChange={handleChange('minOrderValue')}
-              />
-              <small className='font-light'>
-                Lo menos que despachas por pedido, sumado antes de IVA. Déjalo
-                vacío si no exiges mínimo. Es distinto del pedido mínimo de cada
-                formato, que se fija en el producto.
-              </small>
-            </Col>
-          </Row>
+          <Panel
+            title='Condiciones de despacho'
+            description='Lo que exiges para sacar un pedido de tu bodega.'
+          >
+            <div className='form-grid'>
+              <div>
+                <label className='form-label' htmlFor='empresa-minimo'>Pedido mínimo</label>
+                <input
+                  id='empresa-minimo'
+                  type='number'
+                  min={0}
+                  step={1000}
+                  className='form-control'
+                  placeholder='Sin mínimo'
+                  value={values.minOrderValue}
+                  onChange={handleChange('minOrderValue')}
+                />
+                <small className='font-light'>
+                  Lo menos que despachas por pedido, sumado antes de IVA. Déjalo
+                  vacío si no exiges mínimo. Es distinto del pedido mínimo de cada
+                  formato, que se fija en el producto.
+                </small>
+              </div>
+            </div>
+          </Panel>
 
-          <div className='box-head'>
-            <h3>Cuenta para recibir pagos</h3>
-          </div>
-          <p className='font-light'>
-            A donde Suminia te consigna lo que te corresponde de cada pedido. Va
-            entera o vacía: media cuenta la rechaza el banco el día del pago.
-          </p>
-          <Row>
-            <Col md='6' className='mb-3'>
-              <label className='form-label'>Banco</label>
-              <input
-                type='text'
-                className='form-control'
-                placeholder='Bancolombia'
-                value={values.bankName}
-                onChange={handleChange('bankName')}
-              />
-            </Col>
-            <Col md='6' className='mb-3'>
-              <label className='form-label'>Tipo de cuenta</label>
-              <select
-                className='form-control'
-                value={values.bankAccountType}
-                onChange={handleChange('bankAccountType')}
-              >
-                <option value=''>Sin definir</option>
-                <option value='AHORROS'>Ahorros</option>
-                <option value='CORRIENTE'>Corriente</option>
-              </select>
-            </Col>
-            <Col md='6' className='mb-3'>
-              <label className='form-label'>Número de cuenta</label>
-              <input
-                type='text'
-                className='form-control'
-                value={values.bankAccountNumber}
-                onChange={handleChange('bankAccountNumber')}
-              />
-            </Col>
-            <Col md='6' className='mb-3'>
-              <label className='form-label'>Titular</label>
-              <input
-                type='text'
-                className='form-control'
-                value={values.bankAccountHolder}
-                onChange={handleChange('bankAccountHolder')}
-              />
-              <small className='font-light'>
-                Puede no ser la razón social: el banco valida el nombre contra el
-                documento.
-              </small>
-            </Col>
-            <Col md='6' className='mb-3'>
-              <label className='form-label'>NIT o cédula del titular</label>
-              <input
-                type='text'
-                className='form-control'
-                value={values.bankAccountHolderTaxId}
-                onChange={handleChange('bankAccountHolderTaxId')}
-              />
-            </Col>
-          </Row>
+          <Panel
+            title='Cuenta para recibir pagos'
+            description='A dónde Suminia te consigna lo que te corresponde de cada pedido. Va entera o vacía: media cuenta la rechaza el banco el día del pago.'
+          >
+            <div className='form-grid'>
+              <div>
+                <label className='form-label' htmlFor='empresa-banco'>Banco</label>
+                <input
+                  id='empresa-banco'
+                  type='text'
+                  className='form-control'
+                  placeholder='Bancolombia'
+                  value={values.bankName}
+                  onChange={handleChange('bankName')}
+                />
+              </div>
+              <div>
+                <label className='form-label' htmlFor='empresa-tipo-cuenta'>Tipo de cuenta</label>
+                <select
+                  id='empresa-tipo-cuenta'
+                  className='form-control'
+                  value={values.bankAccountType}
+                  onChange={handleChange('bankAccountType')}
+                >
+                  <option value=''>Sin definir</option>
+                  <option value='AHORROS'>Ahorros</option>
+                  <option value='CORRIENTE'>Corriente</option>
+                </select>
+              </div>
+              <div>
+                <label className='form-label' htmlFor='empresa-numero'>Número de cuenta</label>
+                <input
+                  id='empresa-numero'
+                  type='text'
+                  className='form-control'
+                  value={values.bankAccountNumber}
+                  onChange={handleChange('bankAccountNumber')}
+                />
+              </div>
+              <div>
+                <label className='form-label' htmlFor='empresa-titular'>Titular</label>
+                <input
+                  id='empresa-titular'
+                  type='text'
+                  className='form-control'
+                  value={values.bankAccountHolder}
+                  onChange={handleChange('bankAccountHolder')}
+                />
+                <small className='font-light'>
+                  Puede no ser la razón social: el banco valida el nombre contra el
+                  documento.
+                </small>
+              </div>
+              <div>
+                <label className='form-label' htmlFor='empresa-titular-nit'>
+                  NIT o cédula del titular
+                </label>
+                <input
+                  id='empresa-titular-nit'
+                  type='text'
+                  className='form-control'
+                  value={values.bankAccountHolderTaxId}
+                  onChange={handleChange('bankAccountHolderTaxId')}
+                />
+              </div>
+            </div>
+          </Panel>
         </>
       )}
 
-      <button type='submit' className='btn btn-primary btn-sm mt-3' disabled={isSaving}>
-        {isSaving ? 'Guardando...' : 'Guardar cambios'}
-      </button>
+      {/* Un solo boton para todo el formulario, al final y fuera de los paneles:
+          guarda los cuatro a la vez, de modo que colgarlo del pie de uno de
+          ellos sugeriria que solo guarda ese. */}
+      <div className='form-actions'>
+        <button type='submit' className='btn btn-primary' disabled={isSaving}>
+          {isSaving ? 'Guardando...' : 'Guardar cambios'}
+        </button>
+      </div>
     </form>
   );
 };

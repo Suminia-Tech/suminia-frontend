@@ -326,7 +326,7 @@ export const PublicProductScreen = ({
               <div className='box-head'>
                 <h3>Especificaciones</h3>
               </div>
-              <ul className='spec-list'>
+              <ul className='data-list'>
                 {product.brand && (
                   <li>
                     <span className='font-light'>Marca</span>
@@ -359,7 +359,7 @@ export const PublicProductScreen = ({
                   Información del INVIMA
                 </h3>
               </div>
-              <ul className='spec-list'>
+              <ul className='data-list'>
                 <li>
                   <span className='font-light'>Composición</span>
                   <span>

@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { Table } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { PageHeader, Panel } from '@/shared/ui';
 import { canOperate } from '@/shared/lib/organizationAccess';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
@@ -67,25 +68,25 @@ export const MyTeamScreen = () => {
 
   return (
     <>
-      <div className='box-head'>
-        <h3>Mi equipo</h3>
-        {canCreate && (
-          /* .box-head es flex pero sin space-between, de modo que el enlace
-             queda pegado al titulo. ms-auto lo empuja al extremo sin tocar el
-             resto de encabezados del tema. */
-          <a
-            className='ms-auto fw-bold d-inline-flex align-items-center gap-1'
-            href='#javascript'
-            onClick={(event) => {
-              event.preventDefault();
-              setFormOpen(true);
-            }}
-          >
-            <UserPlus size={16} />
-            Añadir miembro
-          </a>
-        )}
-      </div>
+      <PageHeader
+        title='Mi equipo'
+        description='Quién de tu empresa puede entrar a Suminia y qué puede hacer.'
+        action={
+          canCreate && (
+            /* Un boton y no el enlace de antes: abre un formulario, no lleva a
+               otra pagina, y con la cabecera compartida ya no hace falta el
+               `ms-auto` que lo empujaba al extremo. */
+            <button
+              type='button'
+              className='btn btn-primary d-inline-flex align-items-center gap-2'
+              onClick={() => setFormOpen(true)}
+            >
+              <UserPlus size={16} />
+              Añadir miembro
+            </button>
+          )
+        }
+      />
 
       {!isOperational && (
         <div className='alert alert-warning'>
@@ -95,8 +96,14 @@ export const MyTeamScreen = () => {
       )}
 
       {members.length === 0 ? (
-        <p className='font-light'>Todavía no hay nadie más en tu empresa.</p>
+        <Panel>
+          <p className='font-light mb-0'>
+            Todavía no hay nadie más en tu empresa. Añade a quien vaya a publicar
+            productos o atender pedidos contigo.
+          </p>
+        </Panel>
       ) : (
+        <Panel className='panel-table'>
         <Table responsive className='align-middle'>
           <thead>
             <tr>
@@ -150,6 +157,7 @@ export const MyTeamScreen = () => {
             })}
           </tbody>
         </Table>
+        </Panel>
       )}
 
       <MemberFormModal

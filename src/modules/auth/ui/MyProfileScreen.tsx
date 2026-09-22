@@ -2,9 +2,9 @@
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { toast } from 'react-toastify';
-import { Col, Row } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { PageHeader, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useUpdateProfileMutation } from '../api/authApi';
@@ -42,15 +42,38 @@ const ProfileForm = ({ initialName, email, roleLabel }: ProfileFormProps) => {
     }
   };
 
-  return (
-    <>
-      {errorMessage && <div className='alert alert-danger'>{errorMessage}</div>}
+  const sinCambios = !name.trim() || name.trim() === initialName;
 
-      <form onSubmit={handleSubmit} noValidate>
-        <Row>
-          <Col md='6' className='mb-3'>
-            <label className='form-label'>Nombre del usuario</label>
+  return (
+    <form onSubmit={handleSubmit} noValidate>
+      <Panel
+        narrow
+        title='Datos de la cuenta'
+        description='El nombre es el que ve tu equipo y el que acompaña a los pedidos que gestionas.'
+        footer={
+          /* El boton primario a secas y no `SubmitButton`: aquel envuelve el
+             `Button` de reactstrap, que sin variante sale `btn-secondary` —por
+             eso la accion principal de la pantalla se veia apagada— y ademas le
+             cuelga un tic que solo encaja en las pantallas de acceso, que es
+             donde el tema lo estiliza. */
+          <button
+            type='submit'
+            className='btn btn-primary'
+            disabled={isLoading || sinCambios}
+          >
+            {isLoading ? 'Guardando...' : 'Guardar cambios'}
+          </button>
+        }
+      >
+        {errorMessage && <div className='alert alert-danger'>{errorMessage}</div>}
+
+        <div className='form-grid'>
+          <div>
+            <label className='form-label' htmlFor='perfil-nombre'>
+              Nombre del usuario
+            </label>
             <input
+              id='perfil-nombre'
               type='text'
               className='form-control'
               value={name}
@@ -58,27 +81,46 @@ const ProfileForm = ({ initialName, email, roleLabel }: ProfileFormProps) => {
                 setName(event.target.value)
               }
             />
-          </Col>
-          <Col md='6' className='mb-3'>
-            <label className='form-label'>Correo electrónico</label>
-            <input type='email' className='form-control' value={email} disabled readOnly />
-            <small className='font-light'>No editable</small>
-          </Col>
-          <Col md='6' className='mb-3'>
-            <label className='form-label'>Rol</label>
-            <input type='text' className='form-control' value={roleLabel} disabled readOnly />
-          </Col>
-        </Row>
+          </div>
 
-        <button
-          type='submit'
-          className='btn btn-primary btn-sm mt-2'
-          disabled={isLoading || !name.trim() || name.trim() === initialName}
-        >
-          {isLoading ? 'Guardando...' : 'Guardar cambios'}
-        </button>
-      </form>
-    </>
+          <div>
+            <label className='form-label' htmlFor='perfil-correo'>
+              Correo electrónico
+            </label>
+            <input
+              id='perfil-correo'
+              type='email'
+              className='form-control'
+              value={email}
+              disabled
+              readOnly
+            />
+            {/* El correo es la credencial con la que se entra: cambiarlo exige
+                volver a verificarlo, y ese tramite todavia no existe. */}
+            <small className='font-light'>
+              Es tu credencial de acceso, de momento no se puede cambiar.
+            </small>
+          </div>
+
+          <div>
+            <label className='form-label' htmlFor='perfil-rol'>
+              Rol
+            </label>
+            <input
+              id='perfil-rol'
+              type='text'
+              className='form-control'
+              value={roleLabel}
+              disabled
+              readOnly
+            />
+            <small className='font-light'>
+              Lo asigna el administrador de tu empresa.
+            </small>
+          </div>
+        </div>
+      </Panel>
+    </form>
   );
 };
 
@@ -96,9 +138,10 @@ export const MyProfileScreen = () => {
 
   return (
     <>
-      <div className='box-head'>
-        <h3>Mi perfil</h3>
-      </div>
+      <PageHeader
+        title='Mi perfil'
+        description='Tus datos personales. Los de la empresa se editan en Mi empresa.'
+      />
 
       {/* La `key` remonta el formulario cuando cambia el nombre en la sesion,
           de modo que tras guardar recoge el valor nuevo en lugar de quedarse

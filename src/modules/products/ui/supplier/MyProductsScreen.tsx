@@ -20,7 +20,7 @@ import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { canOperate } from '@/shared/lib/organizationAccess';
 import { hasPermission } from '@/shared/lib/permissions';
-import { ConfirmModal, Pagination } from '@/shared/ui';
+import { ConfirmModal, PageHeader, Pagination } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import {
@@ -210,27 +210,29 @@ export const MyProductsScreen = () => {
 
   return (
     <div className='catalog-manager'>
-      <header className='catalog-header'>
-        <div>
-          <h3>Mis productos</h3>
-          <p className='font-light'>
-            {meta
-              ? `${meta.totalCount} ${meta.totalCount === 1 ? 'producto' : 'productos'} en tu catálogo`
-              : 'Lo que tu empresa ofrece en Suminia'}
-          </p>
-        </div>
-
-        {canCreate && (
-          <button
-            type='button'
-            className='btn btn-primary d-inline-flex align-items-center gap-2'
-            onClick={openCreate}
-          >
-            <Plus size={16} />
-            Nuevo producto
-          </button>
-        )}
-      </header>
+      {/* La cabecera compartida en vez de una propia: es la misma pieza que
+          usan las cinco pantallas de Mi cuenta, y antes esta titulaba con un
+          `h3` y las otras con otra cosa. */}
+      <PageHeader
+        title='Mis productos'
+        description={
+          meta
+            ? `${meta.totalCount} ${meta.totalCount === 1 ? 'producto' : 'productos'} en tu catálogo.`
+            : 'Lo que tu empresa ofrece en Suminia.'
+        }
+        action={
+          canCreate && (
+            <button
+              type='button'
+              className='btn btn-primary d-inline-flex align-items-center gap-2'
+              onClick={openCreate}
+            >
+              <Plus size={16} />
+              Nuevo producto
+            </button>
+          )
+        }
+      />
 
       {!isOperational && (
         <div className='alert alert-warning'>

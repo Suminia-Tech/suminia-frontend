@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Col, Row } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { PageHeader, Panel } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
@@ -147,76 +147,69 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
 
   return (
     <>
-      <Row className='mb-4 align-items-center'>
-        <Col>
-          <h2 className='mb-1'>{organization.name}</h2>
-          <StatusBadge status={organization.status} />
-        </Col>
-      </Row>
+      {/* El titulo es el de la seccion, no el nombre de la empresa. Antes el
+          `h1` decia "Distribuidora Medica del Norte" y no habia forma de saber,
+          mirando la pantalla, que era "Mi empresa" y no "Mi perfil". El nombre
+          pasa a encabezar el panel de estado, que es de lo que habla. */}
+      <PageHeader
+        title='Mi empresa'
+        description='Los datos con los que Suminia te identifica y en qué va tu solicitud.'
+      />
 
-      <div className='box-head'>
-        <h3>Estado de la solicitud</h3>
-      </div>
+      <Panel
+        title={organization.name}
+        aside={<StatusBadge status={organization.status} />}
+      >
+        {explicacion && (
+          <div className={CLASE_AVISO[organization.status]}>{explicacion}</div>
+        )}
 
-      {explicacion && (
-        <div className={CLASE_AVISO[organization.status]}>{explicacion}</div>
-      )}
-
-      {/* El estado no se repite aqui: ya esta en la etiqueta de al lado del
-          nombre, y el aviso de arriba explica lo que significa. */}
-      <div className='dashboard-profile mb-4'>
-        <ul className='dash-profile'>
-          {enviada && (
-            <li>
-              <div className='left'>
-                <h6 className='font-light'>Solicitud enviada</h6>
-              </div>
-              <div className='right'>
-                <h6>{enviada}</h6>
-              </div>
-            </li>
-          )}
-          {aprobada && (
-            <li>
-              <div className='left'>
-                <h6 className='font-light'>Aprobada el</h6>
-              </div>
-              <div className='right'>
-                <h6>{aprobada}</h6>
-              </div>
-            </li>
-          )}
-        </ul>
-      </div>
+        {/* El estado no se repite aqui: ya esta en la etiqueta de al lado del
+            nombre, y el aviso de arriba explica lo que significa. */}
+        {(enviada || aprobada) && (
+          <ul className='data-list'>
+            {enviada && (
+              <li>
+                <span className='font-light'>Solicitud enviada</span>
+                <span>{enviada}</span>
+              </li>
+            )}
+            {aprobada && (
+              <li>
+                <span className='font-light'>Aprobada el</span>
+                <span>{aprobada}</span>
+              </li>
+            )}
+          </ul>
+        )}
+      </Panel>
 
       {errorMessage && <div className='alert alert-danger'>{errorMessage}</div>}
 
-      <div className='dashboard-profile'>
-        {canEdit ? (
-          <OrganizationForm
-            key={organization.updatedAt}
-            organization={organization}
-            isSaving={isSaving}
-            onSubmit={handleSubmit}
-            showSupplierFields={kind === 'supplier'}
-          />
-        ) : (
-          /* Sin organization:update los datos se muestran en la misma lista
-             etiqueta/valor que usa el panel de cuenta de la plantilla. */
-          <ul className='dash-profile'>
+      {canEdit ? (
+        <OrganizationForm
+          key={organization.updatedAt}
+          organization={organization}
+          isSaving={isSaving}
+          onSubmit={handleSubmit}
+          showSupplierFields={kind === 'supplier'}
+        />
+      ) : (
+        /* Sin organization:update los datos se leen, no se editan. */
+        <Panel
+          title='Datos de la empresa'
+          description='Solo el administrador de tu empresa puede modificarlos.'
+        >
+          <ul className='data-list'>
             {readOnlyFields.map(({ label, value }) => (
               <li key={label}>
-                <div className='left'>
-                  <h6 className='font-light'>{label}</h6>
-                </div>
-                <div className='right'>
-                  <h6>{value ?? '—'}</h6>
-                </div>
+                <span className='font-light'>{label}</span>
+                <span>{value ?? '—'}</span>
               </li>
             ))}
           </ul>
-        )}
-      </div>
+        </Panel>
+      )}
     </>
   );
 };
