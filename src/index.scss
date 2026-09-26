@@ -4399,19 +4399,98 @@ select.form-control,
 
 .order-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 6px;
+  gap: 10px 14px;
+  margin-bottom: 18px;
 
-  h2 {
-    margin: 0;
+  h1 {
+    margin: 0 0 2px;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: $black1;
+    text-transform: none;
+  }
+
+  p {
+    font-size: 14px;
   }
 }
 
+/* Lo que significa el estado en el que esta el pedido, dentro del panel del
+   recorrido y justo encima de el. */
 .order-hint {
-  margin-bottom: 16px;
-  font-size: 13.5px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+   El pedido, a dos columnas
+
+   A la izquierda lo que se pidio, que es lo que mas ocupa; a la derecha lo que
+   hay que hacer y los datos de apoyo. En una sola columna el pedido dejaba
+   media pantalla vacia a la derecha, y los botones —lo unico accionable de la
+   pantalla— acababan al final de todo, despues de la direccion, la nota y la
+   liquidacion.
+   --------------------------------------------------------------------------- */
+.order-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (min-width: 992px) {
+    /* La lateral fija y la principal con lo que sobre: los datos de apoyo
+       —una direccion, un desglose— tienen un ancho natural, y estirarlos con
+       la pantalla solo separa la etiqueta de su valor. */
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  /* El panel de dentro ya no lleva margen propio: el hueco entre paneles lo
+     pone la rejilla, y sumar los dos dejaba la columna descuadrada. */
+  .panel {
+    margin-bottom: 0;
+  }
+
+  .order-main,
+  .order-side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  @media (min-width: 992px) {
+    .order-side {
+      position: sticky;
+      top: 20px;
+    }
+  }
+}
+
+/* El panel de acciones, que es a lo que se viene. */
+.order-next {
+  .order-actions {
+    /* Sin la raya ni el aire de antes: los llevaba para separarse del
+       contenido cuando iba suelto al final de la pagina, y dentro de un panel
+       con su propia cabecera quedaba una franja vacia bajo el titulo. */
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  /* En una columna de 340px dos botones lado a lado se parten mal. */
+  .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .order-cancel {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
 }
 
 .order-locked {
@@ -4545,6 +4624,14 @@ select.form-control,
   padding: 14px 16px;
   border: 1px solid $border-color;
   border-radius: var(--suminia-radio-caja);
+
+  /* Dentro de un panel se queda sin caja propia: el panel ya la pone, y dos
+     marcos concentricos separados por el padding se leen como un error. */
+  .panel & {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
 }
 
 .order-actions {

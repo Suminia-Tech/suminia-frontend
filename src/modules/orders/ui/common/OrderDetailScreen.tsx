@@ -6,6 +6,7 @@ import { Check, ChevronLeft, MapPin } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { Panel } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/dates';
 import { useAppSelector } from '@/store/hooks';
 
@@ -125,6 +126,16 @@ export const OrderDetailScreen = ({
 
   const order = data.data;
 
+  /* Si no hay ninguna accion posible, el panel no aparece: un "¿Qué sigue?"
+     vacio es peor que no decir nada. */
+  const hayAcciones =
+    side === 'supplier'
+      ? supplierCanDecide(order.status) ||
+        supplierCanShip(order.status) ||
+        supplierCanConfirmDelivery(order.status) ||
+        supplierCanCancel(order.status)
+      : buyerCanConfirmDelivery(order.status) || buyerCanCancel(order.status);
+
   const mover = async (
     status: Order['status'],
     exito: string,
@@ -152,7 +163,7 @@ export const OrderDetailScreen = ({
 
       <div className='order-head'>
         <div>
-          <h2>Pedido #{order.number}</h2>
+          <h1>Pedido #{order.number}</h1>
           <p className='font-light mb-0'>
             {side === 'buyer'
               ? order.supplierOrganizationName
@@ -166,20 +177,28 @@ export const OrderDetailScreen = ({
         </span>
       </div>
 
-      <p className='order-hint font-light'>{ORDER_STATUS_HINT[order.status]}</p>
+      {/* El recorrido y lo que significa el punto en el que esta, juntos y en
+          su propia caja. Antes la frase iba suelta bajo el titulo y la linea de
+          estados debajo, sin nada que las relacionara. */}
+      <Panel className='order-state'>
+        <p className='order-hint'>{ORDER_STATUS_HINT[order.status]}</p>
 
-      {order.statusReason && (
-        <div className='alert alert-warning'>
-          <strong>Motivo:</strong> {order.statusReason}
-        </div>
-      )}
+        {order.statusReason && (
+          <div className='alert alert-warning'>
+            <strong>Motivo:</strong> {order.statusReason}
+          </div>
+        )}
 
-      <Timeline order={order} />
+        <Timeline order={order} />
+      </Panel>
 
-      <div className='box-head mt-4'>
-        <h3>{side === 'buyer' ? 'Qué pediste' : 'Qué te pidieron'}</h3>
-      </div>
-
+      {/* Dos columnas: a la izquierda lo que se pidio, que es lo que mas ocupa;
+          a la derecha lo que hay que hacer y los datos de apoyo. En una sola
+          columna, el pedido dejaba media pantalla vacia a la derecha y los
+          botones acababan al final de todo, despues de la direccion y la nota. */}
+      <div className='order-layout'>
+        <div className='order-main'>
+      <Panel title={side === 'buyer' ? 'Qué pediste' : 'Qué te pidieron'}>
       <ul className='order-items'>
         {order.items.map((item) => (
           <li key={item.id}>
@@ -212,74 +231,21 @@ export const OrderDetailScreen = ({
           <strong>{pesos(order.total, order.currency)}</strong>
         </li>
       </ul>
+      </Panel>
+        </div>
 
-      <div className='box-head mt-4'>
-        <h3>A dónde va</h3>
-      </div>
+        <aside className='order-side'>
+      {/* Lo que se puede hacer va en panel propio y arriba del todo en la
+          columna: para un proveedor que abre un pedido nuevo, confirmarlo es a
+          lo que viene. Estaba al final de la pagina, despues de la direccion,
+          la nota y la liquidacion.
 
-      <div className='order-delivery'>
-        <p className='location-address'>
-          <MapPin size={14} />
-          <span>
-            <strong>{order.delivery.name}</strong>
-            <br />
-            {order.delivery.address} · {order.delivery.city}
-            {order.delivery.department && `, ${order.delivery.department}`}
-          </span>
-        </p>
-        <ul className='location-details'>
-          {order.delivery.contact && <li>{order.delivery.contact}</li>}
-          {order.delivery.phone && <li>{order.delivery.phone}</li>}
-          {order.delivery.hours && <li>{order.delivery.hours}</li>}
-        </ul>
-        {order.delivery.notes && (
-          <p className='location-notes font-light'>{order.delivery.notes}</p>
-        )}
-      </div>
-
-      {order.buyerNotes && (
-        <>
-          <div className='box-head mt-4'>
-            <h3>{copy.nota}</h3>
-          </div>
-          <p className='font-light'>{order.buyerNotes}</p>
-        </>
-      )}
-
-      {/* Solo al proveedor: lo que le va a quedar despues de la comision. Es lo
-          que va a cuadrar contra la consignacion. */}
-      {side === 'supplier' && order.commissionAmount !== null && (
-        <>
-          <div className='box-head mt-4'>
-            <h3>Lo que recibes</h3>
-          </div>
-          <ul className='cart-summary-lines order-totals'>
-            <li>
-              <span className='font-light'>Total del pedido</span>
-              <span>{pesos(order.total, order.currency)}</span>
-            </li>
-            <li>
-              <span className='font-light'>
-                Comisión de Suminia ({order.commissionRate}%)
-              </span>
-              <span>−{pesos(order.commissionAmount, order.currency)}</span>
-            </li>
-            <li className='cart-summary-total'>
-              <span>Te queda</span>
-              <strong>
-                {pesos(order.supplierPayout ?? 0, order.currency)}
-              </strong>
-            </li>
-          </ul>
-          <p className='font-light order-payout-note'>
-            Se consigna a tu cuenta registrada cuando el pedido quede entregado.
-          </p>
-        </>
-      )}
-
-      {/* Lo que cada lado puede hacer con el pedido donde esta. Las mismas
-          reglas que valida el backend: aqui no se decide nada, se evita
-          ofrecer un boton que iba a responder 422. */}
+          Sin titulo: los botones dicen lo que hacen —"Confirmar pedido", "No
+          puedo atenderlo"— y encabezarlos con un "¿Qué sigue?" no añadia nada
+          y se leia como una pregunta sin responder. Lo que sigue ya lo dice la
+          frase de estado, arriba, junto al recorrido. */}
+      {hayAcciones && (
+      <Panel className='order-next'>
       <div className='order-actions'>
         {side === 'supplier' && supplierCanDecide(order.status) && (
           <>
@@ -419,15 +385,81 @@ export const OrderDetailScreen = ({
           </div>
         )}
       </div>
+      </Panel>
+      )}
+
+      <Panel title='A dónde va'>
+      <div className='order-delivery'>
+        <p className='location-address'>
+          <MapPin size={14} />
+          <span>
+            <strong>{order.delivery.name}</strong>
+            <br />
+            {order.delivery.address} · {order.delivery.city}
+            {order.delivery.department && `, ${order.delivery.department}`}
+          </span>
+        </p>
+        <ul className='location-details'>
+          {order.delivery.contact && <li>{order.delivery.contact}</li>}
+          {order.delivery.phone && <li>{order.delivery.phone}</li>}
+          {order.delivery.hours && <li>{order.delivery.hours}</li>}
+        </ul>
+        {order.delivery.notes && (
+          <p className='location-notes font-light'>{order.delivery.notes}</p>
+        )}
+      </div>
+
+      </Panel>
+
+      {order.buyerNotes && (
+        <Panel title={copy.nota}>
+          <p className='font-light mb-0'>{order.buyerNotes}</p>
+        </Panel>
+      )}
+
+      {/* Solo al proveedor: lo que le va a quedar despues de la comision. Es lo
+          que va a cuadrar contra la consignacion. */}
+      {side === 'supplier' && order.commissionAmount !== null && (
+        <Panel title='Lo que recibes'>
+          <ul className='cart-summary-lines order-totals'>
+            <li>
+              <span className='font-light'>Total del pedido</span>
+              <span>{pesos(order.total, order.currency)}</span>
+            </li>
+            <li>
+              <span className='font-light'>
+                Comisión de Suminia ({order.commissionRate}%)
+              </span>
+              <span>−{pesos(order.commissionAmount, order.currency)}</span>
+            </li>
+            <li className='cart-summary-total'>
+              <span>Te queda</span>
+              <strong>
+                {pesos(order.supplierPayout ?? 0, order.currency)}
+              </strong>
+            </li>
+          </ul>
+          <p className='font-light order-payout-note'>
+            Se consigna a tu cuenta registrada cuando el pedido quede entregado.
+          </p>
+        </Panel>
+      )}
+
+      {/* Lo que cada lado puede hacer con el pedido donde esta. Las mismas
+          reglas que valida el backend: aqui no se decide nada, se evita
+          ofrecer un boton que iba a responder 422. */}
 
       {/* Se dice por que ya no se puede anular, en vez de no enseñar nada: sin
           explicacion el boton parece que se perdio. */}
       {side === 'buyer' && order.status === 'CONFIRMED' && (
-        <p className='font-light order-locked'>
-          El proveedor ya confirmó este pedido. Para anularlo ahora, escríbele.
-        </p>
+        <Panel className='order-next'>
+          <p className='font-light order-locked mb-0'>
+            El proveedor ya confirmó este pedido. Para anularlo ahora, escríbele.
+          </p>
+        </Panel>
       )}
-
+        </aside>
+      </div>
     </>
   );
 };
