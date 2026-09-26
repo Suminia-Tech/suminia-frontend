@@ -1510,6 +1510,18 @@ $estado-error: #dc3545;
   width: 100%;
   border-collapse: collapse;
 
+  /* Valor propio para las dos medidas que la tabla toma de su contenedor.
+
+     `.catalog-manager` las declara y la tabla las hereda, pero la misma tabla
+     se usa tambien dentro del modal de formatos, donde ese contenedor no
+     existe. Ahi `var(--row-gap)` quedaba sin resolver, y una variable sin
+     valor no deja el trozo en blanco: invalida la declaracion entera, de modo
+     que la celda perdia tambien los 16px laterales y el texto se pegaba al
+     borde del panel mientras la cabecera seguia sangrada.
+
+     Van en `var()` como respaldo y no declaradas aqui: declarandolas en la
+     tabla ganarian a las del contenedor, que es justo donde se ajustan. */
+
   /* Sin repartir el ancho, la columna del producto se come la mitad de la tabla
      y deja las cifras flotando lejos del nombre al que pertenecen. */
   .col-product {
@@ -1545,7 +1557,7 @@ $estado-error: #dc3545;
   }
 
   td {
-    padding: var(--row-gap) 16px;
+    padding: var(--row-gap, 12px) 16px;
     border-bottom: 1px solid rgba($border-color, 0.5);
     vertical-align: middle;
   }
@@ -1583,9 +1595,9 @@ $estado-error: #dc3545;
 }
 
 .catalog-thumb {
-  flex: 0 0 var(--thumb);
-  width: var(--thumb);
-  height: var(--thumb);
+  flex: 0 0 var(--thumb, 40px);
+  width: var(--thumb, 40px);
+  height: var(--thumb, 40px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1754,7 +1766,7 @@ $estado-error: #dc3545;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: var(--row-gap) 0;
+    padding: var(--row-gap, 12px) 0;
     border-bottom: 1px solid rgba($border-color, 0.5);
 
     &:last-child {
@@ -1776,9 +1788,9 @@ $estado-error: #dc3545;
   }
 
   .sk-thumb {
-    flex: 0 0 var(--thumb);
-    width: var(--thumb);
-    height: var(--thumb);
+    flex: 0 0 var(--thumb, 40px);
+    width: var(--thumb, 40px);
+    height: var(--thumb, 40px);
   }
 
   .sk-line {
@@ -3627,6 +3639,17 @@ select.form-control,
       border: 0;
       border-radius: 0 var(--suminia-radio-busqueda)
         var(--suminia-radio-busqueda) 0;
+
+      /* La lupa centrada en la caja del boton se ve corrida a la derecha. El
+         boton es cuadrado —48x48— pero su lado derecho es un semicirculo de 24
+         de radio: a la altura del icono la curva ya se ha metido unos 3px hacia
+         dentro, de modo que sus esquinas quedan a 9 del borde y no a los 12 que
+         miden en el centro. El ojo lee el hueco mas corto.
+
+         Se compensa con aire de mas por la derecha, que es el lado curvo. El
+         izquierdo comparte recta con el campo y se queda como estaba. */
+      padding-right: 18px;
+      padding-left: 12px;
     }
   }
 }
