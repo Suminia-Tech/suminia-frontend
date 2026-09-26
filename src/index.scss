@@ -67,6 +67,58 @@
 }
 
 /* ---------------------------------------------------------------------------
+   El aire lateral de un control en pastilla
+
+   Un radio de media altura curva el extremo, y el borde visible se aleja del
+   contenido justo a la altura donde el ojo mide el margen. El mismo numero que
+   sobraba en un rectangulo se queda corto en una pastilla: por eso el texto de
+   los campos, el del buscador y la lupa del boton de buscar se veian los tres
+   pegados al borde, cada uno por su lado y cada uno arreglado a mano.
+
+   La cuenta, para no volver a deducirla. En una pastilla de alto H el radio es
+   H/2, y a la altura de las mayusculas —a un cuarto de H del centro— la curva
+   ya se ha metido H·(0,5 − √3/4), un 6,7% de H. Eso es lo que mide de menos el
+   hueco en las esquinas del texto frente a lo que mide en el centro. Sumado al
+   aire que pediria un rectangulo, sale una proporcion del alto:
+
+     lado curvo  0,42 × alto
+     lado recto  0,26 × alto
+
+   Recto es el lado que hace tope con otro control —el campo del buscador con
+   su boton— o con el borde de un contenedor: ahi no hay curva que compensar.
+
+   Se escribe como funcion y no como una tabla de numeros porque el alto de un
+   control cambia con la pantalla y con el sitio, y lo que tiene que viajar es
+   la regla.
+   --------------------------------------------------------------------------- */
+@function aire-pastilla($alto, $lado: curvo) {
+  @if $lado == recto {
+    @return round($alto * 0.26);
+  }
+
+  @return round($alto * 0.42);
+}
+
+/* El caso corriente: un control en pastilla con los dos extremos redondos. */
+@mixin pastilla($alto) {
+  border-radius: var(--suminia-radio-control);
+  padding-left: aire-pastilla($alto);
+  padding-right: aire-pastilla($alto);
+}
+
+/* Un control que forma el extremo de un grupo: una punta curva y la otra a
+   tope con su vecino. `$lado` dice cual de las dos es la curva. */
+@mixin media-pastilla($alto, $lado: izquierda) {
+  @if $lado == izquierda {
+    padding-left: aire-pastilla($alto);
+    padding-right: aire-pastilla($alto, recto);
+  } @else {
+    padding-left: aire-pastilla($alto, recto);
+    padding-right: aire-pastilla($alto);
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Los controles, en pastilla
 
    El tema deja los botones en 0.5rem y los campos en el 4px por defecto de
@@ -369,16 +421,13 @@ textarea.form-control {
      pensado para los campos grandes de la tienda —el buscador, la suscripcion—
      y en un formulario deja el texto flotando lejos del borde.
 
-     18 y no los 14 de antes. Los 14 se eligieron cuando los campos eran
-     rectangulos de 4px de radio; ahora son pastillas, y el mismo numero medido
-     desde el borde de una caja que se curva se ve la mitad: el extremo se
-     aleja del texto justo donde el ojo busca el margen. La regla que funciona
-     es cuatro decimas del alto, que para un campo de 45px son estos 18.
+     El horizontal sale de `aire-pastilla`: los 14 de antes se eligieron cuando
+     los campos eran rectangulos de 4px de radio, y en una pastilla el mismo
+     numero se queda corto. 45px es el alto que les da el tema.
 
      Solo se toca el horizontal: el vertical del tema marca la altura de los
      campos y cambiarlo los descuadraria respecto a los botones. */
-  padding-left: 18px;
-  padding-right: 18px;
+  @include pastilla(45px);
 
   &:focus {
     background-color: $white;
@@ -3628,11 +3677,9 @@ select.form-control,
       border-radius: var(--suminia-radio-busqueda) 0 0
         var(--suminia-radio-busqueda);
 
-      /* Mas aire que en un campo de formulario: este mide 48px de alto, de modo
-         que su extremo redondo tiene 24px de radio y se aleja del texto mucho
-         antes. Son las mismas cuatro decimas del alto que usa `.form-control`,
-         aplicadas a este. */
-      padding-left: 22px;
+      /* Curvo por la izquierda y a tope con el boton por la derecha. El alto
+         sale de `--suminia-alto-control`, que aqui vale 48. */
+      @include media-pastilla(48px, izquierda);
     }
 
     .close-search {
@@ -3640,16 +3687,10 @@ select.form-control,
       border-radius: 0 var(--suminia-radio-busqueda)
         var(--suminia-radio-busqueda) 0;
 
-      /* La lupa centrada en la caja del boton se ve corrida a la derecha. El
-         boton es cuadrado —48x48— pero su lado derecho es un semicirculo de 24
-         de radio: a la altura del icono la curva ya se ha metido unos 3px hacia
-         dentro, de modo que sus esquinas quedan a 9 del borde y no a los 12 que
-         miden en el centro. El ojo lee el hueco mas corto.
-
-         Se compensa con aire de mas por la derecha, que es el lado curvo. El
-         izquierdo comparte recta con el campo y se queda como estaba. */
-      padding-right: 18px;
-      padding-left: 12px;
+      /* Al reves que el campo: recto por la izquierda, donde hace tope con el,
+         y curvo por la derecha. Sin esto la lupa se ve corrida hacia el borde,
+         que es lo que la curva le quita al hueco. */
+      @include media-pastilla(48px, derecha);
     }
   }
 }

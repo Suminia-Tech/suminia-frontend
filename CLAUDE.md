@@ -153,6 +153,27 @@ verificacion de correo— va en `(suminia)/`.
   tiene estilos dentro de `.product-buttons` — en las pantallas de auth se usa sin ese
   contenedor, de modo que ahí no aplica nada.
 
+  **Los radios son tres, y están en `:root`.** `--suminia-radio-control` (999px) para
+  lo que se pulsa o se escribe dentro, `--suminia-radio-caja` (16px) para tarjetas,
+  paneles y avisos, y `--suminia-radio-modal` (28px) para los modales. El de las
+  superficies grandes va aparte porque el radio tiene que crecer con la superficie:
+  16px en un diálogo de 500px se lee como una esquina recta. Las miniaturas se quedan
+  en 8px, sin token, para leerse por dentro de la caja que las contiene.
+
+  **Un control en pastilla necesita más aire lateral, y la regla ya está escrita.**
+  El radio de media altura curva el extremo, y el borde visible se aleja del contenido
+  justo donde el ojo mide el margen: el mismo número que sobra en un rectángulo se
+  queda corto en una pastilla. No lo calcules a ojo —se hizo cuatro veces, cada una
+  con un número distinto—; usa los mixins de `src/index.scss`:
+
+  ```scss
+  @include pastilla(45px);                    // los dos extremos redondos
+  @include media-pastilla(48px, izquierda);   // uno curvo, otro a tope con su vecino
+  ```
+
+  Salen de `aire-pastilla($alto, $lado)`: 0,42 × alto en el lado curvo y 0,26 en el
+  recto. Es la proporción a la que ya estaba el `btn-sm` del tema.
+
   Si el tema no cubre un caso, se añade el estilo en `src/index.scss` siguiendo sus
   convenciones — no se resuelve con estilos en línea ni con clases sueltas de Bootstrap.
 
