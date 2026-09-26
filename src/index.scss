@@ -110,6 +110,25 @@ textarea.form-control,
   border-radius: var(--suminia-radio-control);
 }
 
+/* Los campos de acceso y registro son de subrayado: el tema les quita la caja
+   y les deja solo la raya de abajo, con padding cero para que el texto arranque
+   a la misma altura que la raya.
+
+   La pastilla no les sirve. No se ve mientras el campo esta vacio —no hay
+   fondo que redondear— pero el dia que el navegador rellena la contraseña
+   pinta su propio fondo, y entonces aparece una pildora azul con la letra
+   pegada a la curva. Es lo que se veia al entrar con las credenciales
+   guardadas.
+
+   Se les da la esquina de arriba redondeada y la de abajo recta, que es donde
+   esta la raya, y el mismo aire lateral que cualquier otro campo. */
+.login-section .materialContainer .input input,
+.login-modal .input input {
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 8px 8px 0 0;
+}
+
 /* Los avisos del tema van en 6px y el boton de subir en 5, los dos fuera del
    estandar. El aviso es una caja; el de subir se pulsa, y ademas es cuadrado,
    de modo que la pastilla lo deja redondo. */
@@ -350,10 +369,16 @@ textarea.form-control {
      pensado para los campos grandes de la tienda —el buscador, la suscripcion—
      y en un formulario deja el texto flotando lejos del borde.
 
+     18 y no los 14 de antes. Los 14 se eligieron cuando los campos eran
+     rectangulos de 4px de radio; ahora son pastillas, y el mismo numero medido
+     desde el borde de una caja que se curva se ve la mitad: el extremo se
+     aleja del texto justo donde el ojo busca el margen. La regla que funciona
+     es cuatro decimas del alto, que para un campo de 45px son estos 18.
+
      Solo se toca el horizontal: el vertical del tema marca la altura de los
      campos y cambiarlo los descuadraria respecto a los botones. */
-  padding-left: 14px;
-  padding-right: 14px;
+  padding-left: 18px;
+  padding-right: 18px;
 
   &:focus {
     background-color: $white;
@@ -3590,6 +3615,12 @@ select.form-control,
       border-right: none;
       border-radius: var(--suminia-radio-busqueda) 0 0
         var(--suminia-radio-busqueda);
+
+      /* Mas aire que en un campo de formulario: este mide 48px de alto, de modo
+         que su extremo redondo tiene 24px de radio y se aleja del texto mucho
+         antes. Son las mismas cuatro decimas del alto que usa `.form-control`,
+         aplicadas a este. */
+      padding-left: 22px;
     }
 
     .close-search {
