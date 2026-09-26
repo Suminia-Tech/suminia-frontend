@@ -4489,7 +4489,25 @@ select.form-control,
 }
 
 .orders-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   text-align: right;
+  white-space: nowrap;
+
+  /* La comision debajo del total y no a su lado: son dos cifras del mismo
+     pedido y en linea se leian pegadas, como si fueran una sola. */
+  small {
+    margin-top: 2px;
+    font-size: 12.5px;
+  }
+}
+
+/* La flecha entre las dos empresas en la lista del personal interno. */
+.orders-arrow {
+  margin: 0 7px;
+  vertical-align: -1px;
+  color: rgba($theme-font-color, 0.4);
 }
 
 .order-head {

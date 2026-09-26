@@ -138,9 +138,15 @@ export const MyProfileScreen = () => {
 
   return (
     <>
+      {/* El personal de Suminia no pertenece a ninguna empresa, de modo que
+          mandarlo a "Mi empresa" seria mandarlo a una pantalla que no tiene. */}
       <PageHeader
         title='Mi perfil'
-        description='Tus datos personales. Los de la empresa se editan en Mi empresa.'
+        description={
+          user.organizationId
+            ? 'Tus datos personales. Los de la empresa se editan en Mi empresa.'
+            : 'Tus datos personales y con qué rol entras a Suminia.'
+        }
       />
 
       {/* La `key` remonta el formulario cuando cambia el nombre en la sesion,

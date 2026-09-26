@@ -9,6 +9,10 @@ export { BuyerOrderDetailScreen } from './ui/buyer/OrderDetailScreen';
 export { SupplierOrdersScreen } from './ui/supplier/SupplierOrdersScreen';
 export { SupplierOrderDetailScreen } from './ui/supplier/SupplierOrderDetailScreen';
 
+/* El personal de Suminia los ve todos: no opera, liquida. */
+export { StaffOrdersScreen } from './ui/staff/StaffOrdersScreen';
+export { StaffOrderDetailScreen } from './ui/staff/StaffOrderDetailScreen';
+
 export { useGetOrdersQuery } from './api/ordersApi';
 
 export type { Order, OrderItem, OrderStatus } from './model/order.types';

@@ -14,6 +14,8 @@ export { DeliveryLocationPicker } from './ui/common/DeliveryLocationPicker';
 
 export { default as organizationsReducer } from './model/organizationsSlice';
 
+export { useGetBuyersQuery } from './api/buyersApi';
+
 export {
   useGetSuppliersQuery,
   useGetSupplierQuery,

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 
-import BreadCrumb from '@/_template/Components/Element/BreadCrumb';
 import { SuppliersScreen } from '@/modules/organizations';
 
 export const metadata: Metadata = {
@@ -9,10 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ProveedoresPage() {
-  return (
-    <>
-      <BreadCrumb parent={'Proveedores'} title={'Proveedores'} />
-      <SuppliersScreen />
-    </>
-  );
+  return <SuppliersScreen />;
 }

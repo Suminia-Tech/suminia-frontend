@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Package } from 'react-feather';
+import { ArrowRight, Package } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
@@ -16,18 +16,24 @@ import {
 } from '../../lib/orderStatus';
 import type { OrderStatus } from '../../model/order.types';
 
-/* Los pedidos de la empresa: los que hizo si es compradora, los que le hicieron
-   si es proveedora.
+/* Los pedidos: los que hizo la empresa si es compradora, los que le hicieron si
+   es proveedora, y todos si quien mira es personal de Suminia.
 
-   Es la misma pantalla para los dos lados porque la lista es la misma —numero,
-   la otra empresa, fecha, estado y total— y lo unico que cambia es a quien se
-   nombra y a donde lleva cada fila. Con dos copias, añadir una columna
-   obligaria a acordarse de las dos.
+   Es una sola pantalla para los tres porque la lista es la misma —numero, la
+   otra empresa, fecha, estado y total— y lo que cambia es a quien se nombra y a
+   donde lleva cada fila. Con tres copias, añadir una columna obligaria a
+   acordarse de las tres.
 
-   No hace falta filtrar por empresa: el backend solo devuelve los suyos, porque
-   el alcance va en la consulta. Aqui no se decide quien ve que. */
+   No hace falta filtrar por empresa: el backend devuelve lo que a cada quien le
+   toca, porque el alcance va en la consulta. Aqui no se decide quien ve que.
 
-export type OrderSide = 'buyer' | 'supplier';
+   Para el personal interno la lista es otra cosa. No es un tablero de trabajo
+   —no puede mover un pedido, el backend se lo prohibe con un 403 explicito—
+   sino la cuenta de lo que se movio: quien le compro a quien y cuanto deja cada
+   pedido. Por eso ahi se nombran las dos empresas y aparece la comision, que el
+   backend le manda y a los otros dos no. */
+
+export type OrderSide = 'buyer' | 'supplier' | 'staff';
 
 const COPY: Record<
   OrderSide,
@@ -44,6 +50,13 @@ const COPY: Record<
     descripcion: 'Lo que te han pedido y lo que falta por despachar.',
     vacio: 'Todavía no te han hecho ningún pedido.',
     basePath: '/supplier/orders',
+  },
+  staff: {
+    titulo: 'Pedidos',
+    descripcion:
+      'Todo lo que se ha movido en Suminia y lo que deja cada pedido en comisión.',
+    vacio: 'Todavía no se ha hecho ningún pedido en Suminia.',
+    basePath: '/admin/orders',
   },
 };
 
@@ -88,7 +101,12 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
   if (isError) {
     return (
       <div className='alert alert-danger'>
-        {extractErrorMessage(error, 'No se pudieron cargar tus pedidos.')}
+        {extractErrorMessage(
+          error,
+          side === 'staff'
+            ? 'No se pudieron cargar los pedidos.'
+            : 'No se pudieron cargar tus pedidos.',
+        )}
       </div>
     );
   }
@@ -120,7 +138,11 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
         <div className='orders-empty'>
           <Package size={28} />
           <p className='font-light'>
-            {status ? 'No tienes pedidos en ese estado.' : copy.vacio}
+            {status
+              ? side === 'staff'
+                ? 'No hay pedidos en ese estado.'
+                : 'No tienes pedidos en ese estado.'
+              : copy.vacio}
           </p>
           {/* Al comprador se le ofrece el catalogo; al proveedor no, que el
               pedido no depende de el. */}
@@ -138,11 +160,21 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
                 <div className='orders-line-main'>
                   <span className='orders-number'>#{order.number}</span>
                   {/* La otra empresa: quien vende si miro como comprador, y
-                      quien compra si miro como proveedor. */}
+                      quien compra si miro como proveedor. Para el personal
+                      interno no hay "la otra": van las dos, porque lo que se
+                      mira es la operacion entera. */}
                   <span className='orders-supplier'>
-                    {side === 'buyer'
-                      ? order.supplierOrganizationName
-                      : order.buyerOrganizationName}
+                    {side === 'staff' ? (
+                      <>
+                        {order.buyerOrganizationName}
+                        <ArrowRight size={13} className='orders-arrow' />
+                        {order.supplierOrganizationName}
+                      </>
+                    ) : side === 'buyer' ? (
+                      order.supplierOrganizationName
+                    ) : (
+                      order.buyerOrganizationName
+                    )}
                   </span>
                   <small className='font-light'>
                     {formatDate(order.createdAt)} ·{' '}
@@ -155,9 +187,23 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
                   {ORDER_STATUS_LABEL[order.status]}
                 </span>
 
-                <strong className='orders-total'>
-                  {pesos(order.total, order.currency)}
-                </strong>
+                <span className='orders-total'>
+                  <strong>{pesos(order.total, order.currency)}</strong>
+                  {/* Lo que deja el pedido. Solo al personal interno: el
+                      backend no manda la cifra a los otros dos.
+
+                      Y solo si el pedido llego a cobrarse: en uno anulado o
+                      rechazado la comision sigue calculada en la base, pero
+                      enseñarla ahi seria contar un ingreso que no existe. */}
+                  {side === 'staff' &&
+                    order.commissionAmount !== null &&
+                    order.status !== 'CANCELLED' &&
+                    order.status !== 'REJECTED' && (
+                      <small className='font-light'>
+                        comisión {pesos(order.commissionAmount, order.currency)}
+                      </small>
+                    )}
+                </span>
               </Link>
             </li>
           ))}

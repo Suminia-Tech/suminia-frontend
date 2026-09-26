@@ -1,8 +1,10 @@
 'use client';
 
-import { Button, Col, Container, Input, Row } from 'reactstrap';
+import { Search } from 'react-feather';
+import { Button } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { PageHeader, Panel } from '@/shared/ui';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
@@ -61,45 +63,47 @@ export const OrganizationsScreen = ({ kind }: { kind: OrganizationKind }) => {
   const puedeDecidir = hasPermission(permissions, 'organization:approve');
 
   return (
-    <section className='section-b-space'>
-      <Container>
-        <Row className='align-items-center mb-4'>
-          <Col md='6'>
-            <h2 className='mb-0'>{copy.plural}</h2>
-            <p className='text-muted mb-0'>{copy.descripcion}</p>
-          </Col>
-          <Col md='3' className='mt-3 mt-md-0'>
-            <Input
+    <>
+      <PageHeader title={copy.plural} description={copy.descripcion} />
+
+      <Panel className='panel-table'>
+        {/* Los filtros dentro del panel y pegados a la tabla: gobiernan la
+            lista, de modo que flotando encima se leerian como un bloque
+            aparte. Es la misma barra que el panel de productos. */}
+        <div className='catalog-toolbar'>
+          <label className='catalog-search'>
+            <Search size={16} />
+            <input
               type='search'
               placeholder='Buscar por nombre o NIT'
               value={search}
               onChange={(event) => dispatch(setSearch(event.target.value))}
             />
-          </Col>
-          <Col md='3' className='mt-3 mt-md-0'>
-            <Input
-              type='select'
-              value={status}
-              onChange={(event) =>
-                dispatch(setStatusFilter(event.target.value as OrganizationStatus | ''))
-              }
-            >
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Input>
-          </Col>
-        </Row>
+          </label>
+
+          <select
+            className='filter-select'
+            value={status}
+            aria-label='Filtrar por estado'
+            onChange={(event) =>
+              dispatch(setStatusFilter(event.target.value as OrganizationStatus | ''))
+            }
+          >
+            {STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {isError && (
-          <p className='text-danger'>
+          <div className='alert alert-danger m-3'>
             {extractErrorMessage(
               error,
               `No se pudieron cargar los ${copy.plural.toLowerCase()}.`,
             )}
-          </p>
+          </div>
         )}
 
         <OrganizationTable
@@ -122,33 +126,33 @@ export const OrganizationsScreen = ({ kind }: { kind: OrganizationKind }) => {
         />
 
         {meta && meta.totalPages > 1 && (
-          <div className='d-flex justify-content-between align-items-center mt-3'>
-            <span className='text-muted'>
+          <div className='catalog-panel-foot'>
+            <span className='font-light'>
               Página {meta.page} de {meta.totalPages} · {meta.totalCount}{' '}
               {copy.plural.toLowerCase()}
             </span>
-            <div className='d-flex gap-2'>
-              <Button
-                size='sm'
-                outline
+            <div className='list-pagination'>
+              <button
+                type='button'
+                className='btn btn-sm btn-outline-secondary'
                 disabled={meta.page <= 1}
                 onClick={() => dispatch(setPage(meta.page - 1))}
               >
                 Anterior
-              </Button>
-              <Button
-                size='sm'
-                outline
+              </button>
+              <button
+                type='button'
+                className='btn btn-sm btn-outline-secondary'
                 disabled={meta.page >= meta.totalPages}
                 onClick={() => dispatch(setPage(meta.page + 1))}
               >
                 Siguiente
-              </Button>
+              </button>
             </div>
           </div>
         )}
-      </Container>
-    </section>
+      </Panel>
+    </>
   );
 };
 

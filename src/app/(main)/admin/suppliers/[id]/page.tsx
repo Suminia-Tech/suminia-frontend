@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 
-import BreadCrumb from '@/_template/Components/Element/BreadCrumb';
 import { SupplierDetailScreen } from '@/modules/organizations';
 
 export const metadata: Metadata = {
@@ -15,10 +14,5 @@ export default async function ProveedorDetallePage({
 }) {
   const { id } = await params;
 
-  return (
-    <>
-      <BreadCrumb parent={'Proveedores'} title={'Detalle del proveedor'} />
-      <SupplierDetailScreen supplierId={id} />
-    </>
-  );
+  return <SupplierDetailScreen supplierId={id} />;
 }

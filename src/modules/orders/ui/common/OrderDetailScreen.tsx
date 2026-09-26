@@ -53,6 +53,11 @@ const COPY: Record<
     basePath: '/supplier/orders',
     nota: 'Nota del comprador',
   },
+  staff: {
+    volver: 'Pedidos',
+    basePath: '/admin/orders',
+    nota: 'Nota del comprador',
+  },
 };
 
 const pesos = (valor: number, moneda: string) =>
@@ -126,15 +131,22 @@ export const OrderDetailScreen = ({
 
   const order = data.data;
 
-  /* Si no hay ninguna accion posible, el panel no aparece: un "¿Qué sigue?"
-     vacio es peor que no decir nada. */
+  /* Si no hay ninguna accion posible, el panel no aparece: un panel de botones
+     vacio es peor que no decir nada.
+
+     El personal de Suminia nunca tiene ninguna. No es que no se le ofrezcan:
+     el backend se lo prohibe con un 403 y el mensaje lo dice —"el personal de
+     Suminia no mueve pedidos: eso es del comprador y del proveedor"—. Aqui
+     cobra y liquida, que es otra cosa. */
   const hayAcciones =
-    side === 'supplier'
-      ? supplierCanDecide(order.status) ||
-        supplierCanShip(order.status) ||
-        supplierCanConfirmDelivery(order.status) ||
-        supplierCanCancel(order.status)
-      : buyerCanConfirmDelivery(order.status) || buyerCanCancel(order.status);
+    side === 'staff'
+      ? false
+      : side === 'supplier'
+        ? supplierCanDecide(order.status) ||
+          supplierCanShip(order.status) ||
+          supplierCanConfirmDelivery(order.status) ||
+          supplierCanCancel(order.status)
+        : buyerCanConfirmDelivery(order.status) || buyerCanCancel(order.status);
 
   const mover = async (
     status: Order['status'],
@@ -164,12 +176,16 @@ export const OrderDetailScreen = ({
       <div className='order-head'>
         <div>
           <h1>Pedido #{order.number}</h1>
+          {/* La otra empresa. Para el personal de Suminia no hay "la otra":
+              van las dos, porque no esta de ninguno de los dos lados. */}
           <p className='font-light mb-0'>
-            {side === 'buyer'
-              ? order.supplierOrganizationName
-              : order.buyerOrganizationName}{' '}
+            {side === 'staff'
+              ? `${order.buyerOrganizationName} → ${order.supplierOrganizationName}`
+              : side === 'buyer'
+                ? order.supplierOrganizationName
+                : order.buyerOrganizationName}{' '}
             · {formatDate(order.createdAt)}
-            {side === 'supplier' && ` · pidió ${order.placedByName}`}
+            {side !== 'buyer' && ` · pidió ${order.placedByName}`}
           </p>
         </div>
         <span className={`badge ${ORDER_STATUS_CLASS[order.status]}`}>
@@ -198,7 +214,17 @@ export const OrderDetailScreen = ({
           botones acababan al final de todo, despues de la direccion y la nota. */}
       <div className='order-layout'>
         <div className='order-main'>
-      <Panel title={side === 'buyer' ? 'Qué pediste' : 'Qué te pidieron'}>
+      {/* El titulo, desde donde mira cada uno. El personal de Suminia no pidio
+          ni le pidieron: solo mira. */}
+      <Panel
+        title={
+          side === 'buyer'
+            ? 'Qué pediste'
+            : side === 'supplier'
+              ? 'Qué te pidieron'
+              : 'Qué se pidió'
+        }
+      >
       <ul className='order-items'>
         {order.items.map((item) => (
           <li key={item.id}>
@@ -419,8 +445,12 @@ export const OrderDetailScreen = ({
 
       {/* Solo al proveedor: lo que le va a quedar despues de la comision. Es lo
           que va a cuadrar contra la consignacion. */}
-      {side === 'supplier' && order.commissionAmount !== null && (
-        <Panel title='Lo que recibes'>
+      {/* La liquidacion. El proveedor mira lo que le queda; el personal de
+          Suminia, lo que se queda Suminia. Es el mismo desglose leido desde los
+          dos lados, y el backend le manda las cifras a los dos —al comprador
+          no: el paga el total y punto—. */}
+      {side !== 'buyer' && order.commissionAmount !== null && (
+        <Panel title={side === 'staff' ? 'Liquidación' : 'Lo que recibes'}>
           <ul className='cart-summary-lines order-totals'>
             <li>
               <span className='font-light'>Total del pedido</span>
@@ -433,14 +463,16 @@ export const OrderDetailScreen = ({
               <span>−{pesos(order.commissionAmount, order.currency)}</span>
             </li>
             <li className='cart-summary-total'>
-              <span>Te queda</span>
+              <span>{side === 'staff' ? 'Al proveedor' : 'Te queda'}</span>
               <strong>
                 {pesos(order.supplierPayout ?? 0, order.currency)}
               </strong>
             </li>
           </ul>
           <p className='font-light order-payout-note'>
-            Se consigna a tu cuenta registrada cuando el pedido quede entregado.
+            {side === 'staff'
+              ? 'Se le consigna al proveedor cuando el pedido quede entregado.'
+              : 'Se consigna a tu cuenta registrada cuando el pedido quede entregado.'}
           </p>
         </Panel>
       )}

@@ -5,7 +5,7 @@ import { Check, Edit2, Plus, Trash2, X } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
-import { ConfirmModal } from '@/shared/ui';
+import { ConfirmModal, PageHeader } from '@/shared/ui';
 
 import {
   useCreateCategoryMutation,
@@ -183,28 +183,29 @@ export const CategoriesScreen = () => {
   );
 
   return (
-    <section className='section-b-space'>
-      <div className='container-fluid-lg'>
-        <div className='box-head d-flex align-items-center justify-content-between'>
-          <h3>Categorías del catálogo</h3>
-          {!isNew && !editingId && (
+    <>
+      {/* La cabecera compartida, la misma de las demas pantallas del panel.
+          Tenia una propia con `box-head` y la descripcion suelta debajo del
+          boton, de modo que arrancaba sangrada respecto a sus vecinas. */}
+      <PageHeader
+        title='Categorías'
+        description='El vocabulario común del marketplace: las usan los proveedores para clasificar y los compradores para filtrar. El identificador es la URL del catálogo y el nombre del archivo de su ilustración.'
+        action={
+          !isNew &&
+          !editingId && (
             <button
               type='button'
-              className='btn btn-primary btn-sm d-inline-flex align-items-center gap-1'
+              className='btn btn-primary d-inline-flex align-items-center gap-2'
               onClick={startCreate}
             >
-              <Plus size={15} />
+              <Plus size={16} />
               Nueva categoría
             </button>
-          )}
-        </div>
+          )
+        }
+      />
 
-        <p className='font-light'>
-          Son el vocabulario común del marketplace: las usan los proveedores para
-          clasificar y los compradores para filtrar. El identificador es la URL
-          del catálogo y el nombre del archivo de su ilustración.
-        </p>
-
+      <div>
         {isLoading ? (
           <p className='font-light'>Cargando...</p>
         ) : isError ? (
@@ -298,7 +299,7 @@ export const CategoriesScreen = () => {
           </>
         )}
       </ConfirmModal>
-    </section>
+    </>
   );
 };
 
