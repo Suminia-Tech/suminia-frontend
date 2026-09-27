@@ -2066,6 +2066,52 @@ $area-bg: #f1f4f9;
   /* Sin margen propio: el ultimo panel ya deja su hueco por debajo. */
 }
 
+/* En una columna estrecha —la lateral de una ficha— la lista de dato y valor no
+   tiene sitio para dos columnas: cada pareja se queda en 160px y el valor se
+   parte. Se pide a una. */
+.data-list.is-single {
+  grid-template-columns: 1fr;
+}
+
+/* Lo que la empresa dejo sin llenar, en la ficha que usa el revisor. No es un
+   error —son campos opcionales— pero quien decide merece verlo dicho, no
+   deducirlo de una raya en la lista. */
+.review-missing {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding: 11px 14px;
+  border-radius: var(--suminia-radio-caja);
+  background-color: rgba(178, 106, 0, 0.08);
+  font-size: 14px;
+  line-height: 1.5;
+
+  svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: #b26a00;
+  }
+}
+
+/* Que no hay documentos que revisar. Se dice, en vez de dejar el hueco: un
+   revisor que no los encuentra se queda buscando donde estan. */
+.review-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: $font-dark;
+
+  svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: rgba($theme-font-color, 0.4);
+  }
+}
+
 /* Lo que le falta a la empresa para operar, en el resumen. */
 .summary-todo {
   margin: 0;
