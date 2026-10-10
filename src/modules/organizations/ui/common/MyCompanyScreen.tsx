@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { AlertTriangle } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -15,6 +16,7 @@ import {
   type OrganizationKind,
 } from '../../hooks/useOrganizationAdmin';
 import {
+  buyerMissing,
   describeActivities,
   describeExporter,
   describeProductLines,
@@ -92,6 +94,10 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
                   values.minOrderValue.trim() === ''
                     ? null
                     : Number(values.minOrderValue),
+                deliveryDaysMin:
+                  values.deliveryDaysMin.trim() === '' ? null : Number(values.deliveryDaysMin),
+                deliveryDaysMax:
+                  values.deliveryDaysMax.trim() === '' ? null : Number(values.deliveryDaysMax),
                 bankName: values.bankName.trim() || null,
                 bankAccountType:
                   (values.bankAccountType.trim() as
@@ -127,6 +133,18 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
               {
                 email: values.email.trim(),
                 phone: values.phone.trim() || null,
+                /* El perfil viaja entero; si no se eligio nada, no viaja y
+                   queda como estaba. */
+                ...(values.legalNature && values.buyerActivity
+                  ? {
+                      legalNature: values.legalNature,
+                      buyerActivity: values.buyerActivity,
+                      ipsSector: values.ipsSector || null,
+                      activityOther: values.activityOther.trim() || null,
+                    }
+                  : {}),
+                bankName: values.bankName.trim() || null,
+                bankAccountNumber: values.bankAccountNumber.trim() || null,
               }),
           // Cadena vacia significa "sin dato": el backend acepta null para
           // limpiar el campo, pero rechaza "" en los que valida formato.
@@ -163,6 +181,7 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
   }
 
   const explicacion = EXPLICACION[organization.status];
+  const faltan = kind === 'buyer' ? buyerMissing(organization) : [];
   const enviada = formatDate(organization.createdAt);
   const aprobada = formatDate(organization.approvedAt);
 
@@ -204,6 +223,19 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           <div className={CLASE_AVISO[organization.status]}>{explicacion}</div>
         )}
 
+        {/* Lo que le falta al comprador para que lo aprueben, dicho antes de
+            que lo descubra esperando: Suminia no puede aprobarlo sin ello. */}
+        {kind === 'buyer' && organization.status === 'PENDING' && faltan.length > 0 && (
+          <ul className='summary-todo'>
+            {faltan.map((falta) => (
+              <li key={falta}>
+                <AlertTriangle size={17} />
+                <span>Falta {falta}.</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
         {/* El estado no se repite aqui: ya esta en la etiqueta de al lado del
             nombre, y el aviso de arriba explica lo que significa. */}
         {(enviada || aprobada) && (
@@ -234,13 +266,13 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           onSubmit={handleSubmit}
           showSupplierFields={kind === 'supplier'}
           legalDocuments={
-            kind === 'supplier' && (
-              <LegalDocumentsPanel
-                supplierId={organization.id}
-                documents={organization.documents ?? []}
-                editable
-              />
-            )
+            <LegalDocumentsPanel
+              kind={kind}
+              organizationId={organization.id}
+              documents={organization.documents ?? []}
+              editable
+              legalNature={organization.legalNature}
+            />
           }
         />
       ) : (

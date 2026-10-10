@@ -82,7 +82,7 @@ export const ProductCard = ({ product, href }: ProductCardProps) => {
           <strong>{formatPriceRange(product) ?? <Price value={null} />}</strong>
 
           <span className='catalog-card-meta font-light'>
-            {formatos === 1 ? '1 formato' : `${formatos} formatos`}
+            {formatos === 1 ? '1 presentación' : `${formatos} presentaciones`}
             {product.categoryName ? ` · ${product.categoryName}` : ''}
           </span>
 

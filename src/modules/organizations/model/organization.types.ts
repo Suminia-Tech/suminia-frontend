@@ -46,7 +46,25 @@ export type OrganizationDocumentType =
   | 'CHAMBER_OF_COMMERCE'
   | 'RUT'
   | 'SHAREHOLDING'
-  | 'LEGAL_REPRESENTATIVE_ID';
+  | 'LEGAL_REPRESENTATIVE_ID'
+  /* Solo del comprador: prueba que la cuenta con la que paga es suya. */
+  | 'BANK_CERTIFICATE';
+
+/* Quien es el comprador: decide que documentos se le piden. */
+export type LegalNature = 'LEGAL_ENTITY' | 'NATURAL_PERSON';
+
+export type BuyerActivity =
+  | 'IPS'
+  | 'CLINICAL_LABORATORY'
+  | 'DIAGNOSTIC_CENTER'
+  | 'PHARMACY'
+  | 'NON_PROFIT'
+  | 'NON_HEALTH_ENTITY'
+  | 'PRIVATE_COMPANY'
+  | 'INDEPENDENT_PROFESSIONAL'
+  | 'OTHER';
+
+export type IpsSector = 'PUBLIC' | 'MIXED' | 'PRIVATE';
 
 export interface OrganizationDocument {
   id: string;
@@ -95,6 +113,10 @@ export interface Organization {
   /* Lo menos que este proveedor despacha, sumado el pedido. Null en un
      comprador, y null en un proveedor que no exige minimo —que no es cero. */
   minOrderValue: number | null;
+  /* En cuantos dias habiles despacha, como rango. Opcionales: un backend
+     anterior no los manda. */
+  deliveryDaysMin?: number | null;
+  deliveryDaysMax?: number | null;
   /* A donde Suminia le consigna al proveedor. Null mientras no la registre; en
      un comprador siempre, porque a el no se le paga. */
   bankName: string | null;
@@ -114,6 +136,11 @@ export interface Organization {
   /* A donde llegan las ordenes de compra, los contactos por area y los
      documentos legales. Opcionales por la misma razon que el perfil. */
   orderEmails?: string[];
+  /* El perfil del comprador. Nulos en un proveedor. */
+  legalNature?: LegalNature | null;
+  buyerActivity?: BuyerActivity | null;
+  ipsSector?: IpsSector | null;
+  activityOther?: string | null;
   contacts?: OrganizationContact[];
   documents?: OrganizationDocument[];
   /* Nula mientras el proveedor no la envie. */

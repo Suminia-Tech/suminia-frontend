@@ -117,6 +117,51 @@ export const productsApi = baseApi.injectEndpoints({
       query: (id) => `/public/products/${id}`,
     }),
 
+    /* El registro sanitario o la ficha tecnica de un producto publicado, sin
+       sesion. Mutacion porque el enlace caduca: cachearlo serviria uno
+       vencido. */
+    getPublicDocumentUrl: builder.mutation<
+      ApiResponse<DocumentUrl>,
+      { productId: string; documentId: string }
+    >({
+      query: ({ productId, documentId }) => ({
+        url: `/public/products/${productId}/documents/${documentId}/url`,
+        method: 'GET',
+      }),
+    }),
+
+    /* Los favoritos del usuario. La lista se pide entera —son pocos— y de ella
+       sale tambien si un producto concreto tiene el corazon puesto. */
+    getFavorites: builder.query<ApiResponse<Product[]>, void>({
+      query: () => '/products/favorites',
+      providesTags: [{ type: 'Product', id: 'FAVORITES' }],
+    }),
+
+    setFavorite: builder.mutation<ApiResponse<null>, { productId: string; favorite: boolean }>({
+      query: ({ productId, favorite }) => ({
+        url: `/products/${productId}/favorite`,
+        method: favorite ? 'PUT' : 'DELETE',
+      }),
+      /* El corazon cambia en cuanto se pulsa y no al volver la respuesta: es
+         un gesto que tiene que sentirse inmediato. Si el servidor falla, se
+         deshace. */
+      async onQueryStarted({ productId, favorite }, { dispatch, queryFulfilled }) {
+        const parche = dispatch(
+          productsApi.util.updateQueryData('getFavorites', undefined, (draft) => {
+            if (!favorite) {
+              draft.data = draft.data.filter((product) => product.id !== productId);
+            }
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          parche.undo();
+        }
+      },
+      invalidatesTags: [{ type: 'Product', id: 'FAVORITES' }],
+    }),
+
     getPublicCategories: builder.query<ApiResponse<ProductCategory[]>, void>({
       query: () => '/public/products/categories',
     }),
@@ -369,6 +414,9 @@ export const {
   useGetPublicProductsQuery,
   useGetPublicProductQuery,
   useGetPublicCategoriesQuery,
+  useGetPublicDocumentUrlMutation,
+  useGetFavoritesQuery,
+  useSetFavoriteMutation,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,

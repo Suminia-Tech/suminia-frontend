@@ -20,6 +20,7 @@ import {
 } from '../../hooks/useOrganizationAdmin';
 import {
   CONTACT_AREA_OPTIONS,
+  describeBuyerProfile,
   describeActivities,
   describeExporter,
   describeProductLines,
@@ -239,6 +240,31 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
             </ul>
           </Panel>
 
+          {/* Del comprador: quien es y con que cuenta paga. Se muestra siempre,
+              tambien vacio, porque sin ello no se puede aprobar y el revisor
+              tiene que verlo dicho. */}
+          {!esProveedor && (
+            <Panel
+              title='Perfil del comprador'
+              description='Lo que declara de sí mismo y la cuenta con la que paga.'
+            >
+              <ul className='data-list'>
+                <li>
+                  <span className='font-light'>Naturaleza y actividad</span>
+                  <span>{describeBuyerProfile(organization) ?? '—'}</span>
+                </li>
+                <li>
+                  <span className='font-light'>Medio de pago</span>
+                  <span>
+                    {organization.bankName && organization.bankAccountNumber
+                      ? `${organization.bankName} · ${organization.bankAccountNumber}`
+                      : '—'}
+                  </span>
+                </li>
+              </ul>
+            </Panel>
+          )}
+
           {/* La declaracion va justo despues de lo registrado: es lo otro que
               hay que leer para decidir, y sin ella el backend no deja aprobar.
               Si falta se dice, para no pulsar "Aprobar" y llevarse el error. */}
@@ -399,25 +425,16 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
             </ul>
           </Panel>
 
-          {/* Los soportes que sube el proveedor desde su panel. Se listan
+          {/* Los soportes que sube la empresa desde su panel. Se listan
               todos, cargados o no: un revisor que no ve el RUT tiene que saber
-              que falta, no buscarlo. El comprador todavia no sube nada, y se
-              dice en vez de callarlo. */}
-          {esProveedor ? (
-            <LegalDocumentsPanel
-              supplierId={organization.id}
-              documents={organization.documents ?? []}
-              editable={false}
-            />
-          ) : (
-            <Panel title='Documentos'>
-              <p className='review-note'>
-                <FileText size={16} />
-                El registro no pide documentos todavía. Para verificar el NIT y la
-                razón social hay que consultarlos por fuera de Suminia.
-              </p>
-            </Panel>
-          )}
+              que falta, no buscarlo. */}
+          <LegalDocumentsPanel
+            kind={kind}
+            organizationId={organization.id}
+            documents={organization.documents ?? []}
+            editable={false}
+            legalNature={organization.legalNature}
+          />
         </aside>
       </div>
     </>

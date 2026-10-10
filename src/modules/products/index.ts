@@ -13,6 +13,7 @@ export { ProductReviewScreen } from './ui/admin/ProductReviewScreen';
    cambia no es la pantalla, es que la respuesta no trae precios. */
 export { PublicCatalogScreen } from './ui/public/PublicCatalogScreen';
 export { PublicProductScreen } from './ui/public/PublicProductScreen';
+export { FavoritesScreen } from './ui/buyer/FavoritesScreen';
 export { FeaturedProducts } from './ui/public/FeaturedProducts';
 export { CategoryGrid } from './ui/public/CategoryGrid';
 export { CategoryShowcase } from './ui/public/CategoryShowcase';

@@ -26,6 +26,8 @@ export interface UpdateSupplierRequest {
   /* Solo del proveedor: es lo que exige para despachar. null lo quita, y por eso
      se acepta null y no basta con omitirlo. */
   minOrderValue?: number | null;
+  deliveryDaysMin?: number | null;
+  deliveryDaysMax?: number | null;
   /* Los cinco de la cuenta viajan juntos: el backend rechaza media cuenta.
      Nulos en los cinco la quitan. */
   bankName?: string | null;

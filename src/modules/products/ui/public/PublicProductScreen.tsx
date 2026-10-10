@@ -9,6 +9,7 @@ import {
   Package,
   Percent,
   ShieldOff,
+  ShoppingBag,
   Truck,
 } from 'react-feather';
 import { Col, Row, Table } from 'reactstrap';
@@ -22,8 +23,11 @@ import { useGetMedicineOffersQuery } from '../../api/productsApi';
 import { useCatalogProduct } from '../../hooks/useCatalogProducts';
 import { humanizeAttributeKey, toDisplayPairs } from '../../lib/attributes';
 import { formatPrice } from '../../lib/productLabels';
-import { taxLabel } from '../../lib/tax';
+import { priceTaxSuffix, taxConditionLabel } from '../../lib/tax';
 import { Price } from '../common/Price';
+import { ProductActions } from './ProductActions';
+import { ProductDocumentsSection } from './ProductDocumentsSection';
+import { RelatedProducts } from './RelatedProducts';
 
 /* La ficha que se ve sin haber entrado.
 
@@ -39,6 +43,9 @@ import { Price } from '../common/Price';
    puede ver los dos, y el tipo se describe con datos sueltos para que ninguno
    de los dos lados tenga que conocer los tipos del otro. */
 export interface BuyableFormatProps {
+  /* El nombre del producto, para decir que se añadio: "Guantes de nitrilo
+     Talla L · Caja x 100 añadido a tu carrito". */
+  productName: string;
   formats: {
     presentationId: string;
     name: string;
@@ -56,6 +63,20 @@ interface PublicProductScreenProps {
   productId: string;
   BuyBox?: ComponentType<BuyableFormatProps>;
 }
+
+const pesos = (valor: number, moneda: string) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: moneda,
+    maximumFractionDigits: 0,
+  }).format(valor);
+
+/* "Entrega en 2 a 5 días hábiles", o null si el proveedor no lo ha dicho. */
+const plazoDeEntrega = (min: number | null, max: number | null): string | null => {
+  if (min === null || max === null) return null;
+  if (min === max) return `Entrega en ${min} ${min === 1 ? 'día hábil' : 'días hábiles'}`;
+  return `Entrega en ${min} a ${max} días hábiles`;
+};
 
 export const PublicProductScreen = ({
   productId,
@@ -127,10 +148,15 @@ export const PublicProductScreen = ({
   const moneda = presentations[0]?.currency ?? 'COP';
 
   const enStock = presentations.some((p) => p.stock > 0);
-  const pedidoMinimo = presentations.reduce(
-    (min, p) => Math.min(min, p.minOrderQuantity),
-    Number.POSITIVE_INFINITY,
-  );
+  /* El registro del producto, o el del medicamento en el maestro del INVIMA
+     cuando es un medicamento: alli lo pone el INVIMA y no el proveedor. */
+  const registro = product.sanitaryRegistration ?? invima?.registroSanitario ?? null;
+  const politica = product.supplierPolicy ?? {
+    minOrderValue: null,
+    deliveryDaysMin: null,
+    deliveryDaysMax: null,
+  };
+  const plazo = plazoDeEntrega(politica.deliveryDaysMin, politica.deliveryDaysMax);
 
   return (
     <section className='section-b-space'>
@@ -219,6 +245,17 @@ export const PublicProductScreen = ({
                 )}
               </p>
 
+              {/* El registro sanitario a la vista y no solo en la tabla de
+                  abajo: en el sector es lo primero que se busca para saber si
+                  un producto se puede vender en Colombia. */}
+              {registro && (
+                <p className='product-detail-registry'>
+                  Registro sanitario INVIMA <strong>{registro}</strong>
+                </p>
+              )}
+
+              <ProductActions productId={product.id} productName={product.name} />
+
               {/* El precio arriba, pegado al titulo, como en cualquier ficha de
                   producto. Quien no puede verlo encuentra en su lugar la cifra
                   difuminada de `Price`, que dice que existe sin decir cual. */}
@@ -230,7 +267,7 @@ export const PublicProductScreen = ({
                     )}
                     <strong>{formatPrice(desde, moneda)}</strong>
                     <span className='font-light'>
-                      {taxLabel(product.taxCategory)}
+                      {priceTaxSuffix(product.taxCategory)}
                     </span>
                   </>
                 ) : (
@@ -257,6 +294,7 @@ export const PublicProductScreen = ({
                   catalogo. */}
               {BuyBox && (
                 <BuyBox
+                  productName={product.name}
                   formats={presentations.map((presentation) => ({
                     presentationId: presentation.id,
                     name: presentation.name,
@@ -290,26 +328,33 @@ export const PublicProductScreen = ({
                 </div>
               )}
 
-              {/* Las tres cosas que en B2B se preguntan siempre antes de pedir y
-                  que hoy habia que ir a buscar a la tabla del pie. */}
+              {/* Lo que en B2B se pregunta siempre antes de pedir. El minimo es
+                  el del proveedor, sumado el pedido: el de cada presentacion
+                  no se dice aqui sino en la caja de compra, donde rige. */}
               <ul className='product-detail-perks'>
                 <li>
                   <Percent size={16} />
-                  <span>{taxLabel(product.taxCategory)}</span>
+                  <span>{taxConditionLabel(product.taxCategory)}</span>
                 </li>
                 <li>
                   <Package size={16} />
                   <span>
                     {presentations.length}{' '}
-                    {presentations.length === 1 ? 'formato' : 'formatos'} de venta
+                    {presentations.length === 1 ? 'presentación' : 'presentaciones'}
                   </span>
                 </li>
+                {plazo && (
+                  <li>
+                    <Truck size={16} />
+                    <span>{plazo}</span>
+                  </li>
+                )}
                 <li>
-                  <Truck size={16} />
+                  <ShoppingBag size={16} />
                   <span>
-                    {Number.isFinite(pedidoMinimo) && pedidoMinimo > 1
-                      ? `Pedido mínimo ${pedidoMinimo}`
-                      : 'Sin pedido mínimo'}
+                    {politica.minOrderValue !== null && politica.minOrderValue > 0
+                      ? `Monto mínimo ${pesos(politica.minOrderValue, moneda)} + IVA`
+                      : 'Sin monto mínimo'}
                   </span>
                 </li>
               </ul>
@@ -400,17 +445,16 @@ export const PublicProductScreen = ({
 
           <section className='product-detail-block'>
             <div className='box-head'>
-              <h3>Formatos de venta</h3>
+              <h3>Presentaciones</h3>
             </div>
 
             <Table responsive className='align-middle format-table'>
               <thead>
                 <tr>
-                  <th>Formato</th>
+                  <th>Presentación</th>
                   {conCum && <th>CUM</th>}
                   <th>Empaque</th>
                   <th>Contenido</th>
-                  <th>Pedido mínimo</th>
                   <th>Existencias</th>
                   <th className='text-end'>Precio</th>
                 </tr>
@@ -429,11 +473,6 @@ export const PublicProductScreen = ({
                       {presentation.contentQuantity
                         ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
                         : '—'}
-                    </td>
-                    <td className='font-light'>
-                      {presentation.minOrderQuantity}
-                      {presentation.orderMultiple > 1 &&
-                        ` · de ${presentation.orderMultiple} en ${presentation.orderMultiple}`}
                     </td>
                     <td className='font-light'>
                       {presentation.stock > 0 ? (
@@ -456,6 +495,11 @@ export const PublicProductScreen = ({
             </Table>
           </section>
 
+          <ProductDocumentsSection
+            productId={product.id}
+            documents={product.publicDocuments ?? []}
+          />
+
           {/* La razon de ser del maestro: el mismo medicamento, varios
               proveedores, un solo sitio para compararlos. */}
           {offers.length > 0 && (
@@ -475,8 +519,8 @@ export const PublicProductScreen = ({
                         <small className='font-light'>
                           {offer.presentationCount}{' '}
                           {offer.presentationCount === 1
-                            ? 'formato'
-                            : 'formatos'}
+                            ? 'presentación'
+                            : 'presentaciones'}
                           {offer.inStock ? '' : ' · sin existencias'}
                         </small>
                       </span>
@@ -495,6 +539,8 @@ export const PublicProductScreen = ({
               </ul>
             </section>
           )}
+
+          <RelatedProducts productId={product.id} categoryId={product.categoryId} />
         </div>
       </div>
     </section>

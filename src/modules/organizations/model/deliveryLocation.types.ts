@@ -4,6 +4,17 @@
    las administra quien administra la empresa, con sus mismos permisos, y se
    editan desde su misma pantalla de cuenta. */
 
+/* Los soportes de una sede: la habilitacion del servicio y el certificado que
+   detalla la direccion. */
+export type LocationDocumentType = 'OPERATING_PERMIT' | 'ADDRESS_CERTIFICATE';
+
+export interface LocationDocument {
+  id: string;
+  type: LocationDocumentType;
+  filename: string | null;
+  uploadedAt: string;
+}
+
 export interface DeliveryLocation {
   id: string;
   /** Como la llaman dentro de la empresa: "Sede Norte", "Bodega central". */
@@ -19,6 +30,8 @@ export interface DeliveryLocation {
   notes: string | null;
   /** La que se propone al pedir. Una por empresa. */
   isDefault: boolean;
+  /* Opcional: un backend anterior no los manda. */
+  documents?: LocationDocument[];
   createdAt: string;
   updatedAt: string;
 }

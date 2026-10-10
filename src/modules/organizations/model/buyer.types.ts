@@ -1,4 +1,9 @@
-import type { Organization } from './organization.types';
+import type {
+  BuyerActivity,
+  IpsSector,
+  LegalNature,
+  Organization,
+} from './organization.types';
 
 /* Un comprador es una Organization con type = BUYER. El backend lo expone como
    dominio propio en /buyers, de modo que aqui se le da nombre propio aunque hoy
@@ -14,4 +19,13 @@ export interface UpdateBuyerRequest {
   phone?: string | null;
   address?: string | null;
   city?: string | null;
+  /* El perfil viaja entero: naturaleza y actividad juntas, y el sector o el
+     detalle cuando aplican. */
+  legalNature?: LegalNature | null;
+  buyerActivity?: BuyerActivity | null;
+  ipsSector?: IpsSector | null;
+  activityOther?: string | null;
+  /* La cuenta con la que paga: banco y numero juntos. */
+  bankName?: string | null;
+  bankAccountNumber?: string | null;
 }

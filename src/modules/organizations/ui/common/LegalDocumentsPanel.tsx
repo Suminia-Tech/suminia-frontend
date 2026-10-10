@@ -4,21 +4,28 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import { CheckCircle, ExternalLink, FileText, Upload } from 'react-feather';
 import { toast } from 'react-toastify';
 
-import { Panel } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/dates';
+import { Panel } from '@/shared/ui';
 
-import { LEGAL_DOCUMENT_ACCEPT, useSupplierDocuments } from '../../hooks/useSupplierDocuments';
-import { LEGAL_DOCUMENT_OPTIONS } from '../../lib/commercialProfile';
+import { DOCUMENT_ACCEPT } from '../../hooks/useDocumentFlow';
+import type { OrganizationKind } from '../../hooks/useOrganizationAdmin';
+import { useOrganizationDocuments } from '../../hooks/useOrganizationDocuments';
+import { legalDocumentOptions } from '../../lib/commercialProfile';
 import type {
+  LegalNature,
   OrganizationDocument,
   OrganizationDocumentType,
 } from '../../model/organization.types';
 
 interface LegalDocumentsPanelProps {
-  supplierId: string;
+  kind: OrganizationKind;
+  organizationId: string;
   documents: OrganizationDocument[];
-  /* El proveedor sube y reemplaza; el personal de Suminia solo los abre. */
+  /* La empresa sube y reemplaza; el personal de Suminia solo los abre. */
   editable: boolean;
+  /* Del comprador: una persona natural no sube camara de comercio ni
+     composicion accionaria. */
+  legalNature?: LegalNature | null;
 }
 
 /* Los soportes con los que Suminia verifica a la empresa. Un hueco por tipo, y
@@ -28,11 +35,20 @@ interface LegalDocumentsPanelProps {
    archivo ya esta en el almacenamiento cuando termina de subir, y esperar a
    "Guardar cambios" para registrarlo dejaria objetos sueltos cada vez que
    alguien sale de la pagina sin guardar. */
-const LegalDocumentsPanel = ({ supplierId, documents, editable }: LegalDocumentsPanelProps) => {
+const LegalDocumentsPanel = ({
+  kind,
+  organizationId,
+  documents,
+  editable,
+  legalNature,
+}: LegalDocumentsPanelProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [target, setTarget] = useState<OrganizationDocumentType | null>(null);
-  const { upload, uploading, open, opening, error, clearError } =
-    useSupplierDocuments(supplierId);
+  const { upload, uploading, open, opening, error, clearError } = useOrganizationDocuments(
+    kind,
+    organizationId,
+  );
+  const opciones = legalDocumentOptions(kind, legalNature);
 
   const pick = (type: OrganizationDocumentType) => {
     setTarget(type);
@@ -48,7 +64,7 @@ const LegalDocumentsPanel = ({ supplierId, documents, editable }: LegalDocuments
     if (!file || !target) return;
 
     if (await upload(target, file)) {
-      const label = LEGAL_DOCUMENT_OPTIONS.find((option) => option.value === target)?.label;
+      const label = opciones.find((option) => option.value === target)?.label;
       toast.success(`${label ?? 'Documento'} cargado`);
     }
   };
@@ -58,12 +74,14 @@ const LegalDocumentsPanel = ({ supplierId, documents, editable }: LegalDocuments
       title='Documentos legales'
       description={
         editable
-          ? 'Con estos soportes Suminia verifica tu empresa. PDF, JPG o PNG.'
+          ? kind === 'buyer'
+            ? 'Con estos soportes Suminia verifica tu empresa. Los marcados como obligatorios son necesarios para aprobarla. PDF, JPG o PNG.'
+            : 'Con estos soportes Suminia verifica tu empresa. PDF, JPG o PNG.'
           : 'Los soportes que subió la empresa para su verificación.'
       }
     >
       <div className='document-slots'>
-        {LEGAL_DOCUMENT_OPTIONS.map((option) => {
+        {opciones.map((option) => {
           const document = documents.find((item) => item.type === option.value);
 
           /* Al personal interno no le sirve un hueco vacio con un boton que no
@@ -77,7 +95,12 @@ const LegalDocumentsPanel = ({ supplierId, documents, editable }: LegalDocuments
                 {document ? <CheckCircle size={18} /> : <FileText size={18} />}
               </span>
               <div className='document-slot-text'>
-                <strong>{option.label}</strong>
+                <strong>
+                  {option.label}
+                  {option.required && !document && (
+                    <span className='document-required'> · obligatorio</span>
+                  )}
+                </strong>
                 <small className='font-light'>
                   {document
                     ? `${document.filename ?? 'Documento cargado'} · ${formatDate(document.uploadedAt)}`
@@ -132,7 +155,7 @@ const LegalDocumentsPanel = ({ supplierId, documents, editable }: LegalDocuments
         <input
           ref={inputRef}
           type='file'
-          accept={LEGAL_DOCUMENT_ACCEPT}
+          accept={DOCUMENT_ACCEPT}
           className='d-none'
           onChange={handleFile}
         />

@@ -12,6 +12,11 @@ import type {
   SupplierActivity,
   SupplierProductLine,
 } from '../../model/organization.types';
+import BuyerProfileFields, {
+  type BuyerProfileErrors,
+  type BuyerProfileValues,
+  validateBuyerProfile,
+} from './BuyerProfileFields';
 import SupplierContactsFields, {
   isContactEmpty,
   toContactsValues,
@@ -41,6 +46,10 @@ export interface OrganizationFormValues {
   /* Solo lo manda el proveedor. Cadena vacia significa "sin minimo", que no es
      lo mismo que cero: cero seria exigir un minimo de nada. */
   minOrderValue: string;
+  /* El plazo de entrega en dias habiles, como rango. Vacios los dos: sin
+     decir. */
+  deliveryDaysMin: string;
+  deliveryDaysMax: string;
 
   /* La cuenta a donde se le consigna. Tambien solo del proveedor. */
   bankName: string;
@@ -59,12 +68,24 @@ export interface OrganizationFormValues {
      proveedor. */
   contacts: ContactValues[];
   orderEmails: string[];
+
+  /* El perfil del comprador. Vacio es "sin elegir". */
+  legalNature: BuyerProfileValues['legalNature'];
+  buyerActivity: BuyerProfileValues['buyerActivity'];
+  ipsSector: BuyerProfileValues['ipsSector'];
+  activityOther: string;
 }
 
 /* Los campos que se escriben; las listas y los contactos van por su lado. */
 type TextField = Exclude<
   keyof OrganizationFormValues,
-  'activities' | 'productLines' | 'contacts' | 'orderEmails'
+  | 'activities'
+  | 'productLines'
+  | 'contacts'
+  | 'orderEmails'
+  | 'legalNature'
+  | 'buyerActivity'
+  | 'ipsSector'
 >;
 
 interface OrganizationFormProps {
@@ -86,6 +107,10 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   address: organization.address ?? '',
   city: organization.city ?? '',
   minOrderValue: organization.minOrderValue === null ? '' : String(organization.minOrderValue),
+  deliveryDaysMin:
+    organization.deliveryDaysMin == null ? '' : String(organization.deliveryDaysMin),
+  deliveryDaysMax:
+    organization.deliveryDaysMax == null ? '' : String(organization.deliveryDaysMax),
   bankName: organization.bankName ?? '',
   bankAccountType: organization.bankAccountType ?? '',
   bankAccountNumber: organization.bankAccountNumber ?? '',
@@ -102,6 +127,10 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   contacts: toContactsValues(organization.contacts),
   /* Siempre al menos un campo, para que haya donde escribir el primero. */
   orderEmails: organization.orderEmails?.length ? organization.orderEmails : [''],
+  legalNature: organization.legalNature ?? '',
+  buyerActivity: organization.buyerActivity ?? '',
+  ipsSector: organization.ipsSector ?? '',
+  activityOther: organization.activityOther ?? '',
 });
 
 const OrganizationForm = ({
@@ -124,6 +153,7 @@ const OrganizationForm = ({
 
   const [contactErrors, setContactErrors] = useState<Record<number, string>>({});
   const [orderEmailErrors, setOrderEmailErrors] = useState<Record<number, string>>({});
+  const [deliveryError, setDeliveryError] = useState<string | null>(null);
 
   const handleChange =
     (field: TextField) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -170,16 +200,37 @@ const OrganizationForm = ({
       }
     });
 
+    /* El plazo es un rango: los dos extremos o ninguno, y el primero no
+       pasa al segundo. */
+    const desde = values.deliveryDaysMin.trim();
+    const hasta = values.deliveryDaysMax.trim();
+    let nextDeliveryError: string | null = null;
+    if ((desde === '') !== (hasta === '')) {
+      nextDeliveryError = 'Indica el plazo completo: desde y hasta.';
+    } else if (desde !== '' && Number(desde) > Number(hasta)) {
+      nextDeliveryError = 'El primer número no puede ser mayor que el segundo.';
+    }
+
     setContactErrors(nextContactErrors);
     setOrderEmailErrors(nextOrderEmailErrors);
+    setDeliveryError(nextDeliveryError);
     return (
-      Object.keys(nextContactErrors).length === 0 && Object.keys(nextOrderEmailErrors).length === 0
+      Object.keys(nextContactErrors).length === 0 &&
+      Object.keys(nextOrderEmailErrors).length === 0 &&
+      nextDeliveryError === null
     );
   };
+
+  const [buyerErrors, setBuyerErrors] = useState<BuyerProfileErrors>({});
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (showSupplierFields && !validateSupplierFields()) return;
+    if (!showSupplierFields) {
+      const errores = validateBuyerProfile(values);
+      setBuyerErrors(errores);
+      if (Object.keys(errores).length > 0) return;
+    }
     onSubmit(values);
   };
 
@@ -342,6 +393,14 @@ const OrganizationForm = ({
         </Panel>
       )}
 
+      {!showSupplierFields && (
+        <BuyerProfileFields
+          values={values}
+          errors={buyerErrors}
+          onChange={(cambios) => setValues((current) => ({ ...current, ...cambios }))}
+        />
+      )}
+
       {showSupplierFields && (
         <>
           <Panel
@@ -457,9 +516,43 @@ const OrganizationForm = ({
                 />
                 <small className='font-light'>
                   El valor mínimo en pesos que despachas por pedido, sumado antes de IVA. Déjalo
-                  vacío si no exiges mínimo. Es distinto de la cantidad mínima de cada formato, que
+                  vacío si no exiges mínimo. Es distinto de la cantidad mínima de cada presentación, que
                   se fija en el producto.
                 </small>
+              </div>
+              <div>
+                <span className='form-label d-block'>Tiempo de entrega</span>
+                <div className='delivery-days'>
+                  <input
+                    id='empresa-entrega-desde'
+                    type='number'
+                    min={0}
+                    max={90}
+                    className='form-control'
+                    aria-label='Días hábiles, desde'
+                    placeholder='2'
+                    value={values.deliveryDaysMin}
+                    onChange={handleChange('deliveryDaysMin')}
+                  />
+                  <span className='font-light'>a</span>
+                  <input
+                    id='empresa-entrega-hasta'
+                    type='number'
+                    min={0}
+                    max={90}
+                    className='form-control'
+                    aria-label='Días hábiles, hasta'
+                    placeholder='5'
+                    value={values.deliveryDaysMax}
+                    onChange={handleChange('deliveryDaysMax')}
+                  />
+                  <span className='font-light'>días hábiles</span>
+                </div>
+                <small className='font-light'>
+                  Cuánto tardas en entregar un pedido confirmado. Se muestra en la ficha de
+                  cada producto tuyo.
+                </small>
+                {deliveryError && <small className='text-danger'>{deliveryError}</small>}
               </div>
             </div>
           </Panel>

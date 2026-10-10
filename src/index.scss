@@ -1200,6 +1200,152 @@ $estado-error: #dc3545;
 
   /* Lo que en B2B se pregunta siempre antes de pedir. Va debajo de la compra y
      no encima: son datos de apoyo, no la decision. */
+  /* El registro sanitario, debajo del proveedor: dato de consulta, no de
+     venta, y por eso en el gris de la marca y no en el azul. */
+  .product-detail-registry {
+    margin: -6px 0 14px;
+    font-size: 13.5px;
+    color: rgba($theme-font-color, 0.7);
+
+    strong {
+      font-weight: 600;
+      color: $theme-font-color;
+    }
+  }
+
+  /* El corazon y compartir: una fila discreta bajo los datos del producto,
+     antes del precio. */
+  .product-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    margin-bottom: 16px;
+  }
+
+  .product-favorite {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    @include pastilla(34px);
+    height: 34px;
+    border: 1px solid $border-color;
+    border-radius: var(--suminia-radio-control);
+    background-color: $white;
+    font-size: 13px;
+    color: $theme-font-color;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      border-color: #d6336c;
+      color: #d6336c;
+    }
+
+    /* Puesto, el corazon se rellena: el borde solo no se distingue de
+       "sin poner" de un vistazo. */
+    &.is-active {
+      border-color: #d6336c;
+      color: #d6336c;
+
+      svg {
+        fill: currentColor;
+      }
+    }
+  }
+
+  .product-share {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+
+    ul {
+      display: flex;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      display: block;
+    }
+
+    a,
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid $border-color;
+      border-radius: 50%;
+      background-color: $white;
+      color: $theme-font-color;
+      transition: all 0.2s;
+
+      &:hover,
+      &.is-done {
+        border-color: var(--theme-color);
+        color: var(--theme-color);
+      }
+    }
+  }
+
+  /* Los documentos publicos: una fila por documento que se abre entera. */
+  .product-documents {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: block;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid $border-color;
+      border-radius: var(--suminia-radio-caja);
+      background-color: $white;
+      text-align: left;
+      color: $theme-font-color;
+      transition: border-color 0.2s;
+
+      &:hover:not(:disabled) {
+        border-color: var(--theme-color);
+      }
+
+      > svg:first-child {
+        flex-shrink: 0;
+        color: var(--theme-color);
+      }
+
+      > svg:last-child {
+        flex-shrink: 0;
+        margin-left: auto;
+        color: rgba($theme-font-color, 0.5);
+      }
+
+      span {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      small {
+        overflow: hidden;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
   .product-detail-perks {
     display: flex;
     flex-wrap: wrap;
@@ -2429,7 +2575,6 @@ $area-bg: #f1f4f9;
     font-size: 12.5px;
   }
 
-  .yes-no,
   .currency-row {
     display: flex;
     flex-wrap: wrap;
@@ -2443,8 +2588,45 @@ $area-bg: #f1f4f9;
   }
 }
 
+/* Una pregunta de pocas opciones en una sola fila: Si/No, juridica/natural,
+   publica/mixta/privada. */
+.yes-no {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
+
+/* Los soportes de una sede, debajo de sus datos y separados por una linea:
+   son de la sede, no un bloque aparte. */
+.location-documents {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed $border-color;
+}
+
+/* "Obligatorio" junto al nombre del documento que falta. */
+.document-required {
+  font-weight: 400;
+  font-size: 12px;
+  color: #b26a00;
+}
+
 /* Los correos para ordenes de compra: un campo por correo, con su boton de
    quitar al lado, y el de añadir debajo. */
+/* El plazo de entrega del proveedor: "2 a 5 días hábiles", con los dos
+   numeros cortos y el texto entre ellos. */
+.delivery-days {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .form-control {
+    width: 80px;
+    text-align: center;
+  }
+}
+
 .order-emails {
   display: flex;
   flex-direction: column;
@@ -4103,6 +4285,13 @@ select.form-control,
 .buy-box-field {
   display: block;
   margin-bottom: 14px;
+
+  /* La ayuda de un campo va debajo y con aire: en linea, "95 disponibles"
+     quedaba pegado al selector de cantidad y se leia como parte de el. */
+  > small {
+    display: block;
+    margin-top: 10px;
+  }
 }
 
 /* Las fichas de formato. Copian la caja del selector de talla del tema

@@ -185,6 +185,18 @@ export interface Product {
   images: ProductImage[];
   /* Vacio para quien no es el dueño ni personal de Suminia. */
   documents: ProductDocument[];
+  /* Los que cualquiera puede abrir desde la ficha: registro sanitario y ficha
+     tecnica de un producto publicado. */
+  publicDocuments?: ProductDocument[];
+  /* Las condiciones del proveedor que se leen en la ficha: desde cuanto
+     despacha (sin IVA; null es sin minimo) y en cuantos dias habiles.
+     Opcionales los dos: un backend anterior no los manda, y una ficha no se
+     puede caer por un dato de apoyo. */
+  supplierPolicy?: {
+    minOrderValue: number | null;
+    deliveryDaysMin: number | null;
+    deliveryDaysMax: number | null;
+  };
   submittedAt: string | null;
   reviewedAt: string | null;
   /* El motivo del ultimo rechazo, hasta que se vuelve a enviar. */

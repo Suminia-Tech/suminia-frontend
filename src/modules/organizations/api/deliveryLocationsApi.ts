@@ -1,9 +1,10 @@
 import { baseApi } from '@/shared/api/baseApi';
-import type { ApiResponse } from '@/shared/api/types';
+import type { ApiResponse, SignedUrl, UploadTicket } from '@/shared/api/types';
 
 import type {
   DeliveryLocation,
   DeliveryLocationInput,
+  LocationDocumentType,
   UpdateDeliveryLocationRequest,
 } from '../model/deliveryLocation.types';
 
@@ -36,6 +37,44 @@ export const deliveryLocationsApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: 'DeliveryLocation', id: 'LIST' }],
     }),
 
+    /* Los soportes de cada sede: permiso, subida directa a S3, confirmacion y
+       enlace para abrirlos. */
+    createLocationDocumentUploadUrl: builder.mutation<
+      ApiResponse<UploadTicket>,
+      { locationId: string; contentType: string }
+    >({
+      query: ({ locationId, contentType }) => ({
+        url: `/delivery-locations/${locationId}/documents/upload-url`,
+        method: 'POST',
+        body: { contentType },
+      }),
+    }),
+
+    confirmLocationDocument: builder.mutation<
+      ApiResponse<DeliveryLocation>,
+      {
+        locationId: string;
+        data: { type: LocationDocumentType; storageKey: string; filename?: string };
+      }
+    >({
+      query: ({ locationId, data }) => ({
+        url: `/delivery-locations/${locationId}/documents`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: 'DeliveryLocation', id: 'LIST' }],
+    }),
+
+    getLocationDocumentUrl: builder.mutation<
+      ApiResponse<SignedUrl>,
+      { locationId: string; documentId: string }
+    >({
+      query: ({ locationId, documentId }) => ({
+        url: `/delivery-locations/${locationId}/documents/${documentId}/url`,
+        method: 'GET',
+      }),
+    }),
+
     deleteDeliveryLocation: builder.mutation<ApiResponse<{ id: string }>, string>({
       query: (id) => ({ url: `/delivery-locations/${id}`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'DeliveryLocation', id: 'LIST' }],
@@ -48,4 +87,7 @@ export const {
   useCreateDeliveryLocationMutation,
   useUpdateDeliveryLocationMutation,
   useDeleteDeliveryLocationMutation,
+  useCreateLocationDocumentUploadUrlMutation,
+  useConfirmLocationDocumentMutation,
+  useGetLocationDocumentUrlMutation,
 } = deliveryLocationsApi;

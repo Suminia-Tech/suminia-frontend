@@ -19,6 +19,7 @@ import type {
   DeliveryLocationInput,
 } from '../../model/deliveryLocation.types';
 import DeliveryLocationForm from './DeliveryLocationForm';
+import { LocationDocuments } from './LocationDocuments';
 
 /* Las sedes a donde recibe la empresa.
 
@@ -101,10 +102,7 @@ export const DeliveryLocationsScreen = () => {
         <h3>Sedes de entrega</h3>
       </div>
 
-      <p className='font-light'>
-        A dónde llegan tus pedidos. La dirección de tu empresa es la legal, la de
-        la factura; aquí va la puerta por la que se descarga.
-      </p>
+      <p className='font-light'>A dónde llegan tus pedidos.</p>
 
       {locations.length === 0 && (
         <div className='alert alert-warning'>
@@ -211,6 +209,12 @@ export const DeliveryLocationsScreen = () => {
                 {location.notes && (
                   <p className='location-notes font-light'>{location.notes}</p>
                 )}
+
+                <LocationDocuments
+                  locationId={location.id}
+                  documents={location.documents ?? []}
+                  editable={puedeEditar}
+                />
               </>
             )}
           </li>

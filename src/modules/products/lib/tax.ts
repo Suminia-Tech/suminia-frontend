@@ -50,6 +50,18 @@ const BY_VALUE = new Map(TAX_OPTIONS.map((option) => [option.value, option]));
 export const taxLabel = (category: TaxCategory): string =>
   BY_VALUE.get(category)?.label ?? category;
 
+/* Lo que lee el comprador junto al precio. El precio del catalogo va sin IVA,
+   y "IVA 19%" al lado de la cifra no decia si estaba sumado o no: "+ IVA" lo
+   dice. La tarifa exacta queda en las condiciones de mas abajo. */
+export const priceTaxSuffix = (category: TaxCategory): string =>
+  taxRate(category) > 0 ? '+ IVA' : 'Sin IVA';
+
+/* Y en las condiciones del producto, con la tarifa. */
+export const taxConditionLabel = (category: TaxCategory): string =>
+  taxRate(category) > 0
+    ? `Precios + IVA (${Math.round(taxRate(category) * 100)}%)`
+    : (BY_VALUE.get(category)?.label ?? category);
+
 export const taxRate = (category: TaxCategory): number =>
   BY_VALUE.get(category)?.rate ?? 0;
 

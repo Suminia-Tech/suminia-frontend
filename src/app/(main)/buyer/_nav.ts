@@ -6,6 +6,8 @@ export const BUYER_ACCOUNT_SECTIONS: PanelSection[] = [
   /* Los pedidos primero: es a lo que vuelve el comprador, y lo demas son
      ajustes que se tocan una vez. */
   { label: 'Mis pedidos', href: '/buyer/account/orders' },
+  /* Junto a los pedidos: es la lista de lo que piensa pedir. */
+  { label: 'Favoritos', href: '/buyer/account/favorites' },
   { label: 'Mi empresa', href: '/buyer/account/company' },
   { label: 'Sedes de entrega', href: '/buyer/account/locations' },
   {

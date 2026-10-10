@@ -51,7 +51,13 @@ const pesos = (valor: number, moneda: string) =>
     maximumFractionDigits: 0,
   }).format(valor);
 
-export const BuyBox = ({ formats }: { formats: BuyableFormat[] }) => {
+export const BuyBox = ({
+  productName,
+  formats,
+}: {
+  productName: string;
+  formats: BuyableFormat[];
+}) => {
   const { canBuy, hydrated } = useCanBuy();
   const [addItem, { isLoading }] = useAddCartItemMutation();
 
@@ -72,7 +78,7 @@ export const BuyBox = ({ formats }: { formats: BuyableFormat[] }) => {
     return (
       <div className='buy-box'>
         <p className='font-light mb-0'>
-          Ningún formato de este producto está disponible ahora mismo.
+          Ninguna presentación de este producto está disponible ahora mismo.
         </p>
       </div>
     );
@@ -107,7 +113,11 @@ export const BuyBox = ({ formats }: { formats: BuyableFormat[] }) => {
         presentationId: formato.presentationId,
         quantity: cantidad,
       }).unwrap();
-      toast.success(`${cantidad} × ${formato.name} en tu carrito`);
+      /* Lo que se añadio con su nombre completo: "1 × Talla L · Caja x 100"
+         no decia de que producto, y quien compra varios lo pierde de vista. */
+      toast.success(
+        `${cantidad > 1 ? `${cantidad} × ` : ''}${productName} ${formato.name} añadido a tu carrito`,
+      );
     } catch (err) {
       toast.error(extractErrorMessage(err, 'No se pudo añadir al carrito.'));
     }
@@ -124,7 +134,7 @@ export const BuyBox = ({ formats }: { formats: BuyableFormat[] }) => {
           Con un solo formato no hay nada que elegir: se dice cual es y ya. */}
       {disponibles.length > 1 ? (
         <div className='buy-box-field'>
-          <span className='form-label'>Formato</span>
+          <span className='form-label'>Presentación</span>
           <ul className='buy-box-formats'>
             {disponibles.map((f) => (
               <li key={f.presentationId}>
@@ -149,7 +159,7 @@ export const BuyBox = ({ formats }: { formats: BuyableFormat[] }) => {
         </div>
       ) : (
         <p className='buy-box-single'>
-          <span className='font-light'>Formato</span>
+          <span className='font-light'>Presentación</span>
           <strong>{formato.name}</strong>
         </p>
       )}
