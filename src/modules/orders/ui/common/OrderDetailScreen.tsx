@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { Panel } from '@/shared/ui';
-import { formatDate } from '@/shared/lib/dates';
+import { formatDate, formatDay } from '@/shared/lib/dates';
 import { useAppSelector } from '@/store/hooks';
 
 import {
@@ -15,19 +15,24 @@ import {
   useGetOrderQuery,
 } from '../../api/ordersApi';
 import {
+  buyerCanAnswerAvailability,
   buyerCanCancel,
   buyerCanConfirmDelivery,
   ORDER_STATUS_CLASS,
   ORDER_STATUS_HINT,
+  ORDER_STATUS_HINT_SUPPLIER,
   ORDER_STATUS_LABEL,
   ORDER_TIMELINE,
+  TIMELINE_POSITION,
   supplierCanCancel,
   supplierCanConfirmDelivery,
   supplierCanDecide,
   supplierCanShip,
 } from '../../lib/orderStatus';
 import type { Order, OrderStatus } from '../../model/order.types';
+import BuyerAvailabilityResponse from './BuyerAvailabilityResponse';
 import type { OrderSide } from './OrdersListScreen';
+import SupplierAvailabilityForm from './SupplierAvailabilityForm';
 
 /* La ficha de un pedido, para los dos lados.
 
@@ -70,9 +75,10 @@ const pesos = (valor: number, moneda: string) =>
 /* El recorrido, con lo andado marcado. Un pedido muerto no lo dibuja: no se
    quedo a medio camino, se salio. */
 const Timeline = ({ order }: { order: Order }) => {
-  if (!ORDER_TIMELINE.includes(order.status)) return null;
+  const posicion = TIMELINE_POSITION[order.status] ?? order.status;
+  if (!ORDER_TIMELINE.includes(posicion)) return null;
 
-  const actual = ORDER_TIMELINE.indexOf(order.status);
+  const actual = ORDER_TIMELINE.indexOf(posicion);
   const fechas: Record<string, string | null> = {
     PLACED: order.createdAt,
     CONFIRMED: order.confirmedAt,
@@ -114,9 +120,11 @@ export const OrderDetailScreen = ({
   });
   const [changeStatus, { isLoading: isSaving }] = useChangeOrderStatusMutation();
   const [motivo, setMotivo] = useState('');
-  /* Que accion esta pidiendo motivo, o null. Anular y rechazar lo exigen; las
+  /* Que accion esta pidiendo motivo, o null. Cancelar y rechazar lo exigen; las
      demas van directas. */
   const [pidiendoMotivo, setPidiendoMotivo] = useState<OrderStatus | null>(null);
+  /* El proveedor esta llenando su disponibilidad parcial. */
+  const [proponiendo, setProponiendo] = useState(false);
   const copy = COPY[side];
 
   if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
@@ -175,7 +183,7 @@ export const OrderDetailScreen = ({
 
       <div className='order-head'>
         <div>
-          <h1>Pedido #{order.number}</h1>
+          <h1>Pedido {order.code}</h1>
           {/* La otra empresa. Para el personal de Suminia no hay "la otra":
               van las dos, porque no esta de ninguno de los dos lados. */}
           <p className='font-light mb-0'>
@@ -197,11 +205,44 @@ export const OrderDetailScreen = ({
           su propia caja. Antes la frase iba suelta bajo el titulo y la linea de
           estados debajo, sin nada que las relacionara. */}
       <Panel className='order-state'>
-        <p className='order-hint'>{ORDER_STATUS_HINT[order.status]}</p>
+        <p className='order-hint'>
+          {(side === 'supplier' && ORDER_STATUS_HINT_SUPPLIER[order.status]) ||
+            ORDER_STATUS_HINT[order.status]}
+        </p>
 
-        {order.statusReason && (
+        {/* Mientras se espera al comprador, lo que hay en statusReason es la
+            nota del proveedor y no un motivo: se lee en la propuesta. */}
+        {order.statusReason && order.status !== 'AWAITING_BUYER' && (
           <div className='alert alert-warning'>
             <strong>Motivo:</strong> {order.statusReason}
+          </div>
+        )}
+
+        {/* El despacho parcial deja dos pedidos enlazados. Cada uno dice
+            donde esta el otro, para no perder el hilo. */}
+        {order.backorderOf && (
+          <div className='alert alert-info'>
+            Es lo que quedó pendiente del pedido{' '}
+            <Link href={`${copy.basePath}/${order.backorderOf.id}`}>
+              {order.backorderOf.code}
+            </Link>
+            {order.restockDate && `. Fecha prevista: ${formatDay(order.restockDate)}`}.
+            {side === 'supplier' &&
+              !order.stockReserved &&
+              ' Al confirmarlo se descuenta de tus existencias: cárgalas antes.'}
+          </div>
+        )}
+        {order.backorders.length > 0 && (
+          <div className='alert alert-info'>
+            Lo que faltó va en{' '}
+            {order.backorders.map((pendiente, indice) => (
+              <span key={pendiente.id}>
+                {indice > 0 && ', '}
+                el pedido{' '}
+                <Link href={`${copy.basePath}/${pendiente.id}`}>{pendiente.code}</Link>
+              </span>
+            ))}
+            .
           </div>
         )}
 
@@ -214,17 +255,18 @@ export const OrderDetailScreen = ({
           botones acababan al final de todo, despues de la direccion y la nota. */}
       <div className='order-layout'>
         <div className='order-main'>
-      {/* El titulo, desde donde mira cada uno. El personal de Suminia no pidio
-          ni le pidieron: solo mira. */}
-      <Panel
-        title={
-          side === 'buyer'
-            ? 'Qué pediste'
-            : side === 'supplier'
-              ? 'Qué te pidieron'
-              : 'Qué se pidió'
-        }
-      >
+      {/* Lo que hay que decidir va primero: el proveedor llenando su
+          disponibilidad, o el comprador respondiendo a ella. */}
+      {side === 'supplier' && proponiendo && supplierCanDecide(order.status) && (
+        <SupplierAvailabilityForm order={order} onClose={() => setProponiendo(false)} />
+      )}
+      {side === 'buyer' && buyerCanAnswerAvailability(order.status) && (
+        <BuyerAvailabilityResponse order={order} pesos={pesos} />
+      )}
+
+      {/* "Detalles del pedido" para los tres: antes cada lado tenia su frase
+          —"Qué pediste", "Qué te pidieron"— y se leian como conversacion. */}
+      <Panel title='Detalles del pedido'>
       <ul className='order-items'>
         {order.items.map((item) => (
           <li key={item.id}>
@@ -237,6 +279,11 @@ export const OrderDetailScreen = ({
             </span>
             <span className='order-item-qty'>
               {item.quantity} × {pesos(item.unitPrice, order.currency)}
+              {order.status === 'AWAITING_BUYER' && item.availableQuantity !== null && (
+                <small className='font-light d-block'>
+                  disponibles {item.availableQuantity}
+                </small>
+              )}
             </span>
             <strong>{pesos(item.subtotal, order.currency)}</strong>
           </li>
@@ -285,6 +332,16 @@ export const OrderDetailScreen = ({
             >
               Confirmar pedido
             </button>
+            {/* Antes de rechazar por falta de inventario, ofrecer lo que hay:
+                el comprador puede preferir recibir una parte ya. */}
+            <button
+              type='button'
+              className='btn btn-outline-secondary btn-sm'
+              disabled={isSaving || proponiendo}
+              onClick={() => setProponiendo(true)}
+            >
+              Tengo solo una parte
+            </button>
             <button
               type='button'
               className='btn btn-outline-danger btn-sm'
@@ -325,7 +382,7 @@ export const OrderDetailScreen = ({
             disabled={isSaving}
             onClick={() => setPidiendoMotivo('CANCELLED')}
           >
-            Anular pedido
+            Cancelar pedido
           </button>
         )}
 
@@ -347,7 +404,7 @@ export const OrderDetailScreen = ({
             disabled={isSaving}
             onClick={() => setPidiendoMotivo('CANCELLED')}
           >
-            Anular pedido
+            Cancelar pedido
           </button>
         )}
 
@@ -358,7 +415,7 @@ export const OrderDetailScreen = ({
             <label className='form-label'>
               {pidiendoMotivo === 'REJECTED'
                 ? '¿Por qué no puedes atenderlo?'
-                : '¿Por qué lo anulas?'}
+                : '¿Por qué lo cancelas?'}
             </label>
             <input
               type='text'
@@ -387,14 +444,14 @@ export const OrderDetailScreen = ({
                     pidiendoMotivo,
                     pidiendoMotivo === 'REJECTED'
                       ? 'Pedido rechazado'
-                      : 'Pedido anulado',
+                      : 'Pedido cancelado',
                     motivo,
                   )
                 }
               >
                 {pidiendoMotivo === 'REJECTED'
                   ? 'Rechazar pedido'
-                  : 'Anular pedido'}
+                  : 'Cancelar pedido'}
               </button>
               <button
                 type='button'
@@ -414,7 +471,7 @@ export const OrderDetailScreen = ({
       </Panel>
       )}
 
-      <Panel title='A dónde va'>
+      <Panel title='Dirección de entrega'>
       <div className='order-delivery'>
         <p className='location-address'>
           <MapPin size={14} />
@@ -481,12 +538,12 @@ export const OrderDetailScreen = ({
           reglas que valida el backend: aqui no se decide nada, se evita
           ofrecer un boton que iba a responder 422. */}
 
-      {/* Se dice por que ya no se puede anular, en vez de no enseñar nada: sin
+      {/* Se dice por que ya no se puede cancelar, en vez de no enseñar nada: sin
           explicacion el boton parece que se perdio. */}
       {side === 'buyer' && order.status === 'CONFIRMED' && (
         <Panel className='order-next'>
           <p className='font-light order-locked mb-0'>
-            El proveedor ya confirmó este pedido. Para anularlo ahora, escríbele.
+            El proveedor ya confirmó este pedido. Para cancelarlo ahora, escríbele.
           </p>
         </Panel>
       )}

@@ -5053,6 +5053,58 @@ select.form-control,
   color: $font-dark;
 }
 
+/* El despacho parcial: una fila por producto con lo pedido y las cantidades
+   que se deciden. Las columnas numericas son estrechas y fijas para que los
+   campos queden alineados de fila a fila. `display: grid` en cada `li` porque
+   el tema los pone en inline-block. */
+.availability-lines {
+  margin: 0 0 14px;
+  padding: 0;
+
+  li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 70px 110px;
+    gap: 14px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid $border-color;
+  }
+
+  &.is-answer li {
+    grid-template-columns: minmax(0, 1fr) 70px 110px 110px;
+  }
+
+  .availability-head {
+    padding-top: 0;
+    font-size: 12.5px;
+    color: rgba($theme-font-color, 0.6);
+  }
+
+  .form-control {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    text-align: center;
+  }
+
+  /* En el telefono el producto ocupa su fila y los numeros van debajo. */
+  @media (max-width: 575px) {
+    li,
+    &.is-answer li {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .order-item-name,
+    .availability-head > span:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.availability-note {
+  margin-bottom: 14px;
+  font-size: 13.5px;
+}
+
 .order-totals {
   max-width: 340px;
   margin-left: auto;

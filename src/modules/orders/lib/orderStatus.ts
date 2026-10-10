@@ -11,8 +11,9 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   CONFIRMED: 'Confirmado',
   SHIPPED: 'Despachado',
   DELIVERED: 'Entregado',
-  CANCELLED: 'Anulado',
+  CANCELLED: 'Cancelado',
   REJECTED: 'Rechazado',
+  AWAITING_BUYER: 'Disponibilidad parcial',
 };
 
 /* Lo que significa para quien lo mira, que es distinto de como se llama. */
@@ -21,8 +22,14 @@ export const ORDER_STATUS_HINT: Record<OrderStatus, string> = {
   CONFIRMED: 'El proveedor lo aceptó y lo va a despachar.',
   SHIPPED: 'Va en camino.',
   DELIVERED: 'Recibido.',
-  CANCELLED: 'Se anuló.',
+  CANCELLED: 'Se canceló.',
   REJECTED: 'El proveedor no pudo atenderlo.',
+  AWAITING_BUYER: 'El proveedor no tiene todo lo que pediste. Revisa su propuesta y decide.',
+};
+
+/* Lo mismo dicho al proveedor, donde cambia. */
+export const ORDER_STATUS_HINT_SUPPLIER: Partial<Record<OrderStatus, string>> = {
+  AWAITING_BUYER: 'Enviaste tu disponibilidad. Esperando a que el comprador decida.',
 };
 
 /* Las mismas clases de color que las empresas, para que un pedido y una empresa
@@ -35,14 +42,20 @@ export const ORDER_STATUS_CLASS: Record<OrderStatus, string> = {
   DELIVERED: 'bg-success',
   CANCELLED: 'bg-secondary',
   REJECTED: 'bg-danger',
+  AWAITING_BUYER: 'bg-warning',
 };
 
 export const ORDER_IS_OPEN = (status: OrderStatus): boolean =>
   !['DELIVERED', 'CANCELLED', 'REJECTED'].includes(status);
 
-/** El comprador solo puede anular antes de que el proveedor se comprometa. */
+/* El comprador solo puede cancelar antes de que el proveedor se comprometa, o
+   cuando le proponen un despacho parcial y no le sirve. */
 export const buyerCanCancel = (status: OrderStatus): boolean =>
-  status === 'PLACED';
+  status === 'PLACED' || status === 'AWAITING_BUYER';
+
+/** Y responder a la propuesta de despacho parcial. */
+export const buyerCanAnswerAvailability = (status: OrderStatus): boolean =>
+  status === 'AWAITING_BUYER';
 
 /** Y dar por recibido lo que ya salio. */
 export const buyerCanConfirmDelivery = (status: OrderStatus): boolean =>
@@ -68,6 +81,12 @@ export const supplierCanConfirmDelivery = (status: OrderStatus): boolean =>
 
 /* El recorrido que se dibuja en la ficha. Los estados que matan el pedido no
    entran: no son un paso mas, son el final. */
+/* Esperar la respuesta del comprador no es un paso del recorrido: el pedido
+   sigue sin confirmar. Se dibuja donde estaba. */
+export const TIMELINE_POSITION: Partial<Record<OrderStatus, OrderStatus>> = {
+  AWAITING_BUYER: 'PLACED',
+};
+
 export const ORDER_TIMELINE: OrderStatus[] = [
   'PLACED',
   'CONFIRMED',

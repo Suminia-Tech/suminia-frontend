@@ -63,10 +63,11 @@ const COPY: Record<
 const ESTADOS: { value: OrderStatus | ''; label: string }[] = [
   { value: '', label: 'Todos' },
   { value: 'PLACED', label: 'Esperando confirmación' },
+  { value: 'AWAITING_BUYER', label: 'Disponibilidad parcial' },
   { value: 'CONFIRMED', label: 'Confirmados' },
   { value: 'SHIPPED', label: 'En camino' },
   { value: 'DELIVERED', label: 'Entregados' },
-  { value: 'CANCELLED', label: 'Anulados' },
+  { value: 'CANCELLED', label: 'Cancelados' },
   { value: 'REJECTED', label: 'Rechazados' },
 ];
 
@@ -158,7 +159,7 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
             <li key={order.id}>
               <Link href={`${copy.basePath}/${order.id}`}>
                 <div className='orders-line-main'>
-                  <span className='orders-number'>#{order.number}</span>
+                  <span className='orders-number'>{order.code}</span>
                   {/* La otra empresa: quien vende si miro como comprador, y
                       quien compra si miro como proveedor. Para el personal
                       interno no hay "la otra": van las dos, porque lo que se
@@ -192,7 +193,7 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
                   {/* Lo que deja el pedido. Solo al personal interno: el
                       backend no manda la cifra a los otros dos.
 
-                      Y solo si el pedido llego a cobrarse: en uno anulado o
+                      Y solo si el pedido llego a cobrarse: en uno cancelado o
                       rechazado la comision sigue calculada en la base, pero
                       enseñarla ahi seria contar un ingreso que no existe. */}
                   {side === 'staff' &&

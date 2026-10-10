@@ -50,7 +50,7 @@ export const CheckoutScreen = ({
       const pedidos = respuesta.data;
       toast.success(
         pedidos.length === 1
-          ? `Pedido #${pedidos[0].number} enviado a ${pedidos[0].supplierOrganizationName}`
+          ? `Pedido ${pedidos[0].code} enviado a ${pedidos[0].supplierOrganizationName}`
           : `${pedidos.length} pedidos enviados, uno a cada proveedor`,
       );
 

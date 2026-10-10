@@ -7,9 +7,11 @@ import type {
 } from '@/shared/api/types';
 
 import type {
+  AcceptAvailabilityRequest,
   ChangeOrderStatusRequest,
   Order,
   PlaceOrdersRequest,
+  ProposeAvailabilityRequest,
 } from '../model/order.types';
 
 export const ordersApi = baseApi.injectEndpoints({
@@ -55,7 +57,34 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Order', id },
         { type: 'Order', id: 'LIST' },
-        /* Anular o rechazar repone el inventario. */
+        /* Cancelar o rechazar repone el inventario. */
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
+
+    proposeAvailability: builder.mutation<ApiResponse<Order>, ProposeAvailabilityRequest>({
+      query: ({ id, ...body }) => ({
+        url: `/orders/${id}/availability`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Order', id },
+        { type: 'Order', id: 'LIST' },
+      ],
+    }),
+
+    /* Aceptar crea el pedido pendiente y devuelve al inventario lo que el
+       comprador no se lleva: por eso tambien la lista y los productos. */
+    acceptAvailability: builder.mutation<ApiResponse<Order>, AcceptAvailabilityRequest>({
+      query: ({ id, ...body }) => ({
+        url: `/orders/${id}/availability/accept`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Order', id },
+        { type: 'Order', id: 'LIST' },
         { type: 'Product', id: 'LIST' },
       ],
     }),
@@ -67,4 +96,6 @@ export const {
   useGetOrdersQuery,
   useGetOrderQuery,
   useChangeOrderStatusMutation,
+  useProposeAvailabilityMutation,
+  useAcceptAvailabilityMutation,
 } = ordersApi;
