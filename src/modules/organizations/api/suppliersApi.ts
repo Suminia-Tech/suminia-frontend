@@ -4,9 +4,16 @@ import type {
   ApiResponse,
   DatatableParams,
   PaginatedResponse,
+  SignedUrl,
+  UploadTicket,
 } from '@/shared/api/types';
 
-import type { Supplier, UpdateSupplierRequest } from '../model/supplier.types';
+import type {
+  ConfirmSupplierDocumentRequest,
+  SaveSupplierDeclarationRequest,
+  Supplier,
+  UpdateSupplierRequest,
+} from '../model/supplier.types';
 
 export const suppliersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -74,6 +81,58 @@ export const suppliersApi = baseApi.injectEndpoints({
       ],
     }),
 
+    saveSupplierDeclaration: builder.mutation<
+      ApiResponse<Supplier>,
+      { supplierId: string; data: SaveSupplierDeclarationRequest }
+    >({
+      query: ({ supplierId, data }) => ({
+        url: `/suppliers/${supplierId}/declaration`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { supplierId }) => [
+        { type: 'Supplier', id: supplierId },
+      ],
+    }),
+
+    /* Los documentos legales: permiso, subida directa a S3 y confirmacion. */
+    createSupplierDocumentUploadUrl: builder.mutation<
+      ApiResponse<UploadTicket>,
+      { supplierId: string; contentType: string }
+    >({
+      query: ({ supplierId, contentType }) => ({
+        url: `/suppliers/${supplierId}/documents/upload-url`,
+        method: 'POST',
+        body: { contentType },
+      }),
+    }),
+
+    confirmSupplierDocument: builder.mutation<
+      ApiResponse<Supplier>,
+      { supplierId: string; data: ConfirmSupplierDocumentRequest }
+    >({
+      query: ({ supplierId, data }) => ({
+        url: `/suppliers/${supplierId}/documents`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { supplierId }) => [
+        { type: 'Supplier', id: supplierId },
+      ],
+    }),
+
+    /* Mutacion y no consulta: el enlace caduca, y cachearlo serviria uno
+       vencido al segundo clic. */
+    getSupplierDocumentUrl: builder.mutation<
+      ApiResponse<SignedUrl>,
+      { supplierId: string; documentId: string }
+    >({
+      query: ({ supplierId, documentId }) => ({
+        url: `/suppliers/${supplierId}/documents/${documentId}/url`,
+        method: 'GET',
+      }),
+    }),
+
     deleteSupplier: builder.mutation<ApiResponse<void>, string>({
       query: (id) => ({ url: `/suppliers/${id}`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Supplier', id: 'LIST' }],
@@ -90,4 +149,8 @@ export const {
   useSuspendSupplierMutation,
   useReactivateSupplierMutation,
   useDeleteSupplierMutation,
+  useCreateSupplierDocumentUploadUrlMutation,
+  useConfirmSupplierDocumentMutation,
+  useGetSupplierDocumentUrlMutation,
+  useSaveSupplierDeclarationMutation,
 } = suppliersApi;

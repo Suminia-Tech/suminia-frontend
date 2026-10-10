@@ -5,6 +5,7 @@ export { SuppliersScreen } from './ui/supplier/SuppliersScreen';
 export { SupplierCompanyScreen } from './ui/supplier/MyCompanyScreen';
 export { SupplierSummaryScreen } from './ui/supplier/SupplierSummaryScreen';
 export { SupplierDetailScreen } from './ui/supplier/SupplierDetailScreen';
+export { SupplierDeclarationScreen } from './ui/supplier/SupplierDeclarationScreen';
 
 export { BuyersScreen } from './ui/buyer/BuyersScreen';
 export { BuyerDetailScreen } from './ui/buyer/BuyerDetailScreen';

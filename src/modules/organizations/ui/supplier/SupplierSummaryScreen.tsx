@@ -8,6 +8,13 @@ import { PageHeader, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetSupplierQuery } from '../../api/suppliersApi';
+import {
+  describeActivities,
+  describeExporter,
+  describeProductLines,
+  CONTACT_AREA_OPTIONS,
+  LEGAL_DOCUMENT_OPTIONS,
+} from '../../lib/commercialProfile';
 import { formatTaxId } from '../../lib/taxId';
 import StatusBadge from '../common/StatusBadge';
 
@@ -70,7 +77,21 @@ export const SupplierSummaryScreen = () => {
   const isActive = supplier.status === 'ACTIVE';
   const tieneCuenta = DATOS_DE_COBRO.every((campo) => Boolean(supplier[campo]));
 
+  /* Cada pendiente lleva a donde se resuelve. La declaracion va primero: sin
+     ella Suminia no puede aprobar la empresa, y lo demas se completa igual
+     despues. */
   const pendientes = [
+    supplier.status === 'PENDING' &&
+      !supplier.declaration && {
+        texto: 'Falta tu declaración de autocontrol de riesgos (SAGRILAFT): sin ella no podemos aprobar tu empresa.',
+        enlace: 'Llenar la declaración',
+        href: '/supplier/account/declaration',
+      },
+    !supplier.activities?.length &&
+      !supplier.productLines?.length && {
+        texto: 'Falta contar qué haces y qué categorías de productos vendes.',
+        enlace: 'Completar el perfil',
+      },
     !tieneCuenta && {
       texto: 'Falta la cuenta bancaria donde Suminia te paga las ventas.',
       enlace: 'Añadir la cuenta',
@@ -79,17 +100,27 @@ export const SupplierSummaryScreen = () => {
       texto: 'Falta la ciudad desde la que despachas.',
       enlace: 'Completar los datos',
     },
-    !supplier.phone && {
-      texto: 'Falta un teléfono de contacto para los pedidos.',
-      enlace: 'Completar los datos',
+    !supplier.orderEmails?.length && {
+      texto: 'Falta el correo al que deben llegar las órdenes de compra.',
+      enlace: 'Añadir el correo',
     },
-  ].filter((p): p is { texto: string; enlace: string } => Boolean(p));
+    !supplier.contacts?.length && {
+      texto: 'Faltan las personas de contacto de tus áreas.',
+      enlace: 'Añadir contactos',
+    },
+    (supplier.documents?.length ?? 0) < LEGAL_DOCUMENT_OPTIONS.length && {
+      texto: 'Faltan documentos legales para verificar tu empresa.',
+      enlace: 'Subir documentos',
+    },
+  ]
+    .filter((p): p is { texto: string; enlace: string; href?: string } => Boolean(p))
+    .map((p) => ({ ...p, href: p.href ?? '/supplier/account/company' }));
 
   return (
     <>
       <PageHeader
         title='Resumen'
-        description='El estado de tu empresa en Suminia y lo que falta para operar sin tropiezos.'
+        description='Conoce el estado de tu empresa en Suminia y completa los pasos para comenzar a operar.'
       />
 
       <Panel
@@ -110,21 +141,21 @@ export const SupplierSummaryScreen = () => {
               <li key={pendiente.texto}>
                 <AlertTriangle size={17} />
                 <span>{pendiente.texto}</span>
-                <Link href='/supplier/account/company'>{pendiente.enlace}</Link>
+                <Link href={pendiente.href}>{pendiente.enlace}</Link>
               </li>
             ))}
           </ul>
         ) : (
           <p className='summary-ready'>
             <Check size={17} />
-            No falta nada: tus datos de contacto y de cobro están completos.
+            No falta nada: tu perfil, tus contactos, tus documentos y tus datos de cobro están completos.
           </p>
         )}
       </Panel>
 
       <Panel
-        title='Datos de la empresa'
-        description='Con estos datos te identifica Suminia y te ven los compradores.'
+        title='Información de la empresa'
+        description='Con estos datos te identifica Suminia. Tus contactos y tu dirección no se muestran a los compradores.'
         aside={
           <Link href='/supplier/account/company' className='btn btn-outline-secondary btn-sm'>
             Editar
@@ -141,16 +172,37 @@ export const SupplierSummaryScreen = () => {
             <span>{supplier.legalName}</span>
           </li>
           <li>
-            <span className='font-light'>Correo de contacto</span>
-            <span>{supplier.email}</span>
-          </li>
-          <li>
-            <span className='font-light'>Teléfono</span>
-            <span>{supplier.phone ?? '—'}</span>
-          </li>
-          <li>
             <span className='font-light'>Ciudad</span>
             <span>{supplier.city ?? '—'}</span>
+          </li>
+          <li>
+            <span className='font-light'>Actividades</span>
+            <span>{describeActivities(supplier.activities) ?? '—'}</span>
+          </li>
+          <li>
+            <span className='font-light'>Categorías que comercializa</span>
+            <span>{describeProductLines(supplier.productLines) ?? '—'}</span>
+          </li>
+          <li>
+            <span className='font-light'>Exporta</span>
+            <span>{describeExporter(supplier.exporter) ?? '—'}</span>
+          </li>
+          <li>
+            <span className='font-light'>Contactos registrados</span>
+            <span>
+              {supplier.contacts?.length
+                ? supplier.contacts
+                    .map(
+                      (contact) =>
+                        `${CONTACT_AREA_OPTIONS.find((o) => o.value === contact.area)?.label}: ${contact.name}`,
+                    )
+                    .join(' · ')
+                : '—'}
+            </span>
+          </li>
+          <li>
+            <span className='font-light'>Correos para órdenes</span>
+            <span>{supplier.orderEmails?.length ? supplier.orderEmails.join(', ') : '—'}</span>
           </li>
           <li>
             <span className='font-light'>Dirección</span>

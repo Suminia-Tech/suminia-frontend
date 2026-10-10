@@ -2305,6 +2305,175 @@ $area-bg: #f1f4f9;
     font-size: 12.5px;
     line-height: 1.45;
   }
+
+  /* Una pregunta de opciones dentro del formulario. La leyenda hace de
+     etiqueta: sin esto, la de Bootstrap sale al tamaño de un titulo. */
+  fieldset legend {
+    float: none;
+    width: auto;
+    padding: 0;
+  }
+
+  /* El nombre de un grupo de campos dentro del mismo panel: cada area de
+     contacto. Mas fuerte que la etiqueta de un campo y mas debil que el
+     titulo del panel. */
+  .form-group-title {
+    margin-bottom: 12px;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  /* El titulo del contacto y su boton de quitar, en la misma linea. */
+  .contact-area-head {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .form-group-title {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Una linea entre contacto y contacto: bloques iguales de cinco campos se
+     leen como uno solo si nada los separa. */
+  .contact-area + .contact-area {
+    padding-top: 18px;
+    border-top: 1px solid rgba($theme-font-color, 0.09);
+  }
+
+  /* Las casillas de una pregunta van juntas: con el hueco de la rejilla de
+     campos parecerian preguntas distintas. */
+  .check-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px 22px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+/* Una pagina de texto legal: ancho de lectura acotado y aire entre secciones.
+   Las listas se declaran en bloque porque el tema pone `li` en inline-block
+   para todo el documento. */
+.legal-page {
+  max-width: 820px;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.7;
+
+  h3 {
+    margin: 32px 0 12px;
+    font-size: 19px;
+    font-weight: 600;
+  }
+
+  p {
+    margin-bottom: 12px;
+  }
+
+  ul {
+    margin: 0 0 12px;
+    padding-left: 22px;
+    list-style: disc;
+  }
+
+  li {
+    display: list-item;
+    margin-bottom: 6px;
+  }
+}
+
+/* La declaracion de autocontrol: parrafos legales largos que se aceptan con
+   una casilla. Cada uno separado del siguiente, porque la casilla tiene que
+   leerse atada a su texto y no al de al lado. */
+.declaration-form {
+  fieldset legend {
+    float: none;
+    width: auto;
+    padding: 0;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .declaration-item + .declaration-item {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba($theme-font-color, 0.09);
+  }
+
+  .declaration-item .form-check-label {
+    strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    span {
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+  }
+
+  .form-check-input {
+    flex-shrink: 0;
+  }
+
+  small.text-danger {
+    margin-top: 5px;
+    font-size: 12.5px;
+  }
+
+  .yes-no,
+  .currency-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+  }
+
+  .currency-row .form-control {
+    flex: 1 1 200px;
+    max-width: 280px;
+  }
+}
+
+/* Los correos para ordenes de compra: un campo por correo, con su boton de
+   quitar al lado, y el de añadir debajo. */
+.order-emails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+
+  .order-email-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12.5px;
+  }
+
+  .btn-with-icon {
+    align-self: flex-start;
+  }
+}
+
+/* Un boton con icono y texto: el icono de feather es un svg en linea y, sin
+   flex, se sienta en la linea base y queda mas alto que el texto. */
+.btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .area-sidebar {

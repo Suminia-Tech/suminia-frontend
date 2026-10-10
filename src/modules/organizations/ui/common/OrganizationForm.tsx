@@ -1,11 +1,25 @@
 'use client';
 
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 
+import { isEmail } from '@/shared/lib/validators';
 import { Panel } from '@/shared/ui';
 
+import { ACTIVITY_OPTIONS, PRODUCT_LINE_OPTIONS } from '../../lib/commercialProfile';
 import { formatTaxId } from '../../lib/taxId';
-import type { Organization } from '../../model/organization.types';
+import type {
+  Organization,
+  SupplierActivity,
+  SupplierProductLine,
+} from '../../model/organization.types';
+import SupplierContactsFields, {
+  isContactEmpty,
+  toContactsValues,
+  type ContactValues,
+} from './SupplierContactsFields';
+
+/* A donde se escribe para cambiar lo que no se edita desde el panel. */
+const SUPPORT_EMAIL = 'soporte@suminia.io';
 
 /* Formulario comun a proveedores y compradores: los campos salen de
    Organization, que es la tabla que ambos comparten en el backend.
@@ -34,7 +48,24 @@ export interface OrganizationFormValues {
   bankAccountNumber: string;
   bankAccountHolder: string;
   bankAccountHolderTaxId: string;
+
+  /* El perfil comercial, tambien solo del proveedor. exporter va como cadena
+     porque son tres respuestas y no dos: vacia es "no lo ha dicho". */
+  activities: SupplierActivity[];
+  productLines: SupplierProductLine[];
+  exporter: '' | 'yes' | 'no';
+
+  /* Las personas de cada area y los buzones de las ordenes de compra. Solo del
+     proveedor. */
+  contacts: ContactValues[];
+  orderEmails: string[];
 }
+
+/* Los campos que se escriben; las listas y los contactos van por su lado. */
+type TextField = Exclude<
+  keyof OrganizationFormValues,
+  'activities' | 'productLines' | 'contacts' | 'orderEmails'
+>;
 
 interface OrganizationFormProps {
   organization: Organization;
@@ -43,6 +74,9 @@ interface OrganizationFormProps {
   /* El minimo por pedido solo aparece del lado del proveedor: es lo que exige
      para despachar, y en un comprador no significaria nada. */
   showSupplierFields?: boolean;
+  /* Los documentos legales se suben al momento, no con "Guardar cambios", y por
+     eso llegan ya armados: el formulario solo decide donde van. */
+  legalDocuments?: ReactNode;
 }
 
 const toValues = (organization: Organization): OrganizationFormValues => ({
@@ -51,13 +85,23 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   phone: organization.phone ?? '',
   address: organization.address ?? '',
   city: organization.city ?? '',
-  minOrderValue:
-    organization.minOrderValue === null ? '' : String(organization.minOrderValue),
+  minOrderValue: organization.minOrderValue === null ? '' : String(organization.minOrderValue),
   bankName: organization.bankName ?? '',
   bankAccountType: organization.bankAccountType ?? '',
   bankAccountNumber: organization.bankAccountNumber ?? '',
   bankAccountHolder: organization.bankAccountHolder ?? '',
   bankAccountHolderTaxId: organization.bankAccountHolderTaxId ?? '',
+  activities: organization.activities ?? [],
+  productLines: organization.productLines ?? [],
+  exporter:
+    organization.exporter === null || organization.exporter === undefined
+      ? ''
+      : organization.exporter
+        ? 'yes'
+        : 'no',
+  contacts: toContactsValues(organization.contacts),
+  /* Siempre al menos un campo, para que haya donde escribir el primero. */
+  orderEmails: organization.orderEmails?.length ? organization.orderEmails : [''],
 });
 
 const OrganizationForm = ({
@@ -65,24 +109,77 @@ const OrganizationForm = ({
   isSaving,
   onSubmit,
   showSupplierFields = false,
+  legalDocuments,
 }: OrganizationFormProps) => {
   /* El estado inicial se toma una sola vez. Para recoger los datos frescos tras
      guardar, quien renderiza este formulario le pasa una `key` que cambia con
      updatedAt: React lo remonta y vuelve a leer las props. Es preferible a
      sincronizar con un efecto, que provoca un render en cascada. */
-  const [values, setValues] = useState<OrganizationFormValues>(() =>
-    toValues(organization),
-  );
+  const [values, setValues] = useState<OrganizationFormValues>(() => toValues(organization));
+
+  /* El paso a seguir para cambiar NIT o razon social. Se muestra al pedirlo y
+     no siempre: es un tramite raro, y el aviso permanente sugeriria que hay
+     algo que corregir. */
+  const [showLegalChange, setShowLegalChange] = useState(false);
+
+  const [contactErrors, setContactErrors] = useState<Record<number, string>>({});
+  const [orderEmailErrors, setOrderEmailErrors] = useState<Record<number, string>>({});
 
   const handleChange =
-    (field: keyof OrganizationFormValues) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    (field: TextField) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { value } = event.target;
       setValues((current) => ({ ...current, [field]: value }));
     };
 
+  const handleToggle =
+    <K extends 'activities' | 'productLines'>(
+      field: K,
+      option: OrganizationFormValues[K][number],
+    ) =>
+    () => {
+      setValues((current) => {
+        const list = current[field] as OrganizationFormValues[K][number][];
+        return {
+          ...current,
+          [field]: list.includes(option)
+            ? list.filter((item) => item !== option)
+            : [...list, option],
+        };
+      });
+    };
+
+  /* Un contacto a medias no sirve: sin area no se sabe de que se le habla, sin
+     nombre no se sabe a quien se busca, y sin correo no hay como escribirle. Un
+     contacto entero en blanco si vale: es el que aparece de entrada y nadie
+     lleno. */
+  const validateSupplierFields = (): boolean => {
+    const nextContactErrors: Record<number, string> = {};
+    values.contacts.forEach((contact, index) => {
+      if (isContactEmpty(contact)) return;
+      if (!contact.area || !contact.name.trim() || !contact.email.trim()) {
+        nextContactErrors[index] = 'Para guardar este contacto faltan el área, el nombre y el correo.';
+      } else if (!isEmail(contact.email.trim())) {
+        nextContactErrors[index] = 'El correo no es válido.';
+      }
+    });
+
+    const nextOrderEmailErrors: Record<number, string> = {};
+    values.orderEmails.forEach((email, index) => {
+      if (email.trim() && !isEmail(email.trim())) {
+        nextOrderEmailErrors[index] = 'El correo no es válido.';
+      }
+    });
+
+    setContactErrors(nextContactErrors);
+    setOrderEmailErrors(nextOrderEmailErrors);
+    return (
+      Object.keys(nextContactErrors).length === 0 && Object.keys(nextOrderEmailErrors).length === 0
+    );
+  };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (showSupplierFields && !validateSupplierFields()) return;
     onSubmit(values);
   };
 
@@ -94,8 +191,31 @@ const OrganizationForm = ({
           grupo de campos a su titulo. */}
       <Panel
         title='Datos legales'
-        description='Los fijó Suminia al verificar tu empresa y no se editan desde aquí.'
+        description='Información legal verificada de tu empresa. Solicita autorización para editarla en caso de ser necesario.'
+        aside={
+          <button
+            type='button'
+            className='btn btn-outline-secondary btn-sm'
+            aria-expanded={showLegalChange}
+            onClick={() => setShowLegalChange((current) => !current)}
+          >
+            Solicitar cambio de información legal
+          </button>
+        }
       >
+        {showLegalChange && (
+          <div className='alert alert-info'>
+            Escribe un correo a{' '}
+            <a
+              href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`Cambio de información legal - NIT ${formatTaxId(organization.taxId)}`)}`}
+            >
+              {SUPPORT_EMAIL}
+            </a>{' '}
+            adjuntando el documento que acredite la modificación. Nuestro equipo realizará la
+            revisión y la modificación en el menor tiempo posible.
+          </div>
+        )}
+
         <div className='form-grid'>
           <div>
             <label className='form-label' htmlFor='empresa-nit'>NIT</label>
@@ -122,73 +242,209 @@ const OrganizationForm = ({
         </div>
       </Panel>
 
-      <Panel
-        title='Datos de contacto'
-        description='Con esto te encuentran los compradores y te llegan los avisos de cada pedido.'
-      >
-        <div className='form-grid'>
-          <div>
-            <label className='form-label' htmlFor='empresa-nombre'>Nombre comercial</label>
-            <input
-              id='empresa-nombre'
-              type='text'
-              className='form-control'
-              value={values.name}
-              onChange={handleChange('name')}
-            />
+      {legalDocuments}
+
+      {/* Del lado del proveedor, lo que identifica a la empresa va aparte de
+          las personas de contacto: el correo y el telefono generales los
+          reemplazan los contactos por area. El comprador sigue como estaba. */}
+      {showSupplierFields ? (
+        <Panel
+          title='Información de la empresa'
+          description='Cómo se llama tu empresa en Suminia y desde dónde opera.'
+        >
+          <div className='form-grid'>
+            <div>
+              <label className='form-label' htmlFor='empresa-nombre'>Nombre comercial</label>
+              <input
+                id='empresa-nombre'
+                type='text'
+                className='form-control'
+                value={values.name}
+                onChange={handleChange('name')}
+              />
+            </div>
+            <div>
+              <label className='form-label' htmlFor='empresa-ciudad'>Ciudad</label>
+              <input
+                id='empresa-ciudad'
+                type='text'
+                className='form-control'
+                value={values.city}
+                onChange={handleChange('city')}
+              />
+            </div>
+            <div className='form-grid-full'>
+              <label className='form-label' htmlFor='empresa-direccion'>Dirección</label>
+              <input
+                id='empresa-direccion'
+                type='text'
+                className='form-control'
+                value={values.address}
+                onChange={handleChange('address')}
+              />
+            </div>
           </div>
-          <div>
-            <label className='form-label' htmlFor='empresa-correo'>Correo de contacto</label>
-            <input
-              id='empresa-correo'
-              type='email'
-              className='form-control'
-              value={values.email}
-              onChange={handleChange('email')}
-            />
+        </Panel>
+      ) : (
+        <Panel title='Datos de contacto' description='A donde te llegan los avisos de cada pedido.'>
+          <div className='form-grid'>
+            <div>
+              <label className='form-label' htmlFor='empresa-nombre'>Nombre comercial</label>
+              <input
+                id='empresa-nombre'
+                type='text'
+                className='form-control'
+                value={values.name}
+                onChange={handleChange('name')}
+              />
+            </div>
+            <div>
+              <label className='form-label' htmlFor='empresa-correo'>Correo de contacto</label>
+              <input
+                id='empresa-correo'
+                type='email'
+                className='form-control'
+                value={values.email}
+                onChange={handleChange('email')}
+              />
+            </div>
+            <div>
+              <label className='form-label' htmlFor='empresa-telefono'>Teléfono</label>
+              <input
+                id='empresa-telefono'
+                type='text'
+                className='form-control'
+                value={values.phone}
+                onChange={handleChange('phone')}
+              />
+            </div>
+            <div>
+              <label className='form-label' htmlFor='empresa-ciudad'>Ciudad</label>
+              <input
+                id='empresa-ciudad'
+                type='text'
+                className='form-control'
+                value={values.city}
+                onChange={handleChange('city')}
+              />
+            </div>
+            <div className='form-grid-full'>
+              <label className='form-label' htmlFor='empresa-direccion'>Dirección</label>
+              <input
+                id='empresa-direccion'
+                type='text'
+                className='form-control'
+                value={values.address}
+                onChange={handleChange('address')}
+              />
+            </div>
           </div>
-          <div>
-            <label className='form-label' htmlFor='empresa-telefono'>Teléfono</label>
-            <input
-              id='empresa-telefono'
-              type='text'
-              className='form-control'
-              value={values.phone}
-              onChange={handleChange('phone')}
-            />
-          </div>
-          <div>
-            <label className='form-label' htmlFor='empresa-ciudad'>Ciudad</label>
-            <input
-              id='empresa-ciudad'
-              type='text'
-              className='form-control'
-              value={values.city}
-              onChange={handleChange('city')}
-            />
-          </div>
-          <div className='form-grid-full'>
-            <label className='form-label' htmlFor='empresa-direccion'>Dirección</label>
-            <input
-              id='empresa-direccion'
-              type='text'
-              className='form-control'
-              value={values.address}
-              onChange={handleChange('address')}
-            />
-          </div>
-        </div>
-      </Panel>
+        </Panel>
+      )}
 
       {showSupplierFields && (
         <>
           <Panel
-            title='Condiciones de despacho'
-            description='Lo que exiges para sacar un pedido de tu bodega.'
+            title='Perfil comercial'
+            description='Qué haces en la cadena y qué vendes. Con esto Suminia te presenta a los compradores que buscan lo que ofreces.'
+          >
+            <div className='form-grid'>
+              <fieldset>
+                <legend className='form-label'>¿Cuáles son tus actividades?</legend>
+                {ACTIVITY_OPTIONS.map((option) => (
+                  <div className='form-check' key={option.value}>
+                    <input
+                      id={`empresa-actividad-${option.value}`}
+                      type='checkbox'
+                      className='form-check-input'
+                      checked={values.activities.includes(option.value)}
+                      onChange={handleToggle('activities', option.value)}
+                    />
+                    <label
+                      className='form-check-label'
+                      htmlFor={`empresa-actividad-${option.value}`}
+                    >
+                      {option.label}
+                    </label>
+                  </div>
+                ))}
+                <small className='font-light'>Puedes marcar varias.</small>
+              </fieldset>
+
+              <fieldset>
+                <legend className='form-label'>
+                  ¿La empresa realiza actualmente operaciones de exportación?
+                </legend>
+                {(
+                  [
+                    { value: 'yes', label: 'Sí' },
+                    { value: 'no', label: 'No' },
+                  ] as const
+                ).map((option) => (
+                  <div className='form-check' key={option.value}>
+                    <input
+                      id={`empresa-exporta-${option.value}`}
+                      type='radio'
+                      name='empresa-exporta'
+                      className='form-check-input'
+                      checked={values.exporter === option.value}
+                      onChange={() =>
+                        setValues((current) => ({
+                          ...current,
+                          exporter: option.value,
+                        }))
+                      }
+                    />
+                    <label className='form-check-label' htmlFor={`empresa-exporta-${option.value}`}>
+                      {option.label}
+                    </label>
+                  </div>
+                ))}
+              </fieldset>
+
+              <fieldset className='form-grid-full'>
+                <legend className='form-label'>¿Qué categorías de productos comercializas?</legend>
+                <div className='check-grid'>
+                  {PRODUCT_LINE_OPTIONS.map((option) => (
+                    <div className='form-check' key={option.value}>
+                      <input
+                        id={`empresa-linea-${option.value}`}
+                        type='checkbox'
+                        className='form-check-input'
+                        checked={values.productLines.includes(option.value)}
+                        onChange={handleToggle('productLines', option.value)}
+                      />
+                      <label className='form-check-label' htmlFor={`empresa-linea-${option.value}`}>
+                        {option.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                <small className='font-light'>Puedes marcar varias.</small>
+              </fieldset>
+            </div>
+          </Panel>
+
+          <SupplierContactsFields
+            contacts={values.contacts}
+            orderEmails={values.orderEmails}
+            contactErrors={contactErrors}
+            orderEmailErrors={orderEmailErrors}
+            onContactsChange={(contacts) => setValues((current) => ({ ...current, contacts }))}
+            onOrderEmailsChange={(orderEmails) =>
+              setValues((current) => ({ ...current, orderEmails }))
+            }
+          />
+
+          {/* "Politicas" y no "condiciones": es como se dice en el sector. Y
+              "monto" porque es un valor en pesos, no un numero de unidades. */}
+          <Panel
+            title='Políticas comerciales'
+            description='Lo que exiges para despachar un pedido.'
           >
             <div className='form-grid'>
               <div>
-                <label className='form-label' htmlFor='empresa-minimo'>Pedido mínimo</label>
+                <label className='form-label' htmlFor='empresa-minimo'>Monto mínimo</label>
                 <input
                   id='empresa-minimo'
                   type='number'
@@ -200,9 +456,9 @@ const OrganizationForm = ({
                   onChange={handleChange('minOrderValue')}
                 />
                 <small className='font-light'>
-                  Lo menos que despachas por pedido, sumado antes de IVA. Déjalo
-                  vacío si no exiges mínimo. Es distinto del pedido mínimo de cada
-                  formato, que se fija en el producto.
+                  El valor mínimo en pesos que despachas por pedido, sumado antes de IVA. Déjalo
+                  vacío si no exiges mínimo. Es distinto de la cantidad mínima de cada formato, que
+                  se fija en el producto.
                 </small>
               </div>
             </div>
@@ -257,8 +513,7 @@ const OrganizationForm = ({
                   onChange={handleChange('bankAccountHolder')}
                 />
                 <small className='font-light'>
-                  Puede no ser la razón social: el banco valida el nombre contra el
-                  documento.
+                  Puede no ser la razón social: el banco valida el nombre contra el documento.
                 </small>
               </div>
               <div>
@@ -279,7 +534,7 @@ const OrganizationForm = ({
       )}
 
       {/* Un solo boton para todo el formulario, al final y fuera de los paneles:
-          guarda los cuatro a la vez, de modo que colgarlo del pie de uno de
+          guarda todos a la vez, de modo que colgarlo del pie de uno de
           ellos sugeriria que solo guarda ese. */}
       <div className='form-actions'>
         <button type='submit' className='btn btn-primary' disabled={isSaving}>

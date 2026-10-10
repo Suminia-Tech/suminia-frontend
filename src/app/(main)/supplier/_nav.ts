@@ -1,6 +1,7 @@
 import {
   Briefcase,
   Clipboard,
+  FileText,
   Home,
   Package,
   Shield,
@@ -32,6 +33,9 @@ export const SUPPLIER_SIDEBAR: SidebarGroup[] = [
     items: [
       { label: 'Resumen', href: '/supplier/account', icon: Home },
       { label: 'Mi empresa', href: '/supplier/account/company', icon: Briefcase },
+      /* Lo que firma para que lo aprueben. Se queda despues, en solo lectura,
+         para que pueda consultar lo que declaro. */
+      { label: 'Declaración', href: '/supplier/account/declaration', icon: FileText },
       {
         label: 'Mi equipo',
         href: '/supplier/account/team',

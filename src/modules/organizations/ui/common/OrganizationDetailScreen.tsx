@@ -18,8 +18,16 @@ import {
   useOrganizationDetail,
   type OrganizationKind,
 } from '../../hooks/useOrganizationAdmin';
+import {
+  CONTACT_AREA_OPTIONS,
+  describeActivities,
+  describeExporter,
+  describeProductLines,
+} from '../../lib/commercialProfile';
 import { formatTaxId } from '../../lib/taxId';
 import type { OrganizationStatus } from '../../model/organization.types';
+import DeclarationSummaryPanel from './DeclarationSummaryPanel';
+import LegalDocumentsPanel from './LegalDocumentsPanel';
 import StatusBadge from './StatusBadge';
 
 /* Ficha de una empresa para el personal interno de Suminia: lo que mando al
@@ -121,6 +129,16 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
     organization.bankName && organization.bankAccountNumber,
   );
 
+  const perfil = [
+    { label: 'Actividades', value: describeActivities(organization.activities) },
+    {
+      label: 'Categorías que comercializa',
+      value: describeProductLines(organization.productLines),
+    },
+    { label: 'Exporta', value: describeExporter(organization.exporter) },
+  ];
+  const tienePerfil = perfil.some((campo) => campo.value !== null);
+
   const decidiendo = organization.status === 'PENDING';
 
   const botones = [
@@ -221,6 +239,26 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
             </ul>
           </Panel>
 
+          {/* La declaracion va justo despues de lo registrado: es lo otro que
+              hay que leer para decidir, y sin ella el backend no deja aprobar.
+              Si falta se dice, para no pulsar "Aprobar" y llevarse el error. */}
+          {esProveedor &&
+            (organization.declaration ? (
+              <DeclarationSummaryPanel
+                declaration={organization.declaration}
+                title='Declaración de autocontrol (SAGRILAFT)'
+              />
+            ) : (
+              <Panel title='Declaración de autocontrol (SAGRILAFT)'>
+                <p className='review-missing mb-0'>
+                  <AlertTriangle size={16} />
+                  {decidiendo
+                    ? 'El proveedor todavía no la envía. No se puede aprobar hasta que lo haga.'
+                    : 'Se aprobó antes de que Suminia pidiera esta declaración.'}
+                </p>
+              </Panel>
+            ))}
+
           {/* Del proveedor, y solo si las registro: son datos que se llenan
               despues de aprobado, de modo que en una solicitud nueva estaran
               vacios y un panel en blanco no dice nada. */}
@@ -270,6 +308,61 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
               </ul>
             </Panel>
           )}
+
+          {/* Con quien hablar en la empresa. Tambien lo llena despues de
+              aprobada, y por eso solo aparece si hay algo. */}
+          {esProveedor &&
+            (Boolean(organization.contacts?.length) ||
+              Boolean(organization.orderEmails?.length)) && (
+              <Panel
+                title='Contactos'
+                description='Las personas de cada área y a dónde llegan las órdenes de compra.'
+              >
+                <ul className='data-list'>
+                  {CONTACT_AREA_OPTIONS.map(({ value: area, label }) => {
+                    const contact = organization.contacts?.find((c) => c.area === area);
+                    return (
+                      <li key={area}>
+                        <span className='font-light'>{label}</span>
+                        <span>
+                          {contact
+                            ? [contact.name, contact.position, contact.email, contact.phone]
+                                .filter(Boolean)
+                                .join(' · ')
+                            : '—'}
+                        </span>
+                      </li>
+                    );
+                  })}
+                  <li>
+                    <span className='font-light'>Órdenes de compra</span>
+                    <span>
+                      {organization.orderEmails?.length
+                        ? organization.orderEmails.join(', ')
+                        : '—'}
+                    </span>
+                  </li>
+                </ul>
+              </Panel>
+            )}
+
+          {/* Igual que las condiciones: lo llena despues, y solo se muestra si
+              hay algo. */}
+          {esProveedor && tienePerfil && (
+            <Panel
+              title='Perfil comercial'
+              description='Qué hace en la cadena y qué vende, según el proveedor.'
+            >
+              <ul className='data-list'>
+                {perfil.map(({ label, value }) => (
+                  <li key={label}>
+                    <span className='font-light'>{label}</span>
+                    <span>{value ?? '—'}</span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
         </div>
 
         <aside className='order-side'>
@@ -306,15 +399,25 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
             </ul>
           </Panel>
 
-          {/* Se dice que no hay documentos, en vez de no decir nada: un revisor
-              que no los encuentra se queda buscando donde estan. */}
-          <Panel title='Documentos'>
-            <p className='review-note'>
-              <FileText size={16} />
-              El registro no pide documentos todavía. Para verificar el NIT y la
-              razón social hay que consultarlos por fuera de Suminia.
-            </p>
-          </Panel>
+          {/* Los soportes que sube el proveedor desde su panel. Se listan
+              todos, cargados o no: un revisor que no ve el RUT tiene que saber
+              que falta, no buscarlo. El comprador todavia no sube nada, y se
+              dice en vez de callarlo. */}
+          {esProveedor ? (
+            <LegalDocumentsPanel
+              supplierId={organization.id}
+              documents={organization.documents ?? []}
+              editable={false}
+            />
+          ) : (
+            <Panel title='Documentos'>
+              <p className='review-note'>
+                <FileText size={16} />
+                El registro no pide documentos todavía. Para verificar el NIT y la
+                razón social hay que consultarlos por fuera de Suminia.
+              </p>
+            </Panel>
+          )}
         </aside>
       </div>
     </>

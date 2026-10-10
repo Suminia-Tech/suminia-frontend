@@ -14,8 +14,15 @@ import {
   useOrganizationUpdate,
   type OrganizationKind,
 } from '../../hooks/useOrganizationAdmin';
-import type { OrganizationStatus } from '../../model/organization.types';
+import {
+  describeActivities,
+  describeExporter,
+  describeProductLines,
+} from '../../lib/commercialProfile';
+import type { ContactArea, OrganizationStatus } from '../../model/organization.types';
+import LegalDocumentsPanel from './LegalDocumentsPanel';
 import OrganizationForm, { type OrganizationFormValues } from './OrganizationForm';
+import { isContactEmpty } from './SupplierContactsFields';
 import StatusBadge from './StatusBadge';
 
 /* Los datos de la propia empresa y en que va su solicitud.
@@ -74,7 +81,6 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
         id: organizationId,
         data: {
           name: values.name.trim(),
-          email: values.email.trim(),
           /* Solo del proveedor, y vacio significa quitarlo: por eso null
              explicito y no omitir el campo.
 
@@ -96,11 +102,34 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
                 bankAccountHolder: values.bankAccountHolder.trim() || null,
                 bankAccountHolderTaxId:
                   values.bankAccountHolderTaxId.trim() || null,
+                activities: values.activities,
+                productLines: values.productLines,
+                exporter:
+                  values.exporter === '' ? null : values.exporter === 'yes',
+                /* Los contactos en blanco no viajan: el backend reemplaza la
+                   lista entera, y lo que no llega se borra. El formulario ya
+                   comprobo que los demas traen area. */
+                contacts: values.contacts
+                  .filter((contact) => !isContactEmpty(contact) && contact.area !== '')
+                  .map((contact) => ({
+                    area: contact.area as ContactArea,
+                    name: contact.name.trim(),
+                    position: contact.position.trim() || null,
+                    email: contact.email.trim(),
+                    phone: contact.phone.trim() || null,
+                  })),
+                orderEmails: values.orderEmails
+                  .map((email) => email.trim())
+                  .filter(Boolean),
               }
-            : {}),
+            : /* El proveedor ya no edita correo ni telefono generales: los
+                 reemplazan los contactos por area. El comprador si. */
+              {
+                email: values.email.trim(),
+                phone: values.phone.trim() || null,
+              }),
           // Cadena vacia significa "sin dato": el backend acepta null para
           // limpiar el campo, pero rechaza "" en los que valida formato.
-          phone: values.phone.trim() || null,
           address: values.address.trim() || null,
           city: values.city.trim() || null,
         },
@@ -139,9 +168,20 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
 
   const readOnlyFields = [
     { label: 'Razón social', value: organization.legalName },
-    { label: 'Correo de contacto', value: organization.email },
-    { label: 'Teléfono', value: organization.phone },
     { label: 'Ciudad', value: organization.city },
+    ...(kind === 'supplier'
+      ? [
+          { label: 'Actividades', value: describeActivities(organization.activities) },
+          {
+            label: 'Categorías que comercializa',
+            value: describeProductLines(organization.productLines),
+          },
+          { label: 'Exporta', value: describeExporter(organization.exporter) },
+        ]
+      : [
+          { label: 'Correo de contacto', value: organization.email },
+          { label: 'Teléfono', value: organization.phone },
+        ]),
     { label: 'Dirección', value: organization.address },
   ];
 
@@ -153,7 +193,7 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           pasa a encabezar el panel de estado, que es de lo que habla. */}
       <PageHeader
         title='Mi empresa'
-        description='Los datos con los que Suminia te identifica y en qué va tu solicitud.'
+        description='Información empresarial y estado de tu solicitud.'
       />
 
       <Panel
@@ -193,11 +233,20 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           isSaving={isSaving}
           onSubmit={handleSubmit}
           showSupplierFields={kind === 'supplier'}
+          legalDocuments={
+            kind === 'supplier' && (
+              <LegalDocumentsPanel
+                supplierId={organization.id}
+                documents={organization.documents ?? []}
+                editable
+              />
+            )
+          }
         />
       ) : (
         /* Sin organization:update los datos se leen, no se editan. */
         <Panel
-          title='Datos de la empresa'
+          title='Información de la empresa'
           description='Solo el administrador de tu empresa puede modificarlos.'
         >
           <ul className='data-list'>
