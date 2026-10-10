@@ -124,7 +124,7 @@ const toPayload = (draft: Draft) => ({
 
 const validate = (draft: Draft, isMedicine: boolean): Record<string, string> => {
   const errors: Record<string, string> = {};
-  if (!draft.packaging.trim()) errors.packaging = 'Indica el empaque';
+  if (!draft.packaging.trim()) errors.packaging = 'Indica la unidad de venta';
   if (!draft.price.trim()) errors.price = 'Ingresa el precio';
   else if (Number.isNaN(Number(draft.price)) || Number(draft.price) <= 0)
     errors.price = 'El precio debe ser mayor que cero';
@@ -264,17 +264,17 @@ const ProductPresentationsModal = ({
           presentationId: editingId,
           data: toPayload(draft),
         }).unwrap();
-        toast.success('Formato actualizado');
+        toast.success('Presentación actualizada');
       } else {
         await addPresentation({ productId: product.id, data: toPayload(draft) }).unwrap();
-        toast.success('Formato agregado');
+        toast.success('Presentación agregada');
       }
       cancel();
     } catch (err) {
       const fieldErrors = extractFieldErrors(err);
       setErrors(fieldErrors);
       if (Object.keys(fieldErrors).length === 0) {
-        toast.error(extractErrorMessage(err, 'No se pudo guardar el formato.'));
+        toast.error(extractErrorMessage(err, 'No se pudo guardar la presentación.'));
       }
     }
   };
@@ -287,7 +287,7 @@ const ProductPresentationsModal = ({
         presentationId: presentation.id,
         data: { isDefault: true },
       }).unwrap();
-      toast.success('Formato principal actualizado');
+      toast.success('Presentación principal actualizada');
     } catch (err) {
       toast.error(extractErrorMessage(err, 'No se pudo marcar como principal.'));
     } finally {
@@ -304,10 +304,10 @@ const ProductPresentationsModal = ({
         productId: product.id,
         presentationId: pendingDelete.id,
       }).unwrap();
-      toast.success('Formato retirado');
+      toast.success('Presentación retirada');
       setPendingDelete(null);
     } catch (err) {
-      toast.error(extractErrorMessage(err, 'No se pudo retirar el formato.'));
+      toast.error(extractErrorMessage(err, 'No se pudo retirar la presentación.'));
     } finally {
       setBusyId(null);
     }
@@ -345,16 +345,24 @@ const ProductPresentationsModal = ({
 
       <ModalBody>
         <div className='box-head'>
-          <h3>Formatos de venta</h3>
+          <h3>Presentaciones</h3>
         </div>
-        <p className='font-light'>{product.name}</p>
+        {/* La aclaracion que pidio la revision: sin ella "presentacion" se leia
+            como una referencia distinta del mismo producto, que es otro
+            producto. */}
+        <p className='font-light'>
+          {product.name}
+          {product.reference && ` · Ref. ${product.reference}`}. Las presentaciones son
+          las formas de vender esta misma referencia: caja x 10, caja x 100, talla M.
+          Otra referencia o modelo se crea como un producto aparte.
+        </p>
 
         <div className='catalog-panel'>
           <table className='catalog-table'>
             <thead>
               <tr>
-                <th>Formato</th>
-                <th>Empaque</th>
+                <th>Presentación</th>
+                <th>Unidad de venta</th>
                 <th className='num'>Contenido</th>
                 <th className='num'>Pedido</th>
                 <th className='num'>Precio</th>
@@ -431,7 +439,7 @@ const ProductPresentationsModal = ({
                         type='button'
                         title={
                           presentation.isDefault
-                            ? 'Es el formato principal'
+                            ? 'Es la presentación principal'
                             : 'Marcar como principal'
                         }
                         aria-label='Marcar como principal'
@@ -446,8 +454,8 @@ const ProductPresentationsModal = ({
                       </button>
                       <button
                         type='button'
-                        title='Editar formato'
-                        aria-label='Editar formato'
+                        title='Editar presentación'
+                        aria-label='Editar presentación'
                         onClick={() => startEdit(presentation)}
                       >
                         <Edit2 size={15} />
@@ -460,10 +468,10 @@ const ProductPresentationsModal = ({
                         className='is-danger'
                         title={
                           isLastOne
-                            ? 'Un producto debe conservar al menos un formato'
-                            : 'Retirar formato'
+                            ? 'Un producto debe conservar al menos una presentación'
+                            : 'Retirar presentación'
                         }
-                        aria-label='Retirar formato'
+                        aria-label='Retirar presentación'
                         disabled={isLastOne || busyId === presentation.id}
                         onClick={() => setPendingDelete(presentation)}
                       >
@@ -479,21 +487,21 @@ const ProductPresentationsModal = ({
 
         {(isCreating || editingId) && (
           <form onSubmit={submit} noValidate className='presentation-form'>
-            <h5 className='mb-3'>{editingId ? 'Editar formato' : 'Nuevo formato'}</h5>
+            <h5 className='mb-3'>{editingId ? 'Editar presentación' : 'Nueva presentación'}</h5>
 
             <Row>
               <Col md='6' className='mb-3'>
                 {field('Variante (opcional)', 'variant', { placeholder: 'Talla M' })}
-                <small className='font-light'>Talla, calibre, presentación.</small>
+                <small className='font-light'>Talla, calibre, color.</small>
               </Col>
               <Col md='6' className='mb-3'>
-                <label className='form-label font-light'>Empaque</label>
+                <label className='form-label font-light'>Unidad de venta</label>
                 <SelectWithCustom
                   options={PACKAGING_SUGGESTIONS}
                   value={draft.packaging}
                   onChange={set('packaging')}
-                  emptyLabel='Selecciona el empaque'
-                  customPlaceholder='Escribe el empaque'
+                  emptyLabel='Selecciona la unidad de venta'
+                  customPlaceholder='Escribe la unidad de venta'
                 />
                 {errors.packaging && (
                   <small className='text-danger'>{errors.packaging}</small>
@@ -569,7 +577,7 @@ const ProductPresentationsModal = ({
                     </small>
                   ) : (
                     <small className='font-light'>
-                      De aquí sale el CUM de este formato.
+                      De aquí sale el CUM de esta presentación.
                     </small>
                   )}
                 </Col>
@@ -693,7 +701,7 @@ const ProductPresentationsModal = ({
                 disabled={isAdding || isSaving}
               >
                 <Check size={14} />
-                {isAdding || isSaving ? 'Guardando...' : 'Guardar formato'}
+                {isAdding || isSaving ? 'Guardando...' : 'Guardar presentación'}
               </button>
             </div>
           </form>
@@ -705,7 +713,7 @@ const ProductPresentationsModal = ({
             onClose={() => setPendingDelete(null)}
             onConfirm={confirmRemove}
             isLoading={busyId === pendingDelete.id}
-            title='¿Retirar este formato?'
+            title='¿Retirar esta presentación?'
             confirmLabel='Sí, retirar'
           >
             <p className='mb-1'>
@@ -734,7 +742,7 @@ const ProductPresentationsModal = ({
           onClick={startCreate}
         >
           <Plus size={16} />
-          Agregar formato
+          Agregar presentación
         </button>
       </ModalFooter>
     </Modal>

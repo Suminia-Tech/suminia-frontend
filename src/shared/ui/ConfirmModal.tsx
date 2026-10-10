@@ -23,6 +23,11 @@ interface ConfirmModalProps {
   confirmLabel?: string;
   cancelLabel?: string;
   isLoading?: boolean;
+  /** Lo que dice el boton mientras espera. */
+  loadingLabel?: string;
+  /** Rojo para lo que destruye; primario para lo que solo hay que confirmar,
+      como enviar algo a revision. */
+  tone?: 'danger' | 'primary';
 }
 
 const ConfirmModal = ({
@@ -34,6 +39,8 @@ const ConfirmModal = ({
   confirmLabel = 'Eliminar',
   cancelLabel = 'Cancelar',
   isLoading = false,
+  loadingLabel = 'Eliminando...',
+  tone = 'danger',
 }: ConfirmModalProps) => (
   <Modal className='delete-account-modal' centered isOpen={isOpen} toggle={onClose}>
     <ModalHeader toggle={onClose}></ModalHeader>
@@ -54,11 +61,11 @@ const ConfirmModal = ({
       </button>
       <button
         type='button'
-        className='btn btn-danger'
+        className={`btn btn-${tone}`}
         onClick={onConfirm}
         disabled={isLoading}
       >
-        {isLoading ? 'Eliminando...' : confirmLabel}
+        {isLoading ? loadingLabel : confirmLabel}
       </button>
     </ModalFooter>
   </Modal>

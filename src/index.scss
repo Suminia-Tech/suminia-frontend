@@ -1717,6 +1717,10 @@ $estado-error: #dc3545;
   &.status-muted {
     color: rgba($theme-font-color, 0.45);
   }
+
+  &.status-danger {
+    color: #c62828;
+  }
 }
 
 /* Acciones: iconos con su contador. Aparecen atenuadas y se afirman al pasar
@@ -1780,6 +1784,111 @@ $estado-error: #dc3545;
         color: inherit;
       }
     }
+  }
+}
+
+/* El motivo con el que direccion tecnica devolvio un producto, bajo su
+   estado. Se corta a dos lineas: entero se lee al editarlo. */
+.product-review-note {
+  display: -webkit-box;
+  max-width: 220px;
+  margin-top: 4px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: #c62828;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+/* La accion que lleva un producto a revision, bajo su estado. */
+.status-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--theme-color);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Lista vertical de lo que falta. El tema pone todos los li en linea. */
+.missing-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  list-style: disc;
+
+  li {
+    display: list-item;
+  }
+}
+
+/* Las fotos del producto en la ficha de revision: pequeñas y en fila, para
+   cotejarlas con la ficha tecnica, no para venderlo. */
+.review-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+}
+
+/* Un hueco por documento exigido. Con <div> y no con lista: el tema declara
+   `li { display: inline-block }` para todo el documento. */
+.document-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.document-slot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px dashed $border-color;
+  border-radius: var(--suminia-radio-caja);
+
+  &.is-filled {
+    border-style: solid;
+
+    .document-slot-icon {
+      color: #2e7d32;
+    }
+  }
+}
+
+.document-slot-icon {
+  display: inline-flex;
+  color: rgba($theme-font-color, 0.4);
+}
+
+.document-slot-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+
+  small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

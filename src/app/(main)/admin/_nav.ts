@@ -1,4 +1,5 @@
 import {
+  CheckSquare,
   Clipboard,
   Home,
   Shield,
@@ -42,7 +43,12 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
   },
   {
     label: 'Catálogo',
-    items: [{ label: 'Categorías', href: '/admin/categories', icon: Tag }],
+    /* La revision primero: es trabajo que espera, las categorias son
+       mantenimiento. */
+    items: [
+      { label: 'Productos', href: '/admin/products', icon: CheckSquare },
+      { label: 'Categorías', href: '/admin/categories', icon: Tag },
+    ],
   },
   {
     label: 'Mi cuenta',

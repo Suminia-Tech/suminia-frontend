@@ -13,7 +13,8 @@ import {
   useGetCategoriesQuery,
   useUpdateCategoryMutation,
 } from '../../api/productsApi';
-import type { ProductCategory } from '../../model/product.types';
+import { PRODUCT_TYPE_LABEL, PRODUCT_TYPE_OPTIONS } from '../../lib/productTypes';
+import type { ProductCategory, ProductType } from '../../model/product.types';
 
 /* La taxonomia del catalogo, que hasta ahora solo se podia tocar metiendo filas
    en la base a mano.
@@ -31,14 +32,16 @@ interface Draft {
   name: string;
   slug: string;
   position: string;
+  productType: ProductType;
 }
 
-const EMPTY: Draft = { name: '', slug: '', position: '' };
+const EMPTY: Draft = { name: '', slug: '', position: '', productType: 'HOSPITAL_SUPPLY' };
 
 const toDraft = (category: ProductCategory): Draft => ({
   name: category.name,
   slug: category.slug,
   position: String(category.position),
+  productType: category.productType,
 });
 
 export const CategoriesScreen = () => {
@@ -96,6 +99,7 @@ export const CategoriesScreen = () => {
             name: draft.name.trim(),
             slug: draft.slug.trim() || undefined,
             position: draft.position ? Number(draft.position) : undefined,
+            productType: draft.productType,
           },
         }).unwrap();
         toast.success('Categoría actualizada');
@@ -105,6 +109,7 @@ export const CategoriesScreen = () => {
           /* Vacio significa "derivalo del nombre", que es lo habitual. */
           slug: draft.slug.trim() || undefined,
           position: draft.position ? Number(draft.position) : undefined,
+          productType: draft.productType,
         }).unwrap();
         toast.success('Categoría creada');
       }
@@ -157,6 +162,21 @@ export const CategoriesScreen = () => {
           onChange={(event) => set('slug')(event.target.value)}
         />
         {errors.slug && <small className='text-danger'>{errors.slug}</small>}
+      </td>
+      {/* Lo que se le pide a un producto de esta categoria. El proveedor
+          solo elige la categoria: el tipo regulatorio sale de aqui. */}
+      <td>
+        <select
+          className='form-control'
+          value={draft.productType}
+          onChange={(event) => set('productType')(event.target.value)}
+        >
+          {PRODUCT_TYPE_OPTIONS.map((option) => (
+            <option value={option.value} key={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </td>
       <td className='num'>
         <input
@@ -220,6 +240,9 @@ export const CategoriesScreen = () => {
                   <tr>
                     <th>Nombre</th>
                     <th>Identificador</th>
+                    <th title='Lo que se le pide a un producto de esta categoría'>
+                      Requisitos
+                    </th>
                     <th className='num'>Orden</th>
                     <th className='num'>Productos</th>
                     <th className='actions'></th>
@@ -242,6 +265,9 @@ export const CategoriesScreen = () => {
                         </td>
                         <td className='font-light'>
                           <code>{category.slug}</code>
+                        </td>
+                        <td className='font-light'>
+                          {PRODUCT_TYPE_LABEL[category.productType]}
                         </td>
                         <td className='num font-light'>{category.position}</td>
                         <td className='num font-light'>{category.productCount}</td>

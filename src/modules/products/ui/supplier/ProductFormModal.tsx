@@ -19,13 +19,13 @@ import {
   type AttributePair,
 } from '../../lib/attributes';
 import { composePresentationName } from '../../lib/presentationName';
+import { PRODUCT_TYPE_HELP } from '../../lib/productTypes';
 import { TAX_OPTIONS, defaultTaxCategory } from '../../lib/tax';
 import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
 import type {
   CatalogMedicine,
   CatalogMedicineSearchResult,
   Product,
-  ProductStatus,
   ProductType,
   TaxCategory,
 } from '../../model/product.types';
@@ -35,9 +35,13 @@ import CatalogMedicinePicker from './CatalogMedicinePicker';
    la sesion de quien crea, de modo que no hay forma de publicar en el catalogo
    de otro proveedor.
 
-   Al crear se pide ademas el primer formato de venta, porque un producto sin
-   formatos no tiene precio ni inventario y el backend lo rechaza con 422. Los
-   demas formatos se agregan despues, ya sobre el producto creado.
+   Al crear se pide ademas la primera presentacion, porque un producto sin
+   presentaciones no tiene precio ni inventario y el backend lo rechaza con 422.
+   Las demas se agregan despues, ya sobre el producto creado.
+
+   El estado no se elige aqui. Todo producto nace en borrador y se publica
+   enviandolo a revision desde la lista: lo aprueba direccion tecnica, no el
+   proveedor.
 
    Sigue la estructura de los modales del panel de cuenta: cabecera vacia
    (el tema saca el boton de cierre fuera del marco), contenido en el cuerpo y
@@ -62,9 +66,9 @@ const INITIAL = {
   categoryId: '',
   brand: '',
   manufacturer: '',
+  reference: '',
+  sanitaryRegistration: '',
   description: '',
-  type: 'SUPPLY' as ProductType,
-  status: 'DRAFT' as ProductStatus,
   variant: '',
   packaging: '',
   price: '',
@@ -89,9 +93,9 @@ const toFormState = (product?: Product | null): FormState => {
     categoryId: product.categoryId,
     brand: product.brand ?? '',
     manufacturer: product.manufacturer ?? '',
+    reference: product.reference ?? '',
+    sanitaryRegistration: product.sanitaryRegistration ?? '',
     description: product.description ?? '',
-    type: product.type,
-    status: product.status,
     taxCategory: product.taxCategory,
   };
 };
@@ -106,6 +110,17 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
   const isSaving = isCreating || isUpdating;
 
   const [form, setForm] = useState<FormState>(() => toFormState(product));
+  /* Aparte del resto porque es un si o no, no un texto. Solo cuenta en un
+     dispositivo medico: decide si se le exige el CCAA. */
+  const [isManufacturerOrImporter, setManufacturerOrImporter] = useState(
+    () => product?.isManufacturerOrImporter ?? false,
+  );
+  /* El tipo no se elige: es el de la categoria. Al editar, mientras llegan las
+     categorias, vale el que ya tiene el producto. */
+  const type: ProductType | null =
+    categories.find((category) => category.id === form.categoryId)?.productType ??
+    (product && form.categoryId === product.categoryId ? product.type : null);
+  const isMedicine = type === 'MEDICINE';
   /* Los atributos van aparte del resto del formulario: son una lista que crece,
      no un campo. Aqui solo quedan los libres —material, esterilidad—: lo
      regulatorio de un medicamento ya no se escribe, se lee del maestro. */
@@ -145,19 +160,22 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       setGeneralError(null);
     };
 
-  /* Cambiar de tipo arrastra dos cosas: el enlace al maestro deja de tener
-     sentido en un insumo, y el impuesto que se propone es otro. Se ajustan los
-     dos aqui para que el formulario no quede en un estado que el backend va a
-     rechazar. */
-  const handleTypeChange = (value: ProductType) => {
+  /* Cambiar de categoria puede cambiar el tipo, y eso arrastra dos cosas: el
+     enlace al maestro deja de tener sentido fuera de un medicamento, y el
+     impuesto que se propone es otro. Se ajustan aqui para que el formulario no
+     quede en un estado que el backend va a rechazar. */
+  const handleCategoryChange = (categoryId: string) => {
+    const next = categories.find((category) => category.id === categoryId)?.productType;
+
     setForm((current) => ({
       ...current,
-      type: value,
-      taxCategory: defaultTaxCategory(value),
-      catalogPresentationId: '',
+      categoryId,
+      ...(next && next !== type
+        ? { taxCategory: defaultTaxCategory(next), catalogPresentationId: '' }
+        : {}),
     }));
-    if (value !== 'MEDICINE') setCatalogMedicine(null);
-    setErrors({});
+    if (next !== 'MEDICINE') setCatalogMedicine(null);
+    setErrors((current) => ({ ...current, categoryId: undefined }));
     setGeneralError(null);
   };
 
@@ -217,7 +235,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     /* Un medicamento se elige del maestro: es lo que lo identifica y lo que
        pone su oferta al lado de las de otros proveedores. El backend lo rechaza
        igual; aqui se avisa antes de mandar. */
-    if (form.type === 'MEDICINE') {
+    if (isMedicine) {
       if (!catalogMedicine) {
         next.catalogMedicineId = 'Busca y elige el medicamento en el catálogo del INVIMA';
       } else if (!isEditing && !form.catalogPresentationId) {
@@ -226,7 +244,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     }
 
     if (!isEditing) {
-      if (!form.packaging.trim()) next.packaging = 'Indica el empaque';
+      if (!form.packaging.trim()) next.packaging = 'Indica la unidad de venta';
       if (!form.price.trim()) next.price = 'Ingresa el precio';
       else if (Number.isNaN(Number(form.price)) || Number(form.price) <= 0)
         next.price = 'El precio debe ser un número mayor que cero';
@@ -249,22 +267,28 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     event.preventDefault();
 
     const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) return setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      return setErrors(validationErrors);
+    }
 
     /* Los opcionales vacios se omiten en vez de mandarse como cadena vacia: el
        DTO del backend corre con forbidNonWhitelisted y prefiere ausencia. */
     const common = {
       name: form.name.trim(),
       categoryId: form.categoryId,
-      type: form.type,
-      status: form.status,
       brand: form.brand.trim() || undefined,
       manufacturer: form.manufacturer.trim() || undefined,
+      /* null y no undefined: undefined es "no lo toques", y vaciar el campo al
+         editar tiene que llegar como vaciado. */
+      reference: form.reference.trim() || null,
+      /* Un medicamento no lo declara: lo lee del maestro del INVIMA. */
+      sanitaryRegistration: isMedicine ? null : form.sanitaryRegistration.trim() || null,
+      isManufacturerOrImporter: type === 'MEDICAL_DEVICE' && isManufacturerOrImporter,
       description: form.description.trim() || undefined,
       taxCategory: form.taxCategory,
       /* null y no undefined al quitarlo: undefined significaria "no lo toques"
          y el enlace se quedaria puesto en un producto que ya no es medicamento. */
-      catalogMedicineId: form.type === 'MEDICINE' ? (catalogMedicine?.id ?? null) : null,
+      catalogMedicineId: isMedicine ? (catalogMedicine?.id ?? null) : null,
       attributes: fromAttributePairs(attributes),
     };
 
@@ -320,11 +344,52 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
           <h3>{isEditing ? 'Editar producto' : 'Nuevo producto'}</h3>
         </div>
 
+        {/* Lo que la revision dejo dicho, donde se va a corregir. */}
+        {product?.status === 'REJECTED' && product.reviewNote && (
+          <div className='alert alert-danger'>
+            <strong>Dirección técnica lo devolvió:</strong> {product.reviewNote}
+          </div>
+        )}
+        {product?.status === 'ACTIVE' && (
+          <div className='alert alert-warning'>
+            Este producto está publicado. Si cambias su nombre, marca, referencia,
+            fabricante o registro sanitario, o lo pasas a una categoría con otros
+            requisitos, vuelve a revisión y sale del catálogo hasta que se apruebe.
+          </div>
+        )}
+
         <form id={FORM_ID} onSubmit={handleSubmit} noValidate>
           <Row>
-            {/* Al editar no hay columna de formato, de modo que los datos del
-                producto ocupan el ancho entero en vez de dejar un hueco. */}
+            {/* Al editar no hay columna de presentacion, de modo que los datos
+                del producto ocupan el ancho entero en vez de dejar un hueco. */}
             <Col lg={isEditing ? '12' : '6'}>
+              {/* La categoria va primero porque decide lo que se pide
+                  despues: un medicamento se elige del INVIMA, un dispositivo
+                  medico adjunta documentos. */}
+              <div className='mb-3'>
+                <label className='form-label font-light'>Categoría</label>
+                <select
+                  className='form-control'
+                  value={form.categoryId}
+                  onChange={(event) => handleCategoryChange(event.target.value)}
+                >
+                  <option value=''>Selecciona una categoría</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.categoryId ? (
+                  <small className='text-danger'>{errors.categoryId}</small>
+                ) : (
+                  <small className='font-light'>
+                    {(type && PRODUCT_TYPE_HELP[type]) ??
+                      'Según la categoría te pediremos unos datos u otros.'}
+                  </small>
+                )}
+              </div>
+
               <div className='mb-3'>
                 <label className='form-label font-light'>Nombre del producto</label>
                 <input
@@ -336,41 +401,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                 {errors.name && <small className='text-danger'>{errors.name}</small>}
               </div>
 
-              {/* El tipo decide que mas se le pide al producto. Va primero
-                  porque cambia el resto del formulario. */}
-              <div className='mb-3'>
-                <label className='form-label font-light'>Tipo</label>
-                <select
-                  className='form-control'
-                  value={form.type}
-                  onChange={(event) =>
-                    handleTypeChange(event.target.value as ProductType)
-                  }
-                >
-                  <option value='SUPPLY'>Insumo o dispositivo médico</option>
-                  <option value='MEDICINE'>Medicamento</option>
-                </select>
-              </div>
-
-              <div className='mb-3'>
-                <label className='form-label font-light'>Categoría</label>
-                <select
-                  className='form-control'
-                  value={form.categoryId}
-                  onChange={handleChange('categoryId')}
-                >
-                  <option value=''>Selecciona una categoría</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.categoryId && (
-                  <small className='text-danger'>{errors.categoryId}</small>
-                )}
-              </div>
-
               <Row>
                 <Col sm='6' className='mb-3'>
                   <label className='form-label font-light'>Marca</label>
@@ -380,8 +410,34 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     value={form.brand}
                     onChange={handleChange('brand')}
                   />
+                  {errors.brand && <small className='text-danger'>{errors.brand}</small>}
                 </Col>
+                {/* La referencia es lo que separa un producto de otro. Dos
+                    modelos son dos productos; las presentaciones son las formas
+                    de vender uno solo. */}
                 <Col sm='6' className='mb-3'>
+                  <label className='form-label font-light'>
+                    Referencia / modelo{isMedicine && ' (opcional)'}
+                  </label>
+                  <input
+                    type='text'
+                    className='form-control'
+                    placeholder='HEM-7120'
+                    value={form.reference}
+                    onChange={handleChange('reference')}
+                  />
+                  {errors.reference ? (
+                    <small className='text-danger'>{errors.reference}</small>
+                  ) : (
+                    <small className='font-light'>
+                      Otra referencia se crea como otro producto.
+                    </small>
+                  )}
+                </Col>
+              </Row>
+
+              <Row>
+                <Col sm={isMedicine ? '12' : '6'} className='mb-3'>
                   <label className='form-label font-light'>Fabricante</label>
                   <input
                     type='text'
@@ -390,7 +446,44 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     onChange={handleChange('manufacturer')}
                   />
                 </Col>
+                {/* Un medicamento no lo escribe: lo toma del INVIMA. */}
+                {!isMedicine && (
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Registro sanitario</label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      placeholder='INVIMA 2019DM-0019872'
+                      value={form.sanitaryRegistration}
+                      onChange={handleChange('sanitaryRegistration')}
+                    />
+                    {errors.sanitaryRegistration && (
+                      <small className='text-danger'>{errors.sanitaryRegistration}</small>
+                    )}
+                  </Col>
+                )}
               </Row>
+
+              {/* Solo en un dispositivo medico: quien lo fabrica o lo importa
+                  tiene que aportar ademas el CCAA. */}
+              {type === 'MEDICAL_DEVICE' && (
+                <div className='form-check mb-3'>
+                  <input
+                    id='manufacturer-or-importer'
+                    type='checkbox'
+                    className='form-check-input'
+                    checked={isManufacturerOrImporter}
+                    onChange={(event) => setManufacturerOrImporter(event.target.checked)}
+                  />
+                  <label className='form-check-label' htmlFor='manufacturer-or-importer'>
+                    Soy fabricante o importador de este producto
+                    <small className='font-light d-block'>
+                      Te pediremos el CCAA junto con el registro sanitario y la ficha
+                      técnica.
+                    </small>
+                  </label>
+                </div>
+              )}
 
               <div className='mb-3'>
                 <label className='form-label font-light'>Descripción</label>
@@ -410,7 +503,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   proveedores que eligen la misma ficha quedan enfrentados, y
                   poder comparar ofertas del mismo medicamento es a lo que el
                   comprador entra a Suminia. */}
-              {form.type === 'MEDICINE' && (
+              {isMedicine && (
                 <div className='medicine-fields'>
                   <h5>Medicamento del INVIMA</h5>
                   <p className='font-light'>
@@ -490,32 +583,20 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                 </button>
               </div>
 
-              <div className='mb-3'>
-                <label className='form-label font-light'>Estado</label>
-                <select
-                  className='form-control'
-                  value={form.status}
-                  onChange={handleChange('status')}
-                >
-                  <option value='DRAFT'>Borrador — solo lo ves tú</option>
-                  <option value='ACTIVE'>Publicado — visible en el catálogo</option>
-                  {isEditing && <option value='INACTIVE'>Retirado del catálogo</option>}
-                </select>
-              </div>
             </Col>
 
             {!isEditing && (
               <Col lg='6' className='product-form-aside'>
-                <h5 className='mb-1'>Primer formato de venta</h5>
+                <h5 className='mb-1'>Primera presentación</h5>
                 <p className='font-light'>
-                  Un producto se vende en uno o varios formatos: caja x 100, talla M,
-                  frasco de 500 mL. Empieza con uno y agrega los demás después.
+                  Las formas de vender esta misma referencia: caja x 100, talla M,
+                  frasco de 500 mL. Empieza con una y agrega las demás después.
                 </p>
 
                 {/* Que presentacion comercial se vende. De aqui sale el CUM,
                     que es lo que enfrenta la caja de 30 de un proveedor con la
                     caja de 30 de otro. */}
-                {form.type === 'MEDICINE' && catalogMedicine && (
+                {isMedicine && catalogMedicine && (
                   <div className='mb-3'>
                     <label className='form-label font-light'>
                       Presentación del INVIMA
@@ -553,16 +634,16 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       value={form.variant}
                       onChange={handleChange('variant')}
                     />
-                    <small className='font-light'>Talla, calibre, presentación.</small>
+                    <small className='font-light'>Talla, calibre, color.</small>
                   </Col>
                   <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>Empaque</label>
+                    <label className='form-label font-light'>Unidad de venta</label>
                     <SelectWithCustom
                       options={PACKAGING_SUGGESTIONS}
                       value={form.packaging}
                       onChange={(value) => setField('packaging', value)}
-                      emptyLabel='Selecciona el empaque'
-                      customPlaceholder='Escribe el empaque'
+                      emptyLabel='Selecciona la unidad de venta'
+                      customPlaceholder='Escribe la unidad de venta'
                     />
                     {errors.packaging && (
                       <small className='text-danger'>{errors.packaging}</small>

@@ -33,6 +33,22 @@ export interface PaginatedData<T> {
   meta: PaginationMeta;
 }
 
+/* Permiso firmado para subir un archivo directo al almacenamiento. Los bytes no
+   pasan por la API: el backend firma, el navegador sube y la API confirma. */
+export interface UploadTicket {
+  uploadUrl: string;
+  fields: Record<string, string>;
+  storageKey: string;
+  maxBytes: number;
+  expiresIn: number;
+}
+
+/* Enlace firmado para abrir un archivo privado. Caduca a los pocos minutos. */
+export interface SignedUrl {
+  url: string;
+  expiresIn: number;
+}
+
 /* Los listados llegan doblemente anidados: la envoltura del backend y dentro
    el { data, meta } del datatable. De ahi que leerlos sea result.data.data. */
 export type PaginatedResponse<T> = ApiResponse<PaginatedData<T>>;

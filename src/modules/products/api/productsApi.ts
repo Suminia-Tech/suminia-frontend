@@ -9,13 +9,16 @@ import type {
 import type {
   CatalogMedicineDetail,
   CatalogMedicineSearchResult,
+  ConfirmDocumentRequest,
   ConfirmImageRequest,
   CreateCategoryRequest,
   CreateProductRequest,
+  DocumentUrl,
   MedicineOffer,
   PresentationRequest,
   Product,
   ProductCategory,
+  ReviewProductRequest,
   UpdateCategoryRequest,
   UpdateImageRequest,
   UpdatePresentationRequest,
@@ -277,6 +280,86 @@ export const productsApi = baseApi.injectEndpoints({
         { type: 'Product', id: 'LIST' },
       ],
     }),
+
+    /* Los documentos se suben como las imagenes —permiso firmado, bytes
+       directo a S3, confirmacion—, pero caen en la parte privada del bucket. */
+    createDocumentUploadUrl: builder.mutation<
+      ApiResponse<UploadTicket>,
+      { productId: string; contentType: string }
+    >({
+      query: ({ productId, contentType }) => ({
+        url: `/products/${productId}/documents/upload-url`,
+        method: 'POST',
+        body: { contentType },
+      }),
+    }),
+
+    confirmDocument: builder.mutation<
+      ApiResponse<Product>,
+      { productId: string; data: ConfirmDocumentRequest }
+    >({
+      query: ({ productId, data }) => ({
+        url: `/products/${productId}/documents`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { productId }) => [
+        { type: 'Product', id: productId },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
+
+    removeDocument: builder.mutation<
+      ApiResponse<Product>,
+      { productId: string; documentId: string }
+    >({
+      query: ({ productId, documentId }) => ({
+        url: `/products/${productId}/documents/${documentId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, { productId }) => [
+        { type: 'Product', id: productId },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
+
+    /* Mutacion y no consulta aunque sea un GET: el enlace caduca a los cinco
+       minutos, y una cache que lo sirviera despues entregaria uno muerto. */
+    getDocumentUrl: builder.mutation<
+      ApiResponse<DocumentUrl>,
+      { productId: string; documentId: string }
+    >({
+      query: ({ productId, documentId }) => ({
+        url: `/products/${productId}/documents/${documentId}/url`,
+        method: 'GET',
+      }),
+    }),
+
+    /* El proveedor pide publicar. El backend comprueba antes que el producto
+       este completo para su tipo, y si no responde 422 con lo que falta. */
+    submitProductForReview: builder.mutation<ApiResponse<Product>, string>({
+      query: (id) => ({ url: `/products/${id}/submit`, method: 'POST' }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Product', id },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
+
+    /* Direccion tecnica decide. Solo el personal de Suminia tiene el permiso. */
+    reviewProduct: builder.mutation<
+      ApiResponse<Product>,
+      { id: string; data: ReviewProductRequest }
+    >({
+      query: ({ id, data }) => ({
+        url: `/products/${id}/review`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Product', id },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
@@ -304,4 +387,10 @@ export const {
   useConfirmImageMutation,
   useUpdateImageMutation,
   useRemoveImageMutation,
+  useCreateDocumentUploadUrlMutation,
+  useConfirmDocumentMutation,
+  useRemoveDocumentMutation,
+  useGetDocumentUrlMutation,
+  useSubmitProductForReviewMutation,
+  useReviewProductMutation,
 } = productsApi;

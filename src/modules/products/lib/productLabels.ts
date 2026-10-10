@@ -2,7 +2,9 @@ import type { Product, ProductStatus } from '../model/product.types';
 
 export const PRODUCT_STATUS_LABEL: Record<ProductStatus, string> = {
   DRAFT: 'Borrador',
+  PENDING_REVIEW: 'En revisión',
   ACTIVE: 'Publicado',
+  REJECTED: 'Devuelto',
   INACTIVE: 'Retirado',
 };
 
@@ -11,10 +13,17 @@ export const PRODUCT_STATUS_LABEL: Record<ProductStatus, string> = {
    de color saturado y aqui hace falta algo mas discreto, que no compita con el
    nombre del producto. */
 export const PRODUCT_STATUS_TONE: Record<ProductStatus, string> = {
-  DRAFT: 'neutral',
+  DRAFT: 'muted',
+  PENDING_REVIEW: 'neutral',
   ACTIVE: 'success',
+  REJECTED: 'danger',
   INACTIVE: 'muted',
 };
+
+/* Desde donde se puede enviar a revision. Debe coincidir con SUBMITTABLE del
+   backend, que es quien lo hace cumplir. */
+export const canSubmitForReview = (status: ProductStatus): boolean =>
+  status === 'DRAFT' || status === 'REJECTED' || status === 'INACTIVE';
 
 /* Sin decimales: los precios del catalogo van en pesos colombianos, donde el
    centavo no existe en la practica y "$ 52.500" se lee mejor que "$ 52.500,00". */

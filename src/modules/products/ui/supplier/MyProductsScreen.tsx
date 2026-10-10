@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   AlertCircle,
   Edit2,
+  FileText,
   Image as ImageIcon,
   Layers,
   Package,
@@ -11,13 +12,14 @@ import {
   ChevronDown,
   ChevronUp,
   Search,
+  Send,
   Trash2,
   X,
 } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
-import { extractErrorMessage } from '@/shared/lib/apiError';
+import { extractAllFieldMessages, extractErrorMessage } from '@/shared/lib/apiError';
 import { canOperate } from '@/shared/lib/organizationAccess';
 import { hasPermission } from '@/shared/lib/permissions';
 import { ConfirmModal, PageHeader, Pagination } from '@/shared/ui';
@@ -27,15 +29,19 @@ import {
   useDeleteProductMutation,
   useGetCategoriesQuery,
   useGetProductsQuery,
+  useSubmitProductForReviewMutation,
 } from '../../api/productsApi';
 import {
   PRODUCT_STATUS_LABEL,
   PRODUCT_STATUS_TONE,
+  canSubmitForReview,
   formatPriceRange,
   getPrimaryImage,
   getTotalStock,
 } from '../../lib/productLabels';
+import { requiredDocuments } from '../../lib/productTypes';
 import type { Product, ProductStatus, SortField } from '../../model/product.types';
+import ProductDocumentsModal from './ProductDocumentsModal';
 import ProductFormModal from './ProductFormModal';
 import ProductImagesModal from './ProductImagesModal';
 import ProductPresentationsModal from './ProductPresentationsModal';
@@ -53,7 +59,12 @@ export const MyProductsScreen = () => {
   const [isFormOpen, setFormOpen] = useState(false);
   const [imagesFor, setImagesFor] = useState<Product | null>(null);
   const [formatsFor, setFormatsFor] = useState<Product | null>(null);
+  const [documentsFor, setDocumentsFor] = useState<Product | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
+  const [pendingSubmit, setPendingSubmit] = useState<Product | null>(null);
+  /* Lo que el backend dijo que falta, para enseñarlo en el mismo dialogo en vez
+     de en un aviso que se va solo: son varias cosas y hay que ir a corregirlas. */
+  const [submitMissing, setSubmitMissing] = useState<string[]>([]);
 
   const [page, setPage] = useState(1);
   /* Solo los cinco campos que el backend admite en ALLOWED_SORT: pedirle otro
@@ -138,6 +149,7 @@ export const MyProductsScreen = () => {
     { skip: !hydrated },
   );
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [submitForReview, { isLoading: isSubmitting }] = useSubmitProductForReviewMutation();
 
   /* El backend bloquea las altas si la empresa no esta aprobada
      (ActiveOrganizationGuard), de modo que ofrecerlas seria ofrecer un 403. */
@@ -168,6 +180,25 @@ export const MyProductsScreen = () => {
     }
   };
 
+  const openSubmit = (product: Product) => {
+    setSubmitMissing([]);
+    setPendingSubmit(product);
+  };
+
+  const confirmSubmit = async () => {
+    if (!pendingSubmit) return;
+
+    try {
+      await submitForReview(pendingSubmit.id).unwrap();
+      toast.success('Enviado a revisión de dirección técnica');
+      setPendingSubmit(null);
+    } catch (err) {
+      const missing = extractAllFieldMessages(err);
+      if (missing.length > 0) setSubmitMissing(missing);
+      else toast.error(extractErrorMessage(err, 'No se pudo enviar a revisión.'));
+    }
+  };
+
   const products = data?.data.data ?? [];
   const meta = data?.data.meta;
   const hasFilters = Boolean(debouncedSearch || categoryId || status);
@@ -179,6 +210,7 @@ export const MyProductsScreen = () => {
 
   const imagesProduct = fresh(imagesFor);
   const formatsProduct = fresh(formatsFor);
+  const documentsProduct = fresh(documentsFor);
 
   const activeFilters = [
     debouncedSearch && {
@@ -278,9 +310,11 @@ export const MyProductsScreen = () => {
               onChange={(event) => changeStatus(event.target.value as ProductStatus | '')}
             >
               <option value=''>Estado</option>
-              <option value='DRAFT'>Borrador</option>
-              <option value='ACTIVE'>Publicado</option>
-              <option value='INACTIVE'>Retirado</option>
+              {(Object.keys(PRODUCT_STATUS_LABEL) as ProductStatus[]).map((value) => (
+                <option value={value} key={value}>
+                  {PRODUCT_STATUS_LABEL[value]}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -346,8 +380,8 @@ export const MyProductsScreen = () => {
               <>
                 <h5>Tu catálogo está vacío</h5>
                 <p className='font-light'>
-                  Crea tu primer producto. Queda como borrador hasta que decidas
-                  publicarlo, así que puedes prepararlo con calma.
+                  Crea tu primer producto. Queda como borrador hasta que lo envíes a
+                  revisión, así que puedes prepararlo con calma.
                 </p>
                 {canCreate && (
                   <button
@@ -370,10 +404,16 @@ export const MyProductsScreen = () => {
                   <tr>
                     {sortableHeader('Producto', 'name', 'col-product')}
                     <th className='col-category'>Categoría</th>
-                    <th className='num col-tight'>Formatos</th>
-                    {/* Precio e inventario viven en los formatos, no en el
+                    {/* Precio e inventario viven en las presentaciones, no en el
                         producto: el backend no puede ordenar por ellos sin
-                        decidir antes cual de los formatos manda. */}
+                        decidir antes cual de ellas manda.
+
+                        Las presentaciones no tienen columna propia: tenian una,
+                        "Formatos", con solo un numero, y la revision la leyo
+                        como referencias distintas del mismo producto. Ahora el
+                        numero va bajo el precio, que es lo que explica: un
+                        rango de precios sale de vender la misma referencia en
+                        varias presentaciones. */}
                     <th className='num col-price'>Precio</th>
                     <th className='num col-tight'>Inventario</th>
                     {sortableHeader('Estado', 'status', 'col-status')}
@@ -384,6 +424,13 @@ export const MyProductsScreen = () => {
                   {products.map((product) => {
                     const image = getPrimaryImage(product);
                     const stock = getTotalStock(product);
+                    const docsRequired = requiredDocuments(
+                      product.type,
+                      product.isManufacturerOrImporter,
+                    );
+                    const docsMissing = docsRequired.filter(
+                      (type) => !product.documents.some((document) => document.type === type),
+                    ).length;
 
                     return (
                       <tr key={product.id}>
@@ -403,6 +450,7 @@ export const MyProductsScreen = () => {
                               <strong>{product.name}</strong>
                               <small className='font-light'>
                                 {product.brand ?? product.manufacturer ?? 'Sin marca'}
+                                {product.reference && ` · Ref. ${product.reference}`}
                               </small>
                             </span>
                           </div>
@@ -410,9 +458,14 @@ export const MyProductsScreen = () => {
                         <td>
                           <span className='chip'>{product.categoryName ?? '—'}</span>
                         </td>
-                        <td className='num font-light'>{product.presentations.length}</td>
                         <td className='num'>
                           <strong>{formatPriceRange(product)}</strong>
+                          <small className='font-light d-block'>
+                            {product.presentations.length}{' '}
+                            {product.presentations.length === 1
+                              ? 'presentación'
+                              : 'presentaciones'}
+                          </small>
                         </td>
                         <td className={`num${stock === 0 ? ' text-danger' : ' font-light'}`}>
                           {stock === 0 ? 'Agotado' : stock}
@@ -423,6 +476,27 @@ export const MyProductsScreen = () => {
                           >
                             {PRODUCT_STATUS_LABEL[product.status]}
                           </span>
+                          {/* El motivo en la fila, no escondido en el formulario:
+                              es lo primero que hay que leer de un producto
+                              devuelto. */}
+                          {product.status === 'REJECTED' && product.reviewNote && (
+                            <small className='product-review-note' title={product.reviewNote}>
+                              {product.reviewNote}
+                            </small>
+                          )}
+                          {/* Con texto y bajo el estado, no como un icono mas
+                              entre las acciones: es el paso que lleva el producto
+                              al catalogo, y tiene que leerse como tal. */}
+                          {canUpdate && canSubmitForReview(product.status) && (
+                            <button
+                              type='button'
+                              className='status-action'
+                              onClick={() => openSubmit(product)}
+                            >
+                              <Send size={12} />
+                              Enviar a revisión
+                            </button>
+                          )}
                         </td>
                         {(canUpdate || canDelete) && (
                           <td className='actions'>
@@ -437,13 +511,13 @@ export const MyProductsScreen = () => {
                                   >
                                     <Edit2 size={15} />
                                   </button>
-                                  {/* El contador va dentro del boton: saber cuantos
-                                      formatos e imagenes tiene cada producto es lo
-                                      que dice cual esta a medio preparar. */}
+                                  {/* El contador va dentro del boton: saber cuantas
+                                      presentaciones e imagenes tiene cada producto
+                                      es lo que dice cual esta a medio preparar. */}
                                   <button
                                     type='button'
-                                    title='Formatos de venta'
-                                    aria-label='Formatos de venta'
+                                    title='Presentaciones'
+                                    aria-label='Presentaciones'
                                     onClick={() => setFormatsFor(product)}
                                   >
                                     <Layers size={15} />
@@ -461,6 +535,23 @@ export const MyProductsScreen = () => {
                                     <ImageIcon size={15} />
                                     <span>{product.images.length}</span>
                                   </button>
+                                  {/* Solo donde se exigen. La cuenta es de lo que
+                                      tiene sobre lo que se le pide, y se marca
+                                      mientras falte alguno. */}
+                                  {docsRequired.length > 0 && (
+                                    <button
+                                      type='button'
+                                      title='Documentos'
+                                      aria-label='Documentos'
+                                      className={docsMissing > 0 ? 'is-empty' : undefined}
+                                      onClick={() => setDocumentsFor(product)}
+                                    >
+                                      <FileText size={15} />
+                                      <span>
+                                        {docsRequired.length - docsMissing}/{docsRequired.length}
+                                      </span>
+                                    </button>
+                                  )}
                                 </>
                               )}
                               {canDelete && (
@@ -530,7 +621,7 @@ export const MyProductsScreen = () => {
           </p>
           <p className='mb-0'>
             Se retira del catálogo junto con sus {pendingDelete.presentations.length}{' '}
-            {pendingDelete.presentations.length === 1 ? 'formato' : 'formatos'}
+            {pendingDelete.presentations.length === 1 ? 'presentación' : 'presentaciones'}
             {pendingDelete.images.length > 0 &&
               ` y sus ${pendingDelete.images.length} ${
                 pendingDelete.images.length === 1 ? 'imagen' : 'imágenes'
@@ -538,6 +629,46 @@ export const MyProductsScreen = () => {
             . Los pedidos que ya lo incluyan lo conservan.
           </p>
         </ConfirmModal>
+      )}
+
+      {pendingSubmit && (
+        <ConfirmModal
+          isOpen={Boolean(pendingSubmit)}
+          onClose={() => setPendingSubmit(null)}
+          onConfirm={confirmSubmit}
+          isLoading={isSubmitting}
+          title='¿Enviar a revisión?'
+          confirmLabel='Sí, enviar'
+          loadingLabel='Enviando...'
+          tone='primary'
+        >
+          <p className='mb-1'>
+            <strong>{pendingSubmit.name}</strong>
+          </p>
+          <p className={submitMissing.length > 0 ? 'mb-2' : 'mb-0'}>
+            Dirección técnica revisa el producto y sus documentos. Aparecerá como
+            &quot;Publicado&quot; cuando lo apruebe; mientras tanto no se muestra en el
+            catálogo.
+          </p>
+          {submitMissing.length > 0 && (
+            <div className='alert alert-danger text-start mb-0'>
+              Antes de enviarlo falta:
+              <ul className='missing-list'>
+                {submitMissing.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </ConfirmModal>
+      )}
+
+      {documentsProduct && (
+        <ProductDocumentsModal
+          isOpen={Boolean(documentsProduct)}
+          product={documentsProduct}
+          onClose={() => setDocumentsFor(null)}
+        />
       )}
 
       {imagesProduct && (

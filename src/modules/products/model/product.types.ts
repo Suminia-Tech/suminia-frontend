@@ -2,9 +2,16 @@
    verdad se rompen las cosas, asi que se tipa explicitamente en vez de dejar
    `any`. */
 
-/* Un insumo lo describe su proveedor; un medicamento se elige del maestro del
-   INVIMA y sus datos regulatorios se leen de ahi. */
-export type ProductType = 'SUPPLY' | 'MEDICINE';
+/* Lo que el producto es ante el INVIMA, que decide lo que se le pide al
+   proveedor: un medicamento se elige del maestro, un dispositivo medico adjunta
+   sus soportes, y los demas declaran su registro sanitario. No es la categoria,
+   que es como se navega el catalogo. */
+export type ProductType =
+  | 'MEDICAL_DEVICE'
+  | 'MEDICINE'
+  | 'IN_VITRO_DIAGNOSTIC'
+  | 'HOSPITAL_SUPPLY'
+  | 'DISINFECTANT';
 
 /* Los medicamentos estan excluidos de IVA por el articulo 424 del Estatuto
    Tributario; entre los insumos hay gravados al 19%, al 5% y excluidos, de modo
@@ -12,9 +19,24 @@ export type ProductType = 'SUPPLY' | 'MEDICINE';
    comprador, pero solo el exento da derecho a descontar el IVA de los insumos. */
 export type TaxCategory = 'EXCLUIDO' | 'EXENTO' | 'IVA_5' | 'IVA_19';
 
-/* DRAFT es el producto que el proveedor prepara sin exponerlo, ACTIVE el que
-   ve el comprador, INACTIVE el retirado sin perder su historico. */
-export type ProductStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+/* DRAFT es el producto que el proveedor prepara sin exponerlo. Al enviarlo
+   queda PENDING_REVIEW hasta que direccion tecnica lo aprueba (ACTIVE, el que
+   ve el comprador) o lo devuelve con un motivo (REJECTED). INACTIVE es el
+   retirado sin perder su historico. */
+export type ProductStatus = 'DRAFT' | 'PENDING_REVIEW' | 'ACTIVE' | 'REJECTED' | 'INACTIVE';
+
+/* Los soportes de un dispositivo medico. El CCAA solo se exige a quien lo
+   fabrica o lo importa. */
+export type ProductDocumentType = 'SANITARY_REGISTRATION' | 'TECHNICAL_SHEET' | 'CCAA';
+
+/* Sin URL: viven en la parte privada del bucket y el enlace se firma al
+   abrirlos, con su propia llamada. */
+export interface ProductDocument {
+  id: string;
+  type: ProductDocumentType;
+  filename: string | null;
+  createdAt: string;
+}
 
 /* "A partir de esta cantidad, este precio". Por debajo del primer escalon rige
    el precio base del formato. */
@@ -146,6 +168,12 @@ export interface Product {
   description: string | null;
   brand: string | null;
   manufacturer: string | null;
+  /* Referencia o modelo. Otra referencia es otro producto; las presentaciones
+     son las formas de vender esta. */
+  reference: string | null;
+  /* Lo declara el proveedor. Un medicamento lo lee de `catalogMedicine`. */
+  sanitaryRegistration: string | null;
+  isManufacturerOrImporter: boolean;
   taxCategory: TaxCategory;
   catalogMedicineId: string | null;
   catalogMedicine: CatalogMedicine | null;
@@ -155,6 +183,12 @@ export interface Product {
   offerCount: number;
   presentations: ProductPresentation[];
   images: ProductImage[];
+  /* Vacio para quien no es el dueño ni personal de Suminia. */
+  documents: ProductDocument[];
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  /* El motivo del ultimo rechazo, hasta que se vuelve a enviar. */
+  reviewNote: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -162,13 +196,22 @@ export interface Product {
 /* Campos por los que el backend acepta ordenar (ALLOWED_SORT del repositorio).
    Pedirle cualquier otro responde 400, de modo que se tipa aqui para que la
    pantalla no pueda inventarse uno. */
-export type SortField = 'name' | 'brand' | 'status' | 'createdAt' | 'updatedAt';
+export type SortField =
+  | 'name'
+  | 'brand'
+  | 'status'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'submittedAt';
 
 export interface ProductCategory {
   id: string;
   name: string;
   slug: string;
   position: number;
+  /* El grupo regulatorio de la categoria. Decide lo que se le pide a un
+     producto publicado en ella: el proveedor no elige tipo aparte. */
+  productType: ProductType;
   /* Productos publicados y de empresas habilitadas: lo que de verdad se va a
      encontrar al entrar en ella. */
   productCount: number;
@@ -179,6 +222,7 @@ export interface CreateCategoryRequest {
   /* Si no viaja, el backend lo deriva del nombre. */
   slug?: string;
   position?: number;
+  productType?: ProductType;
 }
 
 export type UpdateCategoryRequest = Partial<CreateCategoryRequest> & {
@@ -212,13 +256,17 @@ export interface PresentationRequest {
 }
 
 export interface CreateProductRequest {
+  /* De ella sale el tipo del producto: no se manda aparte. */
   categoryId: string;
-  type?: ProductType;
   status?: ProductStatus;
   name: string;
   description?: string;
   brand?: string;
   manufacturer?: string;
+  /* null y no ausente para vaciarlo al editar: ausente es "no lo toques". */
+  reference?: string | null;
+  sanitaryRegistration?: string | null;
+  isManufacturerOrImporter?: boolean;
   catalogMedicineId?: string | null;
   taxCategory?: TaxCategory;
   attributes?: Record<string, unknown>;
@@ -236,13 +284,7 @@ export type UpdatePresentationRequest = Partial<PresentationRequest>;
 /* Permiso temporal que devuelve el backend. Los bytes van del navegador
    directo a S3: `fields` lleva la politica firmada y debe adjuntarse al
    formulario antes del archivo. */
-export interface UploadTicket {
-  uploadUrl: string;
-  fields: Record<string, string>;
-  storageKey: string;
-  maxBytes: number;
-  expiresIn: number;
-}
+export type { UploadTicket } from '@/shared/api/types';
 
 export interface ConfirmImageRequest {
   storageKey: string;
@@ -254,4 +296,25 @@ export interface UpdateImageRequest {
   alt?: string;
   position?: number;
   isPrimary?: boolean;
+}
+
+/* --- Documentos y revision --- */
+
+export interface ConfirmDocumentRequest {
+  type: ProductDocumentType;
+  storageKey: string;
+  filename?: string;
+}
+
+export interface DocumentUrl {
+  url: string;
+  expiresIn: number;
+}
+
+export type ReviewDecision = 'APPROVE' | 'REJECT';
+
+export interface ReviewProductRequest {
+  decision: ReviewDecision;
+  /* Obligatorio al rechazar: el proveedor necesita saber que corregir. */
+  note?: string;
 }

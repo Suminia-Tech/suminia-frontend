@@ -5,13 +5,14 @@ import { AlertTriangle, Check } from 'react-feather';
 
 import { useGetBuyersQuery, useGetSuppliersQuery } from '@/modules/organizations';
 import { useGetOrdersQuery } from '@/modules/orders';
+import { useGetProductsQuery } from '@/modules/products';
 import { PageHeader, Panel } from '@/shared/ui';
 
 /* El resumen del personal de Suminia: que hay que hacer hoy y cuanto se movio.
 
-   Vive aqui y no en un modulo porque cruza tres —organizations para las
-   empresas que esperan aprobacion, orders para lo que se facturo— y un modulo
-   nunca importa otro. La pagina si los ve a todos, que es justo para lo que
+   Vive aqui y no en un modulo porque cruza cuatro —organizations para las
+   empresas que esperan aprobacion, products para lo que espera a direccion
+   tecnica, orders para lo que se facturo— y un modulo nunca importa otro. La pagina si los ve a todos, que es justo para lo que
    esta: juntar lo que cada modulo expone.
 
    Dice dos cosas, en este orden. Primero lo que espera una decision: una
@@ -42,6 +43,10 @@ export const AdminSummary = () => {
     ...SOLO_EL_TOTAL,
     filter: { status: 'PENDING' },
   });
+  const { data: productos } = useGetProductsQuery({
+    ...SOLO_EL_TOTAL,
+    filter: { status: 'PENDING_REVIEW' },
+  });
 
   /* Los pedidos si se traen: hace falta sumar la comision de cada uno, y el
      backend no expone todavia un total agregado. Con el volumen de hoy cabe en
@@ -55,6 +60,7 @@ export const AdminSummary = () => {
 
   const proveedoresPendientes = proveedores?.data.meta.totalCount ?? 0;
   const compradoresPendientes = compradores?.data.meta.totalCount ?? 0;
+  const productosPendientes = productos?.data.meta.totalCount ?? 0;
   const lista = pedidos?.data.data ?? [];
 
   /* Los anulados y los rechazados no dejan nada: no se cobraron. */
@@ -78,6 +84,11 @@ export const AdminSummary = () => {
       href: '/admin/buyers',
       enlace: 'Revisar',
     },
+    productosPendientes > 0 && {
+      texto: `${productosPendientes} ${productosPendientes === 1 ? 'producto espera' : 'productos esperan'} la revisión de dirección técnica.`,
+      href: '/admin/products',
+      enlace: 'Revisar',
+    },
   ].filter((p): p is { texto: string; href: string; enlace: string } => Boolean(p));
 
   return (
@@ -89,7 +100,7 @@ export const AdminSummary = () => {
 
       <Panel
         title='Pendiente de revisión'
-        description='Una empresa sin aprobar no puede operar: ni publica ni compra.'
+        description='Una empresa sin aprobar no puede operar, y un producto sin revisar no llega al catálogo.'
       >
         {pendientes.length > 0 ? (
           <ul className='summary-todo'>
@@ -104,7 +115,7 @@ export const AdminSummary = () => {
         ) : (
           <p className='summary-ready'>
             <Check size={17} />
-            No hay empresas esperando aprobación.
+            No hay empresas ni productos esperando revisión.
           </p>
         )}
       </Panel>

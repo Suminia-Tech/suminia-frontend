@@ -37,3 +37,15 @@ export const extractErrorMessage = (error: unknown, fallback: string): string =>
   const [first] = Object.values(extractFieldErrors(error));
   return first ?? fallback;
 };
+
+/** Todos los mensajes de campo, en una lista. Para cuando el backend responde
+    con lo que falta en varios sitios a la vez y hay que enseñarlo entero, no
+    solo el primero de cada campo. */
+export const extractAllFieldMessages = (error: unknown): string[] => {
+  const fields = getBody(error)?.errors ?? getBody(error)?.error;
+  if (!fields || typeof fields !== 'object') return [];
+
+  return Object.values(fields).flatMap((messages) =>
+    Array.isArray(messages) ? messages.map(String) : [String(messages)],
+  );
+};

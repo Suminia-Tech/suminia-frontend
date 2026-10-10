@@ -6,6 +6,8 @@
    distintos aunque lean el mismo endpoint. */
 export { MyProductsScreen } from './ui/supplier/MyProductsScreen';
 export { CategoriesScreen } from './ui/admin/CategoriesScreen';
+export { ProductReviewQueueScreen } from './ui/admin/ProductReviewQueueScreen';
+export { ProductReviewScreen } from './ui/admin/ProductReviewScreen';
 
 /* Las publicas se sirven desde (suminia)/: mismo modulo, otra lectura. Lo que
    cambia no es la pantalla, es que la respuesta no trae precios. */
