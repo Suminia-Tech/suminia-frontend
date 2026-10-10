@@ -63,8 +63,11 @@ const AreaSidebar = ({
       <aside className={`area-sidebar${isOpen ? ' is-open' : ''}`}>
         <div className='area-sidebar-brand'>
           <Link href={homeHref} className='area-sidebar-logo'>
-            {/* Contraido se queda el simbolo: el logotipo completo no cabe en
-                68px y encogerlo lo dejaria ilegible.
+            {/* El simbolo va siempre; el nombre, solo desplegado. Antes el
+                panel abierto mostraba solo la palabra "Suminia" en negro, y se
+                leia como un titulo y no como la marca. Contraido se queda el
+                simbolo solo: el logotipo completo no cabe en 68px y encogerlo
+                lo dejaria ilegible.
 
                 El logotipo se pinta a su tamaño real, 87x18: es lo unico que
                 lo deja nitido, porque ampliarlo aunque sea un tercio ya se nota
@@ -75,13 +78,22 @@ const AreaSidebar = ({
                 eso deja artefactos. No hay nada que optimizar en un archivo que
                 ya pesa menos que la peticion. */}
             <Image
-              src={isCollapsed ? '/assets/images/favicon/icon-192.png' : `${CommonPath}/logo.png`}
-              width={isCollapsed ? 26 : 87}
-              height={isCollapsed ? 26 : 18}
-              alt='Suminia'
-              unoptimized={!isCollapsed}
+              src='/assets/images/favicon/icon-192.png'
+              width={26}
+              height={26}
+              alt={isCollapsed ? 'Suminia' : ''}
               priority
             />
+            {!isCollapsed && (
+              <Image
+                src={`${CommonPath}/logo.png`}
+                width={87}
+                height={18}
+                alt='Suminia'
+                unoptimized
+                priority
+              />
+            )}
           </Link>
 
           <button
