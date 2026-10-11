@@ -1296,6 +1296,23 @@ $estado-error: #dc3545;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 12px;
+
+    /* El que el proveedor no ha subido: la misma caja, con el borde
+       discontinuo y sin nada que pulsar. */
+    .is-missing {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px dashed $border-color;
+      border-radius: var(--suminia-radio-caja);
+      color: rgba($theme-font-color, 0.6);
+
+      span {
+        display: flex;
+        flex-direction: column;
+      }
+    }
     margin: 0;
     padding: 0;
 

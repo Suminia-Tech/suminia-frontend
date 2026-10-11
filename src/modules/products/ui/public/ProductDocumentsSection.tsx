@@ -8,7 +8,12 @@ import { extractErrorMessage } from '@/shared/lib/apiError';
 
 import { useGetPublicDocumentUrlMutation } from '../../api/productsApi';
 import { DOCUMENT_LABEL } from '../../lib/productTypes';
-import type { ProductDocument } from '../../model/product.types';
+import type { ProductDocument, ProductDocumentType } from '../../model/product.types';
+
+/* Los que cualquiera puede abrir desde la ficha. El CCAA no: es de la
+   operacion del proveedor. La misma lista que PUBLIC_DOCUMENT_TYPES del
+   backend. */
+const PUBLIC_DOCUMENTS: ProductDocumentType[] = ['SANITARY_REGISTRATION', 'TECHNICAL_SHEET'];
 
 interface ProductDocumentsSectionProps {
   productId: string;
@@ -26,7 +31,13 @@ export const ProductDocumentsSection = ({ productId, documents }: ProductDocumen
   const [getUrl] = useGetPublicDocumentUrlMutation();
   const [abriendo, setAbriendo] = useState<string | null>(null);
 
-  if (documents.length === 0) return null;
+  /* Los dos que se publican, cargados o no. Un hueco vacio dice que el
+     proveedor no lo ha subido; esconder la seccion hacia pensar que la ficha
+     no los ofrece, que es justo lo contrario de lo que se quiere contar. */
+  const huecos = PUBLIC_DOCUMENTS.map((type) => ({
+    type,
+    document: documents.find((item) => item.type === type) ?? null,
+  }));
 
   const abrir = async (documentId: string) => {
     const tab = window.open('', '_blank');
@@ -51,22 +62,30 @@ export const ProductDocumentsSection = ({ productId, documents }: ProductDocumen
         </h3>
       </div>
       <ul className='product-documents'>
-        {documents.map((document) => (
-          <li key={document.id}>
-            <button
-              type='button'
-              disabled={abriendo === document.id}
-              onClick={() => abrir(document.id)}
-            >
-              <FileText size={18} />
-              <span>
-                <strong>{DOCUMENT_LABEL[document.type]}</strong>
-                {document.filename && (
-                  <small className='font-light'>{document.filename}</small>
-                )}
-              </span>
-              <ExternalLink size={15} />
-            </button>
+        {huecos.map(({ type, document }) => (
+          <li key={type}>
+            {document ? (
+              <button
+                type='button'
+                disabled={abriendo === document.id}
+                onClick={() => abrir(document.id)}
+              >
+                <FileText size={18} />
+                <span>
+                  <strong>{DOCUMENT_LABEL[type]}</strong>
+                  <small className='font-light'>{document.filename ?? 'Ver documento'}</small>
+                </span>
+                <ExternalLink size={15} />
+              </button>
+            ) : (
+              <div className='is-missing'>
+                <FileText size={18} />
+                <span>
+                  <strong>{DOCUMENT_LABEL[type]}</strong>
+                  <small className='font-light'>El proveedor todavía no lo ha cargado.</small>
+                </span>
+              </div>
+            )}
           </li>
         ))}
       </ul>

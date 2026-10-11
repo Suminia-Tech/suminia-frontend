@@ -248,11 +248,16 @@ export const PublicProductScreen = ({
               {/* El registro sanitario a la vista y no solo en la tabla de
                   abajo: en el sector es lo primero que se busca para saber si
                   un producto se puede vender en Colombia. */}
-              {registro && (
-                <p className='product-detail-registry'>
-                  Registro sanitario INVIMA <strong>{registro}</strong>
-                </p>
-              )}
+              {/* Tambien cuando falta: que no este informado es un dato para
+                  quien compra, y esconder la linea lo callaba. */}
+              <p className='product-detail-registry'>
+                Registro sanitario INVIMA{' '}
+                {registro ? (
+                  <strong>{registro}</strong>
+                ) : (
+                  <span className='font-light'>· no informado por el proveedor</span>
+                )}
+              </p>
 
               <ProductActions productId={product.id} productName={product.name} />
 
@@ -343,12 +348,10 @@ export const PublicProductScreen = ({
                     {presentations.length === 1 ? 'presentación' : 'presentaciones'}
                   </span>
                 </li>
-                {plazo && (
-                  <li>
-                    <Truck size={16} />
-                    <span>{plazo}</span>
-                  </li>
-                )}
+                <li>
+                  <Truck size={16} />
+                  <span>{plazo ?? 'Plazo de entrega por confirmar'}</span>
+                </li>
                 <li>
                   <ShoppingBag size={16} />
                   <span>
