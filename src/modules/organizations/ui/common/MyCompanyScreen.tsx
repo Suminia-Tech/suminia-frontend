@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { toast } from 'react-toastify';
 
+import { useScrollToHash } from '@/shared/hooks/useScrollToHash';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { PageHeader, Panel } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/dates';
@@ -16,11 +17,11 @@ import {
   type OrganizationKind,
 } from '../../hooks/useOrganizationAdmin';
 import {
-  buyerMissing,
   describeActivities,
   describeExporter,
   describeProductLines,
 } from '../../lib/commercialProfile';
+import { avisoDe, buyerPendings, SECTION, supplierPendings } from '../../lib/pendings';
 import type { ContactArea, OrganizationStatus } from '../../model/organization.types';
 import LegalDocumentsPanel from './LegalDocumentsPanel';
 import OrganizationForm, { type OrganizationFormValues } from './OrganizationForm';
@@ -73,6 +74,10 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
 
   const canEdit = hasPermission(user?.permissions, 'organization:update');
   const organization = data?.data;
+
+  /* Los enlaces del Resumen traen el panel en el ancla —#cuenta-pagos— y aqui
+     se llega a el en cuanto los datos estan pintados. */
+  useScrollToHash(Boolean(organization));
 
   const handleSubmit = async (values: OrganizationFormValues) => {
     if (!organizationId) return;
@@ -181,7 +186,10 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
   }
 
   const explicacion = EXPLICACION[organization.status];
-  const faltan = kind === 'buyer' ? buyerMissing(organization) : [];
+  /* Lo que falta llenar, con el panel donde se llena. El formulario marca esos
+     paneles; al comprador ademas se le lista arriba, porque no tiene Resumen. */
+  const pendientes =
+    kind === 'buyer' ? buyerPendings(organization) : supplierPendings(organization);
   const enviada = formatDate(organization.createdAt);
   const aprobada = formatDate(organization.approvedAt);
 
@@ -225,12 +233,13 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
 
         {/* Lo que le falta al comprador para que lo aprueben, dicho antes de
             que lo descubra esperando: Suminia no puede aprobarlo sin ello. */}
-        {kind === 'buyer' && organization.status === 'PENDING' && faltan.length > 0 && (
+        {kind === 'buyer' && organization.status === 'PENDING' && pendientes.length > 0 && (
           <ul className='summary-todo'>
-            {faltan.map((falta) => (
-              <li key={falta}>
+            {pendientes.map((pendiente) => (
+              <li key={pendiente.key}>
                 <AlertTriangle size={17} />
-                <span>Falta {falta}.</span>
+                <span>{pendiente.texto}</span>
+                <a href={`#${pendiente.href.split('#')[1]}`}>{pendiente.enlace}</a>
               </li>
             ))}
           </ul>
@@ -265,8 +274,11 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           isSaving={isSaving}
           onSubmit={handleSubmit}
           showSupplierFields={kind === 'supplier'}
+          pendientes={pendientes}
           legalDocuments={
             <LegalDocumentsPanel
+              id={SECTION.documents}
+              warning={avisoDe(pendientes, 'documents')}
               kind={kind}
               organizationId={organization.id}
               documents={organization.documents ?? []}

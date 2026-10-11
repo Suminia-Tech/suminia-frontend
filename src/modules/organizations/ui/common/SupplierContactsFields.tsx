@@ -5,6 +5,7 @@ import { Plus, X } from 'react-feather';
 import { Panel } from '@/shared/ui';
 
 import { CONTACT_AREA_OPTIONS } from '../../lib/commercialProfile';
+import { SECTION } from '../../lib/pendings';
 import type { ContactArea, OrganizationContact } from '../../model/organization.types';
 
 /* Lo que se escribe de cada contacto. Todo cadena: el formulario no distingue
@@ -47,6 +48,9 @@ export const isContactEmpty = (contact: ContactValues): boolean =>
   Object.values(contact).every((value) => value.trim() === '');
 
 interface SupplierContactsFieldsProps {
+  /* Lo que falta llenar en cada panel, si falta algo. */
+  contactsWarning?: string;
+  orderEmailsWarning?: string;
   contacts: ContactValues[];
   orderEmails: string[];
   /* Por indice; el formulario los calcula al guardar. */
@@ -64,6 +68,8 @@ interface SupplierContactsFieldsProps {
    Son datos para Suminia: los compradores no los ven, y el panel lo dice para
    que nadie deje de llenarlos por miedo a recibir llamadas de clientes. */
 const SupplierContactsFields = ({
+  contactsWarning,
+  orderEmailsWarning,
   contacts,
   orderEmails,
   contactErrors,
@@ -93,6 +99,8 @@ const SupplierContactsFields = ({
   return (
     <>
       <Panel
+        id={SECTION.contacts}
+        warning={contactsWarning}
         title='Datos de contacto'
         description='Gestiona los contactos responsables de las áreas comerciales, operativas y administrativas de tu empresa. Son solo para Suminia: los compradores no los ven.'
       >
@@ -204,6 +212,8 @@ const SupplierContactsFields = ({
       </Panel>
 
       <Panel
+        id={SECTION.orderEmails}
+        warning={orderEmailsWarning}
         title='Correos para órdenes de compra'
         description='Cada orden de compra que recibas llega a estos correos. Puedes poner varios si el pedido debe llegar a la vez a ventas y a bodega.'
       >

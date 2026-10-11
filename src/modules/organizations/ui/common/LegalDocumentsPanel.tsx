@@ -18,6 +18,9 @@ import type {
 } from '../../model/organization.types';
 
 interface LegalDocumentsPanelProps {
+  /* Para llegar al panel desde el Resumen, y el aviso de lo que falta. */
+  id?: string;
+  warning?: string;
   kind: OrganizationKind;
   organizationId: string;
   documents: OrganizationDocument[];
@@ -36,6 +39,8 @@ interface LegalDocumentsPanelProps {
    "Guardar cambios" para registrarlo dejaria objetos sueltos cada vez que
    alguien sale de la pagina sin guardar. */
 const LegalDocumentsPanel = ({
+  id,
+  warning,
   kind,
   organizationId,
   documents,
@@ -71,6 +76,8 @@ const LegalDocumentsPanel = ({
 
   return (
     <Panel
+      id={id}
+      warning={warning}
       title='Documentos legales'
       description={
         editable
@@ -88,7 +95,7 @@ const LegalDocumentsPanel = ({
              puede pulsar: le basta con saber que falta. */
           return (
             <div
-              className={`document-slot${document ? ' is-filled' : ''}`}
+              className={`document-slot${document ? ' is-filled' : editable ? ' is-missing' : ''}`}
               key={option.value}
             >
               <span className='document-slot-icon'>
@@ -97,8 +104,13 @@ const LegalDocumentsPanel = ({
               <div className='document-slot-text'>
                 <strong>
                   {option.label}
-                  {option.required && !document && (
-                    <span className='document-required'> · obligatorio</span>
+                  {/* Lo que falta se marca en el hueco: "obligatorio" si sin el
+                      no se aprueba la empresa, "falta" si solo esta pendiente.
+                      Solo para quien lo puede subir. */}
+                  {editable && !document && (
+                    <span className='document-required'>
+                      {option.required ? ' · obligatorio' : ' · falta'}
+                    </span>
                   )}
                 </strong>
                 <small className='font-light'>

@@ -16,6 +16,8 @@ import type { ReactNode } from 'react';
    linea, que es donde se busca el boton de guardar de un formulario. */
 
 interface PanelProps {
+  /* Para llegar al panel con un enlace: /pagina#id. */
+  id?: string;
   title?: string;
   description?: string;
   /** A la derecha del titulo del panel: una accion secundaria o un estado. */
@@ -23,20 +25,27 @@ interface PanelProps {
   footer?: ReactNode;
   /** Formularios: acota el ancho para que un campo no mida 1600px. */
   narrow?: boolean;
+  /** Aviso de lo que falta llenar en este panel, arriba de su contenido. */
+  warning?: ReactNode;
   className?: string;
   children: ReactNode;
 }
 
 export const Panel = ({
+  id,
   title,
   description,
   aside,
   footer,
   narrow = false,
+  warning,
   className,
   children,
 }: PanelProps) => (
-  <section className={`panel${narrow ? ' is-narrow' : ''}${className ? ` ${className}` : ''}`}>
+  <section
+    id={id}
+    className={`panel${narrow ? ' is-narrow' : ''}${warning ? ' has-warning' : ''}${className ? ` ${className}` : ''}`}
+  >
     {(title || aside) && (
       <header className='panel-head'>
         <div>
@@ -47,7 +56,14 @@ export const Panel = ({
       </header>
     )}
 
-    <div className='panel-body'>{children}</div>
+    <div className='panel-body'>
+      {warning && (
+        <p className='panel-warning' role='status'>
+          {warning}
+        </p>
+      )}
+      {children}
+    </div>
 
     {footer && <footer className='panel-foot'>{footer}</footer>}
   </section>

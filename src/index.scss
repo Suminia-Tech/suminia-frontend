@@ -2588,6 +2588,75 @@ $area-bg: #f1f4f9;
   }
 }
 
+/* Lo que falta llenar en un panel. Ambar, el mismo de los avisos del Resumen:
+   no es un error —se puede guardar igual—, es algo pendiente. */
+.panel-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border-radius: var(--suminia-radio-caja);
+  background-color: #fff6e0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #8a5300;
+
+  &::before {
+    content: '!';
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background-color: #b26a00;
+    font-size: 12px;
+    font-weight: 700;
+    color: $white;
+  }
+}
+
+.panel.has-warning {
+  border-color: #f0c674;
+}
+
+/* Al llegar desde un enlace del Resumen, el panel queda por debajo de la
+   cabecera fija —62px— y no tapado por ella, y se resalta un momento para que
+   se vea a donde se llego. */
+.panel[id] {
+  scroll-margin-top: 80px;
+}
+
+.panel.is-targeted {
+  animation: panel-target 2.5s ease-out;
+}
+
+@keyframes panel-target {
+  0%,
+  40% {
+    box-shadow: 0 0 0 3px rgba(var(--theme-color-rgb), 0.35);
+  }
+
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+/* El campo que falta, dentro de un panel con aviso. */
+.form-control.is-missing {
+  border-color: #e0a94a;
+  background-color: #fffaf0;
+}
+
+/* El hueco de un documento que falta subir. */
+.document-slot.is-missing {
+  border-style: dashed;
+  border-color: #e0a94a;
+}
+
 /* Una pregunta de pocas opciones en una sola fila: Si/No, juridica/natural,
    publica/mixta/privada. */
 .yes-no {

@@ -7,6 +7,7 @@ import {
   IPS_SECTOR_OPTIONS,
   LEGAL_NATURE_OPTIONS,
 } from '../../lib/commercialProfile';
+import { SECTION } from '../../lib/pendings';
 import type { BuyerActivity, IpsSector, LegalNature } from '../../model/organization.types';
 
 /* Lo que el comprador escribe de su perfil. Cadenas: vacia es "sin elegir". */
@@ -22,6 +23,9 @@ export interface BuyerProfileValues {
 export type BuyerProfileErrors = Partial<Record<keyof BuyerProfileValues, string>>;
 
 interface BuyerProfileFieldsProps {
+  /* Lo que falta llenar en cada panel, si falta algo. */
+  natureWarning?: string;
+  paymentWarning?: string;
   values: BuyerProfileValues;
   errors: BuyerProfileErrors;
   onChange: (values: Partial<BuyerProfileValues>) => void;
@@ -32,12 +36,20 @@ interface BuyerProfileFieldsProps {
 
    La actividad depende de la naturaleza: cambiar de juridica a natural borra
    la actividad elegida, que en la otra lista no existe. */
-const BuyerProfileFields = ({ values, errors, onChange }: BuyerProfileFieldsProps) => {
+const BuyerProfileFields = ({
+  natureWarning,
+  paymentWarning,
+  values,
+  errors,
+  onChange,
+}: BuyerProfileFieldsProps) => {
   const actividades = values.legalNature ? BUYER_ACTIVITY_OPTIONS[values.legalNature] : [];
 
   return (
     <>
       <Panel
+        id={SECTION.buyerNature}
+        warning={natureWarning}
         title='Naturaleza de la organización'
         description='Decide qué documentos te pedimos para verificar tu empresa.'
       >
@@ -147,6 +159,8 @@ const BuyerProfileFields = ({ values, errors, onChange }: BuyerProfileFieldsProp
       </Panel>
 
       <Panel
+        id={SECTION.buyerPayment}
+        warning={paymentWarning}
         title='Medio de pago'
         description='La cuenta con la que pagas tus pedidos. Súbela también como certificado bancario en los documentos legales.'
       >

@@ -13,8 +13,8 @@ import {
   describeExporter,
   describeProductLines,
   CONTACT_AREA_OPTIONS,
-  LEGAL_DOCUMENT_OPTIONS,
 } from '../../lib/commercialProfile';
+import { supplierPendings } from '../../lib/pendings';
 import { formatTaxId } from '../../lib/taxId';
 import StatusBadge from '../common/StatusBadge';
 
@@ -32,16 +32,6 @@ import StatusBadge from '../common/StatusBadge';
    —cuantos productos, cuantos pedidos— viven en products y en orders, y un
    modulo nunca importa otro; el dia que se quieran aqui, entran como
    componentes desde la pagina, que es la que ve a los tres. */
-
-/* Lo que Suminia necesita para pagarle a un proveedor. Los cinco viajan juntos
-   —el backend rechaza media cuenta—, de modo que o estan todos o no hay cuenta. */
-const DATOS_DE_COBRO = [
-  'bankName',
-  'bankAccountType',
-  'bankAccountNumber',
-  'bankAccountHolder',
-  'bankAccountHolderTaxId',
-] as const;
 
 export const SupplierSummaryScreen = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -75,46 +65,11 @@ export const SupplierSummaryScreen = () => {
 
   const supplier = data.data;
   const isActive = supplier.status === 'ACTIVE';
-  const tieneCuenta = DATOS_DE_COBRO.every((campo) => Boolean(supplier[campo]));
 
-  /* Cada pendiente lleva a donde se resuelve. La declaracion va primero: sin
-     ella Suminia no puede aprobar la empresa, y lo demas se completa igual
-     despues. */
-  const pendientes = [
-    supplier.status === 'PENDING' &&
-      !supplier.declaration && {
-        texto: 'Falta tu declaración de autocontrol de riesgos (SAGRILAFT): sin ella no podemos aprobar tu empresa.',
-        enlace: 'Llenar la declaración',
-        href: '/supplier/account/declaration',
-      },
-    !supplier.activities?.length &&
-      !supplier.productLines?.length && {
-        texto: 'Falta contar qué haces y qué categorías de productos vendes.',
-        enlace: 'Completar el perfil',
-      },
-    !tieneCuenta && {
-      texto: 'Falta la cuenta bancaria donde Suminia te paga las ventas.',
-      enlace: 'Añadir la cuenta',
-    },
-    !supplier.city && {
-      texto: 'Falta la ciudad desde la que despachas.',
-      enlace: 'Completar los datos',
-    },
-    !supplier.orderEmails?.length && {
-      texto: 'Falta el correo al que deben llegar las órdenes de compra.',
-      enlace: 'Añadir el correo',
-    },
-    !supplier.contacts?.length && {
-      texto: 'Faltan las personas de contacto de tus áreas.',
-      enlace: 'Añadir contactos',
-    },
-    (supplier.documents?.length ?? 0) < LEGAL_DOCUMENT_OPTIONS.length && {
-      texto: 'Faltan documentos legales para verificar tu empresa.',
-      enlace: 'Subir documentos',
-    },
-  ]
-    .filter((p): p is { texto: string; enlace: string; href?: string } => Boolean(p))
-    .map((p) => ({ ...p, href: p.href ?? '/supplier/account/company' }));
+  /* Cada pendiente lleva al panel donde se resuelve, no solo a la pagina. La
+     regla vive en lib/pendings.ts: el formulario de Mi empresa marca los mismos
+     paneles con la misma lista. */
+  const pendientes = supplierPendings(supplier);
 
   return (
     <>

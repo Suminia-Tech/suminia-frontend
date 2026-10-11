@@ -6,6 +6,7 @@ import { isEmail } from '@/shared/lib/validators';
 import { Panel } from '@/shared/ui';
 
 import { ACTIVITY_OPTIONS, PRODUCT_LINE_OPTIONS } from '../../lib/commercialProfile';
+import { avisoDe, SECTION, type Pending } from '../../lib/pendings';
 import { formatTaxId } from '../../lib/taxId';
 import type {
   Organization,
@@ -98,6 +99,9 @@ interface OrganizationFormProps {
   /* Los documentos legales se suben al momento, no con "Guardar cambios", y por
      eso llegan ya armados: el formulario solo decide donde van. */
   legalDocuments?: ReactNode;
+  /* Lo que falta llenar, para marcar el panel donde se llena. Se calcula sobre
+     lo guardado: el aviso se va al guardar, no al empezar a escribir. */
+  pendientes?: Pending[];
 }
 
 const toValues = (organization: Organization): OrganizationFormValues => ({
@@ -139,6 +143,7 @@ const OrganizationForm = ({
   onSubmit,
   showSupplierFields = false,
   legalDocuments,
+  pendientes = [],
 }: OrganizationFormProps) => {
   /* El estado inicial se toma una sola vez. Para recoger los datos frescos tras
      guardar, quien renderiza este formulario le pasa una `key` que cambia con
@@ -300,6 +305,8 @@ const OrganizationForm = ({
           reemplazan los contactos por area. El comprador sigue como estaba. */}
       {showSupplierFields ? (
         <Panel
+          id={SECTION.info}
+          warning={avisoDe(pendientes, 'city')}
           title='Información de la empresa'
           description='Cómo se llama tu empresa en Suminia y desde dónde opera.'
         >
@@ -319,7 +326,7 @@ const OrganizationForm = ({
               <input
                 id='empresa-ciudad'
                 type='text'
-                className='form-control'
+                className={`form-control${avisoDe(pendientes, 'city') && !values.city.trim() ? ' is-missing' : ''}`}
                 value={values.city}
                 onChange={handleChange('city')}
               />
@@ -374,7 +381,7 @@ const OrganizationForm = ({
               <input
                 id='empresa-ciudad'
                 type='text'
-                className='form-control'
+                className={`form-control${avisoDe(pendientes, 'city') && !values.city.trim() ? ' is-missing' : ''}`}
                 value={values.city}
                 onChange={handleChange('city')}
               />
@@ -395,6 +402,8 @@ const OrganizationForm = ({
 
       {!showSupplierFields && (
         <BuyerProfileFields
+          natureWarning={avisoDe(pendientes, 'buyerNature')}
+          paymentWarning={avisoDe(pendientes, 'buyerPayment')}
           values={values}
           errors={buyerErrors}
           onChange={(cambios) => setValues((current) => ({ ...current, ...cambios }))}
@@ -404,6 +413,8 @@ const OrganizationForm = ({
       {showSupplierFields && (
         <>
           <Panel
+            id={SECTION.profile}
+            warning={avisoDe(pendientes, 'profile')}
             title='Perfil comercial'
             description='Qué haces en la cadena y qué vendes. Con esto Suminia te presenta a los compradores que buscan lo que ofreces.'
           >
@@ -485,6 +496,8 @@ const OrganizationForm = ({
           </Panel>
 
           <SupplierContactsFields
+            contactsWarning={avisoDe(pendientes, 'contacts')}
+            orderEmailsWarning={avisoDe(pendientes, 'orderEmails')}
             contacts={values.contacts}
             orderEmails={values.orderEmails}
             contactErrors={contactErrors}
@@ -558,6 +571,8 @@ const OrganizationForm = ({
           </Panel>
 
           <Panel
+            id={SECTION.bank}
+            warning={avisoDe(pendientes, 'bank')}
             title='Cuenta para recibir pagos'
             description='A dónde Suminia te consigna lo que te corresponde de cada pedido. Va entera o vacía: media cuenta la rechaza el banco el día del pago.'
           >
