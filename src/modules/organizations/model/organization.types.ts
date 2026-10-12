@@ -117,6 +117,10 @@ export interface Organization {
      anterior no los manda. */
   deliveryDaysMin?: number | null;
   deliveryDaysMax?: number | null;
+  /* Descuento financiero por pronto pago. Null: no lo ha dicho. */
+  offersEarlyPaymentDiscount?: boolean | null;
+  earlyPaymentDiscountRate?: number | null;
+  earlyPaymentDiscountDays?: number | null;
   /* A donde Suminia le consigna al proveedor. Null mientras no la registre; en
      un comprador siempre, porque a el no se le paga. */
   bankName: string | null;

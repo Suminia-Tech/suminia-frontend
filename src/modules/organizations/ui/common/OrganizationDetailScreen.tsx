@@ -288,14 +288,17 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
           {/* Del proveedor, y solo si las registro: son datos que se llenan
               despues de aprobado, de modo que en una solicitud nueva estaran
               vacios y un panel en blanco no dice nada. */}
-          {esProveedor && (organization.minOrderValue !== null || tieneCuenta) && (
+          {esProveedor &&
+            (organization.minOrderValue !== null ||
+              tieneCuenta ||
+              organization.offersEarlyPaymentDiscount != null) && (
             <Panel
               title='Condiciones comerciales'
               description='Las registra el proveedor desde su panel, después de quedar aprobado.'
             >
               <ul className='data-list'>
                 <li>
-                  <span className='font-light'>Pedido mínimo</span>
+                  <span className='font-light'>Monto mínimo</span>
                   <span>
                     {organization.minOrderValue !== null
                       ? new Intl.NumberFormat('es-CO', {
@@ -304,6 +307,16 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                           maximumFractionDigits: 0,
                         }).format(organization.minOrderValue)
                       : 'Sin mínimo'}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-light'>Pronto pago</span>
+                  <span>
+                    {organization.offersEarlyPaymentDiscount
+                      ? `${organization.earlyPaymentDiscountRate}% si paga en ${organization.earlyPaymentDiscountDays} días`
+                      : organization.offersEarlyPaymentDiscount === false
+                        ? 'No ofrece'
+                        : '—'}
                   </span>
                 </li>
                 {tieneCuenta && (

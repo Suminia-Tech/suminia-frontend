@@ -80,7 +80,7 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
   useScrollToHash(Boolean(organization));
 
   const handleSubmit = async (values: OrganizationFormValues) => {
-    if (!organizationId) return;
+    if (!organizationId || !organization) return;
     setErrorMessage(null);
 
     try {
@@ -110,9 +110,20 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
                     | 'CORRIENTE'
                     | '') || null,
                 bankAccountNumber: values.bankAccountNumber.trim() || null,
-                bankAccountHolder: values.bankAccountHolder.trim() || null,
-                bankAccountHolderTaxId:
-                  values.bankAccountHolderTaxId.trim() || null,
+                /* Titular y NIT son los de la empresa: el backend los fija desde
+                   los datos legales, y aqui se mandan igual para que la cuenta
+                   viaje entera. Sin banco no hay cuenta, ni titular. */
+                bankAccountHolder: values.bankName.trim() ? organization.legalName : null,
+                bankAccountHolderTaxId: values.bankName.trim() ? organization.taxId : null,
+                ...(values.earlyPayment
+                  ? {
+                      offersEarlyPaymentDiscount: values.earlyPayment === 'yes',
+                      earlyPaymentDiscountRate:
+                        values.earlyPayment === 'yes' ? Number(values.earlyPaymentRate) : null,
+                      earlyPaymentDiscountDays:
+                        values.earlyPayment === 'yes' ? Number(values.earlyPaymentDays) : null,
+                    }
+                  : {}),
                 activities: values.activities,
                 productLines: values.productLines,
                 exporter:

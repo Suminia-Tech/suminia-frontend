@@ -28,6 +28,9 @@ export interface UpdateSupplierRequest {
   minOrderValue?: number | null;
   deliveryDaysMin?: number | null;
   deliveryDaysMax?: number | null;
+  offersEarlyPaymentDiscount?: boolean | null;
+  earlyPaymentDiscountRate?: number | null;
+  earlyPaymentDiscountDays?: number | null;
   /* Los cinco de la cuenta viajan juntos: el backend rechaza media cuenta.
      Nulos en los cinco la quitan. */
   bankName?: string | null;

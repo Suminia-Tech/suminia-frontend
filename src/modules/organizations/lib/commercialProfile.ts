@@ -107,14 +107,16 @@ export const legalDocumentOptions = (
     },
   ];
 
-  if (esComprador) {
-    opciones.push({
-      value: 'BANK_CERTIFICATE',
-      label: 'Certificado bancario',
-      help: 'De la cuenta que registraste como medio de pago.',
-      required: true,
-    });
-  }
+  /* El certificado bancario lo suben los dos: prueba que la cuenta es de la
+     empresa, la del comprador para pagar y la del proveedor para cobrar. */
+  opciones.push({
+    value: 'BANK_CERTIFICATE',
+    label: 'Certificado bancario',
+    help: esComprador
+      ? 'Actualizado, de la cuenta que registraste como medio de pago.'
+      : 'Actualizado, de la cuenta donde Suminia te paga tus ventas.',
+    required: esComprador,
+  });
 
   return natural
     ? opciones.filter((o) => o.value !== 'CHAMBER_OF_COMMERCE' && o.value !== 'SHAREHOLDING')

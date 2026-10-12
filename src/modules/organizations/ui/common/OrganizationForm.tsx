@@ -51,6 +51,11 @@ export interface OrganizationFormValues {
      decir. */
   deliveryDaysMin: string;
   deliveryDaysMax: string;
+  /* El descuento por pronto pago: si lo ofrece, cuanto y en cuantos dias.
+     Vacio es "no lo ha dicho". */
+  earlyPayment: '' | 'yes' | 'no';
+  earlyPaymentRate: string;
+  earlyPaymentDays: string;
 
   /* La cuenta a donde se le consigna. Tambien solo del proveedor. */
   bankName: string;
@@ -87,6 +92,7 @@ type TextField = Exclude<
   | 'legalNature'
   | 'buyerActivity'
   | 'ipsSector'
+  | 'earlyPayment'
 >;
 
 interface OrganizationFormProps {
@@ -115,6 +121,20 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
     organization.deliveryDaysMin == null ? '' : String(organization.deliveryDaysMin),
   deliveryDaysMax:
     organization.deliveryDaysMax == null ? '' : String(organization.deliveryDaysMax),
+  earlyPayment:
+    organization.offersEarlyPaymentDiscount == null
+      ? ''
+      : organization.offersEarlyPaymentDiscount
+        ? 'yes'
+        : 'no',
+  earlyPaymentRate:
+    organization.earlyPaymentDiscountRate == null
+      ? ''
+      : String(organization.earlyPaymentDiscountRate),
+  earlyPaymentDays:
+    organization.earlyPaymentDiscountDays == null
+      ? ''
+      : String(organization.earlyPaymentDiscountDays),
   bankName: organization.bankName ?? '',
   bankAccountType: organization.bankAccountType ?? '',
   bankAccountNumber: organization.bankAccountNumber ?? '',
@@ -159,6 +179,7 @@ const OrganizationForm = ({
   const [contactErrors, setContactErrors] = useState<Record<number, string>>({});
   const [orderEmailErrors, setOrderEmailErrors] = useState<Record<number, string>>({});
   const [deliveryError, setDeliveryError] = useState<string | null>(null);
+  const [earlyPaymentError, setEarlyPaymentError] = useState<string | null>(null);
 
   const handleChange =
     (field: TextField) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -216,13 +237,27 @@ const OrganizationForm = ({
       nextDeliveryError = 'El primer número no puede ser mayor que el segundo.';
     }
 
+    /* Si ofrece pronto pago, el porcentaje y los dias son lo que lo define. */
+    let nextEarlyPaymentError: string | null = null;
+    if (values.earlyPayment === 'yes') {
+      const tasa = Number(values.earlyPaymentRate);
+      const dias = Number(values.earlyPaymentDays);
+      if (!values.earlyPaymentRate.trim() || !(tasa > 0 && tasa <= 100)) {
+        nextEarlyPaymentError = 'Indica el porcentaje del descuento, entre 0 y 100.';
+      } else if (!values.earlyPaymentDays.trim() || !(Number.isInteger(dias) && dias >= 1)) {
+        nextEarlyPaymentError = 'Indica en cuántos días hay que pagar para tener el descuento.';
+      }
+    }
+
     setContactErrors(nextContactErrors);
     setOrderEmailErrors(nextOrderEmailErrors);
     setDeliveryError(nextDeliveryError);
+    setEarlyPaymentError(nextEarlyPaymentError);
     return (
       Object.keys(nextContactErrors).length === 0 &&
       Object.keys(nextOrderEmailErrors).length === 0 &&
-      nextDeliveryError === null
+      nextDeliveryError === null &&
+      nextEarlyPaymentError === null
     );
   };
 
@@ -567,6 +602,75 @@ const OrganizationForm = ({
                 </small>
                 {deliveryError && <small className='text-danger'>{deliveryError}</small>}
               </div>
+
+              <fieldset className='form-grid-full'>
+                <legend className='form-label'>¿Ofrece descuentos financieros por pronto pago?</legend>
+                <div className='yes-no'>
+                  {(
+                    [
+                      { value: 'yes', label: 'Sí' },
+                      { value: 'no', label: 'No' },
+                    ] as const
+                  ).map((option) => (
+                    <div className='form-check' key={option.value}>
+                      <input
+                        id={`pronto-pago-${option.value}`}
+                        type='radio'
+                        name='pronto-pago'
+                        className='form-check-input'
+                        checked={values.earlyPayment === option.value}
+                        onChange={() =>
+                          setValues((current) => ({ ...current, earlyPayment: option.value }))
+                        }
+                      />
+                      <label className='form-check-label' htmlFor={`pronto-pago-${option.value}`}>
+                        {option.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
+
+              {/* El porcentaje y los dias solo si lo ofrece: a quien dice que
+                  no, no se le pregunta cuanto. */}
+              {values.earlyPayment === 'yes' && (
+                <>
+                  <div>
+                    <label className='form-label' htmlFor='pronto-pago-porcentaje'>
+                      Descuento (%)
+                    </label>
+                    <input
+                      id='pronto-pago-porcentaje'
+                      type='number'
+                      min={0}
+                      max={100}
+                      step={0.5}
+                      className='form-control'
+                      placeholder='2'
+                      value={values.earlyPaymentRate}
+                      onChange={handleChange('earlyPaymentRate')}
+                    />
+                  </div>
+                  <div>
+                    <label className='form-label' htmlFor='pronto-pago-dias'>
+                      Si paga dentro de (días)
+                    </label>
+                    <input
+                      id='pronto-pago-dias'
+                      type='number'
+                      min={1}
+                      max={365}
+                      className='form-control'
+                      placeholder='15'
+                      value={values.earlyPaymentDays}
+                      onChange={handleChange('earlyPaymentDays')}
+                    />
+                  </div>
+                  {earlyPaymentError && (
+                    <small className='text-danger form-grid-full'>{earlyPaymentError}</small>
+                  )}
+                </>
+              )}
             </div>
           </Panel>
 
@@ -612,28 +716,32 @@ const OrganizationForm = ({
                 />
               </div>
               <div>
+                {/* Titular y NIT salen de los datos legales y no se editan: la
+                    cuenta tiene que ser de la empresa. El backend los fija igual,
+                    aunque se le mande otra cosa. */}
                 <label className='form-label' htmlFor='empresa-titular'>Titular</label>
                 <input
                   id='empresa-titular'
                   type='text'
                   className='form-control'
-                  value={values.bankAccountHolder}
-                  onChange={handleChange('bankAccountHolder')}
+                  value={organization.legalName}
+                  disabled
+                  readOnly
                 />
                 <small className='font-light'>
-                  Puede no ser la razón social: el banco valida el nombre contra el documento.
+                  El titular de la cuenta bancaria debe corresponder con la razón social, no se
+                  permiten pagos a terceros.
                 </small>
               </div>
               <div>
-                <label className='form-label' htmlFor='empresa-titular-nit'>
-                  NIT o cédula del titular
-                </label>
+                <label className='form-label' htmlFor='empresa-titular-nit'>NIT del titular</label>
                 <input
                   id='empresa-titular-nit'
                   type='text'
                   className='form-control'
-                  value={values.bankAccountHolderTaxId}
-                  onChange={handleChange('bankAccountHolderTaxId')}
+                  value={formatTaxId(organization.taxId)}
+                  disabled
+                  readOnly
                 />
               </div>
             </div>
