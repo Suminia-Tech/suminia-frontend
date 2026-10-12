@@ -27,6 +27,7 @@ import LegalDocumentsPanel from './LegalDocumentsPanel';
 import OrganizationForm, { type OrganizationFormValues } from './OrganizationForm';
 import { isContactEmpty } from './SupplierContactsFields';
 import StatusBadge from './StatusBadge';
+import { DeclarationStatusPanel } from '../supplier/DeclarationStatusPanel';
 
 /* Los datos de la propia empresa y en que va su solicitud.
 
@@ -287,15 +288,20 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           showSupplierFields={kind === 'supplier'}
           pendientes={pendientes}
           legalDocuments={
-            <LegalDocumentsPanel
-              id={SECTION.documents}
-              warning={avisoDe(pendientes, 'documents')}
-              kind={kind}
-              organizationId={organization.id}
-              documents={organization.documents ?? []}
-              editable
-              legalNature={organization.legalNature}
-            />
+            <>
+              <LegalDocumentsPanel
+                id={SECTION.documents}
+                warning={avisoDe(pendientes, 'documents')}
+                kind={kind}
+                organizationId={organization.id}
+                documents={organization.documents ?? []}
+                editable
+                legalNature={organization.legalNature}
+              />
+              {/* Lo legal junto: la declaracion se firma en su pantalla, pero
+                  se busca aqui. */}
+              {kind === 'supplier' && <DeclarationStatusPanel organization={organization} />}
+            </>
           }
         />
       ) : (
