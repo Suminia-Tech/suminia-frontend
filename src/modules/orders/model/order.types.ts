@@ -125,3 +125,30 @@ export interface AcceptAvailabilityRequest {
   id: string;
   items: { itemId: string; quantity: number; backorderQuantity: number }[];
 }
+
+/* La facturacion de la plataforma en un mes, para el personal de Suminia: lo
+   que se pidio y no se anulo ni se rechazo. */
+export interface MonthlyBilling {
+  /** "2026-10", en hora de Colombia. */
+  month: string;
+  orders: number;
+  billed: number;
+  commission: number;
+}
+
+/* Lo que suma un filtro de pedidos, para el personal de Suminia, y con que se
+   puede filtrar. El dinero y las unidades cuentan solo lo que no se anulo ni
+   se rechazo; `orders` cuenta todos los que deja ver el filtro. */
+export interface OrderMetrics {
+  orders: number;
+  billed: number;
+  commission: number;
+  units: number;
+  options: {
+    months: string[];
+    categories: { id: string; name: string }[];
+    cities: string[];
+    departments: string[];
+    clientTypes: string[];
+  };
+}

@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { AlertTriangle, Check } from 'react-feather';
+import { useState } from 'react';
+import { AlertTriangle, Check, ChevronDown } from 'react-feather';
 
 import { useGetBuyersQuery, useGetSuppliersQuery } from '@/modules/organizations';
-import { useGetOrdersQuery } from '@/modules/orders';
+import { useGetBillingQuery } from '@/modules/orders';
 import { useGetProductsQuery } from '@/modules/products';
 import { PageHeader, Panel } from '@/shared/ui';
 
@@ -20,8 +21,9 @@ import { PageHeader, Panel } from '@/shared/ui';
    tiene un proveedor menos. Despues el dinero, que es lo que se consulta
    cuando no hay nada pendiente.
 
-   Las cifras no piden endpoints nuevos: salen del `meta.totalCount` de los
-   listados que ya existen, pidiendo una pagina de uno. */
+   Los pendientes salen del `meta.totalCount` de los listados que ya existen,
+   pidiendo una pagina de uno. La facturacion, de /orders/billing, que la
+   agrupa por mes en el backend. */
 
 const pesos = (valor: number) =>
   new Intl.NumberFormat('es-CO', {
@@ -29,6 +31,26 @@ const pesos = (valor: number) =>
     currency: 'COP',
     maximumFractionDigits: 0,
   }).format(valor);
+
+/* "Octubre de 2026". El mes llega como "2026-10" y se lee en UTC para que no
+   retroceda un dia —y con el, un mes— por la zona horaria. */
+const FORMATO_MES = new Intl.DateTimeFormat('es-CO', {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const nombreDelMes = (month: string) => {
+  const texto = FORMATO_MES.format(new Date(`${month}-01T00:00:00Z`));
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+};
+
+/* El mes en curso en Colombia, como lo agrupa el backend: "2026-10". */
+const mesActual = () =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: '2-digit',
+  }).format(new Date());
 
 /* Una pagina de uno: lo que interesa es el total que devuelve el meta, no las
    filas. Pedir cien para contarlas seria traerse el listado entero. */
@@ -48,30 +70,25 @@ export const AdminSummary = () => {
     filter: { status: 'PENDING_REVIEW' },
   });
 
-  /* Los pedidos si se traen: hace falta sumar la comision de cada uno, y el
-     backend no expone todavia un total agregado. Con el volumen de hoy cabe en
-     una pagina; el dia que no quepa, la suma se pide al backend. */
-  const { data: pedidos } = useGetOrdersQuery({
-    page: 1,
-    limit: 100,
-    sort: 'createdAt',
-    sortDirection: 'desc',
-  });
+  const { data: facturacion } = useGetBillingQuery();
+  const [verAnteriores, setVerAnteriores] = useState(false);
 
   const proveedoresPendientes = proveedores?.data.meta.totalCount ?? 0;
   const compradoresPendientes = compradores?.data.meta.totalCount ?? 0;
   const productosPendientes = productos?.data.meta.totalCount ?? 0;
-  const lista = pedidos?.data.data ?? [];
 
-  /* Los anulados y los rechazados no dejan nada: no se cobraron. */
-  const facturables = lista.filter(
-    (order) => order.status !== 'CANCELLED' && order.status !== 'REJECTED',
-  );
-  const facturado = facturables.reduce((suma, order) => suma + order.total, 0);
-  const comision = facturables.reduce(
-    (suma, order) => suma + (order.commissionAmount ?? 0),
-    0,
-  );
+  /* Se ve el mes en curso; los anteriores quedan plegados debajo. Un mes sin
+     pedidos no llega del backend, de modo que el actual se completa en cero
+     en vez de desaparecer. */
+  const mes = mesActual();
+  const meses = facturacion?.data ?? [];
+  const actual = meses.find((item) => item.month === mes) ?? {
+    month: mes,
+    orders: 0,
+    billed: 0,
+    commission: 0,
+  };
+  const anteriores = meses.filter((item) => item.month < mes);
 
   const pendientes = [
     proveedoresPendientes > 0 && {
@@ -95,7 +112,7 @@ export const AdminSummary = () => {
     <>
       <PageHeader
         title='Resumen'
-        description='Lo que espera una decisión y lo que se ha movido en la plataforma.'
+        description='Lo que espera una decisión y lo que se ha facturado en la plataforma.'
       />
 
       <Panel
@@ -121,8 +138,8 @@ export const AdminSummary = () => {
       </Panel>
 
       <Panel
-        title='Lo que se ha movido'
-        description='Sobre los pedidos que no se anularon ni se rechazaron: esos no se cobran.'
+        title='Facturación'
+        description={`${nombreDelMes(mes)}. Sobre los pedidos que no se anularon ni se rechazaron: esos no se cobran.`}
         aside={
           <Link href='/admin/orders' className='btn btn-outline-secondary btn-sm'>
             Ver los pedidos
@@ -132,17 +149,58 @@ export const AdminSummary = () => {
         <ul className='data-list'>
           <li>
             <span className='font-light'>Pedidos</span>
-            <span>{facturables.length}</span>
+            <span>{actual.orders}</span>
           </li>
           <li>
             <span className='font-light'>Facturado</span>
-            <span>{pesos(facturado)}</span>
+            <span>{pesos(actual.billed)}</span>
           </li>
           <li>
             <span className='font-light'>Comisión de Suminia</span>
-            <span>{pesos(comision)}</span>
+            <span>{pesos(actual.commission)}</span>
           </li>
         </ul>
+
+        {/* Los meses anteriores, plegados: se consultan, no se miran cada
+            dia. El mismo control que el historial de versiones de los
+            documentos. */}
+        {anteriores.length > 0 && (
+          <>
+            <button
+              type='button'
+              className='document-history-toggle'
+              aria-expanded={verAnteriores}
+              onClick={() => setVerAnteriores((current) => !current)}
+            >
+              <ChevronDown size={14} />
+              {verAnteriores ? 'Ocultar' : 'Ver'} meses anteriores ({anteriores.length})
+            </button>
+            {verAnteriores && (
+              <div className='catalog-table-scroll billing-history'>
+                <table className='catalog-table'>
+                  <thead>
+                    <tr>
+                      <th>Mes</th>
+                      <th className='num'>Pedidos</th>
+                      <th className='num'>Facturado</th>
+                      <th className='num'>Comisión de Suminia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {anteriores.map((item) => (
+                      <tr key={item.month}>
+                        <td>{nombreDelMes(item.month)}</td>
+                        <td className='num'>{item.orders}</td>
+                        <td className='num'>{pesos(item.billed)}</td>
+                        <td className='num'>{pesos(item.commission)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
       </Panel>
     </>
   );

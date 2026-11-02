@@ -71,11 +71,19 @@ const pesos = (valor: number, moneda: string) =>
     maximumFractionDigits: 0,
   }).format(valor);
 
+/* El tiempo en palabras: "mismo día", "3 días hábiles" o "2 a 5 días
+   hábiles". Los dos en 0 son el mismo dia, como los guarda el proveedor. */
+const tiempo = (min: number, max: number): string =>
+  max === 0
+    ? 'el mismo día'
+    : min === max
+      ? `${min} ${min === 1 ? 'día hábil' : 'días hábiles'}`
+      : `${min} a ${max} días hábiles`;
+
 /* "Entrega en 2 a 5 días hábiles", o null si el proveedor no lo ha dicho. */
 const plazoDeEntrega = (min: number | null, max: number | null): string | null => {
   if (min === null || max === null) return null;
-  if (min === max) return `Entrega en ${min} ${min === 1 ? 'día hábil' : 'días hábiles'}`;
-  return `Entrega en ${min} a ${max} días hábiles`;
+  return max === 0 ? 'Entrega el mismo día' : `Entrega en ${tiempo(min, max)}`;
 };
 
 export const PublicProductScreen = ({
@@ -350,7 +358,19 @@ export const PublicProductScreen = ({
                 </li>
                 <li>
                   <Truck size={16} />
-                  <span>{plazo ?? 'Plazo de entrega por confirmar'}</span>
+                  <span>
+                    {plazo ?? 'Plazo de entrega por confirmar'}
+                    {/* Las ciudades donde el proveedor entrega distinto: el
+                        general vale para las demas. */}
+                    {politica.deliveryTimes?.length ? (
+                      <small className='product-delivery-cities font-light'>
+                        {politica.deliveryTimes
+                          .map((time) => `${time.city}: ${tiempo(time.daysMin, time.daysMax)}`)
+                          .join(' · ')}
+                        {plazo ? '. En las demás ciudades, el tiempo general.' : '.'}
+                      </small>
+                    ) : null}
+                  </span>
                 </li>
                 <li>
                   <ShoppingBag size={16} />

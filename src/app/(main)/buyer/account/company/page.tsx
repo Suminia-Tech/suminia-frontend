@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function EmpresaPage() {
   return (
     <div className='dashboard-profile'>
-      <BuyerCompanyScreen />
+      <BuyerCompanyScreen section='empresa' />
     </div>
   );
 }

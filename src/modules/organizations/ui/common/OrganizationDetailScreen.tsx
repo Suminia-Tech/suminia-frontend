@@ -19,12 +19,15 @@ import {
   type OrganizationKind,
 } from '../../hooks/useOrganizationAdmin';
 import {
+  BUYER_CONTACT_AREA_OPTIONS,
   CONTACT_AREA_OPTIONS,
+  contactAreaLabel,
   describeBuyerProfile,
   describeActivities,
   describeExporter,
   describeProductLines,
 } from '../../lib/commercialProfile';
+import { formatDeliveryTime } from '../../lib/deliveryTime';
 import { formatTaxId } from '../../lib/taxId';
 import type { OrganizationStatus } from '../../model/organization.types';
 import DeclarationSummaryPanel from './DeclarationSummaryPanel';
@@ -268,7 +271,7 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
           {/* La declaracion va justo despues de lo registrado: es lo otro que
               hay que leer para decidir, y sin ella el backend no deja aprobar.
               Si falta se dice, para no pulsar "Aprobar" y llevarse el error. */}
-          {esProveedor &&
+          {(esProveedor || decidiendo || organization.declaration) &&
             (organization.declaration ? (
               <DeclarationSummaryPanel
                 declaration={organization.declaration}
@@ -279,17 +282,57 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                 <p className='review-missing mb-0'>
                   <AlertTriangle size={16} />
                   {decidiendo
-                    ? 'El proveedor todavía no la envía. No se puede aprobar hasta que lo haga.'
+                    ? `El ${esProveedor ? 'proveedor' : 'comprador'} todavía no la envía. No se puede aprobar hasta que lo haga.`
                     : 'Se aprobó antes de que Suminia pidiera esta declaración.'}
                 </p>
               </Panel>
             ))}
+
+          {/* Para logistica y visitas de calidad. Solo si hay alguna: no es
+              obligatorio, y un panel vacio no dice nada. */}
+          {esProveedor && Boolean(organization.warehouses?.length) && (
+            <Panel
+              title='Bodegas y puntos de inventario'
+              description='Dónde guarda y desde dónde despacha la mercancía.'
+            >
+              <ul className='data-list'>
+                {organization.warehouses?.map((warehouse, index) => (
+                  <li key={warehouse.id}>
+                    <span className='font-light'>{warehouse.name ?? `Bodega ${index + 1}`}</span>
+                    <span>
+                      {warehouse.address} · {warehouse.city}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
+
+          {/* La otra condicion sin la cual el backend no deja aprobar. */}
+          {esProveedor && (
+            <Panel title='Facturación electrónica'>
+              {organization.issuesElectronicInvoices === true ? (
+                <p className='mb-0'>Expide factura electrónica de venta validada por la DIAN.</p>
+              ) : (
+                <p className='review-missing mb-0'>
+                  <AlertTriangle size={16} />
+                  {organization.issuesElectronicInvoices === false
+                    ? 'Respondió que no expide factura electrónica. No se puede aprobar.'
+                    : decidiendo
+                      ? 'El proveedor todavía no responde si expide factura electrónica. No se puede aprobar hasta que responda que sí.'
+                      : 'Se aprobó antes de que Suminia lo preguntara.'}
+                </p>
+              )}
+            </Panel>
+          )}
 
           {/* Del proveedor, y solo si las registro: son datos que se llenan
               despues de aprobado, de modo que en una solicitud nueva estaran
               vacios y un panel en blanco no dice nada. */}
           {esProveedor &&
             (organization.minOrderValue !== null ||
+              organization.deliveryDaysMin != null ||
+              Boolean(organization.deliveryTimes?.length) ||
               tieneCuenta ||
               organization.offersEarlyPaymentDiscount != null) && (
             <Panel
@@ -307,6 +350,29 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                           maximumFractionDigits: 0,
                         }).format(organization.minOrderValue)
                       : 'Sin mínimo'}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-light'>Tiempo de entrega</span>
+                  <span>
+                    {formatDeliveryTime(organization.deliveryDaysMin, organization.deliveryDaysMax) ??
+                      '—'}
+                  </span>
+                </li>
+                {organization.deliveryTimes?.map((time) => (
+                  <li key={time.city}>
+                    <span className='font-light'>Entrega en {time.city}</span>
+                    <span>{formatDeliveryTime(time.daysMin, time.daysMax)}</span>
+                  </li>
+                ))}
+                <li>
+                  <span className='font-light'>Plazo neto</span>
+                  <span>
+                    {organization.paymentTermDays == null
+                      ? '—'
+                      : organization.paymentTermDays === 0
+                        ? 'De contado'
+                        : `${organization.paymentTermDays} días`}
                   </span>
                 </li>
                 <li>
@@ -342,6 +408,10 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                       <span className='font-light'>Documento del titular</span>
                       <span>{organization.bankAccountHolderTaxId}</span>
                     </li>
+                    <li>
+                      <span className='font-light'>Llave Bre-B</span>
+                      <span>{organization.breBKey ?? '—'}</span>
+                    </li>
                   </>
                 )}
               </ul>
@@ -350,37 +420,76 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
 
           {/* Con quien hablar en la empresa. Tambien lo llena despues de
               aprobada, y por eso solo aparece si hay algo. */}
-          {esProveedor &&
-            (Boolean(organization.contacts?.length) ||
-              Boolean(organization.orderEmails?.length)) && (
+          {(Boolean(organization.contacts?.length) ||
+            Boolean(organization.orderEmails?.length)) && (
               <Panel
                 title='Contactos'
-                description='Las personas de cada área y a dónde llegan las órdenes de compra.'
+                description={
+                  esProveedor
+                    ? 'Las personas de cada área y a dónde llegan las órdenes de compra.'
+                    : 'Las personas de cada área de la organización.'
+                }
               >
                 <ul className='data-list'>
-                  {CONTACT_AREA_OPTIONS.map(({ value: area, label }) => {
-                    const contact = organization.contacts?.find((c) => c.area === area);
-                    return (
-                      <li key={area}>
-                        <span className='font-light'>{label}</span>
-                        <span>
-                          {contact
-                            ? [contact.name, contact.position, contact.email, contact.phone]
-                                .filter(Boolean)
-                                .join(' · ')
-                            : '—'}
-                        </span>
-                      </li>
-                    );
-                  })}
-                  <li>
-                    <span className='font-light'>Órdenes de compra</span>
-                    <span>
-                      {organization.orderEmails?.length
-                        ? organization.orderEmails.join(', ')
-                        : '—'}
-                    </span>
-                  </li>
+                  {(esProveedor ? CONTACT_AREA_OPTIONS : BUYER_CONTACT_AREA_OPTIONS).map(
+                    ({ value: area, label }) => {
+                      /* Varias en los auxiliares de compras; una en las demas. */
+                      const people = organization.contacts?.filter((c) => c.area === area) ?? [];
+                      return (
+                        <li key={area}>
+                          <span className='font-light'>{label}</span>
+                          <span>
+                            {people.length
+                              ? people
+                                  .map((contact) =>
+                                    [contact.name, contact.position, contact.email, contact.phone]
+                                      .filter(Boolean)
+                                      .join(' · '),
+                                  )
+                                  .join(' / ')
+                              : '—'}
+                          </span>
+                        </li>
+                      );
+                    },
+                  )}
+                  {/* Las areas propias de la empresa, despues de las sugeridas
+                      y con su nombre. */}
+                  {[
+                    ...new Set([
+                      ...(organization.customContactAreas ?? []),
+                      ...(organization.contacts ?? [])
+                        .filter((contact) => contact.area === 'OTHER')
+                        .map((contact) => contactAreaLabel(contact)),
+                    ]),
+                  ].map((label) => (
+                    <li key={`propia-${label}`}>
+                      <span className='font-light'>{label}</span>
+                      <span>
+                        {(organization.contacts ?? [])
+                          .filter(
+                            (contact) =>
+                              contact.area === 'OTHER' && contactAreaLabel(contact) === label,
+                          )
+                          .map((contact) =>
+                            [contact.name, contact.position, contact.email, contact.phone]
+                              .filter(Boolean)
+                              .join(' · '),
+                          )
+                          .join(' / ') || '—'}
+                      </span>
+                    </li>
+                  ))}
+                  {esProveedor && (
+                    <li>
+                      <span className='font-light'>Órdenes de compra</span>
+                      <span>
+                        {organization.orderEmails?.length
+                          ? organization.orderEmails.join(', ')
+                          : '—'}
+                      </span>
+                    </li>
+                  )}
                 </ul>
               </Panel>
             )}
@@ -446,6 +555,7 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
             organizationId={organization.id}
             documents={organization.documents ?? []}
             editable={false}
+            reviewable={canDecide}
             legalNature={organization.legalNature}
           />
         </aside>

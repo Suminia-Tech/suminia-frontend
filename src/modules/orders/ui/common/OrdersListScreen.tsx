@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { ArrowRight, Package } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -9,12 +9,20 @@ import { formatDate } from '@/shared/lib/dates';
 import { PageHeader, Pagination } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
-import { useGetOrdersQuery } from '../../api/ordersApi';
+import { useGetOrderMetricsQuery, useGetOrdersQuery } from '../../api/ordersApi';
 import {
   ORDER_STATUS_CLASS,
   ORDER_STATUS_LABEL,
 } from '../../lib/orderStatus';
+import {
+  EMPTY_STAFF_FILTERS,
+  monthLabel,
+  monthOf,
+  toFilterParams,
+  type StaffOrderFilters,
+} from '../../lib/staffFilters';
 import type { OrderStatus } from '../../model/order.types';
+import StaffOrderFiltersPanel from '../staff/StaffOrderFiltersPanel';
 
 /* Los pedidos: los que hizo la empresa si es compradora, los que le hicieron si
    es proveedora, y todos si quien mira es personal de Suminia.
@@ -43,7 +51,7 @@ const COPY: Record<
     titulo: 'Mis pedidos',
     descripcion: 'Lo que has pedido y en qué va cada entrega.',
     vacio: 'Todavía no has hecho ningún pedido.',
-    basePath: '/buyer/account/orders',
+    basePath: '/buyer/orders',
   },
   supplier: {
     titulo: 'Pedidos recibidos',
@@ -85,6 +93,15 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
   const copy = COPY[side];
   const [status, setStatus] = useState<OrderStatus | ''>('');
   const [page, setPage] = useState(1);
+  /* Los filtros de analisis son solo del personal de Suminia: el proveedor y
+     el comprador ven sus propios pedidos, y con el estado les basta. */
+  const [staffFilters, setStaffFilters] = useState<StaffOrderFilters>(EMPTY_STAFF_FILTERS);
+  const isStaff = side === 'staff';
+
+  const filter = {
+    ...(status ? { status } : {}),
+    ...(isStaff ? toFilterParams(staffFilters) : {}),
+  };
 
   const { data, isLoading, isError, error } = useGetOrdersQuery(
     {
@@ -92,10 +109,11 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
       limit: PAGE_SIZE,
       sort: 'createdAt',
       sortDirection: 'desc',
-      ...(status ? { filter: { status } } : {}),
+      ...(Object.keys(filter).length > 0 ? { filter } : {}),
     },
     { skip: !hydrated },
   );
+  const { data: metrics } = useGetOrderMetricsQuery(filter, { skip: !hydrated || !isStaff });
 
   if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
 
@@ -135,13 +153,24 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
         ))}
       </div>
 
+      {isStaff && (
+        <StaffOrderFiltersPanel
+          filters={staffFilters}
+          metrics={metrics?.data}
+          onChange={(next) => {
+            setStaffFilters(next);
+            setPage(1);
+          }}
+        />
+      )}
+
       {orders.length === 0 ? (
         <div className='orders-empty'>
           <Package size={28} />
           <p className='font-light'>
-            {status
+            {status || Object.keys(filter).length > 0
               ? side === 'staff'
-                ? 'No hay pedidos en ese estado.'
+                ? 'No hay pedidos con esos filtros.'
                 : 'No tienes pedidos en ese estado.'
               : copy.vacio}
           </p>
@@ -155,58 +184,68 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
         </div>
       ) : (
         <ul className='orders-list'>
-          {orders.map((order) => (
-            <li key={order.id}>
-              <Link href={`${copy.basePath}/${order.id}`}>
-                <div className='orders-line-main'>
-                  <span className='orders-number'>{order.code}</span>
-                  {/* La otra empresa: quien vende si miro como comprador, y
-                      quien compra si miro como proveedor. Para el personal
-                      interno no hay "la otra": van las dos, porque lo que se
-                      mira es la operacion entera. */}
-                  <span className='orders-supplier'>
-                    {side === 'staff' ? (
-                      <>
-                        {order.buyerOrganizationName}
-                        <ArrowRight size={13} className='orders-arrow' />
-                        {order.supplierOrganizationName}
-                      </>
-                    ) : side === 'buyer' ? (
-                      order.supplierOrganizationName
-                    ) : (
-                      order.buyerOrganizationName
-                    )}
+          {orders.map((order, index) => (
+            <Fragment key={order.id}>
+              {/* Clasificados por mes y año: un encabezado cada vez que cambia
+                  el mes, en hora de Colombia como lo cuenta el backend. Solo
+                  para el personal de Suminia, que es quien compara meses. */}
+              {isStaff &&
+                (index === 0 ||
+                  monthOf(orders[index - 1].createdAt) !== monthOf(order.createdAt)) && (
+                  <li className='orders-month'>{monthLabel(monthOf(order.createdAt))}</li>
+                )}
+              <li>
+                <Link href={`${copy.basePath}/${order.id}`}>
+                  <div className='orders-line-main'>
+                    <span className='orders-number'>{order.code}</span>
+                    {/* La otra empresa: quien vende si miro como comprador, y
+                        quien compra si miro como proveedor. Para el personal
+                        interno no hay "la otra": van las dos, porque lo que se
+                        mira es la operacion entera. */}
+                    <span className='orders-supplier'>
+                      {side === 'staff' ? (
+                        <>
+                          {order.buyerOrganizationName}
+                          <ArrowRight size={13} className='orders-arrow' />
+                          {order.supplierOrganizationName}
+                        </>
+                      ) : side === 'buyer' ? (
+                        order.supplierOrganizationName
+                      ) : (
+                        order.buyerOrganizationName
+                      )}
+                    </span>
+                    <small className='font-light'>
+                      {formatDate(order.createdAt)} ·{' '}
+                      {order.items.length}{' '}
+                      {order.items.length === 1 ? 'producto' : 'productos'}
+                    </small>
+                  </div>
+
+                  <span className={`badge ${ORDER_STATUS_CLASS[order.status]}`}>
+                    {ORDER_STATUS_LABEL[order.status]}
                   </span>
-                  <small className='font-light'>
-                    {formatDate(order.createdAt)} ·{' '}
-                    {order.items.length}{' '}
-                    {order.items.length === 1 ? 'producto' : 'productos'}
-                  </small>
-                </div>
 
-                <span className={`badge ${ORDER_STATUS_CLASS[order.status]}`}>
-                  {ORDER_STATUS_LABEL[order.status]}
-                </span>
+                  <span className='orders-total'>
+                    <strong>{pesos(order.total, order.currency)}</strong>
+                    {/* Lo que deja el pedido. Solo al personal interno: el
+                        backend no manda la cifra a los otros dos.
 
-                <span className='orders-total'>
-                  <strong>{pesos(order.total, order.currency)}</strong>
-                  {/* Lo que deja el pedido. Solo al personal interno: el
-                      backend no manda la cifra a los otros dos.
-
-                      Y solo si el pedido llego a cobrarse: en uno cancelado o
-                      rechazado la comision sigue calculada en la base, pero
-                      enseñarla ahi seria contar un ingreso que no existe. */}
-                  {side === 'staff' &&
-                    order.commissionAmount !== null &&
-                    order.status !== 'CANCELLED' &&
-                    order.status !== 'REJECTED' && (
-                      <small className='font-light'>
-                        comisión {pesos(order.commissionAmount, order.currency)}
-                      </small>
-                    )}
-                </span>
-              </Link>
-            </li>
+                        Y solo si el pedido llego a cobrarse: en uno cancelado o
+                        rechazado la comision sigue calculada en la base, pero
+                        enseñarla ahi seria contar un ingreso que no existe. */}
+                    {side === 'staff' &&
+                      order.commissionAmount !== null &&
+                      order.status !== 'CANCELLED' &&
+                      order.status !== 'REJECTED' && (
+                        <small className='font-light'>
+                          comisión {pesos(order.commissionAmount, order.currency)}
+                        </small>
+                      )}
+                  </span>
+                </Link>
+              </li>
+            </Fragment>
           ))}
         </ul>
       )}

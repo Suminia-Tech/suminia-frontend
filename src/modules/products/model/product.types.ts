@@ -196,6 +196,8 @@ export interface Product {
     minOrderValue: number | null;
     deliveryDaysMin: number | null;
     deliveryDaysMax: number | null;
+    /* Por ciudad, cuando no es el general. Opcional por lo mismo. */
+    deliveryTimes?: { city: string; daysMin: number; daysMax: number }[];
   };
   submittedAt: string | null;
   reviewedAt: string | null;
@@ -329,4 +331,14 @@ export interface ReviewProductRequest {
   decision: ReviewDecision;
   /* Obligatorio al rechazar: el proveedor necesita saber que corregir. */
   note?: string;
+}
+
+/* Lo que suma un filtro del catalogo, para el personal de Suminia. */
+export interface ProductMetrics {
+  products: number;
+  presentations: number;
+  /** Unidades en inventario: la suma del stock de las presentaciones. */
+  stock: number;
+  suppliers: number;
+  options: { suppliers: { id: string; name: string }[] };
 }

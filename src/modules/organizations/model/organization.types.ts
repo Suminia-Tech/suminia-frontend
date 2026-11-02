@@ -25,23 +25,53 @@ export type SupplierProductLine =
 
 /* Una persona por area: a quien llama Suminia cuando algo de esa area se traba.
    Datos internos, los compradores no los ven. */
+/* Las del proveedor y las del comprador, en un mismo enum como en el
+   backend. Gerencia es de los dos. */
 export type ContactArea =
   | 'COMMERCIAL'
   | 'LOGISTICS'
   | 'BILLING'
   | 'COLLECTIONS'
-  | 'MANAGEMENT';
+  | 'MANAGEMENT'
+  | 'PURCHASING_LEAD'
+  | 'PURCHASING_ASSISTANT'
+  | 'ACCOUNTING'
+  | 'TREASURY'
+  | 'TECHNICAL_LEAD'
+  | 'WAREHOUSE'
+  /* Un area que la empresa nombra a su manera; el nombre va en customArea. */
+  | 'OTHER';
+
+/* El tiempo de entrega en una ciudad, cuando no es el general. En dias
+   habiles: 0 y 0 es el mismo dia, iguales un numero fijo, distintos un rango. */
+export interface SupplierDeliveryTime {
+  city: string;
+  daysMin: number;
+  daysMax: number;
+}
+
+/* Una bodega o punto de inventario del proveedor: por donde sale la
+   mercancia y a donde va Suminia en una visita de calidad. */
+export interface SupplierWarehouse {
+  id: string;
+  name: string | null;
+  address: string;
+  city: string;
+}
 
 export interface OrganizationContact {
   area: ContactArea;
+  /* Solo en OTHER: como llama la empresa a esa area. */
+  customArea?: string | null;
   name: string;
   position: string | null;
   email: string;
   phone: string | null;
 }
 
-/* Los soportes legales con los que Suminia verifica a la empresa. Uno vigente
-   por tipo: subir otro reemplaza al anterior. */
+/* Los soportes legales con los que Suminia verifica a la empresa. Cada subida
+   es una version que el personal de Suminia aprueba o rechaza, y las
+   anteriores se conservan. */
 export type OrganizationDocumentType =
   | 'CHAMBER_OF_COMMERCE'
   | 'RUT'
@@ -66,11 +96,37 @@ export type BuyerActivity =
 
 export type IpsSector = 'PUBLIC' | 'MIXED' | 'PRIVATE';
 
+/* El estado de una version. EXPIRED no lo guarda el backend: es una aprobada
+   cuya fecha de vencimiento ya paso, y la calcula al responder. REPLACED es
+   la que dejo de valer porque se aprobo otra o se subio otra antes de
+   revisarla. */
+export type OrganizationDocumentStatus =
+  | 'IN_REVIEW'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'REPLACED'
+  | 'EXPIRED';
+
+/* Quien subio o reviso una version. */
+export interface DocumentActor {
+  id: string;
+  name: string;
+}
+
+/* Una version de un documento. Llegan todas, la mas reciente primero dentro
+   de cada tipo. Los campos de la revision son opcionales porque un backend
+   anterior no los manda. */
 export interface OrganizationDocument {
   id: string;
   type: OrganizationDocumentType;
   filename: string | null;
+  status?: OrganizationDocumentStatus;
   uploadedAt: string;
+  uploadedBy?: DocumentActor | null;
+  reviewedAt?: string | null;
+  reviewedBy?: DocumentActor | null;
+  rejectionReason?: string | null;
+  expiresAt?: string | null;
 }
 
 /* La declaracion del Sistema de Autocontrol y Gestion de Riesgos LA/FT/FP y
@@ -117,10 +173,16 @@ export interface Organization {
      anterior no los manda. */
   deliveryDaysMin?: number | null;
   deliveryDaysMax?: number | null;
+  /* Por ciudad. Opcional: un backend anterior no la manda. */
+  deliveryTimes?: SupplierDeliveryTime[];
+  /* Las areas propias de la empresa, ademas de las sugeridas. */
+  customContactAreas?: string[];
   /* Descuento financiero por pronto pago. Null: no lo ha dicho. */
   offersEarlyPaymentDiscount?: boolean | null;
   earlyPaymentDiscountRate?: number | null;
   earlyPaymentDiscountDays?: number | null;
+  /* El plazo neto en dias: cero es de contado, null no lo ha dicho. */
+  paymentTermDays?: number | null;
   /* A donde Suminia le consigna al proveedor. Null mientras no la registre; en
      un comprador siempre, porque a el no se le paga. */
   bankName: string | null;
@@ -128,6 +190,8 @@ export interface Organization {
   bankAccountNumber: string | null;
   bankAccountHolder: string | null;
   bankAccountHolderTaxId: string | null;
+  /* La llave Bre-B de esa cuenta, opcional. */
+  breBKey?: string | null;
   /* Solo del proveedor. En un comprador las listas vienen vacias, y exporter
      nulo es "no lo ha dicho", que no es lo mismo que "no".
 
@@ -137,6 +201,9 @@ export interface Organization {
   activities?: SupplierActivity[];
   productLines?: SupplierProductLine[];
   exporter?: boolean | null;
+  /* Si expide factura electronica de venta validada por la DIAN. Null: no ha
+     respondido. Sin un si, Suminia no lo aprueba. */
+  issuesElectronicInvoices?: boolean | null;
   /* A donde llegan las ordenes de compra, los contactos por area y los
      documentos legales. Opcionales por la misma razon que el perfil. */
   orderEmails?: string[];
@@ -146,6 +213,9 @@ export interface Organization {
   ipsSector?: IpsSector | null;
   activityOther?: string | null;
   contacts?: OrganizationContact[];
+  /* Opcional por la misma razon que el perfil: un backend anterior no la
+     manda. */
+  warehouses?: SupplierWarehouse[];
   documents?: OrganizationDocument[];
   /* Nula mientras el proveedor no la envie. */
   declaration?: SupplierDeclaration | null;

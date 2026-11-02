@@ -10,6 +10,7 @@ import type {
 
 import type {
   ConfirmSupplierDocumentRequest,
+  ReviewDocumentRequest,
   SaveSupplierDeclarationRequest,
   Supplier,
   UpdateSupplierRequest,
@@ -133,6 +134,20 @@ export const suppliersApi = baseApi.injectEndpoints({
       }),
     }),
 
+    reviewSupplierDocument: builder.mutation<
+      ApiResponse<Supplier>,
+      { supplierId: string; documentId: string; data: ReviewDocumentRequest }
+    >({
+      query: ({ supplierId, documentId, data }) => ({
+        url: `/suppliers/${supplierId}/documents/${documentId}/review`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { supplierId }) => [
+        { type: 'Supplier', id: supplierId },
+      ],
+    }),
+
     deleteSupplier: builder.mutation<ApiResponse<void>, string>({
       query: (id) => ({ url: `/suppliers/${id}`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Supplier', id: 'LIST' }],
@@ -152,5 +167,6 @@ export const {
   useCreateSupplierDocumentUploadUrlMutation,
   useConfirmSupplierDocumentMutation,
   useGetSupplierDocumentUrlMutation,
+  useReviewSupplierDocumentMutation,
   useSaveSupplierDeclarationMutation,
 } = suppliersApi;

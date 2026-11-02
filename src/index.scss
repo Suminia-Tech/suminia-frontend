@@ -1291,78 +1291,6 @@ $estado-error: #dc3545;
     }
   }
 
-  /* Los documentos publicos: una fila por documento que se abre entera. */
-  .product-documents {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
-
-    /* El que el proveedor no ha subido: la misma caja, con el borde
-       discontinuo y sin nada que pulsar. */
-    .is-missing {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border: 1px dashed $border-color;
-      border-radius: var(--suminia-radio-caja);
-      color: rgba($theme-font-color, 0.6);
-
-      span {
-        display: flex;
-        flex-direction: column;
-      }
-    }
-    margin: 0;
-    padding: 0;
-
-    li {
-      display: block;
-    }
-
-    button {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid $border-color;
-      border-radius: var(--suminia-radio-caja);
-      background-color: $white;
-      text-align: left;
-      color: $theme-font-color;
-      transition: border-color 0.2s;
-
-      &:hover:not(:disabled) {
-        border-color: var(--theme-color);
-      }
-
-      > svg:first-child {
-        flex-shrink: 0;
-        color: var(--theme-color);
-      }
-
-      > svg:last-child {
-        flex-shrink: 0;
-        margin-left: auto;
-        color: rgba($theme-font-color, 0.5);
-      }
-
-      span {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-      }
-
-      small {
-        overflow: hidden;
-        font-size: 12px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
-  }
-
   .product-detail-perks {
     display: flex;
     flex-wrap: wrap;
@@ -1384,6 +1312,19 @@ $estado-error: #dc3545;
         flex: 0 0 auto;
         color: var(--theme-color);
       }
+    }
+
+    /* Las ciudades con otro tiempo, debajo del general. La fila se alinea
+       arriba para que el icono quede junto a la primera linea. */
+    li:has(.product-delivery-cities) {
+      flex-basis: 100%;
+      align-items: flex-start;
+    }
+
+    .product-delivery-cities {
+      display: block;
+      margin-top: 2px;
+      font-size: 12.5px;
     }
   }
 }
@@ -1716,6 +1657,11 @@ $estado-error: #dc3545;
    empujar la pagina entera a lo ancho. */
 .catalog-table-scroll {
   overflow-x: auto;
+}
+
+/* Los meses anteriores de la facturacion, debajo de su boton. */
+.billing-history {
+  margin-top: 12px;
 }
 
 .catalog-table {
@@ -2055,6 +2001,147 @@ $estado-error: #dc3545;
   }
 }
 
+/* Un documento legal con revision: debajo de la fila caben la revision del
+   personal de Suminia y el historial, de modo que el hueco se apila. El
+   estado lo dice la etiqueta junto al nombre. */
+.document-slot.is-versioned {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  border-style: solid;
+
+  &.is-missing {
+    border-style: dashed;
+  }
+
+  .document-slot-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px 14px;
+  }
+
+  .document-slot-text {
+    gap: 4px;
+    min-width: 200px;
+
+    /* El texto de estado explica que pasa y que hacer: cortarlo con puntos
+       suspensivos se comeria justo el motivo del rechazo. */
+    small {
+      white-space: normal;
+    }
+  }
+
+  .document-slot-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* El nombre del documento y su estado en la misma linea; si no caben, el
+   estado baja sin partir el nombre. */
+.document-slot-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+/* El estado de un documento legal, como etiqueta de fondo suave junto al
+   nombre: se distingue de un vistazo en la lista de cinco, y el color
+   claro no compite con el nombre. Los mismos tonos que status-pill. */
+.document-state {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--suminia-radio-control);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+
+  &.is-success {
+    background-color: rgba(#2e7d32, 0.1);
+    color: #2e7d32;
+  }
+
+  &.is-neutral {
+    background-color: rgba(#b26a00, 0.12);
+    color: #8a5200;
+  }
+
+  &.is-danger {
+    background-color: rgba(#c62828, 0.1);
+    color: #c62828;
+  }
+
+  &.is-muted {
+    background-color: rgba($theme-font-color, 0.07);
+    color: rgba($theme-font-color, 0.65);
+  }
+}
+
+/* Aprobar o rechazar, debajo del documento que espera revision. */
+.document-review {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed $border-color;
+
+  small {
+    display: block;
+  }
+}
+
+.document-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.document-history-toggle {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--theme-color);
+  font-size: 13px;
+
+  &[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+}
+
+.document-history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.document-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: $light-blue;
+  font-size: 13px;
+
+  small {
+    display: block;
+    margin-top: 2px;
+  }
+}
+
 .catalog-empty {
   padding: 56px 24px;
   text-align: center;
@@ -2142,10 +2229,11 @@ $estado-error: #dc3545;
    mirando", y sin ese contraste todo flota sobre un mismo blanco.
    --------------------------------------------------------------------------- */
 
-/* La entrada mas larga —"Mis productos"— necesita unos 164px contando icono,
-   hueco y sangrados. 208 deja aire suficiente sin que el panel se coma ancho
-   que la tabla de productos si aprovecha. */
-$sidebar-width: 208px;
+/* A 208px y con letra de 14 el panel se leia como una nota al margen: mas
+   chico que el contenido, que va a 16. Con letra de 15 la entrada mas larga
+   con subseccion —"Condiciones y pagos", sangrada— necesita unos 220px; 248
+   le deja aire sin quitarle mucho a la tabla de productos. */
+$sidebar-width: 248px;
 /* Contraido caben el icono y su area de pulsacion, nada mas. */
 $sidebar-width-collapsed: 68px;
 $area-bg: #f1f4f9;
@@ -2676,6 +2764,37 @@ $area-bg: #f1f4f9;
 
 /* Una pregunta de pocas opciones en una sola fila: Si/No, juridica/natural,
    publica/mixta/privada. */
+/* Las areas propias, arriba de los contactos y separadas de ellos por una
+   linea: son de la empresa, no de una persona. Las ya creadas van como
+   `filter-chip`, que es la etiqueta que se quita de un clic en el resto de
+   la app; el campo para nombrar otra, con su boton al lado como en los
+   correos de las ordenes. */
+.contact-custom-areas {
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba($theme-font-color, 0.09);
+}
+
+.contact-custom-areas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.contact-new-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+
+  .form-control {
+    flex: 1;
+    min-width: 220px;
+    max-width: 360px;
+  }
+}
+
 .yes-no {
   display: flex;
   flex-wrap: wrap;
@@ -2704,12 +2823,46 @@ $area-bg: #f1f4f9;
    numeros cortos y el texto entre ellos. */
 .delivery-days {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 
   .form-control {
     width: 80px;
     text-align: center;
+  }
+
+  /* La forma del tiempo lleva texto, no un numero: necesita su ancho. */
+  .delivery-kind {
+    width: 190px;
+    text-align: left;
+  }
+}
+
+/* Las ciudades con otro tiempo: una fila por ciudad, con el nombre, el
+   tiempo y el boton para quitarla. */
+.delivery-cities {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.delivery-city {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.delivery-city-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  .delivery-city-name {
+    width: 220px;
   }
 }
 
@@ -2843,24 +2996,28 @@ $area-bg: #f1f4f9;
 
 /* El titulo del grupo es una etiqueta, no un enlace: pequeno, en mayusculas y
    sin peso, para que se lea como separador y no compita con las entradas. */
-.area-sidebar-group-label {
+.area-sidebar-group-label,
+.account-nav-group-label {
   display: block;
-  padding: 0 10px 8px;
-  font-size: 10.5px;
+  padding: 0 12px 8px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: rgba($theme-font-color, 0.42);
 }
 
-.area-sidebar-nav a {
+.area-sidebar-nav a,
+.account-nav a,
+.area-sidebar-parent,
+.account-nav-parent {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 9px 10px;
+  gap: 12px;
+  padding: 10px 12px;
   margin-bottom: 2px;
   border-radius: var(--suminia-radio-control);
-  font-size: 14px;
+  font-size: 15px;
   color: rgba($theme-font-color, 0.72);
   transition:
     background-color 0.12s ease,
@@ -2888,6 +3045,103 @@ $area-bg: #f1f4f9;
       color: var(--theme-color);
     }
   }
+}
+
+/* La entrada que tiene sus subsecciones abiertas: marcada con color, sin el
+   fondo, que se lo lleva la subseccion. Dos fondos encendidos a la vez no
+   dirian cual es la pagina. */
+/* La entrada que agrupa subsecciones es un boton: se le quita lo de boton y
+   ocupa la fila entera, como los enlaces. La flecha, a la derecha, gira al
+   abrirse. */
+.area-sidebar-parent,
+.account-nav-parent {
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  .area-sidebar-chevron,
+  .account-nav-chevron {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+  }
+
+  &[aria-expanded='true'] .area-sidebar-chevron,
+  &[aria-expanded='true'] .account-nav-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.area-sidebar-parent.is-open,
+.account-nav-parent.is-open {
+  color: var(--theme-color);
+  font-weight: 500;
+
+  svg {
+    color: var(--theme-color);
+  }
+}
+
+/* Las subsecciones, debajo de su entrada: sangradas hasta el texto del padre
+   y con una linea a la izquierda que las ata a el. */
+.area-sidebar-nav .area-sidebar-sub,
+.account-nav .account-nav-sub {
+  margin: 0 0 6px 18px;
+  padding-left: 10px;
+  border-left: 1px solid $border-color;
+
+  a {
+    padding: 8px 12px;
+    font-size: 14.5px;
+  }
+}
+
+/* El menu de la cuenta del comprador: una caja como los paneles, con las
+   entradas del panel lateral del proveedor (las reglas de enlace de arriba
+   son de los dos). Pegado arriba al bajar, para no perderlo en una pagina
+   larga; en el celular va encima del contenido, sin pegarse. */
+.account-nav {
+  position: sticky;
+  top: 20px;
+  margin-bottom: 20px;
+  padding: 12px;
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-caja);
+  background-color: $white;
+
+  /* Columna explicita: el tema declara `li { display: inline-block }`. */
+  ul {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: block;
+  }
+
+  @include mq-max(lg) {
+    position: static;
+  }
+}
+
+/* El mismo hueco entre grupos que en el panel del proveedor, menos el del
+   ultimo, que ya lo pone la caja. */
+.account-nav-group {
+  margin-bottom: 18px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* El titulo del primer grupo arranca pegado al borde de arriba de la caja:
+   un poco de aire para que no se lea como parte del borde. */
+.account-nav-group-label {
+  padding-top: 6px;
 }
 
 .area-main {
@@ -4243,7 +4497,8 @@ select.form-control,
   --suminia-alto-control: calc(39px + (51 - 39) * ((100vw - 320px) / (1920 - 320)));
 
   .toggle-category,
-  .cart-dropdown > .btn {
+  .cart-dropdown > .btn,
+  .notification-bell.is-store > .btn {
     height: var(--suminia-alto-control);
     padding-top: 0;
     padding-bottom: 0;
@@ -4499,7 +4754,10 @@ select.form-control,
     position: relative;
   }
 
-  .cart-dropdown > .btn {
+  /* La campana del comprador va al lado y se dibuja igual: mismo circulo,
+     mismo icono y el mismo cambio al pasar por encima. */
+  .cart-dropdown > .btn,
+  .notification-bell.is-store > .btn {
     /* Es un enlace, no un boton: un `<a>` con altura fija no centra su
        contenido por si solo como si hace un `<button>`, y ademas hereda el
        color de enlace del tema en vez del blanco del boton solido —de ahi que
@@ -4512,17 +4770,24 @@ select.form-control,
     padding-right: 0;
     color: $white;
 
-    &:hover,
-    &:focus {
-      color: $white;
-    }
-
     /* El icono aparte del enlace: el tema pinta de oscuro los `svg` que cuelgan
        de un `li a` de desplegable (components/_dropdown.scss), y como el icono
        trae `stroke="currentColor"`, ese color es el que acaba usando. Poner
        blanco solo en el enlace no bastaba. */
     svg {
       color: $white;
+    }
+
+    /* Al pasar por encima el boton solido del tema se vacia: fondo blanco y
+       borde azul. El icono pasa entonces al azul; si se quedara blanco, como
+       estaba, desapareceria sobre el fondo. */
+    &:hover,
+    &:focus-visible {
+      color: var(--theme-color);
+
+      svg {
+        color: var(--theme-color);
+      }
     }
   }
 }
@@ -5029,6 +5294,11 @@ select.form-control,
   }
 }
 
+/* Los filtros del personal de Suminia, encima de sus cifras. */
+.orders-staff-filters {
+  margin-bottom: 20px;
+}
+
 .orders-empty {
   padding: 40px 0;
   text-align: center;
@@ -5046,6 +5316,22 @@ select.form-control,
   li {
     display: block;
     margin-bottom: 10px;
+  }
+
+  /* El encabezado de cada mes: una etiqueta, no una fila. El mismo dibujo que
+     los titulos de grupo del panel lateral. */
+  .orders-month {
+    margin: 18px 0 8px;
+    padding: 0 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: rgba($theme-font-color, 0.5);
+
+    &:first-child {
+      margin-top: 0;
+    }
   }
 
   a {
@@ -5433,4 +5719,168 @@ select.form-control,
   img:last-child {
     margin-left: -2px;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Notificaciones: la campana de arriba a la derecha, en la barra del panel y
+   en la cabecera de la tienda.
+   --------------------------------------------------------------------------- */
+
+/* Los avisos y quien esta dentro, juntos a la derecha de la barra. */
+.area-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notification-bell {
+  position: relative;
+
+  /* El mismo numero del carrito, para que ambos se lean igual. */
+  .notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -5px;
+    z-index: 2;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border: 2px solid $white;
+    border-radius: var(--suminia-radio-control);
+    background-color: #e03a2f;
+    color: $white;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  &.is-store .notification-badge {
+    top: -6px;
+    right: -7px;
+  }
+}
+
+/* En el panel, un boton redondo del alto del avatar. */
+.notification-bell-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: none;
+  color: rgba($theme-font-color, 0.7);
+  cursor: pointer;
+
+  &:hover,
+  &[aria-expanded='true'] {
+    border-color: rgba($theme-font-color, 0.12);
+    background-color: rgba($theme-font-color, 0.03);
+    color: var(--theme-color);
+  }
+}
+
+.notification-menu {
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba($theme-font-color, 0.08);
+  border-radius: var(--suminia-radio-caja);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.notification-menu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba($theme-font-color, 0.07);
+  font-size: 15px;
+
+  button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--theme-color);
+    font-size: 12.5px;
+  }
+}
+
+.notification-empty {
+  margin: 0;
+  padding: 28px 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Con <div> y botones, no lista: el tema declara `li { display:
+   inline-block }` para todo el documento. */
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 12px 16px 12px 30px;
+  border: 0;
+  border-bottom: 1px solid rgba($theme-font-color, 0.06);
+  background: none;
+  text-align: left;
+  white-space: normal;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background-color: $light-blue;
+  }
+
+  /* Lo no leido, con un punto a la izquierda y el titulo en negrita. */
+  &.is-unread {
+    background-color: rgba(var(--theme-color-rgb), 0.04);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 13px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--theme-color);
+    }
+
+    .notification-title {
+      font-weight: 600;
+    }
+  }
+}
+
+.notification-title {
+  font-size: 14px;
+  color: $theme-font-color;
+  line-height: 1.4;
+}
+
+.notification-body {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-size: 12px;
 }

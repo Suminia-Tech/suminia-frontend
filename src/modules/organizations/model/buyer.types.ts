@@ -3,6 +3,7 @@ import type {
   IpsSector,
   LegalNature,
   Organization,
+  OrganizationContact,
 } from './organization.types';
 
 /* Un comprador es una Organization con type = BUYER. El backend lo expone como
@@ -28,4 +29,9 @@ export interface UpdateBuyerRequest {
   /* La cuenta con la que paga: banco y numero juntos. */
   bankName?: string | null;
   bankAccountNumber?: string | null;
+  /* La lista entera de contactos, una fila por area; reemplaza a la
+     anterior. */
+  contacts?: OrganizationContact[];
+  /* La lista entera de areas propias; la que no viene se quita. */
+  customContactAreas?: string[];
 }

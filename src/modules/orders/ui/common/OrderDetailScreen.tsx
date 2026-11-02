@@ -50,7 +50,7 @@ const COPY: Record<
 > = {
   buyer: {
     volver: 'Mis pedidos',
-    basePath: '/buyer/account/orders',
+    basePath: '/buyer/orders',
     nota: 'Tu nota al proveedor',
   },
   supplier: {

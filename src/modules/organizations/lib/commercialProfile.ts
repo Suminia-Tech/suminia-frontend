@@ -3,10 +3,12 @@ import type {
   ContactArea,
   IpsSector,
   LegalNature,
+  OrganizationDocument,
   OrganizationDocumentType,
   SupplierActivity,
   SupplierProductLine,
 } from '../model/organization.types';
+import { isDelivered } from './documentStatus';
 
 /* Las opciones en el orden en que se le preguntan al proveedor. */
 export const ACTIVITY_OPTIONS: { value: SupplierActivity; label: string }[] = [
@@ -57,6 +59,38 @@ export const CONTACT_AREA_OPTIONS: { value: ContactArea; label: string }[] = [
   { value: 'COLLECTIONS', label: 'Cartera' },
   { value: 'MANAGEMENT', label: 'Gerencia' },
 ];
+
+/* Las del comprador, en el orden de la hoja de Suminia. El responsable
+   tecnico es quien responde por que lo recibido cumple: el quimico
+   farmaceutico, el ingeniero biomedico, el instrumentador quirurgico o el
+   bacteriologo, segun lo que compre la institucion. */
+export const BUYER_CONTACT_AREA_OPTIONS: { value: ContactArea; label: string }[] = [
+  { value: 'PURCHASING_LEAD', label: 'Líder de compras' },
+  { value: 'PURCHASING_ASSISTANT', label: 'Auxiliar de compras' },
+  { value: 'ACCOUNTING', label: 'Contabilidad' },
+  { value: 'TREASURY', label: 'Tesorería' },
+  { value: 'MANAGEMENT', label: 'Gerencia' },
+  {
+    value: 'TECHNICAL_LEAD',
+    label: 'Químico farmacéutico / Ingeniero biomédico / Instrumentador quirúrgico / Bacteriólogo',
+  },
+  { value: 'WAREHOUSE', label: 'Responsable del almacén o recepción de mercancía' },
+];
+
+/* Las que admiten varias personas; las demas, una. Los auxiliares no son
+   obligatorios: una clinica pequeña no los tiene. */
+export const MULTI_CONTACT_AREAS: ContactArea[] = ['PURCHASING_ASSISTANT'];
+
+/* El nombre de un area: el de la sugerida, o el que le puso la empresa. */
+export const contactAreaLabel = (contact: {
+  area: ContactArea;
+  customArea?: string | null;
+}): string =>
+  contact.area === 'OTHER'
+    ? (contact.customArea ?? 'Otra área')
+    : ([...CONTACT_AREA_OPTIONS, ...BUYER_CONTACT_AREA_OPTIONS].find(
+        (option) => option.value === contact.area,
+      )?.label ?? contact.area);
 
 export interface LegalDocumentOption {
   value: OrganizationDocumentType;
@@ -189,7 +223,8 @@ export const buyerMissing = (organization: {
   buyerActivity?: BuyerActivity | null;
   bankName?: string | null;
   bankAccountNumber?: string | null;
-  documents?: { type: OrganizationDocumentType }[];
+  documents?: OrganizationDocument[];
+  declaration?: unknown;
 }): string[] => {
   const faltan: string[] = [];
   if (!organization.legalNature || !organization.buyerActivity) {
@@ -198,11 +233,17 @@ export const buyerMissing = (organization: {
   if (!organization.bankName || !organization.bankAccountNumber) {
     faltan.push('el banco y el número de cuenta de tu medio de pago');
   }
-  const subidos = new Set((organization.documents ?? []).map((d) => d.type));
+  /* Un rechazado no cuenta: hay que volver a subirlo. */
+  const subidos = new Set((organization.documents ?? []).filter(isDelivered).map((d) => d.type));
   for (const opcion of legalDocumentOptions('buyer', organization.legalNature)) {
     if (opcion.required && !subidos.has(opcion.value)) {
       faltan.push(opcion.label.toLowerCase());
     }
+  }
+  /* La misma declaracion que firma el proveedor; sin ella el backend no
+     aprueba. */
+  if (!organization.declaration) {
+    faltan.push('la declaración de autocontrol');
   }
   return faltan;
 };

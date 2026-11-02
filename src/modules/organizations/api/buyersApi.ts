@@ -9,7 +9,11 @@ import type {
 } from '@/shared/api/types';
 
 import type { Buyer, UpdateBuyerRequest } from '../model/buyer.types';
-import type { ConfirmSupplierDocumentRequest } from '../model/supplier.types';
+import type {
+  ConfirmSupplierDocumentRequest,
+  ReviewDocumentRequest,
+  SaveSupplierDeclarationRequest,
+} from '../model/supplier.types';
 
 export const buyersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -66,6 +70,20 @@ export const buyersApi = baseApi.injectEndpoints({
       }),
     }),
 
+    reviewBuyerDocument: builder.mutation<
+      ApiResponse<Buyer>,
+      { organizationId: string; documentId: string; data: ReviewDocumentRequest }
+    >({
+      query: ({ organizationId, documentId, data }) => ({
+        url: `/buyers/${organizationId}/documents/${documentId}/review`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { organizationId }) => [
+        { type: 'Buyer', id: organizationId },
+      ],
+    }),
+
     updateBuyer: builder.mutation<
       ApiResponse<Buyer>,
       { id: string; data: UpdateBuyerRequest }
@@ -75,6 +93,19 @@ export const buyersApi = baseApi.injectEndpoints({
         { type: 'Buyer', id },
         { type: 'Buyer', id: 'LIST' },
       ],
+    }),
+
+    /* La misma declaracion de autocontrol que firma el proveedor. */
+    saveBuyerDeclaration: builder.mutation<
+      ApiResponse<Buyer>,
+      { buyerId: string; data: SaveSupplierDeclarationRequest }
+    >({
+      query: ({ buyerId, data }) => ({
+        url: `/buyers/${buyerId}/declaration`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { buyerId }) => [{ type: 'Buyer', id: buyerId }],
     }),
 
     /* Aprobar pasa la organizacion de PENDING a ACTIVE, que es lo que la
@@ -125,9 +156,11 @@ export const {
   useGetBuyersQuery,
   useGetBuyerQuery,
   useUpdateBuyerMutation,
+  useSaveBuyerDeclarationMutation,
   useCreateBuyerDocumentUploadUrlMutation,
   useConfirmBuyerDocumentMutation,
   useGetBuyerDocumentUrlMutation,
+  useReviewBuyerDocumentMutation,
   useApproveBuyerMutation,
   useRejectBuyerMutation,
   useSuspendBuyerMutation,

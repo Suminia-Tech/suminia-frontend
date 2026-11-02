@@ -18,7 +18,12 @@ import { AreaGuard, PendingApprovalNotice } from '@/modules/auth';
 const BuyerLayout = ({ children }: { children: ReactNode }) => (
   <Layout6 isCategories={true}>
     <PendingApprovalNotice />
-    <AreaGuard area='buyer'>{children}</AreaGuard>
+    {/* El mismo aire de arriba que la tienda (`store-page` en index.scss): sin
+        esto la cuenta y los pedidos arrancaban a 70px del menu, el ritmo de
+        las secciones de la portada y no el de una pagina interior. */}
+    <AreaGuard area='buyer'>
+      <div className='store-page'>{children}</div>
+    </AreaGuard>
   </Layout6>
 );
 

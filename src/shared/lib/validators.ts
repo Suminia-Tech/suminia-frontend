@@ -1,5 +1,12 @@
 export const isEmail = (value: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
+/* Un celular colombiano: diez digitos que empiezan por 3, con o sin el +57
+   delante. Se pide celular y no telefono porque las lineas fijas corporativas
+   suelen quedar inactivas u olvidadas. Los espacios, guiones y parentesis no
+   cuentan: cada quien lo escribe a su manera. */
+export const isColombianMobile = (value: string): boolean =>
+  /^(?:\+?57)?3\d{9}$/.test(value.replace(/[\s().-]/g, ''));
+
 /* Requisito de IsStrongPassword del backend con sus opciones por defecto:
    8 caracteres como minimo, con mayuscula, minuscula, numero y simbolo.
    Estaba duplicado en el registro y en el restablecimiento de contrasena. */

@@ -7,6 +7,7 @@ import SearchForVegitable from '@/_template/Layout/Element/SearchForVegitable';
 import ThreeBarToggle from '@/_template/Layout/Element/ThreeBarToggle';
 import SearchBarWithBgColor from '@/_template/Layout/Element/SearchBarWithBgColor';
 import { CartWidget } from '@/modules/cart';
+import { NotificationBell } from '@/modules/notifications';
 import NavBar from '@/_template/Layout/Element/NavBar';
 import { useAuth } from '@/modules/auth';
 import { getAccountLabel, getAccountPath } from '@/modules/auth';
@@ -42,6 +43,7 @@ const Header5 = ({ noStyle, isCategories }) => {
                       <ThreeBarToggle />
                     </li>
                     <SearchBarWithBgColor customeClass={'d-lg-none d-block'} />
+                    <NotificationBell variant='store' />
                     <CartWidget />
                   </ul>
                 </div>

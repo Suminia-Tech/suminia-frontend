@@ -58,8 +58,8 @@ export const CheckoutScreen = ({
          concreto que mirar, con varios lo util es verlos juntos. */
       router.push(
         pedidos.length === 1
-          ? `/buyer/account/orders/${pedidos[0].id}`
-          : '/buyer/account/orders',
+          ? `/buyer/orders/${pedidos[0].id}`
+          : '/buyer/orders',
       );
     } catch (err) {
       /* En el recuadro y no solo en un aviso flotante: aqui el motivo importa

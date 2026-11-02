@@ -153,6 +153,25 @@ verificacion de correo— va en `(suminia)/`.
   tiene estilos dentro de `.product-buttons` — en las pantallas de auth se usa sin ese
   contenedor, de modo que ahí no aplica nada.
 
+  **Un mismo tipo de elemento se ve igual en toda la app. Siempre.** Antes de diseñar
+  una pieza, buscar si la app ya tiene una equivalente —en `src/modules/` y
+  `src/index.scss`, no solo en `_template/`— y reutilizar sus clases y su estructura.
+  No se inventa un segundo diseño para algo que ya tiene uno:
+
+  | Elemento | Se pinta con |
+  |---|---|
+  | Documento (legal, de producto, cualquiera) | `document-slots` > `document-slot` (`is-filled`), con `document-slot-icon`, `document-slot-text` y el botón `btn btn-outline-secondary btn-sm btn-with-icon` "Ver" |
+  | Estado de algo | `status-pill`, o `document-state` junto al nombre |
+  | Bloque de un formulario o de una pantalla de cuenta | `Panel` de `@/shared/ui` |
+  | Lista etiqueta/valor dentro de un panel | `data-list` |
+  | Subsecciones de una pantalla larga | Una ruta por subsección y su entrada anidada en el menú lateral (`children` en el `_nav.ts` del área), no pestañas dentro de la pantalla |
+
+  Ningún `<button>`, `<ul>` o `<input>` se queda sin clase: el navegador lo pinta con
+  sus estilos por defecto —borde gris en relieve, texto pegado— y se ve roto. Pasó
+  en la sección Documentos de la ficha de producto: sus estilos estaban anidados en
+  `.product-detail` y la sección se pinta fuera de ese contenedor, así que no aplicaba
+  ninguno. Cada pieza nueva se comprueba en el navegador, no solo con el build.
+
   **Los radios son tres, y están en `:root`.** `--suminia-radio-control` (999px) para
   lo que se pulsa o se escribe dentro, `--suminia-radio-caja` (16px) para tarjetas,
   paneles y avisos, y `--suminia-radio-modal` (28px) para los modales. El de las

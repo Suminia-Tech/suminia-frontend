@@ -18,6 +18,7 @@ import type {
   PresentationRequest,
   Product,
   ProductCategory,
+  ProductMetrics,
   ReviewProductRequest,
   UpdateCategoryRequest,
   UpdateImageRequest,
@@ -53,6 +54,18 @@ const toPublicQuery = (params: DatatableParams) => {
 
 export const productsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    /* Los mismos search y filter[...] del listado. */
+    getProductMetrics: builder.query<
+      ApiResponse<ProductMetrics>,
+      { search?: string; filter?: Record<string, string> }
+    >({
+      query: ({ search, filter }) => ({
+        url: '/products/metrics',
+        params: toDatatableQuery({ search, filter }),
+      }),
+      providesTags: [{ type: 'Product', id: 'LIST' }],
+    }),
+
     getProducts: builder.query<PaginatedResponse<Product>, DatatableParams | void>({
       query: (params) => ({ url: '/products', params: toDatatableQuery(params ?? {}) }),
       providesTags: (result) =>
@@ -410,6 +423,7 @@ export const productsApi = baseApi.injectEndpoints({
 
 export const {
   useGetProductsQuery,
+  useGetProductMetricsQuery,
   useGetProductQuery,
   useGetPublicProductsQuery,
   useGetPublicProductQuery,

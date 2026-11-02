@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { AlertTriangle } from 'react-feather';
 import { toast } from 'react-toastify';
 
+import { useLocationHash } from '@/shared/hooks/useLocationHash';
 import { useScrollToHash } from '@/shared/hooks/useScrollToHash';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { PageHeader, Panel } from '@/shared/ui';
@@ -21,13 +24,22 @@ import {
   describeExporter,
   describeProductLines,
 } from '../../lib/commercialProfile';
+import {
+  COMPANY_SECTIONS,
+  companyPath,
+  sectionOfAnchor,
+  type CompanySection,
+} from '../../lib/companySections';
+import { formatDeliveryTime, toDeliveryDays } from '../../lib/deliveryTime';
 import { avisoDe, buyerPendings, SECTION, supplierPendings } from '../../lib/pendings';
-import type { ContactArea, OrganizationStatus } from '../../model/organization.types';
+import type { OrganizationStatus } from '../../model/organization.types';
 import LegalDocumentsPanel from './LegalDocumentsPanel';
 import OrganizationForm, { type OrganizationFormValues } from './OrganizationForm';
-import { isContactEmpty } from './SupplierContactsFields';
+import { toDeliveryTimeRows } from './DeliveryTimeFields';
+import { toContactRows } from './SupplierContactsFields';
+import { toWarehouseRows } from './SupplierWarehousesFields';
 import StatusBadge from './StatusBadge';
-import { DeclarationStatusPanel } from '../supplier/DeclarationStatusPanel';
+import { DeclarationStatusPanel } from './DeclarationStatusPanel';
 
 /* Los datos de la propia empresa y en que va su solicitud.
 
@@ -59,7 +71,13 @@ const CLASE_AVISO: Record<OrganizationStatus, string> = {
   REJECTED: 'alert alert-danger',
 };
 
-export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
+interface MyCompanyScreenProps {
+  kind: OrganizationKind;
+  /* La subseccion que se esta viendo; cada una es su propia ruta. */
+  section: CompanySection;
+}
+
+export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
   const user = useAppSelector((state) => state.auth.user);
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const organizationId = user?.organizationId ?? null;
@@ -79,6 +97,22 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
   /* Los enlaces del Resumen traen el panel en el ancla —#cuenta-pagos— y aqui
      se llega a el en cuanto los datos estan pintados. */
   useScrollToHash(Boolean(organization));
+
+  /* Los enlaces viejos llevaban todo a /company#<panel>, y la campana de un
+     aviso anterior todavia puede traer uno: se pasa a la pagina donde vive ese
+     panel, con la misma ancla. */
+  const hash = useLocationHash();
+  const router = useRouter();
+  const destinoDelAncla = section === 'empresa' ? sectionOfAnchor(hash) : null;
+  useEffect(() => {
+    if (destinoDelAncla && destinoDelAncla !== 'empresa') {
+      router.replace(`${companyPath(kind, destinoDelAncla)}#${hash}`);
+    }
+  }, [destinoDelAncla, hash, kind, router]);
+
+  const meta = COMPANY_SECTIONS[kind].find((item) => item.id === section) ?? COMPANY_SECTIONS[kind][0];
+  /* Un error al guardar puede ser de otra subseccion: se lleva alli. */
+  const goToSection = (next: CompanySection) => router.push(companyPath(kind, next));
 
   const handleSubmit = async (values: OrganizationFormValues) => {
     if (!organizationId || !organization) return;
@@ -100,10 +134,9 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
                   values.minOrderValue.trim() === ''
                     ? null
                     : Number(values.minOrderValue),
-                deliveryDaysMin:
-                  values.deliveryDaysMin.trim() === '' ? null : Number(values.deliveryDaysMin),
-                deliveryDaysMax:
-                  values.deliveryDaysMax.trim() === '' ? null : Number(values.deliveryDaysMax),
+                deliveryDaysMin: toDeliveryDays(values.delivery).min,
+                deliveryDaysMax: toDeliveryDays(values.delivery).max,
+                deliveryTimes: toDeliveryTimeRows(values.deliveryTimes),
                 bankName: values.bankName.trim() || null,
                 bankAccountType:
                   (values.bankAccountType.trim() as
@@ -111,6 +144,9 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
                     | 'CORRIENTE'
                     | '') || null,
                 bankAccountNumber: values.bankAccountNumber.trim() || null,
+                breBKey: values.breBKey.trim() || null,
+                paymentTermDays:
+                  values.paymentTermDays.trim() === '' ? null : Number(values.paymentTermDays),
                 /* Titular y NIT son los de la empresa: el backend los fija desde
                    los datos legales, y aqui se mandan igual para que la cuenta
                    viaje entera. Sin banco no hay cuenta, ni titular. */
@@ -129,18 +165,15 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
                 productLines: values.productLines,
                 exporter:
                   values.exporter === '' ? null : values.exporter === 'yes',
-                /* Los contactos en blanco no viajan: el backend reemplaza la
-                   lista entera, y lo que no llega se borra. El formulario ya
-                   comprobo que los demas traen area. */
-                contacts: values.contacts
-                  .filter((contact) => !isContactEmpty(contact) && contact.area !== '')
-                  .map((contact) => ({
-                    area: contact.area as ContactArea,
-                    name: contact.name.trim(),
-                    position: contact.position.trim() || null,
-                    email: contact.email.trim(),
-                    phone: contact.phone.trim() || null,
-                  })),
+                issuesElectronicInvoices:
+                  values.electronicInvoicing === ''
+                    ? null
+                    : values.electronicInvoicing === 'yes',
+                /* El backend reemplaza la lista entera, y lo que no llega se
+                   borra: van todas las areas de todas las personas. */
+                contacts: toContactRows(values.contacts),
+                customContactAreas: values.customAreas,
+                warehouses: toWarehouseRows(values.warehouses),
                 orderEmails: values.orderEmails
                   .map((email) => email.trim())
                   .filter(Boolean),
@@ -162,6 +195,13 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
                   : {}),
                 bankName: values.bankName.trim() || null,
                 bankAccountNumber: values.bankAccountNumber.trim() || null,
+                /* Una fila por area, como en el proveedor. Sin cargo: el
+                   area lo dice. */
+                contacts: toContactRows(values.contacts).map((contact) => ({
+                  ...contact,
+                  position: null,
+                })),
+                customContactAreas: values.customAreas,
               }),
           // Cadena vacia significa "sin dato": el backend acepta null para
           // limpiar el campo, pero rechaza "" en los que valida formato.
@@ -207,9 +247,21 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
 
   const readOnlyFields = [
     { label: 'Razón social', value: organization.legalName },
-    { label: 'Ciudad', value: organization.city },
+    {
+      label: kind === 'supplier' ? 'Ciudad de la oficina principal' : 'Ciudad',
+      value: organization.city,
+    },
     ...(kind === 'supplier'
       ? [
+          {
+            label: 'Factura electrónica',
+            value:
+              organization.issuesElectronicInvoices == null
+                ? null
+                : organization.issuesElectronicInvoices
+                  ? 'Sí'
+                  : 'No',
+          },
           { label: 'Actividades', value: describeActivities(organization.activities) },
           {
             label: 'Categorías que comercializa',
@@ -221,7 +273,10 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           { label: 'Correo de contacto', value: organization.email },
           { label: 'Teléfono', value: organization.phone },
         ]),
-    { label: 'Dirección', value: organization.address },
+    {
+      label: kind === 'supplier' ? 'Dirección de la oficina principal' : 'Dirección',
+      value: organization.address,
+    },
   ];
 
   return (
@@ -230,11 +285,12 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           `h1` decia "Distribuidora Medica del Norte" y no habia forma de saber,
           mirando la pantalla, que era "Mi empresa" y no "Mi perfil". El nombre
           pasa a encabezar el panel de estado, que es de lo que habla. */}
-      <PageHeader
-        title='Mi empresa'
-        description='Información empresarial y estado de tu solicitud.'
-      />
+      <PageHeader title={meta.title} description={meta.description} />
 
+      {/* El estado de la solicitud, solo en la primera subseccion: es la
+          portada de Mi empresa, y repetirlo en cada una empujaria hacia abajo
+          justo lo que se vino a buscar. */}
+      {section === 'empresa' && (
       <Panel
         title={organization.name}
         aside={<StatusBadge status={organization.status} />}
@@ -251,7 +307,7 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
               <li key={pendiente.key}>
                 <AlertTriangle size={17} />
                 <span>{pendiente.texto}</span>
-                <a href={`#${pendiente.href.split('#')[1]}`}>{pendiente.enlace}</a>
+                <Link href={pendiente.href}>{pendiente.enlace}</Link>
               </li>
             ))}
           </ul>
@@ -276,11 +332,14 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
           </ul>
         )}
       </Panel>
+      )}
 
       {errorMessage && <div className='alert alert-danger'>{errorMessage}</div>}
 
       {canEdit ? (
         <OrganizationForm
+          tab={section}
+          onTabChange={goToSection}
           key={organization.updatedAt}
           organization={organization}
           isSaving={isSaving}
@@ -300,25 +359,96 @@ export const MyCompanyScreen = ({ kind }: { kind: OrganizationKind }) => {
               />
               {/* Lo legal junto: la declaracion se firma en su pantalla, pero
                   se busca aqui. */}
-              {kind === 'supplier' && <DeclarationStatusPanel organization={organization} />}
+              <DeclarationStatusPanel kind={kind} organization={organization} />
             </>
           }
         />
       ) : (
-        /* Sin organization:update los datos se leen, no se editan. */
-        <Panel
-          title='Información de la empresa'
-          description='Solo el administrador de tu empresa puede modificarlos.'
-        >
-          <ul className='data-list'>
-            {readOnlyFields.map(({ label, value }) => (
-              <li key={label}>
-                <span className='font-light'>{label}</span>
-                <span>{value ?? '—'}</span>
-              </li>
-            ))}
-          </ul>
-        </Panel>
+        /* Sin organization:update los datos se leen, no se editan. Se ve lo
+           mismo que llena el administrador —tambien los documentos y las
+           bodegas—, solo que sin botones: quien opera necesita saber en que va
+           la empresa aunque no le toque cambiarlo. Contactos y perfil no
+           tienen vista de lectura: el menu no los ofrece, y a quien llega por
+           un enlace se le dice por que no hay nada. */
+        <>
+          {(section === 'contacto' || section === 'perfil') && (
+            <div className='alert alert-secondary'>
+              Solo el administrador de tu empresa puede ver y modificar esta sección.
+            </div>
+          )}
+          {section === 'empresa' && (
+          <Panel
+            title='Información de la empresa'
+            description='Solo el administrador de tu empresa puede modificarlos.'
+          >
+            <ul className='data-list'>
+              {readOnlyFields.map(({ label, value }) => (
+                <li key={label}>
+                  <span className='font-light'>{label}</span>
+                  <span>{value ?? '—'}</span>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+          )}
+
+          {kind === 'supplier' && section === 'empresa' && (
+            <Panel
+              title='Bodegas y puntos de inventario'
+              description='Dónde guarda y desde dónde despacha la mercancía tu empresa.'
+            >
+              {organization.warehouses?.length ? (
+                <ul className='data-list'>
+                  {organization.warehouses.map((warehouse, index) => (
+                    <li key={warehouse.id}>
+                      <span className='font-light'>
+                        {warehouse.name ?? `Bodega ${index + 1}`}
+                      </span>
+                      <span>
+                        {warehouse.address} · {warehouse.city}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className='font-light mb-0'>Tu empresa aún no ha registrado bodegas.</p>
+              )}
+            </Panel>
+          )}
+
+          {kind === 'supplier' && section === 'condiciones' && (
+            <Panel
+              title='Tiempo de entrega'
+              description='Lo que verá el comprador en cada producto de tu empresa.'
+            >
+              <ul className='data-list'>
+                <li>
+                  <span className='font-light'>General</span>
+                  <span>
+                    {formatDeliveryTime(organization.deliveryDaysMin, organization.deliveryDaysMax) ??
+                      'Sin definir'}
+                  </span>
+                </li>
+                {organization.deliveryTimes?.map((time) => (
+                  <li key={time.city}>
+                    <span className='font-light'>{time.city}</span>
+                    <span>{formatDeliveryTime(time.daysMin, time.daysMax)}</span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
+
+          {section === 'documentos' && (
+            <LegalDocumentsPanel
+              kind={kind}
+              organizationId={organization.id}
+              documents={organization.documents ?? []}
+              editable={false}
+              legalNature={organization.legalNature}
+            />
+          )}
+        </>
       )}
     </>
   );

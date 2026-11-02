@@ -8,7 +8,9 @@ import { extractErrorMessage } from '@/shared/lib/apiError';
 import { PageHeader, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
-import { useGetSupplierQuery, useSaveSupplierDeclarationMutation } from '../../api/suppliersApi';
+import { useSaveBuyerDeclarationMutation } from '../../api/buyersApi';
+import { useSaveSupplierDeclarationMutation } from '../../api/suppliersApi';
+import { useOrganizationDetail, type OrganizationKind } from '../../hooks/useOrganizationAdmin';
 import {
   DATA_POLICY_TEXT,
   DECLARATION_TITLE,
@@ -24,13 +26,15 @@ import {
 } from '../../lib/supplierDeclaration';
 import type {
   InternationalOperationType,
+  Organization,
   SupplierDeclaration,
 } from '../../model/organization.types';
-import type { Supplier } from '../../model/supplier.types';
-import DeclarationSummaryPanel from '../common/DeclarationSummaryPanel';
+import type { SaveSupplierDeclarationRequest } from '../../model/supplier.types';
+import DeclarationSummaryPanel from './DeclarationSummaryPanel';
 
-/* La declaracion de autocontrol de riesgos (antes SAGRILAFT) que el proveedor
-   firma para que Suminia lo apruebe.
+/* La declaracion de autocontrol de riesgos (antes SAGRILAFT) que proveedores
+   y compradores firman para que Suminia los apruebe. Es la misma a los dos
+   lados: Suminia responde por con quien negocian las dos puntas.
 
    Se llena mientras la solicitud esta pendiente. Despues queda fija: Suminia
    aprobo sobre lo que ahi decia, y cambiarla por cuenta propia dejaria la
@@ -203,11 +207,32 @@ const SupportLink = () => (
   </a>
 );
 
-const DeclarationForm = ({ supplier }: { supplier: Supplier }) => {
+/* El envio de cada lado del marketplace. Los dos hooks se llaman siempre
+   —las reglas de los hooks no dejan elegir uno— y se usa el que toca. */
+const useSaveDeclaration = (kind: OrganizationKind) => {
+  const [saveSupplier, supplierState] = useSaveSupplierDeclarationMutation();
+  const [saveBuyer, buyerState] = useSaveBuyerDeclarationMutation();
+  const save = (organizationId: string, data: SaveSupplierDeclarationRequest) =>
+    kind === 'supplier'
+      ? saveSupplier({ supplierId: organizationId, data }).unwrap()
+      : saveBuyer({ buyerId: organizationId, data }).unwrap();
+  return {
+    save,
+    isLoading: kind === 'supplier' ? supplierState.isLoading : buyerState.isLoading,
+  };
+};
+
+const DeclarationForm = ({
+  kind,
+  organization: supplier,
+}: {
+  kind: OrganizationKind;
+  organization: Organization;
+}) => {
   const [values, setValues] = useState<DeclarationValues>(() => toValues(supplier.declaration));
   const [errors, setErrors] = useState<Errors>({});
   const [serverError, setServerError] = useState<string | null>(null);
-  const [save, { isLoading }] = useSaveSupplierDeclarationMutation();
+  const { save, isLoading } = useSaveDeclaration(kind);
 
   const set = <K extends keyof DeclarationValues>(field: K, value: DeclarationValues[K]) =>
     setValues((current) => ({ ...current, [field]: value }));
@@ -244,9 +269,7 @@ const DeclarationForm = ({ supplier }: { supplier: Supplier }) => {
       .filter(Boolean);
 
     try {
-      await save({
-        supplierId: supplier.id,
-        data: {
+      await save(supplier.id, {
           lawfulOrigin: true,
           lawfulUse: true,
           listsAuthorization: true,
@@ -263,8 +286,7 @@ const DeclarationForm = ({ supplier }: { supplier: Supplier }) => {
           operationCountries: international ? values.operationCountries.trim() : null,
           currencies: international ? [...values.currencies, ...otherCurrencies] : [],
           marketingConsent: values.marketingConsent,
-        },
-      }).unwrap();
+      });
       toast.success(supplier.declaration ? 'Declaración actualizada' : 'Declaración enviada');
     } catch (err) {
       setServerError(extractErrorMessage(err, 'No se pudo enviar la declaración.'));
@@ -499,14 +521,16 @@ const DeclarationForm = ({ supplier }: { supplier: Supplier }) => {
   );
 };
 
-export const SupplierDeclarationScreen = () => {
+export const DeclarationScreen = ({ kind }: { kind: OrganizationKind }) => {
   const user = useAppSelector((state) => state.auth.user);
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const organizationId = user?.organizationId ?? null;
 
-  const { data, isLoading, isError, error } = useGetSupplierQuery(organizationId as string, {
-    skip: !organizationId,
-  });
+  const { data, isLoading, isError, error } = useOrganizationDetail(
+    kind,
+    organizationId as string,
+    { skip: !organizationId },
+  );
 
   const header = (
     <PageHeader
@@ -538,7 +562,11 @@ export const SupplierDeclarationScreen = () => {
       <>
         {header}
         {/* La key remonta el formulario con lo guardado tras enviarlo. */}
-        <DeclarationForm key={supplier.declaration?.updatedAt ?? 'nueva'} supplier={supplier} />
+        <DeclarationForm
+          key={supplier.declaration?.updatedAt ?? 'nueva'}
+          kind={kind}
+          organization={supplier}
+        />
       </>
     );
   }
@@ -567,4 +595,7 @@ export const SupplierDeclarationScreen = () => {
   );
 };
 
-export default SupplierDeclarationScreen;
+export const SupplierDeclarationScreen = () => <DeclarationScreen kind='supplier' />;
+export const BuyerDeclarationScreen = () => <DeclarationScreen kind='buyer' />;
+
+export default DeclarationScreen;

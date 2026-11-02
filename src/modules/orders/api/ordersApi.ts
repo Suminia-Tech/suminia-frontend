@@ -9,7 +9,9 @@ import type {
 import type {
   AcceptAvailabilityRequest,
   ChangeOrderStatusRequest,
+  MonthlyBilling,
   Order,
+  OrderMetrics,
   PlaceOrdersRequest,
   ProposeAvailabilityRequest,
 } from '../model/order.types';
@@ -27,6 +29,25 @@ export const ordersApi = baseApi.injectEndpoints({
         /* Y los productos: el pedido aparta inventario. */
         { type: 'Product', id: 'LIST' },
       ],
+    }),
+
+    /* Mes a mes, el mas reciente primero. Se agrupa en el backend: sumar
+       aqui obligaba a traer todos los pedidos de la historia. */
+    getBilling: builder.query<ApiResponse<MonthlyBilling[]>, void>({
+      query: () => '/orders/billing',
+      providesTags: [{ type: 'Order', id: 'LIST' }],
+    }),
+
+    /* Los mismos filter[...] del listado. */
+    getOrderMetrics: builder.query<
+      ApiResponse<OrderMetrics>,
+      Record<string, string> | void
+    >({
+      query: (filter) => ({
+        url: '/orders/metrics',
+        params: toDatatableQuery({ filter: filter ?? {} }),
+      }),
+      providesTags: [{ type: 'Order', id: 'LIST' }],
     }),
 
     getOrders: builder.query<PaginatedResponse<Order>, DatatableParams | void>({
@@ -92,6 +113,8 @@ export const ordersApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetBillingQuery,
+  useGetOrderMetricsQuery,
   usePlaceOrdersMutation,
   useGetOrdersQuery,
   useGetOrderQuery,

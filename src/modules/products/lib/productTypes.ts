@@ -13,22 +13,22 @@ export const PRODUCT_TYPE_OPTIONS: { value: ProductType; label: string; help: st
   {
     value: 'MEDICINE',
     label: 'Medicamento',
-    help: 'Se elige del catálogo del INVIMA: el registro sanitario se toma de ahí.',
+    help: 'Se elige del catálogo del INVIMA, y pide adjuntar el registro sanitario y la ficha técnica.',
   },
   {
     value: 'IN_VITRO_DIAGNOSTIC',
     label: 'Reactivos y diagnóstico in vitro',
-    help: 'Pide registro sanitario, marca y referencia.',
+    help: 'Pide registro sanitario, ficha técnica, marca y referencia.',
   },
   {
     value: 'HOSPITAL_SUPPLY',
     label: 'Insumos hospitalarios',
-    help: 'Pide registro sanitario, marca y referencia.',
+    help: 'Pide registro sanitario, ficha técnica, marca y referencia.',
   },
   {
     value: 'DISINFECTANT',
     label: 'Desinfectantes',
-    help: 'Pide registro sanitario, marca y referencia.',
+    help: 'Pide registro sanitario, ficha técnica, marca y referencia.',
   },
 ];
 
@@ -59,12 +59,9 @@ export const DOCUMENT_HELP: Record<ProductDocumentType, string> = {
 export const requiredDocuments = (
   type: ProductType,
   isManufacturerOrImporter: boolean,
-): ProductDocumentType[] => {
-  if (type !== 'MEDICAL_DEVICE') return [];
-
-  return [
-    'SANITARY_REGISTRATION',
-    'TECHNICAL_SHEET',
-    ...(isManufacturerOrImporter ? (['CCAA'] as const) : []),
-  ];
-};
+): ProductDocumentType[] => [
+  /* En todo producto: sin ellos no se le muestra al comprador. */
+  'SANITARY_REGISTRATION',
+  'TECHNICAL_SHEET',
+  ...(type === 'MEDICAL_DEVICE' && isManufacturerOrImporter ? (['CCAA'] as const) : []),
+];

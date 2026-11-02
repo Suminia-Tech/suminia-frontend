@@ -5,6 +5,7 @@ import type {
   InternationalOperationType,
   OrganizationDocumentType,
   SupplierActivity,
+  SupplierDeliveryTime,
   SupplierProductLine,
 } from './organization.types';
 
@@ -31,6 +32,7 @@ export interface UpdateSupplierRequest {
   offersEarlyPaymentDiscount?: boolean | null;
   earlyPaymentDiscountRate?: number | null;
   earlyPaymentDiscountDays?: number | null;
+  paymentTermDays?: number | null;
   /* Los cinco de la cuenta viajan juntos: el backend rechaza media cuenta.
      Nulos en los cinco la quitan. */
   bankName?: string | null;
@@ -38,20 +40,39 @@ export interface UpdateSupplierRequest {
   bankAccountNumber?: string | null;
   bankAccountHolder?: string | null;
   bankAccountHolderTaxId?: string | null;
+  breBKey?: string | null;
   /* Las listas reemplazan a las anteriores: se manda lo que esta marcado ahora,
      y una vacia las borra. */
   activities?: SupplierActivity[];
   productLines?: SupplierProductLine[];
   exporter?: boolean | null;
+  issuesElectronicInvoices?: boolean | null;
   orderEmails?: string[];
   /* La lista entera: un area que no viene queda sin contacto. */
   contacts?: OrganizationContact[];
+  /* La lista entera: con id se actualiza, sin id se crea, y la que no viene
+     se borra. */
+  warehouses?: { id?: string; name: string | null; address: string; city: string }[];
+  /* La lista entera de tiempos por ciudad; reemplaza a la anterior. */
+  deliveryTimes?: SupplierDeliveryTime[];
+  /* La lista entera de areas propias; la que no viene se quita. */
+  customContactAreas?: string[];
 }
 
 export interface ConfirmSupplierDocumentRequest {
   type: OrganizationDocumentType;
   storageKey: string;
   filename?: string;
+}
+
+/* La revision de una version, por el personal de Suminia. El motivo lo exige
+   el backend al rechazar; la fecha de vencimiento, solo si el documento
+   vence. Vale igual para proveedores y compradores. */
+export interface ReviewDocumentRequest {
+  decision: 'APPROVE' | 'REJECT';
+  reason?: string | null;
+  /* AAAA-MM-DD. */
+  expiresAt?: string | null;
 }
 
 /* Lo que se envia. Las cinco aceptaciones van en true porque el backend las

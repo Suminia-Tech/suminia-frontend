@@ -1,6 +1,6 @@
 'use client';
 
-import { ExternalLink, FileText } from 'react-feather';
+import { CheckCircle, ExternalLink, FileText } from 'react-feather';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 
@@ -21,7 +21,10 @@ interface ProductDocumentsSectionProps {
 }
 
 /* El registro sanitario y la ficha tecnica, para abrirlos desde la ficha. Es
-   lo primero que pide un comprador del sector antes de comprar un dispositivo.
+   lo primero que pide un comprador del sector antes de comprar.
+
+   Se pintan con `document-slot`, el mismo hueco de los documentos legales de
+   Mi empresa: un documento se ve igual en toda la aplicacion.
 
    Se abren con un enlace firmado que caduca a los cinco minutos. La pestaña se
    abre dentro del mismo clic y despues se le pone la direccion: abrirla al
@@ -31,9 +34,9 @@ export const ProductDocumentsSection = ({ productId, documents }: ProductDocumen
   const [getUrl] = useGetPublicDocumentUrlMutation();
   const [abriendo, setAbriendo] = useState<string | null>(null);
 
-  /* Los dos que se publican, cargados o no. Un hueco vacio dice que el
-     proveedor no lo ha subido; esconder la seccion hacia pensar que la ficha
-     no los ofrece, que es justo lo contrario de lo que se quiere contar. */
+  /* Los dos que se publican, cargados o no. Un producto sin ellos no se le
+     muestra al comprador; el hueco vacio queda para el proveedor y el personal
+     de Suminia, que si ven la ficha. */
   const huecos = PUBLIC_DOCUMENTS.map((type) => ({
     type,
     document: documents.find((item) => item.type === type) ?? null,
@@ -61,34 +64,31 @@ export const ProductDocumentsSection = ({ productId, documents }: ProductDocumen
           Documentos
         </h3>
       </div>
-      <ul className='product-documents'>
+      <div className='document-slots'>
         {huecos.map(({ type, document }) => (
-          <li key={type}>
-            {document ? (
+          <div className={`document-slot${document ? ' is-filled' : ''}`} key={type}>
+            <span className='document-slot-icon'>
+              {document ? <CheckCircle size={20} /> : <FileText size={20} />}
+            </span>
+            <div className='document-slot-text'>
+              <strong>{DOCUMENT_LABEL[type]}</strong>
+              <small className='font-light'>
+                {document ? (document.filename ?? 'Documento cargado') : 'Sin cargar.'}
+              </small>
+            </div>
+            {document && (
               <button
                 type='button'
+                className='btn btn-outline-secondary btn-sm btn-with-icon'
                 disabled={abriendo === document.id}
                 onClick={() => abrir(document.id)}
               >
-                <FileText size={18} />
-                <span>
-                  <strong>{DOCUMENT_LABEL[type]}</strong>
-                  <small className='font-light'>{document.filename ?? 'Ver documento'}</small>
-                </span>
-                <ExternalLink size={15} />
+                <ExternalLink size={14} /> Ver
               </button>
-            ) : (
-              <div className='is-missing'>
-                <FileText size={18} />
-                <span>
-                  <strong>{DOCUMENT_LABEL[type]}</strong>
-                  <small className='font-light'>El proveedor todavía no lo ha cargado.</small>
-                </span>
-              </div>
             )}
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </section>
   );
 };

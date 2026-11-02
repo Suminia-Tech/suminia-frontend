@@ -9,7 +9,7 @@ import AddToHome from "./AddToHome";
 import ThreeBarToggle from "./ThreeBarToggle";
 import { getAPIData } from "@/_template/Utils";
 import { OVERLAY, TOPMENUTOGGLE } from "@/_template/ReduxToolkit/Reducers/ModalReducer";
-import { getAccountPath, useAuth } from "@/modules/auth";
+import { getAccountPath, getUserArea, useAuth } from "@/modules/auth";
 
 const NavBar = ({ customClass }) => {
   const { t } = useTranslation("common");
@@ -24,6 +24,16 @@ const NavBar = ({ customClass }) => {
      iniciada, que es cuando lleva a algun sitio. */
   const { user, isAuthenticated } = useAuth();
   const accountPath = getAccountPath(user);
+  /* El orden sigue el recorrido del comprador y lo que mas usa: TIENDA para
+     comprar y MIS PEDIDOS, justo despues, para seguir lo comprado. BLOG, que
+     se lee de vez en cuando, en medio. MI CUENTA al final, donde se espera
+     encontrarla: son ajustes que se tocan poco. Los pedidos solo los tiene
+     el comprador; el proveedor y el personal los ven en su panel. */
+  const menuItems = isAuthenticated && getUserArea(user) === "buyer"
+    ? (headerData ?? []).flatMap((menu) =>
+        menu.path === "/catalog" ? [menu, { title: "MIS PEDIDOS", path: "/buyer/orders", type: "link" }] : [menu],
+      )
+    : headerData;
   useEffect(() => {
     getAPIData("/api/header").then((res) => setHeaderData(res?.data));
   }, []);
@@ -44,7 +54,7 @@ const NavBar = ({ customClass }) => {
               </span>
             </div>
           </li>
-          {headerData?.map((menu, i) => {
+          {menuItems?.map((menu, i) => {
             return (
               <li className={`${menu.type === "link" ? "" : menu.title === "VOXO PLUS" ? "mega-menu ratio_40 dropdown" : "dropdown"}`} key={i}>
                 {menu.type === "link" ? (

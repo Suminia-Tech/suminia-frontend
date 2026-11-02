@@ -30,12 +30,20 @@ export const useScrollToHash = (ready: boolean) => {
     /* Un cuadro despues de que React pinte, para que el panel ya mida lo que
        mide y el desplazamiento caiga donde es. */
     const cuadro = window.requestAnimationFrame(irAlAncla);
-    window.addEventListener('hashchange', irAlAncla);
+    /* Tambien un cuadro despues en `hashchange`: el ancla puede abrir otra
+       pestaña, y su panel no existe hasta que React la pinta. */
+    let cuadroAncla: number | undefined;
+    const alCambiar = () => {
+      window.cancelAnimationFrame(cuadroAncla ?? 0);
+      cuadroAncla = window.requestAnimationFrame(irAlAncla);
+    };
+    window.addEventListener('hashchange', alCambiar);
 
     return () => {
       window.cancelAnimationFrame(cuadro);
+      window.cancelAnimationFrame(cuadroAncla ?? 0);
       window.clearTimeout(quitarResalte);
-      window.removeEventListener('hashchange', irAlAncla);
+      window.removeEventListener('hashchange', alCambiar);
     };
   }, [ready]);
 };

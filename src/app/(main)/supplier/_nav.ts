@@ -32,7 +32,23 @@ export const SUPPLIER_SIDEBAR: SidebarGroup[] = [
     label: 'Mi cuenta',
     items: [
       { label: 'Resumen', href: '/supplier/account', icon: Home },
-      { label: 'Mi empresa', href: '/supplier/account/company', icon: Briefcase },
+      {
+        label: 'Mi empresa',
+        href: '/supplier/account/company',
+        icon: Briefcase,
+        /* Las mismas de COMPANY_SECTIONS en el modulo organizations. Quien
+           solo lee no tiene contactos que ver. */
+        children: [
+          { label: 'Datos generales', href: '/supplier/account/company' },
+          { label: 'Documentos', href: '/supplier/account/company/documents' },
+          {
+            label: 'Contactos',
+            href: '/supplier/account/company/contacts',
+            permission: 'organization:update',
+          },
+          { label: 'Condiciones y pagos', href: '/supplier/account/company/terms' },
+        ],
+      },
       /* Lo que firma para que lo aprueben. Se queda despues, en solo lectura,
          para que pueda consultar lo que declaro. */
       { label: 'Declaración', href: '/supplier/account/declaration', icon: FileText },

@@ -12,7 +12,7 @@ import {
   describeActivities,
   describeExporter,
   describeProductLines,
-  CONTACT_AREA_OPTIONS,
+  contactAreaLabel,
 } from '../../lib/commercialProfile';
 import { supplierPendings } from '../../lib/pendings';
 import { formatTaxId } from '../../lib/taxId';
@@ -149,7 +149,7 @@ export const SupplierSummaryScreen = () => {
                 ? supplier.contacts
                     .map(
                       (contact) =>
-                        `${CONTACT_AREA_OPTIONS.find((o) => o.value === contact.area)?.label}: ${contact.name}`,
+                        `${contactAreaLabel(contact)}: ${contact.name}`,
                     )
                     .join(' · ')
                 : '—'}
@@ -162,6 +162,16 @@ export const SupplierSummaryScreen = () => {
           <li>
             <span className='font-light'>Dirección</span>
             <span>{supplier.address ?? '—'}</span>
+          </li>
+          <li>
+            <span className='font-light'>Bodegas</span>
+            <span>
+              {supplier.warehouses?.length
+                ? supplier.warehouses
+                    .map((warehouse) => warehouse.name ?? warehouse.city)
+                    .join(' · ')
+                : '—'}
+            </span>
           </li>
         </ul>
       </Panel>

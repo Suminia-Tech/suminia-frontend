@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronsLeft, ChevronsRight, X } from 'react-feather';
+import { useState } from 'react';
+import { ChevronDown, ChevronsLeft, ChevronsRight, X } from 'react-feather';
 
 import { CommonPath } from '@/_template/Constant';
 import { hasPermission } from '@/shared/lib/permissions';
@@ -38,6 +39,9 @@ const AreaSidebar = ({
 }: AreaSidebarProps) => {
   const pathname = usePathname();
   const user = useAppSelector((state) => state.auth.user);
+  /* Lo que el usuario abrio o cerro a mano. Sin entrada, un grupo esta abierto
+     mientras se esta dentro de el. */
+  const [toggled, setToggled] = useState<Record<string, boolean>>({});
 
   const allHrefs = groups.flatMap((group) => group.items.map((item) => item.href));
 
@@ -130,6 +134,52 @@ const AreaSidebar = ({
                 <ul>
                   {visible.map((item) => {
                     const Icon = item.icon;
+                    const active = isActive(item.href);
+                    const children = (item.children ?? []).filter(
+                      (child) =>
+                        !child.permission || hasPermission(user?.permissions, child.permission),
+                    );
+
+                    /* Una entrada con subsecciones es un grupo que se abre y
+                       se cierra, con la flecha que lo dice: si solo se
+                       desplegara al entrar, nada avisaria de que las tiene.
+                       Contraido sigue siendo un enlace: no hay sitio para las
+                       subsecciones, y la entrada lleva a la primera. */
+                    if (children.length > 0 && !isCollapsed) {
+                      const open = toggled[item.href] ?? active;
+                      return (
+                        <li key={item.href}>
+                          <button
+                            type='button'
+                            className={`area-sidebar-parent${active ? ' is-open' : ''}`}
+                            aria-expanded={open}
+                            onClick={() =>
+                              setToggled((current) => ({ ...current, [item.href]: !open }))
+                            }
+                          >
+                            <Icon size={19} />
+                            <span>{item.label}</span>
+                            <ChevronDown size={16} className='area-sidebar-chevron' />
+                          </button>
+                          {open && (
+                            <ul className='area-sidebar-sub'>
+                              {children.map((child) => (
+                                <li key={child.href}>
+                                  <Link
+                                    href={child.href}
+                                    onClick={onClose}
+                                    className={pathname === child.href ? 'is-active' : undefined}
+                                    aria-current={pathname === child.href ? 'page' : undefined}
+                                  >
+                                    {child.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      );
+                    }
 
                     return (
                       <li key={item.href}>
@@ -139,9 +189,9 @@ const AreaSidebar = ({
                           /* El title solo hace falta contraido, que es cuando el
                              icono viaja sin su etiqueta. */
                           title={isCollapsed ? item.label : undefined}
-                          className={isActive(item.href) ? 'is-active' : undefined}
+                          className={active ? 'is-active' : undefined}
                         >
-                          <Icon size={17} />
+                          <Icon size={19} />
                           <span>{item.label}</span>
                         </Link>
                       </li>

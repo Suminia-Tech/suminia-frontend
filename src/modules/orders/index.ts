@@ -13,6 +13,6 @@ export { SupplierOrderDetailScreen } from './ui/supplier/SupplierOrderDetailScre
 export { StaffOrdersScreen } from './ui/staff/StaffOrdersScreen';
 export { StaffOrderDetailScreen } from './ui/staff/StaffOrderDetailScreen';
 
-export { useGetOrdersQuery } from './api/ordersApi';
+export { useGetBillingQuery, useGetOrdersQuery } from './api/ordersApi';
 
-export type { Order, OrderItem, OrderStatus } from './model/order.types';
+export type { MonthlyBilling, Order, OrderItem, OrderStatus } from './model/order.types';

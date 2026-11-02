@@ -7,10 +7,12 @@ import { ChevronRight, Home, Menu } from 'react-feather';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 
 import { getAccountLabel, useAuth } from '@/modules/auth';
+import { NotificationBell } from '@/modules/notifications';
 
 import type { SidebarGroup } from './sidebar.types';
 
-/* Barra superior: migas a la izquierda, quien esta dentro a la derecha.
+/* Barra superior: migas a la izquierda; a la derecha los avisos y quien esta
+   dentro.
 
    Las migas salen de la propia navegacion en vez de una lista aparte: si una
    entrada cambia de nombre, la miga cambia con ella y no hay dos sitios que
@@ -68,20 +70,23 @@ const AreaTopbar = ({ groups, homeHref, onOpenMenu }: AreaTopbarProps) => {
         </nav>
       </div>
 
-      <Dropdown
-        className='area-topbar-user'
-        isOpen={menuOpen}
-        toggle={() => setMenuOpen(!menuOpen)}
-      >
-        <DropdownToggle tag='button' type='button'>
-          <span className='area-avatar'>{initials(user?.name)}</span>
-          <span className='area-topbar-name'>{user?.name}</span>
-        </DropdownToggle>
-        <DropdownMenu end>
-          <DropdownItem header>{getAccountLabel(user)}</DropdownItem>
-          <DropdownItem onClick={logout}>Cerrar sesión</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
+      <div className='area-topbar-right'>
+        <NotificationBell variant='panel' />
+        <Dropdown
+          className='area-topbar-user'
+          isOpen={menuOpen}
+          toggle={() => setMenuOpen(!menuOpen)}
+        >
+          <DropdownToggle tag='button' type='button'>
+            <span className='area-avatar'>{initials(user?.name)}</span>
+            <span className='area-topbar-name'>{user?.name}</span>
+          </DropdownToggle>
+          <DropdownMenu end>
+            <DropdownItem header>{getAccountLabel(user)}</DropdownItem>
+            <DropdownItem onClick={logout}>Cerrar sesión</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
     </header>
   );
 };
