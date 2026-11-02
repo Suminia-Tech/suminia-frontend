@@ -42,8 +42,8 @@ src/modules/
 ├── users/            ← usuarios de la plataforma y de cada empresa   (planificado)
 ├── organizations/    ← proveedores y compradores                    (planificado)
 ├── products/         ← producto: catálogo, filtros, detalle         (planificado)
-├── orders/           ← pedidos entre comprador y proveedor          (planificado)
-└── payments/         ← pagos y crédito                              (planificado)
+├── orders/           ← pedidos, su pago por transferencia y las cotizaciones
+└── finance/          ← lo de finanzas: configuración, liquidaciones, crédito y tablero
 ```
 
 ### `organizations` consume dos módulos del backend
@@ -57,6 +57,13 @@ La correspondencia con el backend es uno a uno salvo en un caso:
 | `suppliers/` + `buyers/` | `modules/organizations/` |
 | `products/` | `modules/products/` |
 | `orders/` | `modules/orders/` |
+| `finance/` | `modules/finance/` |
+
+El pago de cada pedido —el comprobante, su verificación, la factura del proveedor, la
+devolución— vive en `orders`, junto al pedido, aunque la cuenta de Suminia y el cupo de
+crédito que consulta el checkout los sirva `/finance` en el backend: los usan las pantallas
+de pedidos, y un módulo no importa otro. `finance` es lo que maneja finanzas desde el
+superadmin, más las liquidaciones que ve el proveedor.
 
 En el backend, `suppliers` y `buyers` son dominios distintos: el proveedor gestiona
 catálogo, el comprador gestiona checkout. En el frontend, en cambio, **comparten pantalla**

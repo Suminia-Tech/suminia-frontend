@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { CartScreen } from '@/modules/cart';
+import { CreateQuoteButton } from '@/modules/orders';
 import { Breadcrumbs } from '@/shared/ui';
 
 export const metadata: Metadata = {
@@ -23,7 +24,8 @@ export default function CarritoPage() {
         <div className='box-head'>
           <h3>Mi carrito</h3>
         </div>
-        <CartScreen />
+        {/* La cotizacion es de orders: el carrito solo le da el sitio. */}
+        <CartScreen extra={<CreateQuoteButton />} />
       </div>
     </section>
   );

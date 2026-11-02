@@ -5884,3 +5884,227 @@ select.form-control,
 .notification-time {
   font-size: 12px;
 }
+
+/* ==========================================================================
+   El dinero del pedido: pago, factura, historial
+   ========================================================================== */
+
+/* Lo que le toca hacer a cada lado con el pago, en una frase bajo las cifras. */
+.order-payment-hint {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* Un subtitulo dentro de un panel: "Transfiere a Suminia", "Sube el
+   comprobante". Mas pequeño que el titulo del panel para no competir con el. */
+.order-subhead {
+  margin: 18px 0 10px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: $theme-font-color;
+  text-transform: none;
+}
+
+.order-payment-form {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid $border-color;
+
+  .order-subhead:first-child {
+    margin-top: 0;
+  }
+}
+
+.order-payment-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  .form-label {
+    margin-bottom: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+}
+
+.order-payment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* El estado del pago en una fila del listado de pedidos, debajo de la fecha. */
+.orders-line-main .status-pill {
+  margin-top: 4px;
+  font-size: 12.5px;
+}
+
+/* El historial del pedido: una linea vertical con un punto por paso, el mas
+   reciente arriba. `li` es inline-block en el tema: aqui va en columna. */
+.order-history {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 12px;
+    position: relative;
+    padding: 0 0 16px;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    /* El tramo hasta el paso anterior. */
+    &:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      bottom: 0;
+      left: 5px;
+      width: 2px;
+      background-color: $border-color;
+    }
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    strong {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    small,
+    p {
+      font-size: 12.5px;
+    }
+  }
+}
+
+.order-history-dot {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background-color: var(--theme-color);
+
+  /* Solo el mas reciente en color: los anteriores ya pasaron. */
+  li:not(:first-child) & {
+    background-color: $border-color;
+  }
+}
+
+/* La cotizacion formal en el carrito, debajo de los botones. */
+.quote-from-cart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid $border-color;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  strong {
+    font-size: 14px;
+  }
+
+  small {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+}
+
+/* Cada proveedor de una cotizacion, con su nombre encima de sus lineas. El
+   primero arranca pegado al borde del panel: el margen del subtitulo es para
+   separar un proveedor del anterior. */
+.quote-supplier + .quote-supplier {
+  margin-top: 8px;
+}
+
+.quote-supplier:first-child .order-subhead {
+  margin-top: 0;
+}
+
+.quote-orders {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: block;
+    padding: 4px 0;
+  }
+}
+
+/* ==========================================================================
+   Finanzas: liquidaciones
+   ========================================================================== */
+
+/* Lo que espera liquidacion de un proveedor: su nombre y su cuenta, el neto y
+   el boton, sobre la tabla de sus pedidos. */
+.payout-block {
+  & + & {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid $border-color;
+  }
+
+  .panel-warning {
+    margin: 0 0 12px;
+  }
+}
+
+.payout-block-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 12px;
+
+  > div:first-child {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 220px;
+
+    strong {
+      font-size: 15px;
+    }
+
+    small {
+      font-size: 12.5px;
+    }
+  }
+}
+
+.payout-upcoming {
+  margin: 18px 0 0;
+  font-size: 13px;
+}
+
+/* La comision o el credito de una empresa, debajo de su ficha en el
+   superadmin. La ficha termina en su propia rejilla de columnas, que no deja
+   margen debajo: sin esto el panel queda pegado a ella. */
+.organization-finance-panel {
+  margin-top: 24px;
+}
+
+/* Una celda que no se parte: un codigo de pedido o una fecha partidos en tres
+   lineas no se leen de un vistazo. */
+.catalog-table td.is-nowrap {
+  white-space: nowrap;
+}

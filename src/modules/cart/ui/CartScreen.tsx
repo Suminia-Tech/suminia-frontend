@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import Link from 'next/link';
 import { AlertCircle, Image as ImageIcon, Trash2 } from 'react-feather';
 import { toast } from 'react-toastify';
@@ -101,7 +103,14 @@ const CartLine = ({
   );
 };
 
-export const CartScreen = () => {
+interface CartScreenProps {
+  /* Lo que otros modulos ofrecen sobre el carrito, como la cotizacion formal.
+     Lo pone la pagina —un modulo no importa otro— y se pinta solo cuando hay
+     algo en el carrito. */
+  extra?: ReactNode;
+}
+
+export const CartScreen = ({ extra }: CartScreenProps = {}) => {
   const { canBuy, hydrated, reason } = useCanBuy();
   const { data, isLoading, isError, error } = useGetCartQuery(undefined, {
     skip: !hydrated || !canBuy,
@@ -293,6 +302,8 @@ export const CartScreen = () => {
         >
           Vaciar carrito
         </button>
+
+        {extra}
       </aside>
     </div>
   );

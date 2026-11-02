@@ -1,4 +1,4 @@
-import { Briefcase, FileText, Heart, MapPin, Shield, User, Users } from 'react-feather';
+import { Briefcase, File, FileText, Heart, MapPin, Shield, User, Users } from 'react-feather';
 
 import type { PanelGroup } from '../_shell/PanelNav';
 
@@ -17,7 +17,12 @@ import type { PanelGroup } from '../_shell/PanelNav';
 export const BUYER_ACCOUNT_GROUPS: PanelGroup[] = [
   {
     label: 'Compras',
-    items: [{ label: 'Favoritos', href: '/buyer/account/favorites', icon: Heart }],
+    /* Las cotizaciones antes que los favoritos: son compras en curso, que
+       esperan una aprobacion para convertirse en pedido. */
+    items: [
+      { label: 'Cotizaciones', href: '/buyer/account/quotes', icon: File },
+      { label: 'Favoritos', href: '/buyer/account/favorites', icon: Heart },
+    ],
   },
   {
     label: 'Organización',

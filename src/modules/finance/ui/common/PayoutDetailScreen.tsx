@@ -1,0 +1,299 @@
+'use client';
+
+import Link from 'next/link';
+import { useRef, useState, type ChangeEvent } from 'react';
+import { ChevronLeft, ExternalLink, Upload } from 'react-feather';
+import { toast } from 'react-toastify';
+
+import { extractErrorMessage } from '@/shared/lib/apiError';
+import { formatDate, formatDay } from '@/shared/lib/dates';
+import { hasPermission } from '@/shared/lib/permissions';
+import { Panel } from '@/shared/ui';
+import { useAppSelector } from '@/store/hooks';
+
+import { useGetPayoutQuery, useMarkPayoutPaidMutation } from '../../api/financeApi';
+import { FILE_ACCEPT, usePayoutFiles } from '../../hooks/usePayoutFiles';
+import { pesos } from '../../lib/format';
+import type { Payout } from '../../model/finance.types';
+
+/* Una liquidacion, para finanzas y para el proveedor.
+
+   Lo que se lee es lo mismo —que pedidos entraron, cuanto vendio, cuanto se
+   quedo Suminia y cuanto se le transfirio— y lo que cambia es que finanzas la
+   marca pagada con el comprobante. El proveedor cuadra contra esto lo que le
+   llego al banco. */
+
+const COPY = {
+  staff: { volver: 'Liquidaciones', base: '/admin/finance/payouts', pedidos: '/admin/orders' },
+  supplier: { volver: 'Mis liquidaciones', base: '/supplier/payouts', pedidos: '/supplier/orders' },
+};
+
+export const PayoutDetailScreen = ({
+  payoutId,
+  side,
+}: {
+  payoutId: string;
+  side: 'staff' | 'supplier';
+}) => {
+  const hydrated = useAppSelector((state) => state.auth.hydrated);
+  const permissions = useAppSelector((state) => state.auth.user?.permissions);
+  const { data, isLoading, isError, error } = useGetPayoutQuery(payoutId, { skip: !hydrated });
+  const files = usePayoutFiles(payoutId);
+  const copy = COPY[side];
+
+  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (isError || !data) {
+    return (
+      <div className='alert alert-danger'>
+        {extractErrorMessage(error, 'No se pudo cargar la liquidación.')}
+      </div>
+    );
+  }
+
+  const payout = data.data;
+  const puedePagar =
+    side === 'staff' && payout.status === 'PENDING' && hasPermission(permissions, 'finance:manage');
+
+  const archivo = (
+    titulo: string,
+    file: Payout['receipt'],
+    vacio: string,
+  ) => (
+    <div
+      className={`document-slot is-versioned${file ? ' is-filled' : side === 'staff' ? ' is-missing' : ''}`}
+    >
+      <div className='document-slot-row'>
+        <div className='document-slot-text'>
+          <div className='document-slot-title'>
+            <strong>{titulo}</strong>
+            <span className={`document-state is-${file ? 'success' : 'muted'}`}>
+              {file ? 'Adjunto' : 'Sin adjuntar'}
+            </span>
+          </div>
+          <small className='font-light'>{file?.filename ?? vacio}</small>
+        </div>
+        {file && (
+          <div className='document-slot-actions'>
+            <button
+              type='button'
+              className='btn btn-outline-secondary btn-sm btn-with-icon'
+              disabled={files.opening === file.storageKey}
+              onClick={() => files.open(file.storageKey)}
+            >
+              <ExternalLink size={14} /> Ver
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <Link href={copy.base} className='font-light d-inline-flex align-items-center gap-1 mb-3'>
+        <ChevronLeft size={16} />
+        {copy.volver}
+      </Link>
+
+      <div className='order-head'>
+        <div>
+          <h1>Liquidación {payout.code}</h1>
+          <p className='font-light mb-0'>
+            {side === 'staff' && `${payout.supplier.name} · `}
+            Generada el {formatDate(payout.createdAt)}
+            {side === 'staff' && ` por ${payout.createdByName}`}
+          </p>
+        </div>
+        <span className={`document-state is-${payout.status === 'PAID' ? 'success' : 'neutral'}`}>
+          {payout.status === 'PAID' ? 'Pagada' : 'Por pagar'}
+        </span>
+      </div>
+
+      <div className='order-layout'>
+        <div className='order-main'>
+          <Panel title='Pedidos'>
+            <div className='catalog-table-scroll'>
+              <table className='catalog-table'>
+                <thead>
+                  <tr>
+                    <th>Pedido</th>
+                    <th>Comprador</th>
+                    <th>Entregado</th>
+                    <th>Factura</th>
+                    <th className='num'>Total</th>
+                    <th className='num'>Comisión</th>
+                    <th className='num'>Neto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payout.items.map((order) => (
+                    <tr key={order.id}>
+                      <td className='is-nowrap'>
+                        <Link href={`${copy.pedidos}/${order.id}`}>{order.code}</Link>
+                      </td>
+                      <td>{order.buyerName}</td>
+                      <td className='is-nowrap'>{order.deliveredAt ? formatDay(order.deliveredAt) : '—'}</td>
+                      <td>{order.invoiceNumber ?? '—'}</td>
+                      <td className='num is-nowrap'>{pesos(order.total)}</td>
+                      <td className='num is-nowrap'>
+                        {pesos(order.commissionAmount)} ({order.commissionRate}%)
+                      </td>
+                      <td className='num is-nowrap'>{pesos(order.supplierPayout)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Panel>
+        </div>
+
+        <aside className='order-side'>
+          <Panel title='Liquidación'>
+            <ul className='cart-summary-lines order-totals'>
+              <li>
+                <span className='font-light'>Vendido</span>
+                <span>{pesos(payout.total)}</span>
+              </li>
+              <li>
+                <span className='font-light'>Comisión de Suminia</span>
+                <span>−{pesos(payout.commission)}</span>
+              </li>
+              <li className='cart-summary-total'>
+                <span>{side === 'staff' ? 'A transferir' : 'Te transferimos'}</span>
+                <strong>{pesos(payout.net)}</strong>
+              </li>
+            </ul>
+            <ul className='data-list is-single mt-3'>
+              <li>
+                <span className='font-light'>Cuenta</span>
+                <span>
+                  {payout.accountNumber
+                    ? `${payout.bankName ?? ''} · ${payout.accountType?.toLowerCase() ?? ''} ${payout.accountNumber}`
+                    : 'Sin cuenta registrada'}
+                </span>
+              </li>
+              {payout.paidAt && (
+                <li>
+                  <span className='font-light'>Pagada</span>
+                  <span>
+                    {formatDate(payout.paidAt)}
+                    {payout.paidByName && side === 'staff' && ` · ${payout.paidByName}`}
+                  </span>
+                </li>
+              )}
+              {payout.note && (
+                <li>
+                  <span className='font-light'>Nota</span>
+                  <span>{payout.note}</span>
+                </li>
+              )}
+            </ul>
+          </Panel>
+
+          <Panel title='Soportes'>
+            <div className='document-slots'>
+              {archivo(
+                'Comprobante de la transferencia',
+                payout.receipt,
+                'Se adjunta al marcarla pagada.',
+              )}
+              {archivo(
+                'Factura de la comisión',
+                payout.commissionInvoice,
+                'La factura de Suminia por la comisión de esta liquidación.',
+              )}
+            </div>
+          </Panel>
+
+          {puedePagar && <MarkPaidForm payout={payout} files={files} />}
+        </aside>
+      </div>
+    </>
+  );
+};
+
+type Files = ReturnType<typeof usePayoutFiles>;
+
+/* Marcarla pagada: el comprobante es obligatorio —es lo que el proveedor va a
+   cuadrar— y la factura de la comision se puede adjuntar despues. */
+const MarkPaidForm = ({ payout, files }: { payout: Payout; files: Files }) => {
+  const [markPaid, { isLoading }] = useMarkPayoutPaidMutation();
+  const recibo = useRef<HTMLInputElement>(null);
+  const factura = useRef<HTMLInputElement>(null);
+  const [receipt, setReceipt] = useState<File | null>(null);
+  const [invoice, setInvoice] = useState<File | null>(null);
+  const [note, setNote] = useState('');
+
+  const pagar = async () => {
+    if (!receipt) return;
+    try {
+      const r = await files.upload('receipt', receipt);
+      const f = invoice ? await files.upload('invoice', invoice) : null;
+      await markPaid({
+        id: payout.id,
+        receiptStorageKey: r.storageKey,
+        receiptFilename: r.filename,
+        ...(f ? { commissionInvoiceKey: f.storageKey, commissionInvoiceFilename: f.filename } : {}),
+        ...(note.trim() ? { note: note.trim() } : {}),
+      }).unwrap();
+      toast.success('Liquidación pagada. Le avisamos al proveedor');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : extractErrorMessage(err, 'No se pudo guardar.'));
+    }
+  };
+
+  const elegir = (
+    ref: React.RefObject<HTMLInputElement | null>,
+    file: File | null,
+    label: string,
+  ) => (
+    <button
+      type='button'
+      className='btn btn-outline-secondary btn-sm btn-with-icon'
+      onClick={() => ref.current?.click()}
+    >
+      <Upload size={14} /> {file ? file.name : label}
+    </button>
+  );
+
+  const onFile =
+    (setter: (file: File | null) => void) => (event: ChangeEvent<HTMLInputElement>) => {
+      setter(event.target.files?.[0] ?? null);
+      event.target.value = '';
+    };
+
+  return (
+    <Panel
+      title='Marcar como pagada'
+      description={`Transfiere ${pesos(payout.net)} a la cuenta del proveedor y adjunta el comprobante.`}
+    >
+      <div className='order-payment-actions'>
+        {elegir(recibo, receipt, 'Comprobante (obligatorio)')}
+        {elegir(factura, invoice, 'Factura de la comisión')}
+      </div>
+      <label className='form-label mt-3' htmlFor='liquidacion-nota'>
+        Nota (opcional)
+      </label>
+      <input
+        id='liquidacion-nota'
+        type='text'
+        maxLength={500}
+        className='form-control'
+        value={note}
+        onChange={(event) => setNote(event.target.value)}
+      />
+      <button
+        type='button'
+        className='btn btn-primary btn-full mt-3'
+        disabled={!receipt || isLoading || files.uploading}
+        onClick={pagar}
+      >
+        {isLoading || files.uploading ? 'Guardando...' : 'Marcar como pagada'}
+      </button>
+      <input ref={recibo} type='file' accept={FILE_ACCEPT} className='d-none' onChange={onFile(setReceipt)} />
+      <input ref={factura} type='file' accept={FILE_ACCEPT} className='d-none' onChange={onFile(setInvoice)} />
+    </Panel>
+  );
+};
+
+export default PayoutDetailScreen;

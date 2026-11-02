@@ -9,6 +9,8 @@ import { extractErrorMessage } from '@/shared/lib/apiError';
 import { LoadingOverlay } from '@/shared/ui';
 
 import { usePlaceOrdersMutation } from '../api/ordersApi';
+import type { PaymentMethod } from '../model/order.types';
+import PaymentMethodPicker from './common/PaymentMethodPicker';
 
 /* Confirmar el pedido.
 
@@ -36,6 +38,7 @@ export const CheckoutScreen = ({
   const [placeOrders, { isLoading }] = usePlaceOrdersMutation();
   const [locationId, setLocationId] = useState('');
   const [notes, setNotes] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('TRANSFER');
   const [error, setError] = useState<string | null>(null);
 
   const confirmar = async () => {
@@ -45,6 +48,7 @@ export const CheckoutScreen = ({
       const respuesta = await placeOrders({
         ...(locationId ? { deliveryLocationId: locationId } : {}),
         ...(notes.trim() ? { notes: notes.trim() } : {}),
+        paymentMethod,
       }).unwrap();
 
       const pedidos = respuesta.data;
@@ -78,6 +82,13 @@ export const CheckoutScreen = ({
             <h3>¿A dónde lo llevamos?</h3>
           </div>
           <LocationPicker value={locationId} onChange={setLocationId} />
+
+          <div className='box-head mt-4'>
+            <h3>¿Cómo pagas?</h3>
+          </div>
+          {/* Sin el total: el carrito es de otro modulo. Si no cabe en el cupo,
+              el backend lo dice al confirmar, en el recuadro de abajo. */}
+          <PaymentMethodPicker value={paymentMethod} onChange={setPaymentMethod} total={null} />
 
           <div className='box-head mt-4'>
             <h3>¿Algo que el proveedor deba saber?</h3>

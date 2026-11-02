@@ -1,7 +1,11 @@
 import {
   CheckSquare,
   Clipboard,
+  CreditCard,
+  DollarSign,
   Home,
+  PieChart,
+  Settings,
   Shield,
   ShoppingBag,
   Tag,
@@ -30,6 +34,52 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
     items: [
       { label: 'Resumen', href: '/admin', icon: Home },
       { label: 'Pedidos', href: '/admin/orders', icon: Clipboard },
+    ],
+  },
+  {
+    /* El dinero: lo maneja finanzas. Primero lo que espera a alguien —el
+       tablero y los pagos por verificar—, despues lo que se le paga a los
+       proveedores y lo que se le fia a los compradores, y al final las
+       reglas. Configuracion y liquidaciones piden finance:manage; quien solo
+       verifica pagos ve lo suyo. */
+    label: 'Finanzas',
+    items: [
+      {
+        label: 'Resumen financiero',
+        href: '/admin/finance',
+        icon: PieChart,
+        permission: 'payment:verify',
+      },
+      {
+        label: 'Pagos',
+        href: '/admin/finance/payments',
+        icon: CreditCard,
+        permission: 'payment:verify',
+        children: [
+          { label: 'Por verificar', href: '/admin/finance/payments' },
+          { label: 'Devoluciones', href: '/admin/finance/refunds' },
+          { label: 'Facturas pendientes', href: '/admin/finance/invoices' },
+          { label: 'Vencidos', href: '/admin/finance/overdue' },
+        ],
+      },
+      {
+        label: 'Liquidaciones',
+        href: '/admin/finance/payouts',
+        icon: DollarSign,
+        permission: 'finance:manage',
+      },
+      {
+        label: 'Crédito',
+        href: '/admin/finance/credit',
+        icon: ShoppingBag,
+        permission: 'payment:verify',
+      },
+      {
+        label: 'Configuración',
+        href: '/admin/finance/settings',
+        icon: Settings,
+        permission: 'finance:manage',
+      },
     ],
   },
   {

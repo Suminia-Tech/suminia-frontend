@@ -13,6 +13,8 @@ import { useGetOrderMetricsQuery, useGetOrdersQuery } from '../../api/ordersApi'
 import {
   ORDER_STATUS_CLASS,
   ORDER_STATUS_LABEL,
+  paymentSummary,
+  TONE_PILL,
 } from '../../lib/orderStatus';
 import {
   EMPTY_STAFF_FILTERS,
@@ -81,6 +83,43 @@ const ESTADOS: { value: OrderStatus | ''; label: string }[] = [
 
 const PAGE_SIZE = 10;
 
+/* Las bandejas del dinero del superadmin: la misma lista con un filtro fijo y
+   su propio titulo. Ahi no hay chips de estado ni filtros de analisis: la
+   bandeja ya dice que se mira. */
+export type OrdersQueue = 'payments' | 'refunds' | 'invoices' | 'overdue';
+
+const QUEUES: Record<
+  OrdersQueue,
+  { titulo: string; descripcion: string; vacio: string; filter: Record<string, string> }
+> = {
+  payments: {
+    titulo: 'Pagos por verificar',
+    descripcion:
+      'Comprobantes que subieron los compradores. Verifícalos contra el banco: el proveedor despacha cuando lo apruebes.',
+    vacio: 'No hay comprobantes por verificar.',
+    filter: { paymentStatus: 'SUBMITTED' },
+  },
+  refunds: {
+    titulo: 'Devoluciones',
+    descripcion:
+      'Pedidos que se cancelaron después de pagados. Devuélvele la plata al comprador y registra el comprobante.',
+    vacio: 'No hay devoluciones pendientes.',
+    filter: { refund: 'true' },
+  },
+  invoices: {
+    titulo: 'Facturas pendientes',
+    descripcion: 'Pedidos despachados a los que el proveedor todavía no les adjunta la factura.',
+    vacio: 'Todos los pedidos despachados tienen su factura.',
+    filter: { invoiced: 'false' },
+  },
+  overdue: {
+    titulo: 'Pagos vencidos',
+    descripcion: 'Pedidos a crédito cuyo plazo para pagar ya pasó.',
+    vacio: 'No hay pagos vencidos.',
+    filter: { overdue: 'true' },
+  },
+};
+
 const pesos = (valor: number, moneda: string) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -88,20 +127,27 @@ const pesos = (valor: number, moneda: string) =>
     maximumFractionDigits: 0,
   }).format(valor);
 
-export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
+export const OrdersListScreen = ({
+  side,
+  queue,
+}: {
+  side: OrderSide;
+  queue?: OrdersQueue;
+}) => {
   const hydrated = useAppSelector((state) => state.auth.hydrated);
-  const copy = COPY[side];
+  const copy = queue ? { ...COPY[side], ...QUEUES[queue] } : COPY[side];
   const [status, setStatus] = useState<OrderStatus | ''>('');
   const [page, setPage] = useState(1);
   /* Los filtros de analisis son solo del personal de Suminia: el proveedor y
      el comprador ven sus propios pedidos, y con el estado les basta. */
   const [staffFilters, setStaffFilters] = useState<StaffOrderFilters>(EMPTY_STAFF_FILTERS);
   const isStaff = side === 'staff';
-
-  const filter = {
-    ...(status ? { status } : {}),
-    ...(isStaff ? toFilterParams(staffFilters) : {}),
-  };
+  const filter = queue
+    ? QUEUES[queue].filter
+    : {
+        ...(status ? { status } : {}),
+        ...(isStaff ? toFilterParams(staffFilters) : {}),
+      };
 
   const { data, isLoading, isError, error } = useGetOrdersQuery(
     {
@@ -113,7 +159,9 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
     },
     { skip: !hydrated },
   );
-  const { data: metrics } = useGetOrderMetricsQuery(filter, { skip: !hydrated || !isStaff });
+  const { data: metrics } = useGetOrderMetricsQuery(filter, {
+    skip: !hydrated || !isStaff || Boolean(queue),
+  });
 
   if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
 
@@ -137,6 +185,7 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
     <>
       <PageHeader title={copy.titulo} description={copy.descripcion} />
 
+      {!queue && (
       <div className='orders-filter'>
         {ESTADOS.map((estado) => (
           <button
@@ -152,8 +201,9 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
           </button>
         ))}
       </div>
+      )}
 
-      {isStaff && (
+      {isStaff && !queue && (
         <StaffOrderFiltersPanel
           filters={staffFilters}
           metrics={metrics?.data}
@@ -168,7 +218,7 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
         <div className='orders-empty'>
           <Package size={28} />
           <p className='font-light'>
-            {status || Object.keys(filter).length > 0
+            {!queue && (status || Object.keys(filter).length > 0)
               ? side === 'staff'
                 ? 'No hay pedidos con esos filtros.'
                 : 'No tienes pedidos en ese estado.'
@@ -220,6 +270,16 @@ export const OrdersListScreen = ({ side }: { side: OrderSide }) => {
                       {order.items.length}{' '}
                       {order.items.length === 1 ? 'producto' : 'productos'}
                     </small>
+                    {(() => {
+                      const pago = paymentSummary(order, side);
+                      return (
+                        pago && (
+                          <span className={`status-pill ${TONE_PILL[pago.tone]}`}>
+                            {pago.label}
+                          </span>
+                        )
+                      );
+                    })()}
                   </div>
 
                   <span className={`badge ${ORDER_STATUS_CLASS[order.status]}`}>

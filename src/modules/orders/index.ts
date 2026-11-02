@@ -12,6 +12,13 @@ export { SupplierOrderDetailScreen } from './ui/supplier/SupplierOrderDetailScre
 /* El personal de Suminia los ve todos: no opera, liquida. */
 export { StaffOrdersScreen } from './ui/staff/StaffOrdersScreen';
 export { StaffOrderDetailScreen } from './ui/staff/StaffOrderDetailScreen';
+/* Las bandejas del dinero: pagos por verificar, devoluciones, facturas. */
+export { StaffOrdersQueueScreen } from './ui/staff/StaffOrdersQueueScreen';
+
+/* La cotizacion formal: sale del carrito y se convierte en pedido. */
+export { CreateQuoteButton } from './ui/buyer/CreateQuoteButton';
+export { QuotesScreen } from './ui/buyer/QuotesScreen';
+export { QuoteDetailScreen } from './ui/buyer/QuoteDetailScreen';
 
 export { useGetBillingQuery, useGetOrdersQuery } from './api/ordersApi';
 

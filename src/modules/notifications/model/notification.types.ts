@@ -1,6 +1,13 @@
 /* Contrato con el backend para los avisos de la campana. */
 
-export type NotificationType = 'DOCUMENT_UPLOADED' | 'DOCUMENT_APPROVED' | 'DOCUMENT_REJECTED';
+export type NotificationType =
+  | 'DOCUMENT_UPLOADED'
+  | 'DOCUMENT_APPROVED'
+  | 'DOCUMENT_REJECTED'
+  /* Lo que le pasa a un pedido, a su pago y a la plata que transfiere Suminia. */
+  | 'ORDER_UPDATE'
+  | 'PAYMENT_UPDATE'
+  | 'PAYOUT_UPDATE';
 
 export interface AppNotification {
   id: string;

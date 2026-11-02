@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Check, ChevronLeft, MapPin } from 'react-feather';
+import { Check, ChevronLeft, MapPin, RotateCcw } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -13,6 +14,7 @@ import { useAppSelector } from '@/store/hooks';
 import {
   useChangeOrderStatusMutation,
   useGetOrderQuery,
+  useReorderMutation,
 } from '../../api/ordersApi';
 import {
   buyerCanAnswerAvailability,
@@ -27,10 +29,14 @@ import {
   supplierCanCancel,
   supplierCanConfirmDelivery,
   supplierCanDecide,
-  supplierCanShip,
+    supplierCanShip,
+  supplierWaitsPayment,
 } from '../../lib/orderStatus';
 import type { Order, OrderStatus } from '../../model/order.types';
 import BuyerAvailabilityResponse from './BuyerAvailabilityResponse';
+import OrderHistoryPanel from './OrderHistoryPanel';
+import OrderInvoicePanel from './OrderInvoicePanel';
+import OrderPaymentPanel from './OrderPaymentPanel';
 import type { OrderSide } from './OrdersListScreen';
 import SupplierAvailabilityForm from './SupplierAvailabilityForm';
 
@@ -119,6 +125,8 @@ export const OrderDetailScreen = ({
     skip: !hydrated,
   });
   const [changeStatus, { isLoading: isSaving }] = useChangeOrderStatusMutation();
+  const [reorder, { isLoading: isReordering }] = useReorderMutation();
+  const router = useRouter();
   const [motivo, setMotivo] = useState('');
   /* Que accion esta pidiendo motivo, o null. Cancelar y rechazar lo exigen; las
      demas van directas. */
@@ -146,15 +154,38 @@ export const OrderDetailScreen = ({
      el backend se lo prohibe con un 403 y el mensaje lo dice —"el personal de
      Suminia no mueve pedidos: eso es del comprador y del proveedor"—. Aqui
      cobra y liquida, que es otra cosa. */
+  /* Por transferencia, el proveedor no despacha hasta que Suminia verifica el
+     pago: el boton no aparece, y el panel de pago dice por que. */
+  const puedeDespachar = supplierCanShip(order.status) && !supplierWaitsPayment(order);
+
+  /* El comprador siempre tiene una: volver a pedir lo mismo. */
   const hayAcciones =
     side === 'staff'
       ? false
       : side === 'supplier'
         ? supplierCanDecide(order.status) ||
-          supplierCanShip(order.status) ||
+          puedeDespachar ||
           supplierCanConfirmDelivery(order.status) ||
           supplierCanCancel(order.status)
-        : buyerCanConfirmDelivery(order.status) || buyerCanCancel(order.status);
+        : true;
+
+  const volverAPedir = async () => {
+    try {
+      const { added, skipped } = (await reorder(order.id).unwrap()).data;
+      if (added === 0) {
+        toast.error('Ninguno de estos productos sigue a la venta.');
+        return;
+      }
+      toast.success(
+        skipped > 0
+          ? `Agregamos ${added} al carrito. ${skipped} ya no están a la venta.`
+          : 'Agregamos los productos al carrito',
+      );
+      router.push('/cart');
+    } catch (err) {
+      toast.error(extractErrorMessage(err, 'No se pudo agregar al carrito.'));
+    }
+  };
 
   const mover = async (
     status: Order['status'],
@@ -232,6 +263,17 @@ export const OrderDetailScreen = ({
               ' Al confirmarlo se descuenta de tus existencias: cárgalas antes.'}
           </div>
         )}
+        {order.quote && side !== 'supplier' && (
+          <div className='alert alert-info'>
+            Salió de la cotización{' '}
+            {side === 'buyer' ? (
+              <Link href={`/buyer/account/quotes/${order.quote.id}`}>{order.quote.code}</Link>
+            ) : (
+              order.quote.code
+            )}
+            , a sus precios.
+          </div>
+        )}
         {order.backorders.length > 0 && (
           <div className='alert alert-info'>
             Lo que faltó va en{' '}
@@ -305,6 +347,8 @@ export const OrderDetailScreen = ({
         </li>
       </ul>
       </Panel>
+
+      <OrderHistoryPanel order={order} />
         </div>
 
         <aside className='order-side'>
@@ -353,7 +397,7 @@ export const OrderDetailScreen = ({
           </>
         )}
 
-        {side === 'supplier' && supplierCanShip(order.status) && (
+        {side === 'supplier' && puedeDespachar && (
           <button
             type='button'
             className='btn btn-primary btn-sm'
@@ -405,6 +449,17 @@ export const OrderDetailScreen = ({
             onClick={() => setPidiendoMotivo('CANCELLED')}
           >
             Cancelar pedido
+          </button>
+        )}
+
+        {side === 'buyer' && (
+          <button
+            type='button'
+            className='btn btn-outline-secondary btn-sm btn-with-icon'
+            disabled={isReordering}
+            onClick={volverAPedir}
+          >
+            <RotateCcw size={14} /> Volver a pedir
           </button>
         )}
 
@@ -471,6 +526,9 @@ export const OrderDetailScreen = ({
       </Panel>
       )}
 
+      <OrderPaymentPanel order={order} side={side} />
+      <OrderInvoicePanel order={order} side={side} />
+
       <Panel title='Dirección de entrega'>
       <div className='order-delivery'>
         <p className='location-address'>
@@ -527,9 +585,15 @@ export const OrderDetailScreen = ({
             </li>
           </ul>
           <p className='font-light order-payout-note'>
-            {side === 'staff'
-              ? 'Se le consigna al proveedor cuando el pedido quede entregado.'
-              : 'Se consigna a tu cuenta registrada cuando el pedido quede entregado.'}
+            {order.payout
+              ? order.payout.status === 'PAID'
+                ? `Pagado en la liquidación ${order.payout.code}.`
+                : `En la liquidación ${order.payout.code}, por pagar.`
+              : order.payableAt
+                ? `Entra en la primera liquidación después del ${formatDate(order.payableAt)}, cuando pasan los días de reclamo.`
+                : side === 'staff'
+                  ? 'Se le liquida al proveedor después de la entrega y los días de reclamo.'
+                  : 'Se consigna a tu cuenta registrada después de la entrega y los días de reclamo.'}
           </p>
         </Panel>
       )}

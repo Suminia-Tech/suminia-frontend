@@ -1,6 +1,7 @@
 import {
   Briefcase,
   Clipboard,
+  DollarSign,
   FileText,
   Home,
   Package,
@@ -22,7 +23,12 @@ export const SUPPLIER_SIDEBAR: SidebarGroup[] = [
      se toca cuando cambia algo. */
   {
     label: 'Ventas',
-    items: [{ label: 'Pedidos', href: '/supplier/orders', icon: Clipboard }],
+    /* Las liquidaciones junto a los pedidos: son lo que el proveedor cobra
+       por lo que vendio. */
+    items: [
+      { label: 'Pedidos', href: '/supplier/orders', icon: Clipboard },
+      { label: 'Liquidaciones', href: '/supplier/payouts', icon: DollarSign },
+    ],
   },
   {
     label: 'Catálogo',

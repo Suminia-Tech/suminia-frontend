@@ -16,8 +16,55 @@ export type OrderStatus =
      resto, y espera a que el comprador decida. */
   | 'AWAITING_BUYER';
 
-export type PaymentStatus = 'PENDING' | 'PAID' | 'REFUNDED';
+/* SUBMITTED: el comprador subio el comprobante y Suminia lo esta verificando. */
+export type PaymentStatus = 'PENDING' | 'SUBMITTED' | 'PAID' | 'REFUNDED';
 export type PayoutStatus = 'PENDING' | 'PAID';
+/* Por transferencia se paga antes del despacho; a credito, despues de la
+   entrega, si Suminia le dio credito al comprador. */
+export type PaymentMethod = 'TRANSFER' | 'CREDIT';
+
+/* Un comprobante de transferencia. El proveedor no los recibe: le basta con
+   saber si el pago esta. */
+export interface OrderPayment {
+  id: string;
+  amount: number;
+  reference: string | null;
+  storageKey: string;
+  filename: string | null;
+  status: 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+  reviewNote: string | null;
+  submittedByName: string;
+  reviewedByName: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+}
+
+export type OrderEventType =
+  | 'PLACED'
+  | 'CONFIRMED'
+  | 'REJECTED'
+  | 'CANCELLED'
+  | 'AVAILABILITY_PROPOSED'
+  | 'AVAILABILITY_ACCEPTED'
+  | 'PAYMENT_SUBMITTED'
+  | 'PAYMENT_APPROVED'
+  | 'PAYMENT_REJECTED'
+  | 'PAYMENT_EXPIRED'
+  | 'SHIPPED'
+  | 'INVOICE_ATTACHED'
+  | 'DELIVERED'
+  | 'REFUNDED'
+  | 'PAYOUT_PAID';
+
+/* Un paso del historial: quien hizo que y cuando. */
+export interface OrderEvent {
+  id: string;
+  type: OrderEventType;
+  actorName: string | null;
+  actorSide: 'buyer' | 'supplier' | 'staff' | 'system';
+  note: string | null;
+  createdAt: string;
+}
 
 export interface OrderItem {
   id: string;
@@ -77,6 +124,33 @@ export interface Order {
   payoutStatus: PayoutStatus;
   statusReason: string | null;
 
+  paymentMethod: PaymentMethod;
+  creditDays: number | null;
+  /** Hasta cuando hay para pagar. */
+  paymentDueAt: string | null;
+  paidAt: string | null;
+  /** Desde cuando entra en una liquidacion. Null para el comprador. */
+  payableAt: string | null;
+  /** La factura del proveedor al comprador. Facturado es tenerla. */
+  invoice: {
+    number: string;
+    storageKey: string | null;
+    filename: string | null;
+    attachedAt: string;
+  } | null;
+  /** La liquidacion en que se le pago al proveedor. Null para el comprador. */
+  payout: { id: string; code: string; status: PayoutStatus } | null;
+  refund: {
+    at: string;
+    storageKey: string | null;
+    filename: string | null;
+    note: string | null;
+  } | null;
+  quote: { id: string; code: string } | null;
+  /* Solo en el detalle; vacios en el listado. */
+  payments: OrderPayment[];
+  events: OrderEvent[];
+
   delivery: OrderDelivery;
   buyerNotes: string | null;
 
@@ -103,6 +177,133 @@ export interface PlaceOrdersRequest {
   /** Sin ella se usa la sede predeterminada de la empresa. */
   deliveryLocationId?: string;
   notes?: string;
+  paymentMethod?: PaymentMethod;
+}
+
+/* Que archivo del pedido: el comprobante, la factura o la devolucion. */
+export type OrderFileKind = 'payment' | 'invoice' | 'refund';
+
+export interface SubmitPaymentRequest {
+  id: string;
+  amount: number;
+  reference?: string;
+  storageKey: string;
+  filename?: string;
+}
+
+export interface ReviewPaymentRequest {
+  id: string;
+  paymentId: string;
+  decision: 'APPROVE' | 'REJECT';
+  note?: string;
+}
+
+export interface AttachInvoiceRequest {
+  id: string;
+  number: string;
+  storageKey: string;
+  filename?: string;
+}
+
+export interface RecordRefundRequest {
+  id: string;
+  storageKey: string;
+  filename?: string;
+  note?: string;
+}
+
+/* La cuenta de Suminia a donde transfiere el comprador. */
+export interface PaymentInstructions {
+  bankName: string | null;
+  accountType: string | null;
+  accountNumber: string | null;
+  accountHolder: string | null;
+  accountHolderTaxId: string | null;
+  breBKey: string | null;
+  paymentInstructions: string | null;
+  paymentWindowHours: number;
+  /** Falso mientras finanzas no registre la cuenta. */
+  configured: boolean;
+}
+
+/* El credito de la empresa compradora con Suminia. */
+export interface CreditStatus {
+  enabled: boolean;
+  limit: number | null;
+  days: number | null;
+  used: number;
+  available: number;
+  overdue: number;
+  overdueOrders: number;
+  oldestDueAt: string | null;
+}
+
+/* La cotizacion formal: el carrito con sus precios, a nombre de Suminia. */
+export interface QuoteItem {
+  id: string;
+  presentationId: string;
+  supplierOrganizationId: string;
+  supplierName: string;
+  productName: string;
+  presentationName: string;
+  packaging: string;
+  sku: string | null;
+  cum: string | null;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+  taxRate: number;
+  tax: number;
+  total: number;
+}
+
+export interface Quote {
+  id: string;
+  code: string;
+  status: 'ACTIVE' | 'CONVERTED';
+  /** Paso su vigencia sin convertirse. */
+  expired: boolean;
+  validUntil: string;
+  createdByName: string;
+  createdAt: string;
+  convertedAt: string | null;
+  subtotal: number;
+  tax: number;
+  total: number;
+  currency: string;
+  buyer: {
+    id: string;
+    name: string;
+    taxId: string | null;
+    email: string;
+    phone: string | null;
+    address: string | null;
+    city: string | null;
+  };
+  items: QuoteItem[];
+  orders: { id: string; code: string }[];
+}
+
+export interface QuoteSummary {
+  id: string;
+  code: string;
+  status: 'ACTIVE' | 'CONVERTED';
+  expired: boolean;
+  validUntil: string;
+  createdByName: string;
+  createdAt: string;
+  total: number;
+  currency: string;
+  buyerName: string;
+  items: number;
+  suppliers: number;
+}
+
+export interface ConvertQuoteRequest {
+  id: string;
+  deliveryLocationId?: string;
+  notes?: string;
+  paymentMethod?: PaymentMethod;
 }
 
 export interface ChangeOrderStatusRequest {
