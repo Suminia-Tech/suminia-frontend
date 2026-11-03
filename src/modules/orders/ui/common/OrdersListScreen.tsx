@@ -11,8 +11,7 @@ import { useAppSelector } from '@/store/hooks';
 
 import { useGetOrderMetricsQuery, useGetOrdersQuery } from '../../api/ordersApi';
 import {
-  ORDER_STATUS_CLASS,
-  ORDER_STATUS_LABEL,
+  displayStatus,
   paymentSummary,
   TONE_PILL,
 } from '../../lib/orderStatus';
@@ -86,7 +85,7 @@ const PAGE_SIZE = 10;
 /* Las bandejas del dinero del superadmin: la misma lista con un filtro fijo y
    su propio titulo. Ahi no hay chips de estado ni filtros de analisis: la
    bandeja ya dice que se mira. */
-export type OrdersQueue = 'payments' | 'refunds' | 'invoices' | 'overdue';
+export type OrdersQueue = 'payments' | 'toInvoice' | 'refunds' | 'invoices' | 'overdue';
 
 const QUEUES: Record<
   OrdersQueue,
@@ -107,10 +106,17 @@ const QUEUES: Record<
     filter: { refund: 'true' },
   },
   invoices: {
-    titulo: 'Facturas pendientes',
-    descripcion: 'Pedidos despachados a los que el proveedor todavía no les adjunta la factura.',
-    vacio: 'Todos los pedidos despachados tienen su factura.',
+    titulo: 'Facturas de proveedores',
+    descripcion: 'Pedidos despachados a los que el proveedor todavía no le adjunta su factura a Suminia.',
+    vacio: 'Todos los pedidos despachados tienen la factura del proveedor.',
     filter: { invoiced: 'false' },
+  },
+  toInvoice: {
+    titulo: 'Por facturar',
+    descripcion:
+      'Pedidos con el pago verificado (o a crédito) a los que Suminia todavía no les emite la factura al comprador.',
+    vacio: 'No hay pedidos por facturar.',
+    filter: { toInvoice: 'true' },
   },
   overdue: {
     titulo: 'Pagos vencidos',
@@ -282,8 +288,8 @@ export const OrdersListScreen = ({
                     })()}
                   </div>
 
-                  <span className={`badge ${ORDER_STATUS_CLASS[order.status]}`}>
-                    {ORDER_STATUS_LABEL[order.status]}
+                  <span className={`badge ${displayStatus(order).className}`}>
+                    {displayStatus(order).label}
                   </span>
 
                   <span className='orders-total'>

@@ -161,6 +161,12 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => dineroDe(id),
     }),
 
+    /* La factura de Suminia al comprador: la adjunta el personal de Suminia. */
+    attachSuminiaInvoice: builder.mutation<ApiResponse<Order>, AttachInvoiceRequest>({
+      query: ({ id, ...body }) => ({ url: `/orders/${id}/suminia-invoice`, method: 'POST', body }),
+      invalidatesTags: (_result, _error, { id }) => dineroDe(id),
+    }),
+
     recordRefund: builder.mutation<ApiResponse<Order>, RecordRefundRequest>({
       query: ({ id, ...body }) => ({ url: `/orders/${id}/refund`, method: 'POST', body }),
       invalidatesTags: (_result, _error, { id }) => dineroDe(id),
@@ -243,6 +249,7 @@ export const {
   useSubmitPaymentMutation,
   useReviewPaymentMutation,
   useAttachInvoiceMutation,
+  useAttachSuminiaInvoiceMutation,
   useRecordRefundMutation,
   useGetOrderFileUrlMutation,
   useReorderMutation,

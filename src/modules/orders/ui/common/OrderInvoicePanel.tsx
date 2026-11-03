@@ -6,42 +6,100 @@ import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
+import { hasPermission } from '@/shared/lib/permissions';
 import { Panel } from '@/shared/ui';
+import { useAppSelector } from '@/store/hooks';
 
-import { useAttachInvoiceMutation } from '../../api/ordersApi';
+import {
+  useAttachInvoiceMutation,
+  useAttachSuminiaInvoiceMutation,
+} from '../../api/ordersApi';
 import { FILE_ACCEPT, useOrderFiles } from '../../hooks/useOrderFiles';
 import { supplierCanInvoice } from '../../lib/orderStatus';
 import type { Order } from '../../model/order.types';
 import type { OrderSide } from './OrdersListScreen';
 
-/* La factura electronica del proveedor al comprador. Un pedido esta facturado
-   cuando la adjunta: es lo que el comprador necesita para su contabilidad y lo
-   que Suminia mira antes de liquidar.
+/* Las facturas del pedido.
 
-   Se pinta como cualquier documento de la app. El proveedor la adjunta desde
-   que confirma; si se equivoco, la reemplaza. */
-export const OrderInvoicePanel = ({ order, side }: { order: Order; side: OrderSide }) => {
+   Suminia le compra al proveedor y le vende al comprador, de modo que hay dos:
+   el proveedor le factura a Suminia y despacha con remision, y Suminia le
+   factura al comprador cuando verifica su pago (a credito, desde la
+   confirmacion). Cada lado ve la suya; el personal de Suminia, las dos.
+
+   Se pintan como cualquier documento de la app, y se adjuntan una vez —si
+   hubo un error, se reemplazan—. */
+
+type Variant = 'supplier' | 'suminia';
+
+const COPY: Record<
+  Variant,
+  { titulo: string; vacio: string; pendienteQuien: string }
+> = {
+  supplier: {
+    titulo: 'Factura a Suminia',
+    vacio:
+      'Factura a nombre de Suminia y despacha con remisión. Suminia revisa la factura antes de liquidarte.',
+    pendienteQuien: 'El proveedor todavía no adjunta su factura a Suminia.',
+  },
+  suminia: {
+    titulo: 'Factura de Suminia',
+    vacio: 'Adjunta la factura electrónica que Suminia le emitió al comprador.',
+    pendienteQuien: 'Suminia te envía la factura electrónica cuando verifica tu pago.',
+  },
+};
+
+export const OrderInvoicePanel = ({
+  order,
+  side,
+  variant,
+}: {
+  order: Order;
+  side: OrderSide;
+  variant: Variant;
+}) => {
+  const permissions = useAppSelector((state) => state.auth.user?.permissions);
   const files = useOrderFiles(order.id);
-  const [attach, { isLoading }] = useAttachInvoiceMutation();
+  const [attachSupplier, supplierState] = useAttachInvoiceMutation();
+  const [attachSuminia, suminiaState] = useAttachSuminiaInvoiceMutation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
-  const [number, setNumber] = useState(order.invoice?.number ?? '');
+  const factura = variant === 'supplier' ? order.invoice : order.suminiaInvoice;
+  const [number, setNumber] = useState(factura?.number ?? '');
   const [file, setFile] = useState<File | null>(null);
-  const puedeAdjuntar = side === 'supplier' && supplierCanInvoice(order);
+  const copy = COPY[variant];
 
-  /* Sin factura y sin poder adjuntarla, no hay nada que mostrar. */
-  if (!order.invoice && !puedeAdjuntar) return null;
+  const cobrado = order.paymentMethod === 'CREDIT' || order.paymentStatus === 'PAID';
+  const puedeAdjuntar =
+    variant === 'supplier'
+      ? side === 'supplier' && supplierCanInvoice(order)
+      : side === 'staff' &&
+        hasPermission(permissions, 'payment:verify') &&
+        supplierCanInvoice(order) &&
+        cobrado;
+  /* Lo que falta se dice a quien lo espera: al comprador, que su factura viene
+     en camino; a Suminia, que el proveedor no ha facturado —se le pide antes
+     de liquidar—. */
+  const avisoPendiente =
+    !factura &&
+    !puedeAdjuntar &&
+    supplierCanInvoice(order) &&
+    ((variant === 'suminia' && side === 'buyer') || (variant === 'supplier' && side === 'staff'));
+
+  if (!factura && !puedeAdjuntar && !avisoPendiente) return null;
+
+  const isLoading = supplierState.isLoading || suminiaState.isLoading;
 
   const guardar = async () => {
     if (!file || !number.trim()) return;
     try {
-      const subido = await files.upload('invoice', file);
-      await attach({
+      const subido = await files.upload(variant === 'supplier' ? 'invoice' : 'suminia_invoice', file);
+      const body = {
         id: order.id,
         number: number.trim(),
         storageKey: subido.storageKey,
         filename: subido.filename,
-      }).unwrap();
+      };
+      await (variant === 'supplier' ? attachSupplier(body) : attachSuminia(body)).unwrap();
       toast.success('Factura adjuntada');
       setEditing(false);
       setFile(null);
@@ -50,40 +108,42 @@ export const OrderInvoicePanel = ({ order, side }: { order: Order; side: OrderSi
     }
   };
 
-  const formulario = puedeAdjuntar && (editing || !order.invoice);
+  const formulario = puedeAdjuntar && (editing || !factura);
 
   return (
-    <Panel title='Factura'>
+    <Panel title={copy.titulo}>
       <div className='document-slots'>
-        <div className={`document-slot is-versioned${order.invoice ? ' is-filled' : ' is-missing'}`}>
+        <div
+          className={`document-slot is-versioned${factura ? ' is-filled' : puedeAdjuntar ? ' is-missing' : ''}`}
+        >
           <div className='document-slot-row'>
             <div className='document-slot-text'>
               <div className='document-slot-title'>
-                <strong>
-                  {order.invoice ? `Factura ${order.invoice.number}` : 'Factura electrónica'}
-                </strong>
-                <span className={`document-state is-${order.invoice ? 'success' : 'neutral'}`}>
-                  {order.invoice ? 'Adjuntada' : 'Pendiente'}
+                <strong>{factura ? `Factura ${factura.number}` : 'Factura electrónica'}</strong>
+                <span className={`document-state is-${factura ? 'success' : 'neutral'}`}>
+                  {factura ? 'Adjuntada' : 'Pendiente'}
                 </span>
               </div>
               <small className='font-light'>
-                {order.invoice
-                  ? `Adjuntada el ${formatDate(order.invoice.attachedAt)}`
-                  : 'Adjunta la factura electrónica de venta al comprador. Suminia la revisa antes de liquidarte.'}
+                {factura
+                  ? `Adjuntada el ${formatDate(factura.attachedAt)}`
+                  : puedeAdjuntar
+                    ? copy.vacio
+                    : copy.pendienteQuien}
               </small>
             </div>
             <div className='document-slot-actions'>
-              {order.invoice?.storageKey && (
+              {factura?.storageKey && (
                 <button
                   type='button'
                   className='btn btn-outline-secondary btn-sm btn-with-icon'
-                  disabled={files.opening === order.invoice.storageKey}
-                  onClick={() => files.open(order.invoice!.storageKey!)}
+                  disabled={files.opening === factura.storageKey}
+                  onClick={() => files.open(factura.storageKey!)}
                 >
                   <ExternalLink size={14} /> Ver
                 </button>
               )}
-              {puedeAdjuntar && order.invoice && !editing && (
+              {puedeAdjuntar && factura && !editing && (
                 <button
                   type='button'
                   className='btn btn-outline-secondary btn-sm btn-with-icon'
@@ -97,11 +157,11 @@ export const OrderInvoicePanel = ({ order, side }: { order: Order; side: OrderSi
 
           {formulario && (
             <div className='document-review'>
-              <label className='form-label' htmlFor='factura-numero'>
+              <label className='form-label' htmlFor={`factura-${variant}`}>
                 Número de la factura
               </label>
               <input
-                id='factura-numero'
+                id={`factura-${variant}`}
                 type='text'
                 maxLength={60}
                 className='form-control'

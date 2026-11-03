@@ -82,6 +82,8 @@ export interface FinanceSummary {
     payoutsUnpaid: Amount;
     refunds: Amount;
     missingInvoices: number;
+    /** Cobrados (o a credito) a los que Suminia no les ha facturado. */
+    toInvoiceBuyers: number;
     credit: { buyers: number; outstanding: number; overdue: number; overdueOrders: number };
   };
   history: FinanceMonth[];

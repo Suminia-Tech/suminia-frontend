@@ -52,6 +52,7 @@ export type OrderEventType =
   | 'PAYMENT_EXPIRED'
   | 'SHIPPED'
   | 'INVOICE_ATTACHED'
+  | 'SUMINIA_INVOICE_ATTACHED'
   | 'DELIVERED'
   | 'REFUNDED'
   | 'PAYOUT_PAID';
@@ -131,13 +132,24 @@ export interface Order {
   paidAt: string | null;
   /** Desde cuando entra en una liquidacion. Null para el comprador. */
   payableAt: string | null;
-  /** La factura del proveedor al comprador. Facturado es tenerla. */
+  /** La factura del proveedor a Suminia. Null para el comprador. */
   invoice: {
     number: string;
     storageKey: string | null;
     filename: string | null;
     attachedAt: string;
   } | null;
+  /** La factura de Suminia al comprador. Null para el proveedor. */
+  suminiaInvoice: {
+    number: string;
+    storageKey: string | null;
+    filename: string | null;
+    attachedAt: string;
+  } | null;
+  /* Cerrado para quien mira: el comprador, cuando pasan los dias de reclamo
+     despues de la entrega; Suminia y el proveedor, cuando se le paga al
+     proveedor. */
+  closed: boolean;
   /** La liquidacion en que se le pago al proveedor. Null para el comprador. */
   payout: { id: string; code: string; status: PayoutStatus } | null;
   refund: {
@@ -181,7 +193,7 @@ export interface PlaceOrdersRequest {
 }
 
 /* Que archivo del pedido: el comprobante, la factura o la devolucion. */
-export type OrderFileKind = 'payment' | 'invoice' | 'refund';
+export type OrderFileKind = 'payment' | 'invoice' | 'refund' | 'suminia_invoice';
 
 export interface SubmitPaymentRequest {
   id: string;

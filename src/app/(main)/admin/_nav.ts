@@ -57,8 +57,9 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
         permission: 'payment:verify',
         children: [
           { label: 'Por verificar', href: '/admin/finance/payments' },
+          { label: 'Por facturar', href: '/admin/finance/to-invoice' },
           { label: 'Devoluciones', href: '/admin/finance/refunds' },
-          { label: 'Facturas pendientes', href: '/admin/finance/invoices' },
+          { label: 'Facturas de proveedores', href: '/admin/finance/invoices' },
           { label: 'Vencidos', href: '/admin/finance/overdue' },
         ],
       },

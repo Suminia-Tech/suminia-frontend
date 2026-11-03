@@ -192,8 +192,27 @@ export const ORDER_EVENT_LABEL: Record<OrderEventType, string> = {
   PAYMENT_REJECTED: 'Comprobante rechazado por Suminia',
   PAYMENT_EXPIRED: 'Cancelado: no se recibió el pago a tiempo',
   SHIPPED: 'Despachado',
-  INVOICE_ATTACHED: 'Factura adjuntada',
+  INVOICE_ATTACHED: 'El proveedor adjuntó su factura a Suminia',
+  SUMINIA_INVOICE_ATTACHED: 'Suminia emitió la factura al comprador',
   DELIVERED: 'Entregado',
   REFUNDED: 'Pago devuelto al comprador',
   PAYOUT_PAID: 'Liquidado al proveedor',
+};
+
+/* El estado que se muestra. Un pedido entregado pasa a "Cerrado" cuando se
+   cierra para quien lo mira —el comprador al pasar los dias de reclamo,
+   Suminia y el proveedor al pagarse la liquidacion—: el backend lo calcula y
+   manda `closed`. */
+export const displayStatus = (
+  order: Pick<Order, 'status' | 'closed'>,
+): { label: string; className: string } =>
+  order.closed
+    ? { label: 'Cerrado', className: 'bg-secondary' }
+    : { label: ORDER_STATUS_LABEL[order.status], className: ORDER_STATUS_CLASS[order.status] };
+
+/* Lo que significa estar cerrado, para cada lado. */
+export const CLOSED_HINT: Record<'buyer' | 'supplier' | 'staff', string> = {
+  buyer: 'Recibido. Pasaron los días de reclamo: el pedido quedó cerrado.',
+  supplier: 'Entregado y liquidado: el pedido quedó cerrado.',
+  staff: 'Entregado y liquidado al proveedor: el pedido quedó cerrado.',
 };

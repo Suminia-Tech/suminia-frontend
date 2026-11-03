@@ -41,6 +41,10 @@ export const FinanceSummaryScreen = () => {
       texto: `${plural(pending.toVerify.count, 'comprobante', 'comprobantes')} por verificar (${pesos(pending.toVerify.amount)}).`,
       href: '/admin/finance/payments',
     },
+    pending.toInvoiceBuyers > 0 && {
+      texto: `${plural(pending.toInvoiceBuyers, 'pedido cobrado', 'pedidos cobrados')} sin la factura de Suminia al comprador.`,
+      href: '/admin/finance/to-invoice',
+    },
     pending.refunds.count > 0 && {
       texto: `${plural(pending.refunds.count, 'pedido pagado se cayó', 'pedidos pagados se cayeron')}: hay que devolver ${pesos(pending.refunds.amount)}.`,
       href: '/admin/finance/refunds',
@@ -58,7 +62,7 @@ export const FinanceSummaryScreen = () => {
       href: '/admin/finance/credit',
     },
     pending.missingInvoices > 0 && {
-      texto: `${plural(pending.missingInvoices, 'pedido despachado', 'pedidos despachados')} sin la factura del proveedor.`,
+      texto: `${plural(pending.missingInvoices, 'pedido despachado', 'pedidos despachados')} sin la factura del proveedor a Suminia.`,
       href: '/admin/finance/invoices',
     },
   ].filter((p): p is { texto: string; href: string } => Boolean(p));

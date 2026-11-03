@@ -20,7 +20,8 @@ import {
   buyerCanAnswerAvailability,
   buyerCanCancel,
   buyerCanConfirmDelivery,
-  ORDER_STATUS_CLASS,
+  CLOSED_HINT,
+  displayStatus,
   ORDER_STATUS_HINT,
   ORDER_STATUS_HINT_SUPPLIER,
   ORDER_STATUS_LABEL,
@@ -107,6 +108,12 @@ const Timeline = ({ order }: { order: Order }) => {
           </span>
         </li>
       ))}
+      {/* El ultimo paso: cerrado. Para el comprador cuando pasan los dias de
+          reclamo; para Suminia y el proveedor, cuando se liquida. */}
+      <li className={order.closed ? 'is-done' : undefined}>
+        <span className='order-timeline-dot'>{order.closed && <Check size={12} />}</span>
+        <span>Cerrado</span>
+      </li>
     </ol>
   );
 };
@@ -227,8 +234,8 @@ export const OrderDetailScreen = ({
             {side !== 'buyer' && ` · pidió ${order.placedByName}`}
           </p>
         </div>
-        <span className={`badge ${ORDER_STATUS_CLASS[order.status]}`}>
-          {ORDER_STATUS_LABEL[order.status]}
+        <span className={`badge ${displayStatus(order).className}`}>
+          {displayStatus(order).label}
         </span>
       </div>
 
@@ -237,8 +244,10 @@ export const OrderDetailScreen = ({
           estados debajo, sin nada que las relacionara. */}
       <Panel className='order-state'>
         <p className='order-hint'>
-          {(side === 'supplier' && ORDER_STATUS_HINT_SUPPLIER[order.status]) ||
-            ORDER_STATUS_HINT[order.status]}
+          {order.closed
+            ? CLOSED_HINT[side]
+            : (side === 'supplier' && ORDER_STATUS_HINT_SUPPLIER[order.status]) ||
+              ORDER_STATUS_HINT[order.status]}
         </p>
 
         {/* Mientras se espera al comprador, lo que hay en statusReason es la
@@ -527,7 +536,10 @@ export const OrderDetailScreen = ({
       )}
 
       <OrderPaymentPanel order={order} side={side} />
-      <OrderInvoicePanel order={order} side={side} />
+      {/* Cada lado ve su factura: el comprador la de Suminia, el proveedor la
+          suya a Suminia. El personal de Suminia, las dos. */}
+      {side !== 'supplier' && <OrderInvoicePanel order={order} side={side} variant='suminia' />}
+      {side !== 'buyer' && <OrderInvoicePanel order={order} side={side} variant='supplier' />}
 
       <Panel title='Dirección de entrega'>
       <div className='order-delivery'>

@@ -175,7 +175,7 @@ const PaymentHint = ({ order, side }: OrderPaymentPanelProps) => {
     }
     if (order.paymentStatus === 'PAID') {
       return side === 'supplier' && order.status === 'CONFIRMED'
-        ? 'Suminia verificó el pago. Ya puedes despacharlo.'
+        ? 'Suminia verificó el pago. Ya puedes despacharlo con remisión; la factura va a nombre de Suminia.'
         : null;
     }
     if (order.paymentStatus === 'SUBMITTED') {
