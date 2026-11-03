@@ -63,7 +63,7 @@ const COPY: Record<
   staff: {
     titulo: 'Pedidos',
     descripcion:
-      'Todo lo que se ha movido en Suminia y lo que deja cada pedido en comisión.',
+      'Todo lo que se ha movido en Suminia y el margen que deja cada pedido.',
     vacio: 'Todavía no se ha hecho ningún pedido en Suminia.',
     basePath: '/admin/orders',
   },
@@ -312,7 +312,7 @@ export const OrdersListScreen = ({
                       order.status !== 'CANCELLED' &&
                       order.status !== 'REJECTED' && (
                         <small className='font-light'>
-                          comisión {pesos(order.commissionAmount, order.currency)}
+                          margen {pesos(order.commissionAmount, order.currency)}
                         </small>
                       )}
                   </span>

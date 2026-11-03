@@ -38,7 +38,7 @@ export const PayoutsScreen = () => {
     <>
       <PageHeader
         title='Liquidaciones'
-        description='Lo que Suminia les transfiere a los proveedores: sus pedidos entregados menos la comisión.'
+        description='Lo que Suminia les transfiere a los proveedores: lo que les compró, a sus precios, con IVA y envío.'
       />
 
       {puedeLiquidar && (
@@ -146,7 +146,7 @@ const PayableBlock = ({ payable }: { payable: PayableSupplier }) => {
               <th>Entregado</th>
               <th>Factura</th>
               <th className='num'>Total</th>
-              <th className='num'>Comisión</th>
+              <th className='num'>Margen</th>
               <th className='num'>Al proveedor</th>
             </tr>
           </thead>

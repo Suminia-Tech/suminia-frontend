@@ -97,11 +97,16 @@ export interface OrderItem {
   quantity: number;
   /** Lo que el proveedor dijo tener, si propuso un despacho parcial. */
   availableQuantity: number | null;
+  /* Los precios del lado de quien mira: de venta para el comprador y el
+     equipo de Suminia, los suyos para el proveedor. */
   unitPrice: number;
   subtotal: number;
   taxRate: number;
   tax: number;
   total: number;
+  /** Solo el equipo de Suminia: lo que se le compra al proveedor. */
+  unitCost: number | null;
+  markupRate: number | null;
 }
 
 export interface OrderDelivery {
@@ -203,9 +208,13 @@ export interface Order {
   shippingCost: number;
   total: number;
   currency: string;
+  /** Solo el equipo de Suminia: lo que se le compra al proveedor. */
+  costSubtotal: number | null;
+  costTax: number | null;
 
-  /* Null para el comprador: lo que se queda Suminia no le incumbe. Lo ven el
-     proveedor, para cuadrar lo que le van a consignar, y el equipo interno. */
+  /* El margen de Suminia —venta menos costo, antes de IVA— y el incremento
+     promedio: solo el equipo interno. Lo que se le paga al proveedor lo ven
+     el y el equipo. El comprador, ninguno. */
   commissionRate: number | null;
   commissionAmount: number | null;
   supplierPayout: number | null;

@@ -38,7 +38,7 @@ const COPY: Record<
   supplier: {
     titulo: 'Factura a Suminia',
     vacio:
-      'Factura a nombre de Suminia el valor que te paga —el total menos la comisión— y despacha con remisión. Suminia la revisa antes de liquidarte.',
+      'Factura a nombre de Suminia tus productos a tus precios, con su IVA, y despacha con remisión. Sin ella no se te puede liquidar.',
     pendienteQuien: 'El proveedor todavía no adjunta su factura a Suminia.',
   },
   suminia: {

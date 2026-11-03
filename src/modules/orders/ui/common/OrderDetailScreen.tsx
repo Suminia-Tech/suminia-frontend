@@ -653,30 +653,41 @@ export const OrderDetailScreen = ({
         </Panel>
       )}
 
-      {/* Solo al proveedor: lo que le va a quedar despues de la comision. Es lo
-          que va a cuadrar contra la consignacion. */}
       {/* La liquidacion. El proveedor mira lo que le queda; el personal de
           Suminia, lo que se queda Suminia. Es el mismo desglose leido desde los
           dos lados, y el backend le manda las cifras a los dos —al comprador
           no: el paga el total y punto—. */}
-      {side !== 'buyer' && order.commissionAmount !== null && (
-        <Panel title={side === 'staff' ? 'Liquidación' : 'Lo que recibes'}>
+      {side !== 'buyer' && order.supplierPayout !== null && (
+        <Panel title={side === 'staff' ? 'Margen y liquidación' : 'Lo que recibes'}>
+          {/* Suminia le compra al proveedor a sus precios y le vende a la
+              institucion con el incremento: el equipo ve la venta, el costo y
+              lo que queda; el proveedor, solo lo que se le paga. */}
           <ul className='cart-summary-lines order-totals'>
-            <li>
-              <span className='font-light'>Total del pedido</span>
-              <span>{pesos(order.total, order.currency)}</span>
-            </li>
-            <li>
-              <span className='font-light'>
-                Comisión de Suminia ({order.commissionRate}% de los productos)
-              </span>
-              <span>−{pesos(order.commissionAmount, order.currency)}</span>
-            </li>
+            {side === 'staff' && order.costSubtotal !== null && (
+              <>
+                <li>
+                  <span className='font-light'>Venta, antes de IVA</span>
+                  <span>{pesos(order.subtotal, order.currency)}</span>
+                </li>
+                <li>
+                  <span className='font-light'>Costo del proveedor, antes de IVA</span>
+                  <span>−{pesos(order.costSubtotal, order.currency)}</span>
+                </li>
+                <li>
+                  <span className='font-light'>
+                    Margen de Suminia
+                    {order.commissionRate !== null &&
+                      ` (incremento de ${String(order.commissionRate).replace('.', ',')}%)`}
+                  </span>
+                  <span>{pesos(order.commissionAmount ?? 0, order.currency)}</span>
+                </li>
+              </>
+            )}
             <li className='cart-summary-total'>
-              <span>{side === 'staff' ? 'Al proveedor' : 'Te queda'}</span>
-              <strong>
-                {pesos(order.supplierPayout ?? 0, order.currency)}
-              </strong>
+              <span>
+                {side === 'staff' ? 'Al proveedor, con IVA y envío' : 'Te pagamos, con IVA y envío'}
+              </span>
+              <strong>{pesos(order.supplierPayout, order.currency)}</strong>
             </li>
           </ul>
           <p className='font-light order-payout-note'>

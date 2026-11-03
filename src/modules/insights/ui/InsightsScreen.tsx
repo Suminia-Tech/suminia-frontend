@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { ArrowDownRight, ArrowUpRight } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
+import { MonthlyBars, PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetInsightsQuery } from '../api/insightsApi';
 import type { Comparison } from '../model/insights.types';
 import { mesLargo, pesos, pesosCortos, porcentaje } from './format';
-import MonthlyBars from './MonthlyBars';
 import RankList from './RankList';
 
 /* Los indicadores comerciales: lo que le sirve a quien vende Suminia.
@@ -114,7 +113,7 @@ export const InsightsScreen = () => {
           <Kpi label='Ventas' value={kpis.sales} format={pesos} />
           <Kpi label='Pedidos' value={kpis.orders} format={numero} />
           <Kpi label='Ticket promedio' value={kpis.averageTicket} format={pesos} />
-          <Kpi label='Comisión de Suminia' value={kpis.commission} format={pesos} />
+          <Kpi label='Margen de Suminia' value={kpis.commission} format={pesos} />
           <Kpi label='Compradores que compraron' value={kpis.activeBuyers} format={numero} />
           <Kpi label='Proveedores que vendieron' value={kpis.activeSuppliers} format={numero} />
         </div>
@@ -136,9 +135,9 @@ export const InsightsScreen = () => {
             format={numero}
           />
         </Panel>
-        <Panel title='Comisión por mes' description='Lo que gana Suminia sobre los productos.'>
+        <Panel title='Margen por mes' description='Lo que gana Suminia: lo vendido menos lo comprado, antes de IVA.'>
           <MonthlyBars
-            label='Comisión'
+            label='Margen'
             data={insights.months.map((m) => ({ month: m.month, value: m.commission }))}
             format={pesos}
             shortFormat={pesosCortos}

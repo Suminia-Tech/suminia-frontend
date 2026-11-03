@@ -666,7 +666,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
 
                 <Row>
                   <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>Precio (COP)</label>
+                    <label className='form-label font-light'>Tu precio a Suminia (COP, sin IVA)</label>
                     <input
                       type='number'
                       min='0'
@@ -674,7 +674,13 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       value={form.price}
                       onChange={handleChange('price')}
                     />
-                    {errors.price && <small className='text-danger'>{errors.price}</small>}
+                    {errors.price ? (
+                      <small className='text-danger'>{errors.price}</small>
+                    ) : (
+                      <small className='font-light'>
+                        Lo que Suminia te paga por unidad y lo que le facturas.
+                      </small>
+                    )}
                   </Col>
                   <Col sm='6' className='mb-3'>
                     <label className='form-label font-light'>Inventario</label>

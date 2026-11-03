@@ -6177,6 +6177,47 @@ select.form-control,
   font-size: 13px;
 }
 
+/* Las tablas del plan financiero en la configuracion: cada celda es un
+   campo. Mas bajos que un campo de formulario para que la fila se lea como
+   fila, y en pastilla como cualquier control de la app. */
+.plan-table {
+  td {
+    vertical-align: middle;
+  }
+
+  .document-state {
+    display: inline-block;
+  }
+}
+
+.plan-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.plan-input {
+  width: 84px;
+  height: 36px;
+  @include pastilla(36px);
+  text-align: right;
+
+  &.is-money {
+    width: 150px;
+  }
+}
+
+.plan-year {
+  width: auto;
+  height: 36px;
+  @include pastilla(36px);
+}
+
+.plan-categories {
+  margin-top: 24px;
+}
+
 /* Lo que no se liquida por falta de la factura del proveedor, debajo de lo
    listo: se ve que existe y por que no entra. */
 .payout-blocked {
@@ -6420,6 +6461,81 @@ select.form-control,
   table {
     margin-top: 10px;
   }
+}
+
+/* La meta y la referencia de una grafica: marcas en tinta oscura, no otra
+   serie de color. La meta, un trazo corto sobre su barra; la referencia —el
+   equilibrio—, una linea discontinua a lo ancho. */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: rgba($theme-font-color, 0.7);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  i {
+    display: inline-block;
+  }
+}
+
+.chart-legend-bar {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background-color: var(--theme-color);
+}
+
+.chart-legend-target {
+  width: 14px;
+  height: 2px;
+  background-color: $theme-font-color;
+}
+
+.chart-legend-reference {
+  width: 16px;
+  border-top: 2px dashed rgba($theme-font-color, 0.55);
+}
+
+.chart-target {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  height: 2px;
+  margin-bottom: -1px;
+  border-radius: 1px;
+  background-color: $theme-font-color;
+  pointer-events: none;
+}
+
+.chart-reference {
+  stroke: rgba($theme-font-color, 0.55);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.insight-bar.is-negative {
+  border-radius: 0 0 4px 4px;
+}
+
+.chart-target-track {
+  position: relative;
+}
+
+.chart-target-tick {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background-color: $theme-font-color;
 }
 
 /* Rankings */

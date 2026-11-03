@@ -132,9 +132,15 @@ export const PayoutDetailScreen = ({
                     <th>Comprador</th>
                     <th>Entregado</th>
                     <th>Factura</th>
-                    <th className="num">Total</th>
-                    <th className="num">Comisión</th>
-                    <th className="num">Neto</th>
+                    {side === "staff" && (
+                      <>
+                        <th className="num">Venta</th>
+                        <th className="num">Margen</th>
+                      </>
+                    )}
+                    <th className="num">
+                      {side === "staff" ? "Al proveedor" : "Te pagamos"}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,10 +156,14 @@ export const PayoutDetailScreen = ({
                         {order.deliveredAt ? formatDay(order.deliveredAt) : "—"}
                       </td>
                       <td className="is-nowrap">{order.invoiceNumber ?? "—"}</td>
-                      <td className="num is-nowrap">{pesos(order.total)}</td>
-                      <td className="num is-nowrap">
-                        {pesos(order.commissionAmount)} ({formatPercent(order.commissionRate)})
-                      </td>
+                      {side === "staff" && (
+                        <>
+                          <td className="num is-nowrap">{pesos(order.total)}</td>
+                          <td className="num is-nowrap">
+                            {pesos(order.commissionAmount)} ({formatPercent(order.commissionRate)})
+                          </td>
+                        </>
+                      )}
                       <td className="num is-nowrap">
                         {pesos(order.supplierPayout)}
                       </td>
@@ -168,14 +178,18 @@ export const PayoutDetailScreen = ({
         <aside className="order-side">
           <Panel title="Liquidación">
             <ul className="cart-summary-lines order-totals">
-              <li>
-                <span className="font-light">Vendido</span>
-                <span>{pesos(payout.total)}</span>
-              </li>
-              <li>
-                <span className="font-light">Comisión de Suminia</span>
-                <span>−{pesos(payout.commission)}</span>
-              </li>
+              {side === "staff" && (
+                <>
+                  <li>
+                    <span className="font-light">Vendido, con IVA</span>
+                    <span>{pesos(payout.total)}</span>
+                  </li>
+                  <li>
+                    <span className="font-light">Margen de Suminia, antes de IVA</span>
+                    <span>{pesos(payout.commission)}</span>
+                  </li>
+                </>
+              )}
               <li className="cart-summary-total">
                 <span>
                   {side === "staff" ? "A transferir" : "Te transferimos"}

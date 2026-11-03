@@ -17,12 +17,15 @@ import {
   useUpdateFinanceSettingsMutation,
 } from '../../api/financeApi';
 import { formatChangeValue, formatPercent, WEEKDAY_LABEL } from '../../lib/format';
+import CommercialLinesPanel from './CommercialLinesPanel';
+import PlanPanel from './PlanPanel';
 import type { PlatformSettings, PlatformSettingsUpdate } from '../../model/finance.types';
 
 /* Las reglas del dinero, en manos de finanzas.
 
-   Todo lo que puede cambiar con el tiempo esta aqui y no en el codigo: la
-   comision, los plazos, la cuenta donde se recibe. Lo que se cambia vale para
+   Todo lo que puede cambiar con el tiempo esta aqui y no en el codigo: el
+   incremento de cada linea comercial, los supuestos y metas del plan
+   financiero, los plazos, la cuenta donde se recibe. Lo que se cambia vale para
    los pedidos nuevos —cada pedido se graba la comision y los plazos con que
    se hizo—, y cada cambio queda en el historial de abajo con quien lo hizo.
 
@@ -48,11 +51,15 @@ export const FinanceSettingsScreen = () => {
     <>
       <PageHeader
         title='Configuración financiera'
-        description='La comisión, los plazos y la cuenta donde se reciben los pagos. Los cambios valen para los pedidos nuevos.'
+        description='Los incrementos sobre el costo, los supuestos y metas del plan financiero, los plazos y la cuenta donde se reciben los pagos. Los precios cambian al instante en el catálogo; los pedidos ya hechos conservan los suyos.'
       />
       {/* La clave reinicia el formulario cuando cambia lo guardado: se
           inicializa una vez con lo que hay, sin copiarlo en un efecto. */}
+      <CommercialLinesPanel editable={editable} general={data.data.commissionRate}>
+        <NegotiatedCommissions />
+      </CommercialLinesPanel>
       <SettingsForm key={data.data.updatedAt} settings={data.data} editable={editable} />
+      <PlanPanel editable={editable} />
       {editable && <ChangesPanel />}
     </>
   );
@@ -67,6 +74,17 @@ const NUMERICOS: (keyof PlatformSettingsUpdate)[] = [
   'claimWindowDays',
   'payoutWeekday',
   'quoteValidityDays',
+  'freightRate',
+  'collectionRate',
+  'returnsRate',
+  'badDebtRate',
+  'otherVariableRate',
+  'monthlyFixedCosts',
+  'cashFloor',
+  'creditPortfolioCap',
+  'targetTicket',
+  'targetFrequency',
+  'targetQuoteConversion',
 ];
 
 const aCampos = (s: PlatformSettings): Campos => ({
@@ -76,6 +94,17 @@ const aCampos = (s: PlatformSettings): Campos => ({
   claimWindowDays: String(s.claimWindowDays),
   payoutWeekday: String(s.payoutWeekday),
   quoteValidityDays: String(s.quoteValidityDays),
+  freightRate: String(s.freightRate),
+  collectionRate: String(s.collectionRate),
+  returnsRate: String(s.returnsRate),
+  badDebtRate: String(s.badDebtRate),
+  otherVariableRate: String(s.otherVariableRate),
+  monthlyFixedCosts: String(s.monthlyFixedCosts),
+  cashFloor: String(s.cashFloor),
+  creditPortfolioCap: String(s.creditPortfolioCap),
+  targetTicket: String(s.targetTicket),
+  targetFrequency: String(s.targetFrequency),
+  targetQuoteConversion: String(s.targetQuoteConversion),
   bankName: s.bankName ?? '',
   accountType: s.accountType ?? '',
   accountNumber: s.accountNumber ?? '',
@@ -173,17 +202,31 @@ const SettingsForm = ({
   return (
     <>
       <Panel
-        title='Comisión y plazos'
+        title='Supuestos del plan'
+        description='Lo que el informe financiero reserva sobre cada venta y lo que cuesta operar. Con esto se calculan el aporte, el resultado y el equilibrio del tablero.'
+        footer={footer}
+      >
+        <div className='form-grid'>
+          {numero('freightRate', 'Flete neto (% de ventas)', 'Lo que cuesta llevar el pedido y no se le cobra al comprador.', { min: 0, max: 20, step: 0.1 })}
+          {numero('collectionRate', 'Recaudo (% de ventas)', 'Comisiones bancarias y del medio de pago.', { min: 0, max: 20, step: 0.1 })}
+          {numero('returnsRate', 'Devoluciones y garantías (% de ventas)', 'Reserva para lo que se devuelve o se repone.', { min: 0, max: 20, step: 0.1 })}
+          {numero('badDebtRate', 'Pérdida de cartera (% de ventas)', 'Reserva para el crédito que no se cobre.', { min: 0, max: 20, step: 0.1 })}
+          {numero('otherVariableRate', 'Tributos y otros variables (% de ventas)', 'Impuestos operativos y lo demás que crece con la venta.', { min: 0, max: 20, step: 0.1 })}
+          {numero('monthlyFixedCosts', 'Gasto fijo mensual ($)', 'Nómina, asesorías, marketing y tecnología de un mes.', { min: 0, max: 10_000_000_000, step: 100000 })}
+          {numero('cashFloor', 'Piso de caja ($)', 'La caja que no se toca. Bajo este piso se suspende el crédito nuevo.', { min: 0, max: 100_000_000_000, step: 1000000 })}
+          {numero('creditPortfolioCap', 'Tope de cartera a crédito ($)', 'Lo máximo que puede estar prestado entre todas las instituciones.', { min: 0, max: 100_000_000_000, step: 1000000 })}
+          {numero('targetTicket', 'Ticket meta por pedido ($)', 'Lo que se espera que pida una institución cada vez.', { min: 0, max: 10_000_000_000, step: 100000 })}
+          {numero('targetFrequency', 'Pedidos meta por comprador al mes', 'Cuántas veces al mes compra una institución activa.', { min: 0, max: 100, step: 0.1 })}
+          {numero('targetQuoteConversion', 'Conversión meta de cotizaciones (%)', 'De cada 100 cotizaciones, cuántas se vuelven pedido.', { min: 0, max: 100, step: 1 })}
+        </div>
+      </Panel>
+
+      <Panel
+        title='Plazos'
         description={`Actualizado el ${formatDate(settings.updatedAt)}.`}
         footer={footer}
       >
         <div className='form-grid'>
-          {numero(
-            'commissionRate',
-            'Comisión general (%)',
-            'Sobre el total con IVA. La de cada proveedor se pacta en su ficha y manda sobre esta.',
-            { min: 0, max: 50, step: 0.5 },
-          )}
           {numero(
             'paymentWindowHours',
             'Horas para pagar',
@@ -227,8 +270,13 @@ const SettingsForm = ({
             'Mientras esté vigente, una cotización se convierte en pedido a sus precios.',
             { min: 1, max: 90 },
           )}
+          {numero(
+            'commissionRate',
+            'Incremento general (%)',
+            'Sobre el costo, para una línea comercial que no tenga el suyo.',
+            { min: 0, max: 50, step: 0.5 },
+          )}
         </div>
-        <NegotiatedCommissions />
       </Panel>
 
       <Panel
@@ -356,8 +404,8 @@ const NegotiatedCommissions = () => {
   return (
     <p className='panel-warning mt-3 mb-0'>
       <span>
-        {pactadas.length === 1 ? 'Este proveedor tiene' : 'Estos proveedores tienen'} una comisión
-        pactada y no cambian con la general:{' '}
+        {pactadas.length === 1 ? 'Este proveedor tiene' : 'Estos proveedores tienen'} un incremento
+        pactado y no cambian con el de su línea:{' '}
         {pactadas.map((p, i) => (
           <span key={p.id}>
             {i > 0 && ', '}

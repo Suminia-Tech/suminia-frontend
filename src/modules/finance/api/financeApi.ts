@@ -7,14 +7,18 @@ import type {
 } from '@/shared/api/types';
 
 import type {
+  CommercialLine,
+  CommercialLineSetting,
   CreditPortfolioRow,
   FinanceChange,
+  FinanceDashboard,
   FinanceSummary,
   MarkPayoutPaidRequest,
   OrganizationFinance,
   PayableSupplier,
   Payout,
   PayoutFileKind,
+  PlanMonth,
   PlatformSettings,
   PlatformSettingsUpdate,
 } from '../model/finance.types';
@@ -33,9 +37,81 @@ export const financeApi = baseApi.injectEndpoints({
     updateFinanceSettings: builder.mutation<ApiResponse<PlatformSettings>, PlatformSettingsUpdate>(
       {
         query: (body) => ({ url: '/finance/settings', method: 'PATCH', body }),
-        invalidatesTags: [{ type: 'Finance', id: 'SETTINGS' }, { type: 'Finance', id: 'CHANGES' }, RESUMEN],
+        /* El incremento general entra en el precio del catalogo, y los
+           supuestos del plan en el tablero. */
+        invalidatesTags: [
+          { type: 'Finance', id: 'SETTINGS' },
+          { type: 'Finance', id: 'CHANGES' },
+          { type: 'Finance', id: 'DASHBOARD' },
+          { type: 'Product', id: 'LIST' },
+          { type: 'Cart', id: 'MINE' },
+          RESUMEN,
+        ],
       },
     ),
+
+    /* El tablero 360 del año: lo real contra el plan. */
+    getFinanceDashboard: builder.query<ApiResponse<FinanceDashboard>, number | void>({
+      query: (year) => ({ url: '/finance/dashboard', params: year ? { year } : {} }),
+      providesTags: [{ type: 'Finance', id: 'DASHBOARD' }, RESUMEN],
+    }),
+
+    getCommercialLines: builder.query<ApiResponse<CommercialLineSetting[]>, void>({
+      query: () => '/finance/commercial-lines',
+      providesTags: [{ type: 'Finance', id: 'LINES' }],
+    }),
+
+    updateCommercialLine: builder.mutation<
+      ApiResponse<CommercialLineSetting[]>,
+      { line: CommercialLine } & Partial<
+        Pick<CommercialLineSetting, 'markupRate' | 'minRate' | 'maxRate' | 'planMixRate'>
+      >
+    >({
+      query: ({ line, ...body }) => ({
+        url: `/finance/commercial-lines/${line}`,
+        method: 'PATCH',
+        body,
+      }),
+      /* El incremento entra en el precio de todo el catalogo. */
+      invalidatesTags: [
+        { type: 'Finance', id: 'LINES' },
+        { type: 'Finance', id: 'CHANGES' },
+        { type: 'Finance', id: 'DASHBOARD' },
+        { type: 'Product', id: 'LIST' },
+        { type: 'Cart', id: 'MINE' },
+      ],
+    }),
+
+    assignCategoryLine: builder.mutation<
+      ApiResponse<CommercialLineSetting[]>,
+      { categoryId: string; line: CommercialLine }
+    >({
+      query: ({ categoryId, line }) => ({
+        url: `/finance/categories/${categoryId}/line`,
+        method: 'PATCH',
+        body: { line },
+      }),
+      invalidatesTags: [
+        { type: 'Finance', id: 'LINES' },
+        { type: 'Finance', id: 'CHANGES' },
+        { type: 'Product', id: 'LIST' },
+        { type: 'Cart', id: 'MINE' },
+      ],
+    }),
+
+    getPlan: builder.query<ApiResponse<PlanMonth[]>, void>({
+      query: () => '/finance/plan',
+      providesTags: [{ type: 'Finance', id: 'PLAN' }],
+    }),
+
+    savePlanMonth: builder.mutation<ApiResponse<PlanMonth[]>, PlanMonth>({
+      query: ({ month, ...body }) => ({ url: `/finance/plan/${month}`, method: 'PUT', body }),
+      invalidatesTags: [
+        { type: 'Finance', id: 'PLAN' },
+        { type: 'Finance', id: 'CHANGES' },
+        { type: 'Finance', id: 'DASHBOARD' },
+      ],
+    }),
 
     /* Los proveedores con comision pactada: no cambian con la general. */
     getNegotiatedCommissions: builder.query<
@@ -158,6 +234,12 @@ export const financeApi = baseApi.injectEndpoints({
 
 export const {
   useGetFinanceSettingsQuery,
+  useGetFinanceDashboardQuery,
+  useGetCommercialLinesQuery,
+  useUpdateCommercialLineMutation,
+  useAssignCategoryLineMutation,
+  useGetPlanQuery,
+  useSavePlanMonthMutation,
   useGetNegotiatedCommissionsQuery,
   useUpdateFinanceSettingsMutation,
   useGetFinanceChangesQuery,

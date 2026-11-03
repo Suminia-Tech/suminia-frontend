@@ -93,7 +93,9 @@ export const PayoutsList = ({ basePath, side }: { basePath: string; side: 'staff
                 </span>
                 <span className='orders-total'>
                   <strong>{pesos(payout.net)}</strong>
-                  <small className='font-light'>comisión {pesos(payout.commission)}</small>
+                  {side === 'staff' && (
+                    <small className='font-light'>margen {pesos(payout.commission)}</small>
+                  )}
                 </span>
               </Link>
             </li>

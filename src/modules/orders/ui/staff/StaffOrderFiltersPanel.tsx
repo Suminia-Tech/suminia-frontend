@@ -208,7 +208,7 @@ export const StaffOrderFiltersPanel = ({
           operacion. El dinero y las unidades, sin lo anulado ni lo rechazado. */}
       <Panel
         title={active.length > 0 ? 'Lo que muestra este filtro' : 'Todos los pedidos'}
-        description='Valor, comisión y unidades sin contar los pedidos anulados ni rechazados.'
+        description='Valor, margen y unidades sin contar los pedidos anulados ni rechazados.'
       >
         <ul className='data-list'>
           <li>
@@ -220,7 +220,7 @@ export const StaffOrderFiltersPanel = ({
             <span>{metrics ? pesos(metrics.billed) : '—'}</span>
           </li>
           <li>
-            <span className='font-light'>Comisión de Suminia</span>
+            <span className='font-light'>Margen de Suminia</span>
             <span>{metrics ? pesos(metrics.commission) : '—'}</span>
           </li>
           <li>

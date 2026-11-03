@@ -54,20 +54,20 @@ const CommissionForm = ({
   const guardar = async (valor: number | null) => {
     try {
       await update({ id: finance.organizationId, rate: valor }).unwrap();
-      toast.success(valor === null ? 'Vuelve a la comisión general' : 'Comisión pactada guardada');
+      toast.success(valor === null ? 'Vuelve al incremento de cada línea' : 'Incremento pactado guardado');
     } catch (err) {
-      toast.error(extractErrorMessage(err, 'No se pudo guardar la comisión.'));
+      toast.error(extractErrorMessage(err, 'No se pudo guardar el incremento.'));
     }
   };
 
   return (
     <Panel
       className='organization-finance-panel'
-      title='Comisión'
+      title='Incremento pactado'
       description={
         finance.commissionRate === null
-          ? `Se le cobra la general${general !== null ? `, ${general}%` : ''}. Pacta una distinta si se negoció con este proveedor.`
-          : `Pactada en ${finance.commissionRate}%. Vale para sus pedidos nuevos.`
+          ? 'Sus productos se venden con el incremento de su línea comercial. Pacta uno distinto si se negoció con este proveedor: vale para todo su catálogo.'
+          : `Pactado en ${String(finance.commissionRate).replace('.', ',')}% para todo su catálogo, en vez del de cada línea. El precio cambia al instante; los pedidos hechos conservan el suyo.`
       }
       footer={
         editable && (
@@ -79,7 +79,7 @@ const CommissionForm = ({
                 disabled={isLoading}
                 onClick={() => guardar(null)}
               >
-                Volver a la general
+                Volver al de cada línea
               </button>
             )}
             <button
@@ -88,7 +88,7 @@ const CommissionForm = ({
               disabled={isLoading || rate === actual || rate === ''}
               onClick={() => guardar(Number(rate))}
             >
-              {isLoading ? 'Guardando...' : 'Guardar comisión'}
+              {isLoading ? 'Guardando...' : 'Guardar incremento'}
             </button>
           </>
         )
@@ -98,7 +98,7 @@ const CommissionForm = ({
         <div className='form-grid'>
           <div>
             <label className='form-label' htmlFor='comision-pactada'>
-              Comisión pactada (%)
+              Incremento pactado (%)
             </label>
             <input
               id='comision-pactada'
@@ -107,11 +107,11 @@ const CommissionForm = ({
               max={50}
               step={0.5}
               className='form-control'
-              placeholder={general !== null ? `La general: ${general}%` : ''}
+              placeholder='El de cada línea'
               value={rate}
               onChange={(event) => setRate(event.target.value)}
             />
-            <small className='font-light'>Sobre el total con IVA de cada pedido.</small>
+            <small className='font-light'>Sobre su precio, antes de IVA.</small>
           </div>
         </div>
       )}

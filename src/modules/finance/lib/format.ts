@@ -8,6 +8,19 @@ export const pesos = (valor: number) =>
     maximumFractionDigits: 0,
   }).format(valor);
 
+/* "$ 5,3 M": para las tarjetas y las barras, donde la cifra entera no cabe. */
+export const pesosCortos = (valor: number) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(valor);
+
+/* "13,5%": un decimal como mucho, con coma. */
+export const porcentaje = (valor: number) =>
+  `${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 1 }).format(valor)}%`;
+
 /* "Noviembre de 2026". El mes llega como "2026-11" y se lee en UTC para que
    no retroceda un dia —y con el, un mes— por la zona horaria. */
 const FORMATO_MES = new Intl.DateTimeFormat('es-CO', {
@@ -33,15 +46,33 @@ export const WEEKDAY_LABEL: Record<number, string> = {
 
 /* Un valor del historial de cambios como se lee: "10%", "$ 20.000.000",
    "30 días", "Sí". El backend los guarda como texto, sin unidades. */
+const PORCENTAJES = [
+  'commissionRate',
+  'freightRate',
+  'collectionRate',
+  'returnsRate',
+  'badDebtRate',
+  'otherVariableRate',
+  'targetQuoteConversion',
+];
+const PESOS = ['creditLimit', 'monthlyFixedCosts', 'cashFloor', 'creditPortfolioCap', 'targetTicket'];
+
 export const formatChangeValue = (field: string, value: string | null): string => {
   if (value === null) return field === 'commissionRate' ? 'La general' : '—';
+  /* Los del plan llegan como "line:SUPPLIES:markupRate" o
+     "plan:2027-03:sales": se formatean por su ultimo tramo. */
+  const [tipo, , campo] = field.split(':');
+  if (tipo === 'line') return formatPercent(Number(value));
+  if (tipo === 'plan') {
+    return campo === 'sales' || campo === 'result' ? pesos(Number(value)) : value;
+  }
+  if (PORCENTAJES.includes(field)) return formatPercent(Number(value));
+  if (PESOS.includes(field)) return pesos(Number(value));
   switch (field) {
-    case 'commissionRate':
-      return `${value}%`;
+    case 'targetFrequency':
+      return value.replace('.', ',');
     case 'creditEnabled':
       return value === 'true' ? 'Sí' : 'No';
-    case 'creditLimit':
-      return pesos(Number(value));
     case 'creditDays':
     case 'quoteValidityDays':
       return `${value} días`;

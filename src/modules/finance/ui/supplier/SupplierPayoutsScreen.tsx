@@ -10,7 +10,7 @@ export const SupplierPayoutsScreen = () => (
   <>
     <PageHeader
       title='Liquidaciones'
-      description='Lo que Suminia te transfiere por tus pedidos entregados, ya descontada la comisión.'
+      description='Lo que Suminia te transfiere por tus pedidos entregados, a tus precios.'
     />
     <PayoutsList basePath='/supplier/payouts' side='supplier' />
   </>

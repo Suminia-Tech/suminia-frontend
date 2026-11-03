@@ -3,7 +3,22 @@
    comprador, las liquidaciones y el tablero. */
 
 export interface PlatformSettings {
+  /** El incremento sobre el costo cuando la linea no define uno. */
   commissionRate: number;
+  /* Los supuestos del plan financiero: costos variables en % de ventas,
+     gasto fijo del mes, piso de caja, tope de cartera y metas. */
+  freightRate: number;
+  collectionRate: number;
+  returnsRate: number;
+  badDebtRate: number;
+  otherVariableRate: number;
+  monthlyFixedCosts: number;
+  cashFloor: number;
+  creditPortfolioCap: number;
+  targetTicket: number;
+  targetFrequency: number;
+  targetQuoteConversion: number;
+
   paymentWindowHours: number;
   paymentReminderHours: number;
   claimWindowDays: number;
@@ -159,4 +174,94 @@ export interface MarkPayoutPaidRequest {
   commissionInvoiceKey?: string;
   commissionInvoiceFilename?: string;
   note?: string;
+}
+
+export type CommercialLine =
+  | 'SUPPLIES'
+  | 'BASIC_EQUIPMENT'
+  | 'HOSPITAL_FURNITURE'
+  | 'SIMPLE_DEVICES'
+  | 'MEDICINES';
+
+/* Una linea comercial: el incremento sobre el costo con que se vende lo de
+   sus categorias, el rango sano y su peso en el plan. */
+export interface CommercialLineSetting {
+  line: CommercialLine;
+  label: string;
+  markupRate: number;
+  minRate: number;
+  maxRate: number;
+  planMixRate: number;
+  categories: { id: string; name: string }[];
+}
+
+export interface PlanMonth {
+  month: string;
+  newBuyers: number;
+  activeBuyers: number;
+  sales: number;
+  result: number;
+}
+
+export interface DashboardMonth {
+  month: string;
+  sales: number;
+  cost: number;
+  grossMargin: number;
+  variableCosts: number;
+  contribution: number;
+  fixedCosts: number;
+  result: number;
+  orders: number;
+  activeBuyers: number;
+  newBuyers: number;
+  plan: { sales: number; newBuyers: number; activeBuyers: number; result: number } | null;
+}
+
+/* El tablero 360: lo real del año contra el plan financiero. */
+export interface FinanceDashboard {
+  year: number;
+  years: number[];
+  months: DashboardMonth[];
+  totals: {
+    sales: number;
+    grossMargin: number;
+    contribution: number;
+    result: number;
+    orders: number;
+    newBuyers: number;
+    planSales: number;
+    planResult: number;
+    planNewBuyers: number;
+  };
+  rates: {
+    grossMargin: number | null;
+    contribution: number | null;
+    variableCosts: number;
+    planGrossMargin: number;
+    planContribution: number;
+  };
+  breakEven: { monthlySales: number; activeBuyers: number; lastMonthSales: number };
+  buyers: {
+    avgTicket: number | null;
+    targetTicket: number;
+    frequency: number | null;
+    targetFrequency: number;
+    repurchase60: { rate: number | null; eligible: number };
+  };
+  lines: {
+    line: CommercialLine;
+    label: string;
+    sales: number;
+    grossMargin: number;
+    mix: number | null;
+    planMix: number;
+    markupRate: number;
+    minRate: number;
+    maxRate: number;
+  }[];
+  quotes: { created: number; converted: number; conversion: number | null; target: number };
+  credit: { outstanding: number; overdue: number; cap: number };
+  fixedCosts: number;
+  cashFloor: number;
 }

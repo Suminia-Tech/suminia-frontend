@@ -156,7 +156,7 @@ export const AdminSummary = () => {
             <span>{pesos(actual.billed)}</span>
           </li>
           <li>
-            <span className='font-light'>Comisión de Suminia</span>
+            <span className='font-light'>Margen de Suminia</span>
             <span>{pesos(actual.commission)}</span>
           </li>
         </ul>
@@ -183,7 +183,7 @@ export const AdminSummary = () => {
                       <th>Mes</th>
                       <th className='num'>Pedidos</th>
                       <th className='num'>Facturado</th>
-                      <th className='num'>Comisión de Suminia</th>
+                      <th className='num'>Margen de Suminia</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -10,3 +10,7 @@ export { default as PasswordToggle } from './PasswordToggle';
 export { default as PasswordField } from './PasswordField';
 export { default as SubmitButton } from './SubmitButton';
 export { PageSkeleton, SkeletonRows } from './Skeleton';
+export { MonthlyBars } from './charts/MonthlyBars';
+export type { MonthlyBarsDatum } from './charts/MonthlyBars';
+export { TargetBars } from './charts/TargetBars';
+export type { TargetBarRow } from './charts/TargetBars';
