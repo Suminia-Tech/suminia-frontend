@@ -36,7 +36,6 @@ export const CommercialLinesPanel = ({
 }) => {
   const { data, isLoading } = useGetCommercialLinesQuery();
   const lineas = data?.data ?? [];
-  const mezcla = lineas.reduce((s, l) => s + l.planMixRate, 0);
 
   return (
     <Panel
@@ -47,12 +46,6 @@ export const CommercialLinesPanel = ({
         <SkeletonRows rows={5} />
       ) : (
         <>
-          {Math.round(mezcla) !== 100 && (
-            <p className='panel-warning'>
-              Los pesos en ventas suman {formatPercent(Math.round(mezcla * 10) / 10)}: deberían sumar
-              100%.
-            </p>
-          )}
           <div className='catalog-table-scroll'>
             <table className='catalog-table plan-table'>
               <thead>
@@ -60,7 +53,6 @@ export const CommercialLinesPanel = ({
                   <th>Línea</th>
                   <th className='num'>Incremento</th>
                   <th className='num'>Rango sano</th>
-                  <th className='num'>Peso en ventas (plan)</th>
                   <th className='num'>Margen sobre venta</th>
                   {editable && <th />}
                 </tr>
@@ -68,7 +60,7 @@ export const CommercialLinesPanel = ({
               <tbody>
                 {lineas.map((linea) => (
                   <LineRow
-                    key={`${linea.line}-${linea.markupRate}-${linea.minRate}-${linea.maxRate}-${linea.planMixRate}`}
+                    key={`${linea.line}-${linea.markupRate}-${linea.minRate}-${linea.maxRate}`}
                     linea={linea}
                     editable={editable}
                   />
@@ -76,11 +68,6 @@ export const CommercialLinesPanel = ({
               </tbody>
             </table>
           </div>
-          <p className='font-light plan-note'>
-            <strong>Peso en ventas:</strong> de cada $100 que se vendan, cuántos espera el plan que
-            vengan de esa línea. No cambia ningún precio: con él se calcula el margen esperado del
-            tablero y se compara con lo que de verdad se vende.
-          </p>
           <CategoryLines lineas={lineas} editable={editable} />
           {children}
         </>
@@ -89,7 +76,7 @@ export const CommercialLinesPanel = ({
   );
 };
 
-type Campo = 'markupRate' | 'minRate' | 'maxRate' | 'planMixRate';
+type Campo = 'markupRate' | 'minRate' | 'maxRate';
 
 const LineRow = ({ linea, editable }: { linea: CommercialLineSetting; editable: boolean }) => {
   const [update, { isLoading }] = useUpdateCommercialLineMutation();
@@ -97,7 +84,6 @@ const LineRow = ({ linea, editable }: { linea: CommercialLineSetting; editable: 
     markupRate: String(linea.markupRate),
     minRate: String(linea.minRate),
     maxRate: String(linea.maxRate),
-    planMixRate: String(linea.planMixRate),
   });
   const cambiados = (Object.keys(campos) as Campo[]).filter(
     (c) => Number(campos[c]) !== linea[c],
@@ -152,9 +138,6 @@ const LineRow = ({ linea, editable }: { linea: CommercialLineSetting; editable: 
         <span className='plan-cell'>
           {input('minRate', 'Mínimo')} – {input('maxRate', 'Máximo')}%
         </span>
-      </td>
-      <td className='num'>
-        <span className='plan-cell'>{input('planMixRate', 'Peso en ventas')}%</span>
       </td>
       <td className='num'>{formatPercent(margen)}</td>
       {editable && (
