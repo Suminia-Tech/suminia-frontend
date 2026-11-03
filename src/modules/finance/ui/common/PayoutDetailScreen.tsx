@@ -11,7 +11,7 @@ import { useAppSelector } from "@/store/hooks";
 
 import { useGetPayoutQuery } from "../../api/financeApi";
 import { usePayoutFiles } from "../../hooks/usePayoutFiles";
-import { pesos } from "../../lib/format";
+import { formatPercent, pesos } from "../../lib/format";
 import type { Payout } from "../../model/finance.types";
 import MarkPayoutPaidForm from "../staff/MarkPayoutPaidForm";
 
@@ -145,15 +145,14 @@ export const PayoutDetailScreen = ({
                           {order.code}
                         </Link>
                       </td>
-                      <td>{order.buyerName}</td>
+                      <td className="is-nowrap">{order.buyerName}</td>
                       <td className="is-nowrap">
                         {order.deliveredAt ? formatDay(order.deliveredAt) : "—"}
                       </td>
-                      <td>{order.invoiceNumber ?? "—"}</td>
+                      <td className="is-nowrap">{order.invoiceNumber ?? "—"}</td>
                       <td className="num is-nowrap">{pesos(order.total)}</td>
                       <td className="num is-nowrap">
-                        {pesos(order.commissionAmount)} ({order.commissionRate}
-                        %)
+                        {pesos(order.commissionAmount)} ({formatPercent(order.commissionRate)})
                       </td>
                       <td className="num is-nowrap">
                         {pesos(order.supplierPayout)}

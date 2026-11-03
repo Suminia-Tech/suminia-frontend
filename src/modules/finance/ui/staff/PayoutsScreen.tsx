@@ -10,7 +10,7 @@ import { PageHeader, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useCreatePayoutMutation, useGetPayableQuery } from '../../api/financeApi';
-import { pesos } from '../../lib/format';
+import { formatPercent, pesos } from '../../lib/format';
 import type { PayableSupplier } from '../../model/finance.types';
 import PayoutsList from '../common/PayoutsList';
 
@@ -141,14 +141,14 @@ const PayableBlock = ({ payable }: { payable: PayableSupplier }) => {
                 <td className='is-nowrap'>
                   <Link href={`/admin/orders/${order.id}`}>{order.code}</Link>
                 </td>
-                <td>{order.buyerName}</td>
+                <td className="is-nowrap">{order.buyerName}</td>
                 <td className='is-nowrap'>{order.deliveredAt ? formatDay(order.deliveredAt) : '—'}</td>
-                <td className={order.invoiceNumber ? undefined : 'font-light'}>
+                <td className={order.invoiceNumber ? 'is-nowrap' : 'font-light is-nowrap'}>
                   {order.invoiceNumber ?? 'Falta'}
                 </td>
                 <td className='num is-nowrap'>{pesos(order.total)}</td>
                 <td className='num is-nowrap'>
-                  {pesos(order.commissionAmount)} ({order.commissionRate}%)
+                  {pesos(order.commissionAmount)} ({formatPercent(order.commissionRate)})
                 </td>
                 <td className='num is-nowrap'>{pesos(order.supplierPayout)}</td>
               </tr>

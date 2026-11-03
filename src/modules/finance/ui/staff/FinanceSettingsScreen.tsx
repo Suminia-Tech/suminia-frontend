@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -12,9 +13,10 @@ import { useAppSelector } from '@/store/hooks';
 import {
   useGetFinanceChangesQuery,
   useGetFinanceSettingsQuery,
+  useGetNegotiatedCommissionsQuery,
   useUpdateFinanceSettingsMutation,
 } from '../../api/financeApi';
-import { formatChangeValue, WEEKDAY_LABEL } from '../../lib/format';
+import { formatChangeValue, formatPercent, WEEKDAY_LABEL } from '../../lib/format';
 import type { PlatformSettings, PlatformSettingsUpdate } from '../../model/finance.types';
 
 /* Las reglas del dinero, en manos de finanzas.
@@ -185,13 +187,13 @@ const SettingsForm = ({
           {numero(
             'paymentWindowHours',
             'Horas para pagar',
-            'Desde que el proveedor confirma. Vencidas sin comprobante, el pedido se cancela solo.',
+            'Desde que se hace el pedido. Vencidas sin pago verificado, el pedido se cancela solo.',
             { min: 1, max: 720 },
           )}
           {numero(
             'paymentReminderHours',
             'Recordatorio de pago (horas)',
-            'Cuántas horas después de la confirmación se le recuerda al comprador.',
+            'Cuántas horas después de hecho el pedido se le recuerda al comprador que pague.',
             { min: 1, max: 719 },
           )}
           {numero(
@@ -226,6 +228,7 @@ const SettingsForm = ({
             { min: 1, max: 90 },
           )}
         </div>
+        <NegotiatedCommissions />
       </Panel>
 
       <Panel
@@ -340,6 +343,30 @@ const ChangesPanel = () => {
         </div>
       )}
     </Panel>
+  );
+};
+
+/* Quien no paga la general. Sin esto, subir la general parece no hacer nada
+   con el proveedor que la tiene pactada: el pedido sale con la suya. */
+const NegotiatedCommissions = () => {
+  const { data } = useGetNegotiatedCommissionsQuery();
+  const pactadas = data?.data ?? [];
+  if (pactadas.length === 0) return null;
+
+  return (
+    <p className='panel-warning mt-3 mb-0'>
+      <span>
+        {pactadas.length === 1 ? 'Este proveedor tiene' : 'Estos proveedores tienen'} una comisión
+        pactada y no cambian con la general:{' '}
+        {pactadas.map((p, i) => (
+          <span key={p.id}>
+            {i > 0 && ', '}
+            <Link href={`/admin/suppliers/${p.id}`}>{p.name}</Link> ({formatPercent(p.rate)})
+          </span>
+        ))}
+        . Se quita en la ficha de cada uno.
+      </span>
+    </p>
   );
 };
 

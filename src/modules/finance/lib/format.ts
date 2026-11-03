@@ -15,6 +15,9 @@ const FORMATO_MES = new Intl.DateTimeFormat('es-CO', {
   year: 'numeric',
   timeZone: 'UTC',
 });
+/* 6,5%: coma decimal, como se escribe en Colombia. */
+export const formatPercent = (rate: number) => `${String(rate).replace('.', ',')}%`;
+
 export const monthName = (month: string) => {
   const texto = FORMATO_MES.format(new Date(`${month}-01T00:00:00Z`));
   return texto.charAt(0).toUpperCase() + texto.slice(1);

@@ -37,6 +37,15 @@ export const financeApi = baseApi.injectEndpoints({
       },
     ),
 
+    /* Los proveedores con comision pactada: no cambian con la general. */
+    getNegotiatedCommissions: builder.query<
+      ApiResponse<{ id: string; name: string; rate: number }[]>,
+      void
+    >({
+      query: () => '/finance/negotiated-commissions',
+      providesTags: [{ type: 'Finance', id: 'NEGOTIATED' }],
+    }),
+
     getFinanceChanges: builder.query<ApiResponse<FinanceChange[]>, void>({
       query: () => '/finance/changes',
       providesTags: [{ type: 'Finance', id: 'CHANGES' }],
@@ -66,7 +75,10 @@ export const financeApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: { rate },
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'Finance', id: `ORG-${id}` }],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Finance', id: `ORG-${id}` },
+        { type: 'Finance', id: 'NEGOTIATED' },
+      ],
     }),
 
     updateBuyerCredit: builder.mutation<
@@ -146,6 +158,7 @@ export const financeApi = baseApi.injectEndpoints({
 
 export const {
   useGetFinanceSettingsQuery,
+  useGetNegotiatedCommissionsQuery,
   useUpdateFinanceSettingsMutation,
   useGetFinanceChangesQuery,
   useGetFinanceSummaryQuery,
