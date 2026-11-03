@@ -198,6 +198,11 @@ export interface Product {
     deliveryDaysMax: number | null;
     /* Por ciudad, cuando no es el general. Opcional por lo mismo. */
     deliveryTimes?: { city: string; daysMin: number; daysMax: number }[];
+    /* El envio lo pone el proveedor: desde cuanto es gratis (sin IVA) y
+       cuanto cuesta si no. Null: no ofrece gratis / no cobra envio. */
+    freeShippingFrom?: number | null;
+    shippingCost?: number | null;
+    shippingCosts?: { city: string; cost: number }[];
   };
   submittedAt: string | null;
   reviewedAt: string | null;

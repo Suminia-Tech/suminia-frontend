@@ -17,6 +17,7 @@ import type {
   CreditStatus,
   MonthlyBilling,
   Order,
+  OrderPreview,
   OrderFileKind,
   OrderMetrics,
   PaymentInstructions,
@@ -133,6 +134,15 @@ export const ordersApi = baseApi.injectEndpoints({
         { type: 'Order', id: 'LIST' },
         { type: 'Product', id: 'LIST' },
       ],
+    }),
+
+    /* Lo que costaria el carrito en una sede, con el envio de cada proveedor. */
+    getOrderPreview: builder.query<ApiResponse<OrderPreview>, string>({
+      query: (deliveryLocationId) => ({
+        url: '/orders/preview',
+        params: deliveryLocationId ? { deliveryLocationId } : {},
+      }),
+      providesTags: [{ type: 'Cart', id: 'MINE' }],
     }),
 
     /* El permiso para subir un archivo del pedido directo al almacenamiento. */
@@ -278,6 +288,7 @@ export const {
   useReorderMutation,
   useGetPaymentInstructionsQuery,
   useGetMyCreditQuery,
+  useGetOrderPreviewQuery,
   useCreateQuoteMutation,
   useGetQuotesQuery,
   useGetQuoteQuery,

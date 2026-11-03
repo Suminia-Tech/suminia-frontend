@@ -10,8 +10,7 @@ import {
   Percent,
   ShieldOff,
   ShoppingBag,
-  Truck,
-} from 'react-feather';
+  Truck, Send } from 'react-feather';
 import { Col, Row, Table } from 'reactstrap';
 
 import { useMounted } from '@/shared/hooks/useMounted';
@@ -81,6 +80,26 @@ const tiempo = (min: number, max: number): string =>
       : `${min} a ${max} días hábiles`;
 
 /* "Entrega en 2 a 5 días hábiles", o null si el proveedor no lo ha dicho. */
+/* El envio, como lo fijo el proveedor: gratis desde un monto, y el costo si
+   no se llega. Es lo que el comprador pregunta antes de armar el pedido. */
+const envioGeneral = (
+  politica: {
+    freeShippingFrom?: number | null;
+    shippingCost?: number | null;
+  },
+  moneda: string,
+): string => {
+  const gratis = politica.freeShippingFrom ?? null;
+  const costo = politica.shippingCost ?? null;
+  if (gratis === 0 || (gratis === null && !costo)) return 'Envío gratis';
+  if (gratis !== null) {
+    return costo
+      ? `Envío gratis desde ${pesos(gratis, moneda)} + IVA; si no, ${pesos(costo, moneda)}`
+      : `Envío gratis desde ${pesos(gratis, moneda)} + IVA`;
+  }
+  return `Envío ${pesos(costo ?? 0, moneda)}`;
+};
+
 const plazoDeEntrega = (min: number | null, max: number | null): string | null => {
   if (min === null || max === null) return null;
   return max === 0 ? 'Entrega el mismo día' : `Entrega en ${tiempo(min, max)}`;
@@ -368,6 +387,20 @@ export const PublicProductScreen = ({
                           .map((time) => `${time.city}: ${tiempo(time.daysMin, time.daysMax)}`)
                           .join(' · ')}
                         {plazo ? '. En las demás ciudades, el tiempo general.' : '.'}
+                      </small>
+                    ) : null}
+                  </span>
+                </li>
+                <li>
+                  <Send size={16} />
+                  <span>
+                    {envioGeneral(politica, moneda)}
+                    {politica.shippingCosts?.length ? (
+                      <small className='product-delivery-cities font-light'>
+                        {politica.shippingCosts
+                          .map((row) => `${row.city}: ${pesos(row.cost, moneda)}`)
+                          .join(' · ')}
+                        . En las demás ciudades, el envío general.
                       </small>
                     ) : null}
                   </span>

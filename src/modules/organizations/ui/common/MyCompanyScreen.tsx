@@ -36,10 +36,19 @@ import type { OrganizationStatus } from '../../model/organization.types';
 import LegalDocumentsPanel from './LegalDocumentsPanel';
 import OrganizationForm, { type OrganizationFormValues } from './OrganizationForm';
 import { toDeliveryTimeRows } from './DeliveryTimeFields';
+import { toShippingCostRows } from './ShippingCostFields';
 import { toContactRows } from './SupplierContactsFields';
 import { toWarehouseRows } from './SupplierWarehousesFields';
 import StatusBadge from './StatusBadge';
 import { DeclarationStatusPanel } from './DeclarationStatusPanel';
+
+
+const pesos = (valor: number) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    maximumFractionDigits: 0,
+  }).format(valor);
 
 /* Los datos de la propia empresa y en que va su solicitud.
 
@@ -137,6 +146,11 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
                 deliveryDaysMin: toDeliveryDays(values.delivery).min,
                 deliveryDaysMax: toDeliveryDays(values.delivery).max,
                 deliveryTimes: toDeliveryTimeRows(values.deliveryTimes),
+                freeShippingFrom:
+                  values.freeShippingFrom.trim() === '' ? null : Number(values.freeShippingFrom),
+                shippingCost:
+                  values.shippingCost.trim() === '' ? null : Number(values.shippingCost),
+                shippingCosts: toShippingCostRows(values.shippingCosts),
                 bankName: values.bankName.trim() || null,
                 bankAccountType:
                   (values.bankAccountType.trim() as
@@ -413,6 +427,33 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
               ) : (
                 <p className='font-light mb-0'>Tu empresa aún no ha registrado bodegas.</p>
               )}
+            </Panel>
+          )}
+
+          {kind === 'supplier' && section === 'condiciones' && (
+            <Panel title='Envío' description='Lo que verá el comprador en cada producto y al pedir.'>
+              <ul className='data-list'>
+                <li>
+                  <span className='font-light'>Envío gratis desde</span>
+                  <span>
+                    {organization.freeShippingFrom != null
+                      ? `${pesos(organization.freeShippingFrom)} + IVA`
+                      : 'No ofrece'}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-light'>Costo de envío</span>
+                  <span>
+                    {organization.shippingCost ? pesos(organization.shippingCost) : 'No cobra envío'}
+                  </span>
+                </li>
+                {organization.shippingCosts?.map((row) => (
+                  <li key={row.city}>
+                    <span className='font-light'>{row.city}</span>
+                    <span>{pesos(row.cost)}</span>
+                  </li>
+                ))}
+              </ul>
             </Panel>
           )}
 

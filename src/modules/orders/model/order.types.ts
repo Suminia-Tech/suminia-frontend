@@ -190,6 +190,8 @@ export interface Order {
   items: OrderItem[];
   subtotal: number;
   tax: number;
+  /** El envio que fijo el proveedor para la ciudad de entrega. */
+  shippingCost: number;
   total: number;
   currency: string;
 
@@ -302,6 +304,9 @@ export interface Quote {
   convertedAt: string | null;
   subtotal: number;
   tax: number;
+  /** El envio de los proveedores a la sede principal, cuando se cotizo. */
+  shipping: number;
+  shippingDetail: { supplierOrganizationId: string; supplierName: string; cost: number; city: string | null }[];
   total: number;
   currency: string;
   buyer: {
@@ -385,4 +390,25 @@ export interface OrderMetrics {
     departments: string[];
     clientTypes: string[];
   };
+}
+
+/* Lo que costaria el carrito llevado a una sede: el envio de cada proveedor
+   depende de la ciudad. Lo enseña el checkout antes de confirmar. */
+export interface OrderPreview {
+  city: string | null;
+  suppliers: {
+    supplierOrganizationId: string;
+    supplierName: string;
+    subtotal: number;
+    tax: number;
+    shippingCost: number;
+    total: number;
+    freeShippingFrom: number | null;
+    /** Lo que falta para el envio gratis, si lo ofrece y no se llega. */
+    missingForFreeShipping: number | null;
+  }[];
+  subtotal: number;
+  tax: number;
+  shipping: number;
+  total: number;
 }

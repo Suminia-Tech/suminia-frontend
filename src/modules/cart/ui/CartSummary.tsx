@@ -18,7 +18,9 @@ const pesos = (valor: number, moneda: string) =>
     maximumFractionDigits: 0,
   }).format(valor);
 
-export const CartSummary = () => {
+/* En el checkout, debajo va el envio y el total a pagar: ahi este total es el
+   de los productos, y se dice asi para no leer dos totales. */
+export const CartSummary = ({ totalLabel = 'Total' }: { totalLabel?: string } = {}) => {
   const { canBuy, hydrated } = useCanBuy();
   const { data, isLoading } = useGetCartQuery(undefined, {
     skip: !hydrated || !canBuy,
@@ -79,7 +81,7 @@ export const CartSummary = () => {
           <span>{pesos(cart.tax, cart.currency)}</span>
         </li>
         <li className='cart-summary-total'>
-          <span>Total</span>
+          <span>{totalLabel}</span>
           <strong>{pesos(cart.total, cart.currency)}</strong>
         </li>
       </ul>

@@ -11,6 +11,7 @@ import { LoadingOverlay } from '@/shared/ui';
 import { usePlaceOrdersMutation } from '../api/ordersApi';
 import type { PaymentMethod } from '../model/order.types';
 import PaymentMethodPicker from './common/PaymentMethodPicker';
+import ShippingPreview from './common/ShippingPreview';
 
 /* Confirmar el pedido.
 
@@ -23,7 +24,7 @@ import PaymentMethodPicker from './common/PaymentMethodPicker';
    seria dejarle al navegador decir que precio pago. */
 
 interface CheckoutScreenProps {
-  Summary: ComponentType;
+  Summary: ComponentType<{ totalLabel?: string }>;
   LocationPicker: ComponentType<{
     value: string;
     onChange: (locationId: string) => void;
@@ -109,7 +110,9 @@ export const CheckoutScreen = ({
             <h3>Tu pedido</h3>
           </div>
 
-          <Summary />
+          <Summary totalLabel='Total productos' />
+          {/* El envio depende de la sede: se calcula con la elegida. */}
+          <ShippingPreview locationId={locationId} />
 
           {error && <div className='alert alert-danger mt-3'>{error}</div>}
 

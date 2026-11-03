@@ -121,6 +121,12 @@ export const QuoteDetailScreen = ({ quoteId, LocationPicker }: QuoteDetailScreen
                 <span className='font-light'>IVA</span>
                 <span>{pesos(quote.tax, quote.currency)}</span>
               </li>
+              {quote.shippingDetail.map((envio) => (
+                <li key={envio.supplierOrganizationId}>
+                  <span className='font-light'>Envío {envio.supplierName}</span>
+                  <span>{envio.cost > 0 ? pesos(envio.cost, quote.currency) : 'Gratis'}</span>
+                </li>
+              ))}
               <li className='cart-summary-total'>
                 <span>Total</span>
                 <strong>{pesos(quote.total, quote.currency)}</strong>
@@ -211,7 +217,7 @@ const ConvertQuote = ({
   return (
     <Panel
       title='Convertir en pedido'
-      description={`A los precios cotizados, hasta el ${formatDay(quote.validUntil)}.`}
+      description={`A los precios cotizados, hasta el ${formatDay(quote.validUntil)}. El envío se calcula para la sede que elijas.`}
     >
       <h3 className='order-subhead'>¿A dónde lo llevamos?</h3>
       <LocationPicker value={locationId} onChange={setLocationId} />

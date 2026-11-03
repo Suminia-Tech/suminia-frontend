@@ -2864,6 +2864,12 @@ $area-bg: #f1f4f9;
   .delivery-city-name {
     width: 220px;
   }
+
+  /* El costo de envio de una ciudad: en la misma fila que su nombre, como
+     el tiempo de entrega. */
+  .delivery-city-cost {
+    width: 180px;
+  }
 }
 
 .order-emails {
@@ -6123,4 +6129,22 @@ select.form-control,
 
 .document-slots + .order-claim-cta {
   margin-top: 16px;
+}
+
+/* El envio y el total con envio, debajo del resumen del carrito en el
+   checkout. Mientras se recalcula para otra sede, se atenua. */
+.shipping-preview {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid $border-color;
+
+  li small {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #b26a00;
+  }
+
+  &.is-loading {
+    opacity: 0.55;
+  }
 }

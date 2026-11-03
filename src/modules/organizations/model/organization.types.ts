@@ -50,6 +50,12 @@ export interface SupplierDeliveryTime {
   daysMax: number;
 }
 
+/* El costo de envio a una ciudad, cuando no es el general. Final, con IVA. */
+export interface SupplierShippingCost {
+  city: string;
+  cost: number;
+}
+
 /* Una bodega o punto de inventario del proveedor: por donde sale la
    mercancia y a donde va Suminia en una visita de calidad. */
 export interface SupplierWarehouse {
@@ -175,6 +181,11 @@ export interface Organization {
   deliveryDaysMax?: number | null;
   /* Por ciudad. Opcional: un backend anterior no la manda. */
   deliveryTimes?: SupplierDeliveryTime[];
+  /* El envio: gratis desde un monto sin IVA (null: no ofrece) y su costo si
+     no se llega (null: no cobra). Y por ciudad, cuando cuesta distinto. */
+  freeShippingFrom?: number | null;
+  shippingCost?: number | null;
+  shippingCosts?: SupplierShippingCost[];
   /* Las areas propias de la empresa, ademas de las sugeridas. */
   customContactAreas?: string[];
   /* Descuento financiero por pronto pago. Null: no lo ha dicho. */

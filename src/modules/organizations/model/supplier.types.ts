@@ -7,6 +7,7 @@ import type {
   SupplierActivity,
   SupplierDeliveryTime,
   SupplierProductLine,
+  SupplierShippingCost,
 } from './organization.types';
 
 /* Un proveedor es una Organization con type = SUPPLIER. El backend lo expone
@@ -29,6 +30,8 @@ export interface UpdateSupplierRequest {
   minOrderValue?: number | null;
   deliveryDaysMin?: number | null;
   deliveryDaysMax?: number | null;
+  freeShippingFrom?: number | null;
+  shippingCost?: number | null;
   offersEarlyPaymentDiscount?: boolean | null;
   earlyPaymentDiscountRate?: number | null;
   earlyPaymentDiscountDays?: number | null;
@@ -55,6 +58,8 @@ export interface UpdateSupplierRequest {
   warehouses?: { id?: string; name: string | null; address: string; city: string }[];
   /* La lista entera de tiempos por ciudad; reemplaza a la anterior. */
   deliveryTimes?: SupplierDeliveryTime[];
+  /* La lista entera de costos de envio por ciudad; reemplaza a la anterior. */
+  shippingCosts?: SupplierShippingCost[];
   /* La lista entera de areas propias; la que no viene se quita. */
   customContactAreas?: string[];
 }

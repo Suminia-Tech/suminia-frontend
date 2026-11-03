@@ -33,6 +33,12 @@ import {
   toCityDeliveryValues,
   type CityDeliveryValues,
 } from './DeliveryTimeFields';
+import {
+  CityShippingCostsFields,
+  isCityShippingEmpty,
+  toCityShippingValues,
+  type CityShippingValues,
+} from './ShippingCostFields';
 import SupplierWarehousesFields, {
   isWarehouseEmpty,
   toWarehouseValues,
@@ -75,6 +81,11 @@ export interface OrganizationFormValues {
   /* El tiempo de entrega general, y las ciudades donde es otro. */
   delivery: DeliveryValues;
   deliveryTimes: CityDeliveryValues[];
+  /* El envio: gratis desde (vacio: no ofrece), su costo si no (vacio: no
+     cobra), y las ciudades donde cuesta distinto. */
+  freeShippingFrom: string;
+  shippingCost: string;
+  shippingCosts: CityShippingValues[];
   /* El descuento por pronto pago: si lo ofrece, cuanto y en cuantos dias.
      Vacio es "no lo ha dicho". */
   earlyPayment: '' | 'yes' | 'no';
@@ -126,6 +137,7 @@ type TextField = Exclude<
   | 'warehouses'
   | 'delivery'
   | 'deliveryTimes'
+  | 'shippingCosts'
   | 'orderEmails'
   | 'legalNature'
   | 'buyerActivity'
@@ -183,6 +195,10 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   minOrderValue: organization.minOrderValue === null ? '' : String(organization.minOrderValue),
   delivery: toDeliveryValues(organization.deliveryDaysMin, organization.deliveryDaysMax),
   deliveryTimes: toCityDeliveryValues(organization.deliveryTimes),
+  freeShippingFrom:
+    organization.freeShippingFrom == null ? '' : String(organization.freeShippingFrom),
+  shippingCost: organization.shippingCost == null ? '' : String(organization.shippingCost),
+  shippingCosts: toCityShippingValues(organization.shippingCosts),
   earlyPayment:
     organization.offersEarlyPaymentDiscount == null
       ? ''
@@ -272,6 +288,7 @@ const OrganizationForm = ({
   const [warehouseErrors, setWarehouseErrors] = useState<Record<number, string>>({});
   const [deliveryError, setDeliveryError] = useState<string | null>(null);
   const [cityDeliveryErrors, setCityDeliveryErrors] = useState<Record<number, string>>({});
+  const [cityShippingErrors, setCityShippingErrors] = useState<Record<number, string>>({});
   const [earlyPaymentError, setEarlyPaymentError] = useState<string | null>(null);
   const [paymentTermError, setPaymentTermError] = useState<string | null>(null);
 
@@ -350,6 +367,26 @@ const OrganizationForm = ({
       seenCities.add(key);
     });
 
+    /* Igual con el envio por ciudad: cada una con su costo, y una vez. */
+    const nextCityShippingErrors: Record<number, string> = {};
+    const seenShipping = new Set<string>();
+    values.shippingCosts.forEach((value, index) => {
+      if (isCityShippingEmpty(value)) return;
+      const key = value.city
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+      if (!key) {
+        nextCityShippingErrors[index] = 'Indica la ciudad.';
+      } else if (value.cost.trim() === '' || !(Number(value.cost) >= 0)) {
+        nextCityShippingErrors[index] = 'Indica el costo de envío.';
+      } else if (seenShipping.has(key)) {
+        nextCityShippingErrors[index] = `${value.city.trim()} ya está en la lista.`;
+      }
+      seenShipping.add(key);
+    });
+
     const plazo = values.paymentTermDays.trim();
     let nextPaymentTermError: string | null = null;
     if (plazo !== '' && !(Number.isInteger(Number(plazo)) && Number(plazo) >= 0 && Number(plazo) <= 365)) {
@@ -376,6 +413,7 @@ const OrganizationForm = ({
     setWarehouseErrors(nextWarehouseErrors);
     setDeliveryError(nextDeliveryError);
     setCityDeliveryErrors(nextCityDeliveryErrors);
+    setCityShippingErrors(nextCityShippingErrors);
     setEarlyPaymentError(nextEarlyPaymentError);
     setPaymentTermError(nextPaymentTermError);
     if (Object.keys(nextWarehouseErrors).length > 0) return 'empresa';
@@ -388,6 +426,7 @@ const OrganizationForm = ({
     if (
       nextDeliveryError !== null ||
       Object.keys(nextCityDeliveryErrors).length > 0 ||
+      Object.keys(nextCityShippingErrors).length > 0 ||
       nextPaymentTermError !== null ||
       nextEarlyPaymentError !== null
     ) {
@@ -854,6 +893,61 @@ const OrganizationForm = ({
                   errors={cityDeliveryErrors}
                   onChange={(deliveryTimes) =>
                     setValues((current) => ({ ...current, deliveryTimes }))
+                  }
+                />
+              </div>
+
+              {/* El envio lo pone el proveedor: Suminia lo cobra con el pedido y
+                  se lo pasa entero. */}
+              <div>
+                <label className='form-label' htmlFor='empresa-envio-gratis'>
+                  Envío gratis desde
+                </label>
+                <input
+                  id='empresa-envio-gratis'
+                  type='number'
+                  min={0}
+                  step={1000}
+                  className='form-control'
+                  placeholder='No ofrezco envío gratis'
+                  value={values.freeShippingFrom}
+                  onChange={handleChange('freeShippingFrom')}
+                />
+                <small className='font-light'>
+                  El monto del pedido, antes de IVA, desde el que no cobras envío. Déjalo vacío si
+                  no ofreces envío gratis.
+                </small>
+              </div>
+              <div>
+                <label className='form-label' htmlFor='empresa-envio'>
+                  Costo de envío
+                </label>
+                <input
+                  id='empresa-envio'
+                  type='number'
+                  min={0}
+                  step={1000}
+                  className='form-control'
+                  placeholder='No cobro envío'
+                  value={values.shippingCost}
+                  onChange={handleChange('shippingCost')}
+                />
+                <small className='font-light'>
+                  Lo que cobras por despachar un pedido que no llega al envío gratis, IVA incluido.
+                  Déjalo vacío si no cobras envío.
+                </small>
+              </div>
+              <div className='form-grid-full'>
+                <span className='form-label d-block'>Costos de envío por ciudad</span>
+                <small className='font-light d-block mb-2'>
+                  Si a alguna ciudad el envío te cuesta distinto, añádela con su costo. En las
+                  demás vale el de arriba, y el envío gratis aplica en todas.
+                </small>
+                <CityShippingCostsFields
+                  values={values.shippingCosts}
+                  errors={cityShippingErrors}
+                  onChange={(shippingCosts) =>
+                    setValues((current) => ({ ...current, shippingCosts }))
                   }
                 />
               </div>

@@ -34,6 +34,14 @@ import DeclarationSummaryPanel from './DeclarationSummaryPanel';
 import LegalDocumentsPanel from './LegalDocumentsPanel';
 import StatusBadge from './StatusBadge';
 
+
+const dinero = (valor: number) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    maximumFractionDigits: 0,
+  }).format(valor);
+
 /* Ficha de una empresa para el personal interno de Suminia: lo que mando al
    registrarse y la decision sobre si puede operar. Sirve para los dos lados
    del marketplace; el tipo entra por parametro.
@@ -333,6 +341,8 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
             (organization.minOrderValue !== null ||
               organization.deliveryDaysMin != null ||
               Boolean(organization.deliveryTimes?.length) ||
+              organization.shippingCost != null ||
+              organization.freeShippingFrom != null ||
               tieneCuenta ||
               organization.offersEarlyPaymentDiscount != null) && (
             <Panel
@@ -363,6 +373,26 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                   <li key={time.city}>
                     <span className='font-light'>Entrega en {time.city}</span>
                     <span>{formatDeliveryTime(time.daysMin, time.daysMax)}</span>
+                  </li>
+                ))}
+                <li>
+                  <span className='font-light'>Envío gratis desde</span>
+                  <span>
+                    {organization.freeShippingFrom != null
+                      ? `${dinero(organization.freeShippingFrom)} + IVA`
+                      : 'No ofrece'}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-light'>Costo de envío</span>
+                  <span>
+                    {organization.shippingCost ? dinero(organization.shippingCost) : 'No cobra envío'}
+                  </span>
+                </li>
+                {organization.shippingCosts?.map((row) => (
+                  <li key={`envio-${row.city}`}>
+                    <span className='font-light'>Envío a {row.city}</span>
+                    <span>{dinero(row.cost)}</span>
                   </li>
                 ))}
                 <li>

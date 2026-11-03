@@ -351,6 +351,10 @@ export const OrderDetailScreen = ({
           <span className='font-light'>IVA</span>
           <span>{pesos(order.tax, order.currency)}</span>
         </li>
+        <li>
+          <span className='font-light'>Envío</span>
+          <span>{order.shippingCost > 0 ? pesos(order.shippingCost, order.currency) : 'Gratis'}</span>
+        </li>
         <li className='cart-summary-total'>
           <span>Total</span>
           <strong>{pesos(order.total, order.currency)}</strong>
@@ -589,7 +593,7 @@ export const OrderDetailScreen = ({
             </li>
             <li>
               <span className='font-light'>
-                Comisión de Suminia ({order.commissionRate}%)
+                Comisión de Suminia ({order.commissionRate}% de los productos)
               </span>
               <span>−{pesos(order.commissionAmount, order.currency)}</span>
             </li>
