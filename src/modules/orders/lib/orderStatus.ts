@@ -231,6 +231,13 @@ export const CLOSED_HINT: Record<'buyer' | 'supplier' | 'staff', string> = {
   staff: 'Entregado y liquidado al proveedor: el pedido quedó cerrado.',
 };
 
+/* El comprador lo ve cerrado por dos caminos: lo cerro el mismo, o se
+   acabaron los dias de reclamo. La frase dice cual. */
+export const closedHint = (order: Order, side: 'buyer' | 'supplier' | 'staff'): string =>
+  side === 'buyer' && order.events.some((event) => event.type === 'RECEIVED')
+    ? 'Recibido. Confirmaste que llegó completo y en buenas condiciones: el pedido quedó cerrado.'
+    : CLOSED_HINT[side];
+
 export const CLAIM_REASON_LABEL: Record<ClaimReason, string> = {
   DEFECTIVE: 'Producto defectuoso',
   WRONG_PRODUCT: 'Producto incorrecto',

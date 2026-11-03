@@ -20,7 +20,7 @@ import {
   buyerCanAnswerAvailability,
   buyerCanCancel,
   buyerCanConfirmDelivery,
-  CLOSED_HINT,
+  closedHint,
   displayStatus,
   ORDER_STATUS_HINT,
   ORDER_STATUS_HINT_SUPPLIER,
@@ -265,7 +265,7 @@ export const OrderDetailScreen = ({
       <Panel className='order-state'>
         <p className='order-hint'>
           {order.closed
-            ? CLOSED_HINT[side]
+            ? closedHint(order, side)
             : esperandoPago
               ? order.paymentStatus === 'SUBMITTED'
                 ? side === 'buyer'
