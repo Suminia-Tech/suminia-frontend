@@ -119,8 +119,8 @@ export const FinanceSummaryScreen = () => {
 
         <div className='insight-columns'>
           <Panel
-            title='Mezcla de ventas por línea'
-            description='Qué parte de lo vendido es de cada línea, contra la mezcla del plan.'
+            title='Peso de cada línea en las ventas'
+            description='De cada $100 vendidos, cuántos vinieron de cada línea, contra lo que espera el plan.'
           >
             <TargetBars
               rows={d.lines.map((l) => ({

@@ -49,7 +49,7 @@ export const CommercialLinesPanel = ({
         <>
           {Math.round(mezcla) !== 100 && (
             <p className='panel-warning'>
-              La mezcla del plan suma {formatPercent(Math.round(mezcla * 10) / 10)}: debería sumar
+              Los pesos en ventas suman {formatPercent(Math.round(mezcla * 10) / 10)}: deberían sumar
               100%.
             </p>
           )}
@@ -60,7 +60,7 @@ export const CommercialLinesPanel = ({
                   <th>Línea</th>
                   <th className='num'>Incremento</th>
                   <th className='num'>Rango sano</th>
-                  <th className='num'>Mezcla del plan</th>
+                  <th className='num'>Peso en ventas (plan)</th>
                   <th className='num'>Margen sobre venta</th>
                   {editable && <th />}
                 </tr>
@@ -76,6 +76,11 @@ export const CommercialLinesPanel = ({
               </tbody>
             </table>
           </div>
+          <p className='font-light plan-note'>
+            <strong>Peso en ventas:</strong> de cada $100 que se vendan, cuántos espera el plan que
+            vengan de esa línea. No cambia ningún precio: con él se calcula el margen esperado del
+            tablero y se compara con lo que de verdad se vende.
+          </p>
           <CategoryLines lineas={lineas} editable={editable} />
           {children}
         </>
@@ -149,7 +154,7 @@ const LineRow = ({ linea, editable }: { linea: CommercialLineSetting; editable: 
         </span>
       </td>
       <td className='num'>
-        <span className='plan-cell'>{input('planMixRate', 'Mezcla')}%</span>
+        <span className='plan-cell'>{input('planMixRate', 'Peso en ventas')}%</span>
       </td>
       <td className='num'>{formatPercent(margen)}</td>
       {editable && (
