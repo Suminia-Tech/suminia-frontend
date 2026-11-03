@@ -81,6 +81,7 @@ const aCampos = (s: PlatformSettings): Campos => ({
   accountHolderTaxId: s.accountHolderTaxId ?? '',
   breBKey: s.breBKey ?? '',
   paymentInstructions: s.paymentInstructions ?? '',
+  staffNotificationEmail: s.staffNotificationEmail ?? '',
 });
 
 const SettingsForm = ({
@@ -268,6 +269,34 @@ const SettingsForm = ({
               value={campos.paymentInstructions}
               onChange={(event) => set('paymentInstructions')(event.target.value)}
             />
+          </div>
+        </div>
+      </Panel>
+
+      <Panel
+        title='Avisos al equipo'
+        description='A dónde le llega por correo a Suminia lo que pide su atención: comprobantes por verificar, documentos por revisar, reclamos.'
+        footer={footer}
+      >
+        <div className='form-grid'>
+          <div>
+            <label className='form-label' htmlFor='fin-staffNotificationEmail'>
+              Correo de avisos
+            </label>
+            <input
+              id='fin-staffNotificationEmail'
+              type='email'
+              maxLength={255}
+              className='form-control'
+              disabled={!editable}
+              placeholder='equipo@suminia.io'
+              value={campos.staffNotificationEmail}
+              onChange={(event) => set('staffNotificationEmail')(event.target.value)}
+            />
+            <small className='font-light'>
+              La campana le llega a cada persona del equipo; este es el buzón común. Vacío, no se
+              envía correo.
+            </small>
           </div>
         </div>
       </Panel>

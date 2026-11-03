@@ -13,14 +13,14 @@ import {
   useMarkNotificationReadMutation,
   useMarkNotificationsSeenMutation,
 } from '../api/notificationsApi';
+import { useNotificationStream } from '../hooks/useNotificationStream';
 import { timeAgo } from '../lib/relativeTime';
 import type { AppNotification } from '../model/notification.types';
 
-/* Cada 20 segundos con la pestaña a la vista, y otra vez al volver a ella:
-   un pedido nuevo se espera casi enseguida —quien prueba con comprador y
-   proveedor en dos ventanas lo nota—, y una pestaña olvidada no tiene por que
-   seguir preguntando. */
-const POLLING_MS = 20_000;
+/* Los avisos llegan en tiempo real por useNotificationStream. Esto es la red
+   de seguridad por si la conexion se cae sin que el navegador se entere: una
+   consulta cada dos minutos con la pestaña a la vista, y al volver a ella. */
+const POLLING_MS = 120_000;
 
 interface NotificationBellProps {
   /* "panel" va en la barra superior del proveedor y del personal interno;
@@ -45,6 +45,7 @@ export const NotificationBell = ({ variant }: NotificationBellProps) => {
     refetchOnFocus: true,
   });
   const [markSeen] = useMarkNotificationsSeenMutation();
+  useNotificationStream(!skip);
   const [markRead] = useMarkNotificationReadMutation();
   const [markAllRead] = useMarkAllNotificationsReadMutation();
 

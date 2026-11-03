@@ -17,6 +17,8 @@ export interface PlatformSettings {
   accountHolderTaxId: string | null;
   breBKey: string | null;
   paymentInstructions: string | null;
+  /** El buzon del equipo de Suminia para lo que pide su atencion. */
+  staffNotificationEmail: string | null;
   updatedAt: string;
 }
 

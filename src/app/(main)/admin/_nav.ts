@@ -3,6 +3,7 @@ import {
   Clipboard,
   CreditCard,
   DollarSign,
+  BarChart2,
   Home,
   PieChart,
   Settings,
@@ -34,6 +35,13 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
     items: [
       { label: 'Resumen', href: '/admin', icon: Home },
       { label: 'Pedidos', href: '/admin/orders', icon: Clipboard },
+      /* Para el area comercial: como va el negocio. */
+      {
+        label: 'Indicadores',
+        href: '/admin/insights',
+        icon: BarChart2,
+        permission: 'organization:list',
+      },
     ],
   },
   {
