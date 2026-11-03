@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { Table } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { canOperate } from '@/shared/lib/organizationAccess';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
@@ -53,7 +53,7 @@ export const MyTeamScreen = () => {
   };
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='list' />;
   }
 
   if (isError) {

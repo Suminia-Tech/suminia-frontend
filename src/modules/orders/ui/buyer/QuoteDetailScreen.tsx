@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate, formatDay } from '@/shared/lib/dates';
-import { Panel } from '@/shared/ui';
+import { PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useConvertQuoteMutation, useGetQuoteQuery } from '../../api/ordersApi';
@@ -48,7 +48,7 @@ export const QuoteDetailScreen = ({ quoteId, LocationPicker }: QuoteDetailScreen
   const { data, isLoading, isError, error } = useGetQuoteQuery(quoteId, { skip: !hydrated });
   const { download, downloading } = useQuotePdf();
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='detail' />;
   if (isError || !data) {
     return (
       <div className='alert alert-danger'>

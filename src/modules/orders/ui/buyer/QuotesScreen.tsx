@@ -6,7 +6,7 @@ import { FileText } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate, formatDay } from '@/shared/lib/dates';
-import { PageHeader, Pagination } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Pagination } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetQuotesQuery } from '../../api/ordersApi';
@@ -31,7 +31,7 @@ export const QuotesScreen = () => {
     { skip: !hydrated },
   );
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='list' />;
   if (isError) {
     return (
       <div className='alert alert-danger'>

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 import { DATA_POLICY_PATH } from '@/shared/config/legal';
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useSaveBuyerDeclarationMutation } from '../../api/buyersApi';
@@ -540,7 +540,7 @@ export const DeclarationScreen = ({ kind }: { kind: OrganizationKind }) => {
   );
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='form' />;
   }
 
   if (!organizationId) {

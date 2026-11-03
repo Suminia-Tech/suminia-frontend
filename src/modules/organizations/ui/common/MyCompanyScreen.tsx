@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { useLocationHash } from '@/shared/hooks/useLocationHash';
 import { useScrollToHash } from '@/shared/hooks/useScrollToHash';
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
@@ -230,7 +230,7 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
   };
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='form' />;
   }
 
   /* El personal interno de Suminia no pertenece a ninguna organizacion, de modo

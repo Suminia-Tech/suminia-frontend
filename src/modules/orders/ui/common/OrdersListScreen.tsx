@@ -6,7 +6,7 @@ import { ArrowRight, Package } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
-import { PageHeader, Pagination } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Pagination } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetOrderMetricsQuery, useGetOrdersQuery } from '../../api/ordersApi';
@@ -176,7 +176,7 @@ export const OrdersListScreen = ({
     skip: !hydrated || !isStaff || Boolean(queue),
   });
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='list' />;
 
   if (isError) {
     return (

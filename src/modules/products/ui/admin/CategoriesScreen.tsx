@@ -5,7 +5,7 @@ import { Check, Edit2, Plus, Trash2, X } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
-import { ConfirmModal, PageHeader } from '@/shared/ui';
+import { ConfirmModal, PageHeader, SkeletonRows } from '@/shared/ui';
 
 import {
   useCreateCategoryMutation,
@@ -227,7 +227,7 @@ export const CategoriesScreen = () => {
 
       <div>
         {isLoading ? (
-          <p className='font-light'>Cargando...</p>
+          <SkeletonRows rows={6} />
         ) : isError ? (
           <div className='alert alert-danger'>
             {extractErrorMessage(error, 'No se pudieron cargar las categorías.')}

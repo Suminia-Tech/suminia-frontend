@@ -5,7 +5,7 @@ import { AlertTriangle, Check } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDay } from '@/shared/lib/dates';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetFinanceSummaryQuery } from '../../api/financeApi';
@@ -24,7 +24,7 @@ export const FinanceSummaryScreen = () => {
     skip: !hydrated,
   });
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='dashboard' />;
   if (isError || !data) {
     return (
       <div className='alert alert-danger'>

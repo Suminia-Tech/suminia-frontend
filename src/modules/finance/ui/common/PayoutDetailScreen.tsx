@@ -6,7 +6,7 @@ import { ChevronLeft, ExternalLink } from "react-feather";
 import { extractErrorMessage } from "@/shared/lib/apiError";
 import { formatDate, formatDay } from "@/shared/lib/dates";
 import { hasPermission } from "@/shared/lib/permissions";
-import { Panel } from "@/shared/ui";
+import { PageSkeleton, Panel } from "@/shared/ui";
 import { useAppSelector } from "@/store/hooks";
 
 import { useGetPayoutQuery } from "../../api/financeApi";
@@ -50,7 +50,7 @@ export const PayoutDetailScreen = ({
   const files = usePayoutFiles(payoutId);
   const copy = COPY[side];
 
-  if (!hydrated || isLoading) return <p className="font-light">Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant="detail" />;
   if (isError || !data) {
     return (
       <div className="alert alert-danger">

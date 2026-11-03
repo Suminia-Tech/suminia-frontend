@@ -7,6 +7,7 @@ import { AlertCircle, Image as ImageIcon, Trash2 } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { PageSkeleton } from '@/shared/ui';
 
 import {
   useClearCartMutation,
@@ -132,7 +133,7 @@ export const CartScreen = ({ extra }: CartScreenProps = {}) => {
   };
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='detail' />;
   }
 
   /* Quien no puede comprar no tiene carrito. No es un error: es que todavia no

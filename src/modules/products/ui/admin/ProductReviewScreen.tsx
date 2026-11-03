@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
-import { Panel } from '@/shared/ui';
+import { PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetProductQuery, useReviewProductMutation } from '../../api/productsApi';
@@ -47,7 +47,7 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='detail' />;
   }
 
   if (isError || !data) {

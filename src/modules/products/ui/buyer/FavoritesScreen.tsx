@@ -5,7 +5,7 @@ import { Heart } from 'react-feather';
 import { Col, Row } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader } from '@/shared/ui';
+import { PageHeader, PageSkeleton } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetFavoritesQuery } from '../../api/productsApi';
@@ -32,7 +32,7 @@ export const FavoritesScreen = () => {
     return (
       <>
         {header}
-        <p className='font-light'>Cargando...</p>
+        <PageSkeleton variant='list' header={false} />
       </>
     );
   }

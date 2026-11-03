@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDay } from '@/shared/lib/dates';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetCreditPortfolioQuery } from '../../api/financeApi';
@@ -20,7 +20,7 @@ export const CreditPortfolioScreen = () => {
     skip: !hydrated,
   });
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='list' />;
   if (isError || !data) {
     return (
       <div className='alert alert-danger'>

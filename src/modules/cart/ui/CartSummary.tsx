@@ -4,6 +4,7 @@ import { AlertCircle } from 'react-feather';
 
 import { useGetCartQuery } from '../api/cartApi';
 import { useCanBuy } from '../hooks/useCanBuy';
+import { SkeletonRows } from '@/shared/ui';
 
 /* Lo que se va a pedir, de solo lectura.
 
@@ -26,7 +27,7 @@ export const CartSummary = ({ totalLabel = 'Total' }: { totalLabel?: string } = 
     skip: !hydrated || !canBuy,
   });
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <SkeletonRows rows={3} />;
 
   const cart = data?.data;
   if (!cart || cart.itemCount === 0) {

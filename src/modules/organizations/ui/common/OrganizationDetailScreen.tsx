@@ -8,7 +8,7 @@ import { AlertTriangle, ChevronLeft, FileText } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
 
@@ -91,7 +91,7 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
   const canDecide = hasPermission(permissions, 'organization:approve');
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='detail' />;
   }
 
   if (isError || !data) {

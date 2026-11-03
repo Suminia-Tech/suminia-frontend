@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 
 import { useAppSelector } from '@/store/hooks';
+import { PageSkeleton } from '@/shared/ui';
 
 import { getHomePath, type Area } from '../lib/area';
 import { belongsToArea } from '../lib/area';
@@ -44,7 +45,7 @@ export const AreaGuard = ({ area, children }: AreaGuardProps) => {
     return (
       <section className='section-b-space'>
         <div className='container-fluid-lg'>
-          <p className='font-light'>Cargando...</p>
+          <PageSkeleton variant='list' />
         </div>
       </section>
     );

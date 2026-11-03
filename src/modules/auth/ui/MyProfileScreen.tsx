@@ -4,7 +4,7 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useUpdateProfileMutation } from '../api/authApi';
@@ -129,7 +129,7 @@ export const MyProfileScreen = () => {
   const hydrated = useAppSelector((state) => state.auth.hydrated);
 
   if (!hydrated) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='form' />;
   }
 
   if (!user) {

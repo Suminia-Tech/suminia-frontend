@@ -16,6 +16,10 @@ export const baseApi = createApi({
       return headers;
     },
   }),
+  /* Al volver a una pantalla, si lo que hay en cache tiene mas de 30
+     segundos se pide de nuevo. Sin esto, entrar a un pedido desde un aviso o
+     desde otra pestaña enseñaba lo que habia la ultima vez. */
+  refetchOnMountOrArgChange: 30,
   tagTypes: [
     'Auth',
     'Profile',

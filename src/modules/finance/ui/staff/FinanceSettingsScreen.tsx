@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import {
@@ -35,7 +35,7 @@ export const FinanceSettingsScreen = () => {
     skip: !hydrated,
   });
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='form' />;
   if (isError || !data) {
     return (
       <div className='alert alert-danger'>

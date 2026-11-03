@@ -9,7 +9,7 @@ import { Col, Row } from 'reactstrap';
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { useMounted } from '@/shared/hooks/useMounted';
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { Breadcrumbs, Pagination } from '@/shared/ui';
+import { Breadcrumbs, Pagination, SkeletonRows } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
@@ -139,7 +139,7 @@ export const PublicCatalogScreen = () => {
         </Row>
 
         {isLoading ? (
-          <p className='font-light'>Cargando...</p>
+          <SkeletonRows rows={6} thumb />
         ) : isError ? (
           <div className='alert alert-danger'>
             {extractErrorMessage(error, 'No se pudo cargar el catálogo.')}

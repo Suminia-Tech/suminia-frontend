@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
+import { PageSkeleton } from '@/shared/ui';
 
 import {
   useCreateDeliveryLocationMutation,
@@ -65,7 +66,7 @@ export const DeliveryLocationsScreen = () => {
   };
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='list' />;
   }
 
   if (isError) {

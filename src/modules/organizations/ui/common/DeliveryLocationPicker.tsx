@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 
 import { useGetDeliveryLocationsQuery } from '../../api/deliveryLocationsApi';
+import { SkeletonRows } from '@/shared/ui';
 
 /* Elegir a donde llega el pedido.
 
@@ -35,7 +36,7 @@ export const DeliveryLocationPicker = ({
     if (!value && predeterminada) onChange(predeterminada);
   }, [value, predeterminada, onChange]);
 
-  if (isLoading) return <p className='font-light'>Cargando sedes...</p>;
+  if (isLoading) return <SkeletonRows rows={2} />;
 
   if (locations.length === 0) {
     return (

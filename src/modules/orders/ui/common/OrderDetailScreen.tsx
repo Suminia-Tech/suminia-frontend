@@ -7,7 +7,7 @@ import { Check, ChevronLeft, MapPin, RotateCcw } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { Panel } from '@/shared/ui';
+import { PageSkeleton, Panel } from '@/shared/ui';
 import { formatDate, formatDay } from '@/shared/lib/dates';
 import { useAppSelector } from '@/store/hooks';
 
@@ -194,7 +194,7 @@ export const OrderDetailScreen = ({
   const [proponiendo, setProponiendo] = useState(false);
   const copy = COPY[side];
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='detail' />;
 
   if (isError || !data) {
     return (

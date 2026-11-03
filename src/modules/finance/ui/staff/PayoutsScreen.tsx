@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDay } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, Panel, SkeletonRows } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useCreatePayoutMutation, useGetPayableQuery } from '../../api/financeApi';
@@ -46,7 +46,7 @@ export const PayoutsScreen = () => {
           description='Pedidos entregados que ya pasaron los días de reclamo. Por transferencia, solo los pagados; a crédito entran aunque el comprador no haya pagado.'
         >
           {isLoading ? (
-            <p className='font-light mb-0'>Cargando...</p>
+            <SkeletonRows rows={3} />
           ) : listos.length === 0 ? (
             <p className='font-light mb-0'>No hay nada listo para liquidar.</p>
           ) : (

@@ -7,6 +7,7 @@ import { Table } from 'reactstrap';
 import { formatTaxId } from '../../lib/taxId';
 import type { Organization } from '../../model/organization.types';
 import StatusBadge from './StatusBadge';
+import { SkeletonRows } from '@/shared/ui';
 
 /* Tabla comun a proveedores y compradores: las columnas salen de Organization,
    que es la tabla que ambos comparten en el backend. Lo que cambia entre las
@@ -30,7 +31,7 @@ const OrganizationTable = ({
   actions,
 }: OrganizationTableProps) => {
   if (isLoading) {
-    return <p className='text-muted my-4'>Cargando...</p>;
+    return <SkeletonRows rows={6} />;
   }
 
   if (organizations.length === 0) {

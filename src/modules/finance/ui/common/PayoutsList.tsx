@@ -6,7 +6,7 @@ import { DollarSign } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
-import { Pagination } from '@/shared/ui';
+import { Pagination, SkeletonRows } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetPayoutsQuery } from '../../api/financeApi';
@@ -31,7 +31,7 @@ export const PayoutsList = ({ basePath, side }: { basePath: string; side: 'staff
     { skip: !hydrated },
   );
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <SkeletonRows rows={4} />;
   if (isError) {
     return (
       <div className='alert alert-danger'>

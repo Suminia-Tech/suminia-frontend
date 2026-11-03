@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { AlertTriangle, Check } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetSupplierQuery } from '../../api/suppliersApi';
@@ -44,7 +44,7 @@ export const SupplierSummaryScreen = () => {
   );
 
   if (!hydrated || isLoading) {
-    return <p className='font-light'>Cargando...</p>;
+    return <PageSkeleton variant='dashboard' />;
   }
 
   if (!organizationId) {

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowDownRight, ArrowUpRight } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetInsightsQuery } from '../api/insightsApi';
@@ -85,7 +85,7 @@ export const InsightsScreen = () => {
     skip: !hydrated,
   });
 
-  if (!hydrated || isLoading) return <p className='font-light'>Cargando...</p>;
+  if (!hydrated || isLoading) return <PageSkeleton variant='dashboard' />;
   if (isError || !data) {
     return (
       <div className='alert alert-danger'>
