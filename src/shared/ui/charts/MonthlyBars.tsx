@@ -144,7 +144,9 @@ export const MonthlyBars = ({
               {etiqueta && activo !== i && (
                 <span
                   className='insight-bar-value'
-                  style={{ bottom: pct(negativo ? base - 16 : base + alto + 4) }}
+                  /* La de una barra negativa va sobre el cero: debajo chocaria
+                     con el nombre del mes. */
+                  style={{ bottom: pct(negativo ? ALTO - cero + 4 : base + alto + 4) }}
                 >
                   {shortFormat(d.value)}
                 </span>

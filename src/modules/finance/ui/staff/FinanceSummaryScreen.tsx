@@ -52,7 +52,7 @@ export const FinanceSummaryScreen = () => {
 
       <PendingPanel summary={resumen.data.data} />
 
-      <div className={tablero.isFetching ? 'is-refreshing' : undefined}>
+      <div className={`panel-stack${tablero.isFetching ? ' is-refreshing' : ''}`}>
         <YearPanel d={d} onYear={setYear} />
 
         <Panel

@@ -6210,7 +6210,13 @@ select.form-control,
 
 .plan-year {
   width: auto;
+  min-width: 100px;
   height: 36px;
+  /* El select del tema trae relleno vertical para su alto de 45px: en 36
+     recortaba el año. */
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 34px;
   @include pastilla(36px);
 }
 
@@ -6339,11 +6345,24 @@ select.form-control,
 .insight-columns {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0 24px;
+  /* El hueco entre paneles lo pone la rejilla: el tema le quita el margen al
+     ultimo hijo, y sin esto la columna derecha quedaba pegada a lo de abajo. */
+  gap: 20px 24px;
+  margin-bottom: 20px;
+
+  > .panel {
+    margin-bottom: 0;
+  }
 
   @media (min-width: 1200px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* Un grupo de paneles dentro de la pantalla: conserva el hueco de abajo que
+   el tema le quita al ultimo panel del grupo. */
+.panel-stack {
+  margin-bottom: 20px;
 }
 
 .insight-period {
