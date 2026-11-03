@@ -33,15 +33,15 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
   {
     label: 'Operación',
     items: [
-      { label: 'Resumen', href: '/admin', icon: Home },
-      { label: 'Pedidos', href: '/admin/orders', icon: Clipboard },
-      /* Para el area comercial: como va el negocio. */
+      /* Primero, para el area comercial: como va el negocio. */
       {
         label: 'Indicadores',
         href: '/admin/insights',
         icon: BarChart2,
         permission: 'organization:list',
       },
+      { label: 'Resumen', href: '/admin', icon: Home },
+      { label: 'Pedidos', href: '/admin/orders', icon: Clipboard },
     ],
   },
   {
