@@ -32,6 +32,7 @@ export const PayoutsScreen = () => {
   const proveedores = data?.data ?? [];
   const listos = proveedores.filter((p) => p.ready.length > 0);
   const pronto = proveedores.filter((p) => p.ready.length === 0 && p.upcoming.length > 0);
+  const sinFactura = proveedores.flatMap((p) => p.blocked.map((o) => ({ ...o, supplier: p.supplier.name })));
 
   return (
     <>
@@ -43,7 +44,7 @@ export const PayoutsScreen = () => {
       {puedeLiquidar && (
         <Panel
           title='Por liquidar'
-          description='Pedidos entregados que ya pasaron los días de reclamo. Por transferencia, solo los pagados; a crédito entran aunque el comprador no haya pagado.'
+          description='Pedidos entregados, cerrados por el comprador o con los días de reclamo vencidos, y con la factura electrónica del proveedor. Por transferencia, solo los pagados; a crédito entran aunque el comprador no haya pagado.'
         >
           {isLoading ? (
             <SkeletonRows rows={3} />
@@ -51,6 +52,27 @@ export const PayoutsScreen = () => {
             <p className='font-light mb-0'>No hay nada listo para liquidar.</p>
           ) : (
             listos.map((proveedor) => <PayableBlock key={proveedor.supplier.id} payable={proveedor} />)
+          )}
+          {sinFactura.length > 0 && (
+            <div className='payout-blocked'>
+              <p className='panel-warning'>
+                {sinFactura.length === 1
+                  ? 'Este pedido no se puede liquidar: '
+                  : `Estos ${sinFactura.length} pedidos no se pueden liquidar: `}
+                falta la factura electrónica del proveedor. Entran en cuanto la adjunte.
+              </p>
+              <ul className='data-list is-single'>
+                {sinFactura.map((order) => (
+                  <li key={order.id}>
+                    <span>
+                      <Link href={`/admin/orders/${order.id}`}>{order.code}</Link>
+                      <span className='font-light'> · {order.supplier}</span>
+                    </span>
+                    <span>{pesos(order.supplierPayout)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           {pronto.length > 0 && (
             <p className='font-light payout-upcoming'>
@@ -114,13 +136,6 @@ const PayableBlock = ({ payable }: { payable: PayableSupplier }) => {
         </button>
       </div>
 
-      {payable.missingInvoices > 0 && (
-        <p className='panel-warning'>
-          {payable.missingInvoices}{' '}
-          {payable.missingInvoices === 1 ? 'pedido no tiene' : 'pedidos no tienen'} la factura del
-          proveedor. Conviene pedírsela antes de liquidar.
-        </p>
-      )}
 
       <div className='catalog-table-scroll'>
         <table className='catalog-table'>

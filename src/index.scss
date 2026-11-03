@@ -6177,6 +6177,16 @@ select.form-control,
   font-size: 13px;
 }
 
+/* Lo que no se liquida por falta de la factura del proveedor, debajo de lo
+   listo: se ve que existe y por que no entra. */
+.payout-blocked {
+  margin-top: 18px;
+
+  .panel-warning {
+    margin-bottom: 10px;
+  }
+}
+
 /* La comision o el credito de una empresa, debajo de su ficha en el
    superadmin. La ficha termina en su propia rejilla de columnas, que no deja
    margen debajo: sin esto el panel queda pegado a ella. */

@@ -59,8 +59,23 @@ const PendingPayout = ({
   const proveedor = data?.data.find((p) => p.supplier.id === supplierOrganizationId);
   const listo = proveedor?.ready.find((o) => o.id === orderId);
   const enReclamo = proveedor?.upcoming.find((o) => o.id === orderId);
+  const sinFactura = proveedor?.blocked.find((o) => o.id === orderId);
 
-  if (isLoading || (!listo && !enReclamo) || !proveedor) return null;
+  if (isLoading || (!listo && !enReclamo && !sinFactura) || !proveedor) return null;
+
+  if (sinFactura) {
+    return (
+      <Panel
+        title='Liquidación al proveedor'
+        aside={<span className='document-state is-danger'>Sin factura</span>}
+      >
+        <p className='font-light mb-0'>
+          No se le puede pagar al proveedor hasta que adjunte su factura electrónica a Suminia
+          por {pesos(sinFactura.supplierPayout)}. Entra en la liquidación en cuanto la adjunte.
+        </p>
+      </Panel>
+    );
+  }
 
   if (!listo) {
     return (
@@ -108,11 +123,6 @@ const PendingPayout = ({
           </span>
         </li>
       </ul>
-      {!listo.invoiceNumber && (
-        <p className='panel-warning'>
-          Falta la factura del proveedor. Conviene pedírsela antes de liquidar.
-        </p>
-      )}
       <small className='font-light d-block mt-3'>
         {otros > 0
           ? `La liquidación es por proveedor: incluye este pedido y los otros ${otros} de ${proveedor.supplier.name} que ya están listos.`

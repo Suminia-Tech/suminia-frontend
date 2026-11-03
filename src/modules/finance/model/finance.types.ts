@@ -142,8 +142,11 @@ export interface PayableSupplier {
   };
   ready: PayoutOrder[];
   upcoming: PayoutOrder[];
+  /** Listos salvo por la factura del proveedor: no entran hasta que la adjunte. */
+  blocked: PayoutOrder[];
   readyNet: number;
   upcomingNet: number;
+  blockedNet: number;
   missingInvoices: number;
 }
 
