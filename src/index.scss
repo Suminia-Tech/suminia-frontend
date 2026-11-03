@@ -6127,6 +6127,13 @@ select.form-control,
   }
 }
 
+/* Cerrar va primero: es lo que pasa casi siempre. Reclamar queda al lado. */
+.order-claim-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .document-slots + .order-claim-cta {
   margin-top: 16px;
 }

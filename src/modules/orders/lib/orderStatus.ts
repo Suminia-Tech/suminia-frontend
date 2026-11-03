@@ -206,6 +206,7 @@ export const ORDER_EVENT_LABEL: Record<OrderEventType, string> = {
   DELIVERED: 'Entregado',
   CLAIM_OPENED: 'El comprador abrió un reclamo',
   CLAIM_RESOLVED: 'Suminia resolvió el reclamo',
+  RECEIVED: 'Cerrado: llegó completo y en buenas condiciones',
   REFUNDED: 'Pago devuelto al comprador',
   PAYOUT_PAID: 'Liquidado al proveedor',
 };

@@ -186,6 +186,13 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => dineroDe(id),
     }),
 
+    /* Cerrar el pedido: el comprador confirma que llego bien, se acaban los
+       dias de reclamo y entra en la siguiente liquidacion. */
+    confirmReceipt: builder.mutation<ApiResponse<Order>, string>({
+      query: (id) => ({ url: `/orders/${id}/receipt`, method: 'POST' }),
+      invalidatesTags: (_result, _error, id) => dineroDe(id),
+    }),
+
     resolveClaim: builder.mutation<
       ApiResponse<Order>,
       { id: string; claimId: string; resolution: string }
@@ -295,6 +302,7 @@ export const {
   useGetMyCreditQuery,
   useGetOrderPreviewQuery,
   useCreateQuoteMutation,
+  useConfirmReceiptMutation,
   useGetQuotesQuery,
   useGetQuoteQuery,
   useDownloadQuotePdfMutation,

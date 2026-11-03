@@ -1,16 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertCircle } from 'react-feather';
+import { AlertCircle, CheckCircle } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate, formatDateTime } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
-import { Panel } from '@/shared/ui';
+import { ConfirmModal, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
-import { useOpenClaimMutation, useResolveClaimMutation } from '../../api/ordersApi';
+import {
+  useConfirmReceiptMutation,
+  useOpenClaimMutation,
+  useResolveClaimMutation,
+} from '../../api/ordersApi';
 import { CLAIM_REASON_LABEL } from '../../lib/orderStatus';
 import type { ClaimReason, Order, OrderClaim } from '../../model/order.types';
 import type { OrderSide } from './OrdersListScreen';
@@ -22,7 +26,11 @@ import type { OrderSide } from './OrdersListScreen';
    no se le paga lo que esta en disputa. Lo resuelve Suminia con lo acordado
    —reposicion, nota credito, sin lugar— y el pedido sigue su curso.
 
-   El panel no aparece si no hay reclamos ni se puede abrir uno. */
+   Junto al reclamo va lo contrario: cerrar el pedido cuando llego bien, sin
+   esperar a que pasen los dias. Lo cierra el comprador, o Suminia en su
+   nombre si la clinica lo confirma por otro medio.
+
+   El panel no aparece si no hay reclamos ni se puede hacer nada. */
 export const OrderClaimPanel = ({ order, side }: { order: Order; side: OrderSide }) => {
   const permissions = useAppSelector((state) => state.auth.user?.permissions);
   const puedeResolver = side === 'staff' && hasPermission(permissions, 'payment:verify');
@@ -32,12 +40,13 @@ export const OrderClaimPanel = ({ order, side }: { order: Order; side: OrderSide
     order.claimableUntil !== null &&
     new Date(order.claimableUntil) > new Date();
   const puedeReclamar = side === 'buyer' && enPlazo && !abierto;
+  const puedeCerrar = enPlazo && !abierto && (side === 'buyer' || puedeResolver);
 
-  if (order.claims.length === 0 && !puedeReclamar) return null;
+  if (order.claims.length === 0 && !puedeCerrar) return null;
 
   return (
     <Panel
-      title='Reclamos'
+      title={order.claims.length > 0 ? 'Reclamos' : 'Recepción del pedido'}
       aside={
         abierto && <span className='document-state is-danger'>En reclamo</span>
       }
@@ -55,7 +64,9 @@ export const OrderClaimPanel = ({ order, side }: { order: Order; side: OrderSide
         </div>
       )}
 
-      {puedeReclamar && <ClaimForm order={order} />}
+      {puedeCerrar && (
+        <ClaimForm order={order} side={side} canClaim={puedeReclamar} />
+      )}
     </Panel>
   );
 };
@@ -159,26 +170,85 @@ const ClaimSlot = ({
   );
 };
 
-/* Reportar un problema: que paso y con que. */
-const ClaimForm = ({ order }: { order: Order }) => {
+/* Las dos salidas de un pedido entregado: cerrarlo porque llego bien, o
+   reportar un problema y contar que paso. */
+const ClaimForm = ({
+  order,
+  side,
+  canClaim,
+}: {
+  order: Order;
+  side: OrderSide;
+  canClaim: boolean;
+}) => {
   const [open, { isLoading }] = useOpenClaimMutation();
+  const [confirmReceipt, cierre] = useConfirmReceiptMutation();
   const [abierto, setAbierto] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
   const [reason, setReason] = useState<ClaimReason | ''>('');
   const [description, setDescription] = useState('');
+  const enNombre = side === 'staff';
+
+  const cerrar = async () => {
+    try {
+      await confirmReceipt(order.id).unwrap();
+      setConfirmando(false);
+      toast.success(`Pedido ${order.code} cerrado`);
+    } catch (err) {
+      toast.error(extractErrorMessage(err, 'No se pudo cerrar el pedido.'));
+    }
+  };
 
   if (!abierto) {
     return (
       <div className='order-claim-cta'>
         <p className='font-light mb-0'>
-          ¿Algo no llegó bien? Tienes hasta el {formatDateTime(order.claimableUntil)} para reclamar.
+          {enNombre
+            ? `Si ${order.buyerOrganizationName} confirmó que lo recibió bien, puedes cerrarlo en su nombre. Si no, se cierra solo el ${formatDateTime(order.claimableUntil)}.`
+            : `Si llegó completo y en buenas condiciones, ciérralo. Si algo no llegó bien, tienes hasta el ${formatDateTime(order.claimableUntil)} para reclamar.`}
         </p>
-        <button
-          type='button'
-          className='btn btn-outline-danger btn-sm btn-with-icon'
-          onClick={() => setAbierto(true)}
+        <div className='order-claim-actions'>
+          <button
+            type='button'
+            className='btn btn-primary btn-sm btn-with-icon'
+            onClick={() => setConfirmando(true)}
+          >
+            <CheckCircle size={14} /> Cerrar pedido
+          </button>
+          {canClaim && (
+            <button
+              type='button'
+              className='btn btn-outline-danger btn-sm btn-with-icon'
+              onClick={() => setAbierto(true)}
+            >
+              <AlertCircle size={14} /> Tengo un problema con este pedido
+            </button>
+          )}
+        </div>
+
+        <ConfirmModal
+          isOpen={confirmando}
+          onClose={() => setConfirmando(false)}
+          onConfirm={cerrar}
+          title={`¿Cerrar el pedido ${order.code}?`}
+          confirmLabel='Sí, cerrar pedido'
+          loadingLabel='Cerrando...'
+          isLoading={cierre.isLoading}
+          tone='primary'
         >
-          <AlertCircle size={14} /> Tengo un problema con este pedido
-        </button>
+          {enNombre ? (
+            <p className='mb-0'>
+              ¿Ya confirmaste con {order.buyerOrganizationName} que el pedido llegó completo y en buenas
+              condiciones? Al cerrarlo ya no podrá reclamar, y se le paga al proveedor en la
+              próxima liquidación.
+            </p>
+          ) : (
+            <p className='mb-0'>
+              ¿Ya revisaste que el pedido llegó completo y en buenas condiciones? Al cerrarlo
+              ya no podrás abrir un reclamo, y Suminia le paga al proveedor.
+            </p>
+          )}
+        </ConfirmModal>
       </div>
     );
   }

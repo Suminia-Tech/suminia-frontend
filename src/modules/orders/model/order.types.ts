@@ -56,6 +56,7 @@ export type OrderEventType =
   | 'DELIVERED'
   | 'CLAIM_OPENED'
   | 'CLAIM_RESOLVED'
+  | 'RECEIVED'
   | 'REFUNDED'
   | 'PAYOUT_PAID';
 
