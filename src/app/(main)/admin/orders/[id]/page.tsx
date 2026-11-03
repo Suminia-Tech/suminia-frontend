@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { OrderPayoutPanel } from '@/modules/finance';
 import { StaffOrderDetailScreen } from '@/modules/orders';
 
 export const metadata: Metadata = {
@@ -14,5 +15,5 @@ export default async function PedidoDetallePage({
 }) {
   const { id } = await params;
 
-  return <StaffOrderDetailScreen orderId={id} />;
+  return <StaffOrderDetailScreen orderId={id} PayoutPanel={OrderPayoutPanel} />;
 }

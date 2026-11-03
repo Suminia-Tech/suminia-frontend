@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Fragment, useState } from 'react';
+import { Fragment, useState, type ComponentType } from 'react';
 import { Check, ChevronLeft, MapPin, RotateCcw } from 'react-feather';
 import { toast } from 'react-toastify';
 
@@ -82,7 +82,7 @@ const pesos = (valor: number, moneda: string) =>
 
 /* El recorrido, con lo andado marcado. Un pedido muerto no lo dibuja: no se
    quedo a medio camino, se salio. */
-const Timeline = ({ order }: { order: Order }) => {
+const Timeline = ({ order, side }: { order: Order; side: OrderSide }) => {
   const posicion = TIMELINE_POSITION[order.status] ?? order.status;
   if (!ORDER_TIMELINE.includes(posicion)) return null;
 
@@ -122,24 +122,66 @@ const Timeline = ({ order }: { order: Order }) => {
           )}
         </Fragment>
       ))}
-      {/* El ultimo paso: cerrado. Para el comprador cuando pasan los dias de
-          reclamo; para Suminia y el proveedor, cuando se liquida. */}
-      <li className={order.closed ? 'is-done' : undefined}>
-        <span className='order-timeline-dot'>{order.closed && <Check size={12} />}</span>
-        <span>Cerrado</span>
-      </li>
+      {/* El comprador termina en cerrado: cuando lo cierra el, o cuando pasan
+          los dias de reclamo. Suminia y el proveedor siguen hasta el pago al
+          proveedor, que es lo que lo cierra de su lado: la liquidacion
+          generada y el comprobante de la transferencia. */}
+      {side === 'buyer' ? (
+        <TimelineStep done={order.closed} label='Cerrado' date={order.closed ? order.payableAt : null} />
+      ) : (
+        <>
+          <TimelineStep
+            done={order.payout !== null}
+            label='Liquidación generada'
+            date={order.payout?.createdAt ?? null}
+          />
+          <TimelineStep
+            done={order.closed}
+            label={side === 'supplier' ? 'Te pagamos' : 'Pagado al proveedor'}
+            date={order.payout?.paidAt ?? null}
+          />
+        </>
+      )}
     </ol>
   );
 };
 
+const TimelineStep = ({
+  done,
+  label,
+  date,
+}: {
+  done: boolean;
+  label: string;
+  date: string | null;
+}) => (
+  <li className={done ? 'is-done' : undefined}>
+    <span className='order-timeline-dot'>{done && <Check size={12} />}</span>
+    <span>
+      {label}
+      {done && date && <small className='font-light'>{formatDate(date)}</small>}
+    </span>
+  </li>
+);
+
+/* La liquidacion al proveedor vive en finanzas, y un modulo no importa otro:
+   la pagina la pasa ya armada y la ficha solo le dice de que pedido se trata. */
+export interface OrderPayoutPanelProps {
+  orderId: string;
+  supplierOrganizationId: string;
+  payout: Order['payout'];
+}
+
 interface OrderDetailScreenProps {
   orderId: string;
   side: OrderSide;
+  PayoutPanel?: ComponentType<OrderPayoutPanelProps>;
 }
 
 export const OrderDetailScreen = ({
   orderId,
   side,
+  PayoutPanel,
 }: OrderDetailScreenProps) => {
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const { data, isLoading, isError, error } = useGetOrderQuery(orderId, {
@@ -325,7 +367,7 @@ export const OrderDetailScreen = ({
           </div>
         )}
 
-        <Timeline order={order} />
+        <Timeline order={order} side={side} />
       </Panel>
 
       {/* Dos columnas: a la izquierda lo que se pidio, que es lo que mas ocupa;
@@ -575,6 +617,13 @@ export const OrderDetailScreen = ({
           suya a Suminia. El personal de Suminia, las dos. */}
       {side !== 'supplier' && <OrderInvoicePanel order={order} side={side} variant='suminia' />}
       {side !== 'buyer' && <OrderInvoicePanel order={order} side={side} variant='supplier' />}
+      {PayoutPanel && (
+        <PayoutPanel
+          orderId={order.id}
+          supplierOrganizationId={order.supplierOrganizationId}
+          payout={order.payout}
+        />
+      )}
 
       <Panel title='Dirección de entrega'>
       <div className='order-delivery'>

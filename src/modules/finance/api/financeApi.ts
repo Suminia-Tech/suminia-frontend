@@ -99,7 +99,9 @@ export const financeApi = baseApi.injectEndpoints({
       invalidatesTags: [
         { type: 'Payout', id: 'PAYABLE' },
         { type: 'Payout', id: 'LIST' },
-        { type: 'Order', id: 'LIST' },
+        /* Todos los pedidos, no solo la lista: una liquidacion cambia varios a
+           la vez, y la ficha de cada uno enseña su liquidacion. */
+        'Order',
         RESUMEN,
       ],
     }),
@@ -129,7 +131,9 @@ export const financeApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Payout', id },
         { type: 'Payout', id: 'LIST' },
-        { type: 'Order', id: 'LIST' },
+        /* Todos los pedidos, no solo la lista: una liquidacion cambia varios a
+           la vez, y la ficha de cada uno enseña su liquidacion. */
+        'Order',
         RESUMEN,
       ],
     }),

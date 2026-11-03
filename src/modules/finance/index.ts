@@ -10,3 +10,4 @@ export { SupplierCommissionPanel } from './ui/staff/SupplierCommissionPanel';
 export { BuyerCreditPanel } from './ui/staff/BuyerCreditPanel';
 export { PayoutDetailScreen } from './ui/common/PayoutDetailScreen';
 export { SupplierPayoutsScreen } from './ui/supplier/SupplierPayoutsScreen';
+export { OrderPayoutPanel } from './ui/staff/OrderPayoutPanel';
