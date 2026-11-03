@@ -33,8 +33,9 @@ export const CreateQuoteButton = () => {
       <div>
         <strong>¿Necesitas aprobar la compra antes de pedir?</strong>
         <small className='font-light'>
-          Descarga una cotización formal con estos precios. La conviertes en pedido cuando
-          la aprueben, mientras esté vigente.
+          Descarga una cotización formal con estos precios. Los productos pasan del carrito
+          a la cotización, y la conviertes en pedido cuando la aprueben, mientras esté
+          vigente.
         </small>
       </div>
       <button

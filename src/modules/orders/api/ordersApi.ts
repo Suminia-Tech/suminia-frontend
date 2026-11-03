@@ -230,7 +230,12 @@ export const ordersApi = baseApi.injectEndpoints({
 
     createQuote: builder.mutation<ApiResponse<Quote>, void>({
       query: () => ({ url: '/quotes', method: 'POST' }),
-      invalidatesTags: [{ type: 'Quote', id: 'LIST' }],
+      /* El backend vacia el carrito al cotizar: lo cotizado vive ahora en la
+         cotizacion, y de ella sale el pedido. */
+      invalidatesTags: [
+        { type: 'Quote', id: 'LIST' },
+        { type: 'Cart', id: 'MINE' },
+      ],
     }),
 
     getQuotes: builder.query<PaginatedResponse<QuoteSummary>, { page: number; limit: number }>({
