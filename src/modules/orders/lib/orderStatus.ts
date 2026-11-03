@@ -231,6 +231,31 @@ export const CLOSED_HINT: Record<'buyer' | 'supplier' | 'staff', string> = {
   staff: 'Entregado y liquidado al proveedor: el pedido quedó cerrado.',
 };
 
+/* Entregado y todavia abierto para Suminia y el proveedor: lo que falta es
+   pagarle al proveedor, y la frase dice en que punto va. Nulo para el
+   comprador, o si aun corren los dias de reclamo: ahi basta con "Recibido". */
+export const deliveredHint = (order: Order, side: 'buyer' | 'supplier' | 'staff'): string | null => {
+  if (side === 'buyer' || order.status !== 'DELIVERED' || order.closed) return null;
+  if (order.claims.some((claim) => claim.status === 'OPEN')) {
+    return 'En reclamo: no se le paga al proveedor hasta que Suminia lo resuelva.';
+  }
+  if (order.payout) {
+    return side === 'staff'
+      ? `Liquidación ${order.payout.code} generada: falta transferirle al proveedor y adjuntar el comprobante.`
+      : `Está en la liquidación ${order.payout.code}: Suminia te transfiere pronto.`;
+  }
+  if (order.payableAt && new Date(order.payableAt) <= new Date()) {
+    const porComprador = order.events.some((event) => event.type === 'RECEIVED');
+    const motivo = porComprador
+      ? 'El comprador lo cerró: llegó completo y en buenas condiciones.'
+      : 'Pasaron los días de reclamo.';
+    return side === 'staff'
+      ? `${motivo} Listo para liquidar al proveedor.`
+      : `${motivo} Entra en tu próxima liquidación.`;
+  }
+  return null;
+};
+
 /* El comprador lo ve cerrado por dos caminos: lo cerro el mismo, o se
    acabaron los dias de reclamo. La frase dice cual. */
 export const closedHint = (order: Order, side: 'buyer' | 'supplier' | 'staff'): string =>

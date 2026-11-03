@@ -21,6 +21,7 @@ import {
   buyerCanCancel,
   buyerCanConfirmDelivery,
   closedHint,
+  deliveredHint,
   displayStatus,
   ORDER_STATUS_HINT,
   ORDER_STATUS_HINT_SUPPLIER,
@@ -308,7 +309,8 @@ export const OrderDetailScreen = ({
         <p className='order-hint'>
           {order.closed
             ? closedHint(order, side)
-            : esperandoPago
+            : deliveredHint(order, side) ??
+              (esperandoPago
               ? order.paymentStatus === 'SUBMITTED'
                 ? side === 'buyer'
                   ? 'Estamos verificando tu pago.'
@@ -317,7 +319,7 @@ export const OrderDetailScreen = ({
                   ? 'Esperando tu pago.'
                   : 'Esperando el pago del comprador.'
               : (side === 'supplier' && ORDER_STATUS_HINT_SUPPLIER[order.status]) ||
-                ORDER_STATUS_HINT[order.status]}
+                ORDER_STATUS_HINT[order.status])}
         </p>
 
         {/* Mientras se espera al comprador, lo que hay en statusReason es la
@@ -612,11 +614,8 @@ export const OrderDetailScreen = ({
       {/* El reclamo arriba de todo: si hay uno abierto es lo que hay que
           atender, y al comprador es donde se le ofrece reclamar. */}
       <OrderClaimPanel order={order} side={side} />
-      <OrderPaymentPanel order={order} side={side} />
-      {/* Cada lado ve su factura: el comprador la de Suminia, el proveedor la
-          suya a Suminia. El personal de Suminia, las dos. */}
-      {side !== 'supplier' && <OrderInvoicePanel order={order} side={side} variant='suminia' />}
-      {side !== 'buyer' && <OrderInvoicePanel order={order} side={side} variant='supplier' />}
+      {/* Despues del reclamo, la liquidacion: cuando el pedido ya se entrego es
+          lo unico que le queda pendiente a Suminia. */}
       {PayoutPanel && (
         <PayoutPanel
           orderId={order.id}
@@ -624,6 +623,11 @@ export const OrderDetailScreen = ({
           payout={order.payout}
         />
       )}
+      <OrderPaymentPanel order={order} side={side} />
+      {/* Cada lado ve su factura: el comprador la de Suminia, el proveedor la
+          suya a Suminia. El personal de Suminia, las dos. */}
+      {side !== 'supplier' && <OrderInvoicePanel order={order} side={side} variant='suminia' />}
+      {side !== 'buyer' && <OrderInvoicePanel order={order} side={side} variant='supplier' />}
 
       <Panel title='Dirección de entrega'>
       <div className='order-delivery'>
