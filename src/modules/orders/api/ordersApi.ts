@@ -12,6 +12,7 @@ import type {
   AcceptAvailabilityRequest,
   AttachInvoiceRequest,
   ChangeOrderStatusRequest,
+  ClaimReason,
   ConvertQuoteRequest,
   CreditStatus,
   MonthlyBilling,
@@ -167,6 +168,26 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => dineroDe(id),
     }),
 
+    openClaim: builder.mutation<
+      ApiResponse<Order>,
+      { id: string; reason: ClaimReason; description: string }
+    >({
+      query: ({ id, ...body }) => ({ url: `/orders/${id}/claims`, method: 'POST', body }),
+      invalidatesTags: (_result, _error, { id }) => dineroDe(id),
+    }),
+
+    resolveClaim: builder.mutation<
+      ApiResponse<Order>,
+      { id: string; claimId: string; resolution: string }
+    >({
+      query: ({ id, claimId, resolution }) => ({
+        url: `/orders/${id}/claims/${claimId}/resolve`,
+        method: 'POST',
+        body: { resolution },
+      }),
+      invalidatesTags: (_result, _error, { id }) => dineroDe(id),
+    }),
+
     recordRefund: builder.mutation<ApiResponse<Order>, RecordRefundRequest>({
       query: ({ id, ...body }) => ({ url: `/orders/${id}/refund`, method: 'POST', body }),
       invalidatesTags: (_result, _error, { id }) => dineroDe(id),
@@ -250,6 +271,8 @@ export const {
   useReviewPaymentMutation,
   useAttachInvoiceMutation,
   useAttachSuminiaInvoiceMutation,
+  useOpenClaimMutation,
+  useResolveClaimMutation,
   useRecordRefundMutation,
   useGetOrderFileUrlMutation,
   useReorderMutation,

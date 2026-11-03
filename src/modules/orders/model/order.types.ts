@@ -54,8 +54,26 @@ export type OrderEventType =
   | 'INVOICE_ATTACHED'
   | 'SUMINIA_INVOICE_ATTACHED'
   | 'DELIVERED'
+  | 'CLAIM_OPENED'
+  | 'CLAIM_RESOLVED'
   | 'REFUNDED'
   | 'PAYOUT_PAID';
+
+export type ClaimReason = 'DEFECTIVE' | 'WRONG_PRODUCT' | 'MISSING_ITEMS' | 'DAMAGED' | 'OTHER';
+
+/* Un reclamo del comprador sobre lo entregado. Mientras este abierto, el
+   pedido no se cierra ni se le liquida al proveedor. */
+export interface OrderClaim {
+  id: string;
+  reason: ClaimReason;
+  description: string;
+  status: 'OPEN' | 'RESOLVED';
+  createdByName: string;
+  resolution: string | null;
+  resolvedByName: string | null;
+  resolvedAt: string | null;
+  createdAt: string;
+}
 
 /* Un paso del historial: quien hizo que y cuando. */
 export interface OrderEvent {
@@ -150,6 +168,9 @@ export interface Order {
      despues de la entrega; Suminia y el proveedor, cuando se le paga al
      proveedor. */
   closed: boolean;
+  /** Hasta cuando puede reclamar el comprador. Null si no esta entregado. */
+  claimableUntil: string | null;
+  claims: OrderClaim[];
   /** La liquidacion en que se le pago al proveedor. Null para el comprador. */
   payout: { id: string; code: string; status: PayoutStatus } | null;
   refund: {

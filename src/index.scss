@@ -6108,3 +6108,19 @@ select.form-control,
 .catalog-table td.is-nowrap {
   white-space: nowrap;
 }
+
+/* La invitacion a reclamar, en el panel de reclamos del comprador. */
+.order-claim-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+
+  p {
+    font-size: 13.5px;
+  }
+}
+
+.document-slots + .order-claim-cta {
+  margin-top: 16px;
+}

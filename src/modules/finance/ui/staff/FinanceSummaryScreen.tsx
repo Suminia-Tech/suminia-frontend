@@ -41,6 +41,10 @@ export const FinanceSummaryScreen = () => {
       texto: `${plural(pending.toVerify.count, 'comprobante', 'comprobantes')} por verificar (${pesos(pending.toVerify.amount)}).`,
       href: '/admin/finance/payments',
     },
+    pending.openClaims > 0 && {
+      texto: `${plural(pending.openClaims, 'reclamo abierto', 'reclamos abiertos')}: el pedido no se cierra ni se liquida hasta resolverlo.`,
+      href: '/admin/finance/claims',
+    },
     pending.toInvoiceBuyers > 0 && {
       texto: `${plural(pending.toInvoiceBuyers, 'pedido cobrado', 'pedidos cobrados')} sin la factura de Suminia al comprador.`,
       href: '/admin/finance/to-invoice',

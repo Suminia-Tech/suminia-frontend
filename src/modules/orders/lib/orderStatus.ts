@@ -1,4 +1,5 @@
 import type {
+  ClaimReason,
   Order,
   OrderEventType,
   OrderStatus,
@@ -195,6 +196,8 @@ export const ORDER_EVENT_LABEL: Record<OrderEventType, string> = {
   INVOICE_ATTACHED: 'El proveedor adjuntó su factura a Suminia',
   SUMINIA_INVOICE_ATTACHED: 'Suminia emitió la factura al comprador',
   DELIVERED: 'Entregado',
+  CLAIM_OPENED: 'El comprador abrió un reclamo',
+  CLAIM_RESOLVED: 'Suminia resolvió el reclamo',
   REFUNDED: 'Pago devuelto al comprador',
   PAYOUT_PAID: 'Liquidado al proveedor',
 };
@@ -204,9 +207,11 @@ export const ORDER_EVENT_LABEL: Record<OrderEventType, string> = {
    Suminia y el proveedor al pagarse la liquidacion—: el backend lo calcula y
    manda `closed`. */
 export const displayStatus = (
-  order: Pick<Order, 'status' | 'closed'>,
+  order: Pick<Order, 'status' | 'closed' | 'claims'>,
 ): { label: string; className: string } =>
-  order.closed
+  order.claims.some((claim) => claim.status === 'OPEN')
+    ? { label: 'En reclamo', className: 'bg-danger' }
+    : order.closed
     ? { label: 'Cerrado', className: 'bg-secondary' }
     : { label: ORDER_STATUS_LABEL[order.status], className: ORDER_STATUS_CLASS[order.status] };
 
@@ -215,4 +220,12 @@ export const CLOSED_HINT: Record<'buyer' | 'supplier' | 'staff', string> = {
   buyer: 'Recibido. Pasaron los días de reclamo: el pedido quedó cerrado.',
   supplier: 'Entregado y liquidado: el pedido quedó cerrado.',
   staff: 'Entregado y liquidado al proveedor: el pedido quedó cerrado.',
+};
+
+export const CLAIM_REASON_LABEL: Record<ClaimReason, string> = {
+  DEFECTIVE: 'Producto defectuoso',
+  WRONG_PRODUCT: 'Producto incorrecto',
+  MISSING_ITEMS: 'Faltaron productos',
+  DAMAGED: 'Llegó en mal estado',
+  OTHER: 'Otro problema',
 };

@@ -84,6 +84,8 @@ export interface FinanceSummary {
     missingInvoices: number;
     /** Cobrados (o a credito) a los que Suminia no les ha facturado. */
     toInvoiceBuyers: number;
+    /** Reclamos sin resolver: frenan el cierre y la liquidacion. */
+    openClaims: number;
     credit: { buyers: number; outstanding: number; overdue: number; overdueOrders: number };
   };
   history: FinanceMonth[];

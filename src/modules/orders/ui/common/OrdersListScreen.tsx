@@ -85,7 +85,7 @@ const PAGE_SIZE = 10;
 /* Las bandejas del dinero del superadmin: la misma lista con un filtro fijo y
    su propio titulo. Ahi no hay chips de estado ni filtros de analisis: la
    bandeja ya dice que se mira. */
-export type OrdersQueue = 'payments' | 'toInvoice' | 'refunds' | 'invoices' | 'overdue';
+export type OrdersQueue = 'payments' | 'toInvoice' | 'claims' | 'refunds' | 'invoices' | 'overdue';
 
 const QUEUES: Record<
   OrdersQueue,
@@ -97,6 +97,13 @@ const QUEUES: Record<
       'Comprobantes que subieron los compradores. Verifícalos contra el banco: el proveedor despacha cuando lo apruebes.',
     vacio: 'No hay comprobantes por verificar.',
     filter: { paymentStatus: 'SUBMITTED' },
+  },
+  claims: {
+    titulo: 'Reclamos',
+    descripcion:
+      'Reclamos abiertos de compradores. Mientras no se resuelvan, el pedido no se cierra ni se le liquida al proveedor.',
+    vacio: 'No hay reclamos abiertos.',
+    filter: { claim: 'open' },
   },
   refunds: {
     titulo: 'Devoluciones',

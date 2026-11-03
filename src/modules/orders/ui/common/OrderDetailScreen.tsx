@@ -35,6 +35,7 @@ import {
 } from '../../lib/orderStatus';
 import type { Order, OrderStatus } from '../../model/order.types';
 import BuyerAvailabilityResponse from './BuyerAvailabilityResponse';
+import OrderClaimPanel from './OrderClaimPanel';
 import OrderHistoryPanel from './OrderHistoryPanel';
 import OrderInvoicePanel from './OrderInvoicePanel';
 import OrderPaymentPanel from './OrderPaymentPanel';
@@ -535,6 +536,9 @@ export const OrderDetailScreen = ({
       </Panel>
       )}
 
+      {/* El reclamo arriba de todo: si hay uno abierto es lo que hay que
+          atender, y al comprador es donde se le ofrece reclamar. */}
+      <OrderClaimPanel order={order} side={side} />
       <OrderPaymentPanel order={order} side={side} />
       {/* Cada lado ve su factura: el comprador la de Suminia, el proveedor la
           suya a Suminia. El personal de Suminia, las dos. */}
