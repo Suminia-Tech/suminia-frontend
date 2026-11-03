@@ -123,26 +123,21 @@ const Timeline = ({ order, side }: { order: Order; side: OrderSide }) => {
           )}
         </Fragment>
       ))}
-      {/* El comprador termina en cerrado: cuando lo cierra el, o cuando pasan
-          los dias de reclamo. Suminia y el proveedor siguen hasta el pago al
-          proveedor, que es lo que lo cierra de su lado: la liquidacion
-          generada y el comprobante de la transferencia. */}
-      {side === 'buyer' ? (
-        <TimelineStep done={order.closed} label='Cerrado' date={order.closed ? order.payableAt : null} />
-      ) : (
-        <>
-          <TimelineStep
-            done={order.payout !== null}
-            label='Liquidación generada'
-            date={order.payout?.createdAt ?? null}
-          />
-          <TimelineStep
-            done={order.closed}
-            label={side === 'supplier' ? 'Te pagamos' : 'Pagado al proveedor'}
-            date={order.payout?.paidAt ?? null}
-          />
-        </>
+      {/* Para Suminia y el proveedor, antes de cerrar va el pago al
+          proveedor: es lo que lo cierra de su lado. El comprador cierra cuando
+          lo da por bueno o cuando pasan los dias de reclamo. */}
+      {side !== 'buyer' && (
+        <TimelineStep
+          done={order.payout?.status === 'PAID'}
+          label={side === 'supplier' ? 'Pago recibido' : 'Pagado al proveedor'}
+          date={order.payout?.paidAt ?? null}
+        />
       )}
+      <TimelineStep
+        done={order.closed}
+        label='Cerrado'
+        date={side === 'buyer' ? order.payableAt : (order.payout?.paidAt ?? null)}
+      />
     </ol>
   );
 };
