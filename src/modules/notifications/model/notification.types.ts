@@ -22,7 +22,9 @@ export interface AppNotification {
 
 export interface NotificationPage {
   items: AppNotification[];
-  /* Las no leidas de todas, no solo de las que vienen: el numero de la
-     campana. */
+  /* Las no leidas de todas, no solo de las que vienen. */
   unreadCount: number;
+  /* Las que llegaron desde que abrio la campana: el numero que lleva encima.
+     Abrirla lo pone en cero; cada aviso sigue resaltado hasta pulsarlo. */
+  unseenCount: number;
 }

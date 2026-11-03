@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Check, ChevronLeft, MapPin, RotateCcw } from 'react-feather';
 import { toast } from 'react-toastify';
 
@@ -97,17 +97,30 @@ const Timeline = ({ order }: { order: Order }) => {
   return (
     <ol className='order-timeline'>
       {ORDER_TIMELINE.map((paso, indice) => (
-        <li key={paso} className={indice <= actual ? 'is-done' : undefined}>
-          <span className='order-timeline-dot'>
-            {indice <= actual && <Check size={12} />}
-          </span>
-          <span>
-            {ORDER_STATUS_LABEL[paso]}
-            {fechas[paso] && (
-              <small className='font-light'>{formatDate(fechas[paso])}</small>
-            )}
-          </span>
-        </li>
+        <Fragment key={paso}>
+          <li className={indice <= actual ? 'is-done' : undefined}>
+            <span className='order-timeline-dot'>
+              {indice <= actual && <Check size={12} />}
+            </span>
+            <span>
+              {ORDER_STATUS_LABEL[paso]}
+              {fechas[paso] && (
+                <small className='font-light'>{formatDate(fechas[paso])}</small>
+              )}
+            </span>
+          </li>
+          {/* Por transferencia, el pago verificado va entre el pedido y la
+              confirmacion: es lo que hace que el proveedor lo reciba. */}
+          {paso === 'PLACED' && order.paymentMethod === 'TRANSFER' && (
+            <li className={order.paidAt ? 'is-done' : undefined}>
+              <span className='order-timeline-dot'>{order.paidAt && <Check size={12} />}</span>
+              <span>
+                Pago verificado
+                {order.paidAt && <small className='font-light'>{formatDate(order.paidAt)}</small>}
+              </span>
+            </li>
+          )}
+        </Fragment>
       ))}
       {/* El ultimo paso: cerrado. Para el comprador cuando pasan los dias de
           reclamo; para Suminia y el proveedor, cuando se liquida. */}
@@ -154,6 +167,12 @@ export const OrderDetailScreen = ({
   }
 
   const order = data.data;
+  /* Por transferencia, hasta que se verifica el pago lo que se espera es el
+     pago, no al proveedor: el todavia no ve el pedido. */
+  const esperandoPago =
+    order.status === 'PLACED' &&
+    order.paymentMethod === 'TRANSFER' &&
+    (order.paymentStatus === 'PENDING' || order.paymentStatus === 'SUBMITTED');
 
   /* Si no hay ninguna accion posible, el panel no aparece: un panel de botones
      vacio es peor que no decir nada.
@@ -247,8 +266,16 @@ export const OrderDetailScreen = ({
         <p className='order-hint'>
           {order.closed
             ? CLOSED_HINT[side]
-            : (side === 'supplier' && ORDER_STATUS_HINT_SUPPLIER[order.status]) ||
-              ORDER_STATUS_HINT[order.status]}
+            : esperandoPago
+              ? order.paymentStatus === 'SUBMITTED'
+                ? side === 'buyer'
+                  ? 'Estamos verificando tu pago.'
+                  : 'Pago por verificar.'
+                : side === 'buyer'
+                  ? 'Esperando tu pago.'
+                  : 'Esperando el pago del comprador.'
+              : (side === 'supplier' && ORDER_STATUS_HINT_SUPPLIER[order.status]) ||
+                ORDER_STATUS_HINT[order.status]}
         </p>
 
         {/* Mientras se espera al comprador, lo que hay en statusReason es la
@@ -275,13 +302,13 @@ export const OrderDetailScreen = ({
         )}
         {order.quote && side !== 'supplier' && (
           <div className='alert alert-info'>
-            Salió de la cotización{' '}
+            Pedido generado a partir de la cotización{' '}
             {side === 'buyer' ? (
               <Link href={`/buyer/account/quotes/${order.quote.id}`}>{order.quote.code}</Link>
             ) : (
               order.quote.code
             )}
-            , a sus precios.
+            , con los precios cotizados.
           </div>
         )}
         {order.backorders.length > 0 && (
@@ -418,7 +445,7 @@ export const OrderDetailScreen = ({
             disabled={isSaving}
             onClick={() => mover('SHIPPED', 'Pedido despachado')}
           >
-            Ya lo despaché
+            Despachar
           </button>
         )}
 

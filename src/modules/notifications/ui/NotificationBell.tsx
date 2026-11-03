@@ -11,14 +11,16 @@ import {
   useGetNotificationsQuery,
   useMarkAllNotificationsReadMutation,
   useMarkNotificationReadMutation,
+  useMarkNotificationsSeenMutation,
 } from '../api/notificationsApi';
 import { timeAgo } from '../lib/relativeTime';
 import type { AppNotification } from '../model/notification.types';
 
-/* Cada minuto, y solo con la pestaña a la vista: un aviso de documento no se
-   espera al segundo, y una pestaña olvidada no tiene por que seguir
-   preguntando. */
-const POLLING_MS = 60_000;
+/* Cada 20 segundos con la pestaña a la vista, y otra vez al volver a ella:
+   un pedido nuevo se espera casi enseguida —quien prueba con comprador y
+   proveedor en dos ventanas lo nota—, y una pestaña olvidada no tiene por que
+   seguir preguntando. */
+const POLLING_MS = 20_000;
 
 interface NotificationBellProps {
   /* "panel" va en la barra superior del proveedor y del personal interno;
@@ -40,7 +42,9 @@ export const NotificationBell = ({ variant }: NotificationBellProps) => {
     skip,
     pollingInterval: POLLING_MS,
     skipPollingIfUnfocused: true,
+    refetchOnFocus: true,
   });
+  const [markSeen] = useMarkNotificationsSeenMutation();
   const [markRead] = useMarkNotificationReadMutation();
   const [markAllRead] = useMarkAllNotificationsReadMutation();
 
@@ -48,6 +52,9 @@ export const NotificationBell = ({ variant }: NotificationBellProps) => {
 
   const items = data?.data.items ?? [];
   const unread = data?.data.unreadCount ?? 0;
+  /* El numero de la campana son las que no ha visto: abrirla lo pone en
+     cero, como en cualquier red social. Las no leidas siguen resaltadas. */
+  const unseen = data?.data.unseenCount ?? 0;
 
   const select = (notification: AppNotification) => {
     setOpen(false);
@@ -69,7 +76,10 @@ export const NotificationBell = ({ variant }: NotificationBellProps) => {
       tag={variant === 'store' ? 'li' : 'div'}
       className={`notification-bell is-${variant}`}
       isOpen={open}
-      toggle={() => setOpen(!open)}
+      toggle={() => {
+        if (!open && unseen > 0) markSeen();
+        setOpen(!open);
+      }}
     >
       <DropdownToggle
         tag='button'
@@ -77,15 +87,15 @@ export const NotificationBell = ({ variant }: NotificationBellProps) => {
         className={
           variant === 'store' ? 'btn btn-solid-default btn-spacing' : 'notification-bell-toggle'
         }
-        aria-label={unread === 0 ? 'Notificaciones' : `Notificaciones, ${unread} sin leer`}
+        aria-label={unseen === 0 ? 'Notificaciones' : `Notificaciones, ${unseen} nuevas`}
       >
         <Bell size={variant === 'store' ? undefined : 19} />
       </DropdownToggle>
       {/* Fuera del boton: `.btn` recorta con `overflow: hidden`, como en el
           carrito. */}
-      {unread > 0 && (
+      {unseen > 0 && (
         <span className='notification-badge' aria-hidden='true'>
-          {unread > 99 ? '99+' : unread}
+          {unseen > 99 ? '99+' : unseen}
         </span>
       )}
 

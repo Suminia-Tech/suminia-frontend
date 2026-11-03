@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query';
 
 import { authReducer } from '@/modules/auth';
 import { organizationsReducer } from '@/modules/organizations';
@@ -38,6 +39,10 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
 });
+
+/* Para que las consultas que lo piden —la campana— se repitan al volver a la
+   pestaña o al recuperar la conexion. Sin esto `refetchOnFocus` no hace nada. */
+setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

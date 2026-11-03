@@ -173,6 +173,8 @@ export interface Order {
   claims: OrderClaim[];
   /** La liquidacion en que se le pago al proveedor. Null para el comprador. */
   payout: { id: string; code: string; status: PayoutStatus } | null;
+  /** Lo que hay que devolver de un pedido pagado atendido en parte. */
+  refundAmount: number | null;
   refund: {
     at: string;
     storageKey: string | null;

@@ -20,6 +20,7 @@ import { FILE_ACCEPT, useOrderFiles } from '../../hooks/useOrderFiles';
 import {
   buyerCanPay,
   needsRefund,
+  refundDue,
   PAYMENT_METHOD_LABEL,
   paymentSummary,
   supplierWaitsPayment,
@@ -164,26 +165,26 @@ export const OrderPaymentPanel = ({ order, side }: OrderPaymentPanelProps) => {
 const PaymentHint = ({ order, side }: OrderPaymentPanelProps) => {
   const texto = (() => {
     if (order.paymentStatus === 'REFUNDED') return null;
-    if (['CANCELLED', 'REJECTED'].includes(order.status)) {
-      return order.paymentStatus === 'PAID'
-        ? side === 'buyer'
-          ? 'El pedido se canceló después de pagado. Suminia te devuelve la plata a tu cuenta.'
-          : side === 'staff'
-            ? 'El pedido se canceló después de pagado: hay que devolverle la plata al comprador.'
-            : null
-        : null;
+    if (needsRefund(order)) {
+      const monto = pesos(refundDue(order), order.currency);
+      return side === 'buyer'
+        ? `Suminia te devuelve ${monto} a tu cuenta: lo que el proveedor no pudo atender.`
+        : side === 'staff'
+          ? `Hay que devolverle ${monto} al comprador.`
+          : null;
     }
+    if (['CANCELLED', 'REJECTED'].includes(order.status)) return null;
     if (order.paymentStatus === 'PAID') {
-      return side === 'supplier' && order.status === 'CONFIRMED'
-        ? 'Suminia verificó el pago. Ya puedes despacharlo con remisión; la factura va a nombre de Suminia.'
+      return side === 'supplier' && (order.status === 'PLACED' || order.status === 'CONFIRMED')
+        ? 'Pagado: Suminia ya verificó el pago. Despáchalo con remisión; la factura va a nombre de Suminia.'
         : null;
     }
     if (order.paymentStatus === 'SUBMITTED') {
       return side === 'buyer'
-        ? 'Recibimos tu comprobante. Lo estamos verificando y te avisamos en cuanto quede.'
+        ? `Recibimos tu comprobante. En cuanto lo verifiquemos, le enviamos el pedido a ${order.supplierOrganizationName}.`
         : side === 'supplier'
-          ? 'El comprador envió su comprobante. Te avisamos en cuanto Suminia lo verifique para que despaches.'
-          : 'Verifica el comprobante contra el banco antes de aprobarlo.';
+          ? null
+          : 'Verifica el comprobante contra el banco: al aprobarlo, el proveedor recibe el pedido.';
     }
     if (order.paymentMethod === 'CREDIT') {
       if (side === 'supplier') return 'Va a crédito con Suminia: despáchalo sin esperar el pago.';
@@ -191,16 +192,11 @@ const PaymentHint = ({ order, side }: OrderPaymentPanelProps) => {
         ? `Va a crédito: el pago vence el ${formatDate(order.paymentDueAt)}.`
         : 'Va a crédito: el plazo para pagar empieza a contar con la entrega.';
     }
-    if (order.status === 'PLACED' || order.status === 'AWAITING_BUYER') {
+    if (order.status === 'PLACED' || supplierWaitsPayment(order)) {
       return side === 'buyer'
-        ? 'Pagas por transferencia cuando el proveedor confirme el pedido: si no puede atenderlo, no hay nada que devolverte.'
-        : null;
-    }
-    if (supplierWaitsPayment(order)) {
-      return side === 'supplier'
-        ? 'Esperando el pago del comprador. No lo despaches todavía: te avisamos cuando Suminia lo verifique.'
+        ? `Paga ahora: ${order.supplierOrganizationName} recibe el pedido en cuanto verifiquemos tu pago. Si no lo recibimos a tiempo, se cancela.`
         : side === 'staff'
-          ? 'Esperando el comprobante del comprador. Si vence el plazo, el pedido se cancela solo.'
+          ? 'Esperando el comprobante del comprador. El proveedor todavía no ve el pedido; si vence el plazo, se cancela solo.'
           : null;
     }
     return null;
@@ -528,7 +524,7 @@ const RefundForm = ({ order, files }: { order: Order; files: Files }) => {
     <div className='order-payment-form'>
       <h3 className='order-subhead'>Registrar la devolución</h3>
       <p className='font-light order-payment-hint'>
-        Transfiere {pesos(order.total, order.currency)} al comprador y sube el comprobante.
+        Transfiere {pesos(refundDue(order), order.currency)} al comprador y sube el comprobante.
       </p>
       <label className='form-label' htmlFor='devolucion-nota'>
         Nota (opcional)

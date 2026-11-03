@@ -103,15 +103,15 @@ export const ORDER_TIMELINE: OrderStatus[] = [
 /* ------------------------------------------------------------------------
    El dinero del pedido
 
-   Por transferencia: se paga cuando el proveedor confirma —asi un rechazo no
-   deja nada que devolver— y el proveedor no despacha hasta que Suminia
-   verifica el pago. A credito: se despacha sin pago y se paga despues de la
-   entrega. Las mismas reglas que el backend.
+   Por transferencia: se paga apenas se hace el pedido, y el proveedor no lo
+   ve hasta que Suminia verifica el pago; si despues no lo puede atender,
+   Suminia devuelve la plata. A credito: el proveedor lo ve de una vez, lo
+   despacha y se paga despues de la entrega. Las mismas reglas que el backend.
    ------------------------------------------------------------------------ */
 
 type MoneyView = Pick<
   Order,
-  'status' | 'paymentStatus' | 'paymentMethod' | 'invoice' | 'paymentDueAt'
+  'status' | 'paymentStatus' | 'paymentMethod' | 'invoice' | 'paymentDueAt' | 'refundAmount' | 'refund'
 >;
 
 const MUERTO: OrderStatus[] = ['CANCELLED', 'REJECTED'];
@@ -129,11 +129,10 @@ export const paymentSummary = (
   side: 'buyer' | 'supplier' | 'staff',
 ): { label: string; tone: 'success' | 'neutral' | 'danger' | 'muted' } | null => {
   if (order.paymentStatus === 'REFUNDED') return { label: 'Pago devuelto', tone: 'muted' };
-  if (MUERTO.includes(order.status)) {
-    return order.paymentStatus === 'PAID'
-      ? { label: side === 'buyer' ? 'Te devolvemos el pago' : 'Por devolver', tone: 'danger' }
-      : null;
+  if (needsRefund(order)) {
+    return { label: side === 'buyer' ? 'Te devolvemos plata' : 'Por devolver', tone: 'danger' };
   }
+  if (MUERTO.includes(order.status)) return null;
   if (order.paymentStatus === 'PAID') return { label: 'Pagado', tone: 'success' };
   if (order.paymentStatus === 'SUBMITTED') {
     return { label: 'Pago en verificación', tone: 'neutral' };
@@ -145,7 +144,7 @@ export const paymentSummary = (
       ? { label: 'Crédito vencido', tone: 'danger' }
       : { label: 'A crédito', tone: 'muted' };
   }
-  if (order.status === 'CONFIRMED') {
+  if (order.status === 'PLACED' || order.status === 'CONFIRMED') {
     return { label: side === 'buyer' ? 'Por pagar' : 'Esperando el pago', tone: 'neutral' };
   }
   return null;
@@ -161,8 +160,10 @@ export const TONE_PILL: Record<'success' | 'neutral' | 'danger' | 'muted', strin
 /** El comprador puede subir su comprobante. */
 export const buyerCanPay = (order: MoneyView): boolean => {
   if (MUERTO.includes(order.status) || order.paymentStatus !== 'PENDING') return false;
+  /* CONFIRMED por transferencia queda por los pedidos de antes del cambio,
+     que se pagaban al confirmar. */
   return order.paymentMethod === 'TRANSFER'
-    ? order.status === 'CONFIRMED'
+    ? order.status === 'PLACED' || order.status === 'CONFIRMED'
     : ['CONFIRMED', 'SHIPPED', 'DELIVERED'].includes(order.status);
 };
 
@@ -176,9 +177,16 @@ export const supplierWaitsPayment = (order: MoneyView): boolean =>
 export const supplierCanInvoice = (order: MoneyView): boolean =>
   ['CONFIRMED', 'SHIPPED', 'DELIVERED'].includes(order.status);
 
-/** Un pedido pagado que se cayo: Suminia le devuelve la plata al comprador. */
-export const needsRefund = (order: MoneyView): boolean =>
-  order.paymentStatus === 'PAID' && MUERTO.includes(order.status);
+/* Hay que devolverle plata al comprador: el pedido pagado se cayo entero, o
+   el proveedor solo atendio una parte. */
+export const needsRefund = (order: Pick<Order, 'status' | 'paymentStatus' | 'refundAmount' | 'refund'>): boolean =>
+  order.paymentStatus === 'PAID' &&
+  !order.refund &&
+  (order.refundAmount !== null ? order.refundAmount > 0 : MUERTO.includes(order.status));
+
+/** Cuanto se devuelve. */
+export const refundDue = (order: Pick<Order, 'status' | 'total' | 'refundAmount'>): number =>
+  order.refundAmount ?? (MUERTO.includes(order.status) ? order.total : 0);
 
 /* Como se cuenta cada paso del historial. */
 export const ORDER_EVENT_LABEL: Record<OrderEventType, string> = {

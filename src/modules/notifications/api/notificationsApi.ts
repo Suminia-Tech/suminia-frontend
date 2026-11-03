@@ -17,6 +17,12 @@ export const notificationsApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Notification', id: 'LIST' }],
     }),
 
+    /* Abrir la campana: el contador vuelve a cero. */
+    markNotificationsSeen: builder.mutation<ApiResponse<null>, void>({
+      query: () => ({ url: '/notifications/seen', method: 'PATCH' }),
+      invalidatesTags: [{ type: 'Notification', id: 'LIST' }],
+    }),
+
     markAllNotificationsRead: builder.mutation<ApiResponse<null>, void>({
       query: () => ({ url: '/notifications/read-all', method: 'PATCH' }),
       invalidatesTags: [{ type: 'Notification', id: 'LIST' }],
@@ -28,4 +34,5 @@ export const {
   useGetNotificationsQuery,
   useMarkNotificationReadMutation,
   useMarkAllNotificationsReadMutation,
+  useMarkNotificationsSeenMutation,
 } = notificationsApi;

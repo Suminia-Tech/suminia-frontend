@@ -36,7 +36,7 @@ export const PaymentMethodPicker = ({ value, onChange, total }: PaymentMethodPic
   if (!credito?.enabled) {
     return (
       <p className='font-light'>
-        Pagas por transferencia a Suminia cuando el proveedor confirme el pedido.
+        Pagas por transferencia a Suminia al hacer el pedido. El proveedor lo recibe en cuanto verifiquemos tu pago.
       </p>
     );
   }
@@ -61,7 +61,7 @@ export const PaymentMethodPicker = ({ value, onChange, total }: PaymentMethodPic
           <span>
             <strong>Transferencia</strong>
             <small className='font-light'>
-              Pagas a Suminia cuando el proveedor confirme, antes del despacho.
+              Pagas a Suminia ahora; el proveedor lo recibe cuando verifiquemos el pago.
             </small>
           </span>
         </label>

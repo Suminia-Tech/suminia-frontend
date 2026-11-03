@@ -141,9 +141,11 @@ export const StaffOrderFiltersPanel = ({
               onChange={(event) => set('clientType', event.target.value)}
             >
               <option value=''>Tipo de cliente</option>
-              {options?.clientTypes.map((type) => (
+              {/* Todos los tipos de comprador, y no solo los que ya tienen
+                  pedidos: con pocos datos el desplegable salia vacio. */}
+              {Object.entries(CLIENT_TYPE_LABEL).map(([type, label]) => (
                 <option key={type} value={type}>
-                  {CLIENT_TYPE_LABEL[type] ?? type}
+                  {label}
                 </option>
               ))}
             </select>
