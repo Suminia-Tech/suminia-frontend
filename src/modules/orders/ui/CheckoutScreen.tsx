@@ -75,7 +75,7 @@ export const CheckoutScreen = ({
 
   return (
     <>
-      <LoadingOverlay isOpen={isLoading} />
+      <LoadingOverlay isOpen={isLoading} variant='detail' />
 
       <div className='checkout-layout'>
         <div>
@@ -84,6 +84,20 @@ export const CheckoutScreen = ({
           </div>
           <LocationPicker value={locationId} onChange={setLocationId} />
 
+          {/* Las indicaciones van con la direccion: son de esta entrega. */}
+          <label className='form-label mt-3' htmlFor='indicaciones-entrega'>
+            Indicaciones para la entrega <span className='font-light'>(opcional)</span>
+          </label>
+          <textarea
+            id='indicaciones-entrega'
+            className='form-control'
+            rows={2}
+            maxLength={1000}
+            placeholder='Piso, consultorio o área que recibe, horario, número de orden de compra...'
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+          />
+
           <div className='box-head mt-4'>
             <h3>¿Cómo pagas?</h3>
           </div>
@@ -91,18 +105,6 @@ export const CheckoutScreen = ({
               el backend lo dice al confirmar, en el recuadro de abajo. */}
           <PaymentMethodPicker value={paymentMethod} onChange={setPaymentMethod} total={null} />
 
-          <div className='box-head mt-4'>
-            <h3>¿Algo que el proveedor deba saber?</h3>
-          </div>
-          <textarea
-            className='form-control'
-            rows={3}
-            maxLength={1000}
-            placeholder='Número de orden de compra, urgencia, instrucciones de entrega...'
-            value={notes}
-            onChange={(event) => setNotes(event.target.value)}
-          />
-          <small className='font-light'>Opcional.</small>
         </div>
 
         <aside className='checkout-side'>

@@ -184,7 +184,7 @@ export const CartScreen = ({ extra }: CartScreenProps = {}) => {
       <div className='cart-empty'>
         <p className='font-light'>Tu carrito está vacío.</p>
         <Link href='/catalog' className='btn btn-primary'>
-          Ir al catálogo
+          Ver productos
         </Link>
       </div>
     );

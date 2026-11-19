@@ -2,7 +2,8 @@
 
 import { X } from 'react-feather';
 
-import { Panel } from '@/shared/ui';
+import { ZONE_LABEL, ZONES, type Zone } from '@/shared/lib/zones';
+import { CitySelect, DepartmentSelect, Panel } from '@/shared/ui';
 
 import {
   CLIENT_TYPE_LABEL,
@@ -38,8 +39,9 @@ export const StaffOrderFiltersPanel = ({
   onChange,
 }: StaffOrderFiltersPanelProps) => {
   const options = metrics?.options;
+  /* Quitar el departamento se lleva la ciudad: sola no dice de donde es. */
   const set = (key: keyof StaffOrderFilters, value: string) =>
-    onChange({ ...filters, [key]: value });
+    onChange({ ...filters, [key]: value, ...(key === 'department' && !value ? { city: '' } : {}) });
 
   const categoryName = (id: string) =>
     options?.categories.find((category) => category.id === id)?.name ?? 'Categoría';
@@ -51,8 +53,17 @@ export const StaffOrderFiltersPanel = ({
       label: 'Categoría',
       value: categoryName(filters.categoryId),
     },
+    filters.department && {
+      key: 'department',
+      label: 'Departamento',
+      value: filters.department,
+    },
     filters.city && { key: 'city', label: 'Ciudad', value: filters.city },
-    filters.department && { key: 'department', label: 'Zona', value: filters.department },
+    filters.zone && {
+      key: 'zone',
+      label: 'Zona',
+      value: ZONE_LABEL[filters.zone as Zone] ?? filters.zone,
+    },
     filters.clientType && {
       key: 'clientType',
       label: 'Cliente',
@@ -105,31 +116,41 @@ export const StaffOrderFiltersPanel = ({
               ))}
             </select>
 
-            <select
+            {/* Departamento y despues ciudad, de la lista completa del DANE y
+                no solo de donde ya hubo pedidos. La ciudad aparece al elegir
+                el departamento: hay nombres repetidos entre departamentos, y
+                sin el no se sabe de cual se habla. */}
+            <DepartmentSelect
               className='filter-select'
-              aria-label='Ciudad de entrega'
-              value={filters.city}
-              onChange={(event) => set('city', event.target.value)}
-            >
-              <option value=''>Ciudad</option>
-              {options?.cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
+              aria-label='Departamento de entrega'
+              placeholder='Departamento'
+              value={filters.department}
+              onChange={(department) => onChange({ ...filters, department, city: '' })}
+            />
 
-            {/* La zona es el departamento de la entrega. */}
+            {filters.department && (
+              <CitySelect
+                className='filter-select'
+                aria-label='Ciudad de entrega'
+                placeholder='Ciudad'
+                department={filters.department}
+                value={filters.city}
+                onChange={(city) => set('city', city)}
+              />
+            )}
+
+            {/* La zona de la sede dentro de su ciudad. La elige el comprador en
+                la sede, en las ciudades grandes. */}
             <select
               className='filter-select'
               aria-label='Zona de entrega'
-              value={filters.department}
-              onChange={(event) => set('department', event.target.value)}
+              value={filters.zone}
+              onChange={(event) => set('zone', event.target.value)}
             >
               <option value=''>Zona</option>
-              {options?.departments.map((department) => (
-                <option key={department} value={department}>
-                  {department}
+              {ZONES.map((zone) => (
+                <option key={zone} value={zone}>
+                  {ZONE_LABEL[zone]}
                 </option>
               ))}
             </select>

@@ -117,7 +117,7 @@ export const AdminSummary = () => {
 
       <Panel
         title='Pendiente de revisión'
-        description='Una empresa sin aprobar no puede operar, y un producto sin revisar no llega al catálogo.'
+        description='Una empresa sin aprobar no puede operar, y un producto sin revisar no se publica.'
       >
         {pendientes.length > 0 ? (
           <ul className='summary-todo'>

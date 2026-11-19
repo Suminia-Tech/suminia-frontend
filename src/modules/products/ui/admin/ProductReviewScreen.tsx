@@ -13,6 +13,7 @@ import { useAppSelector } from '@/store/hooks';
 
 import { useGetProductQuery, useReviewProductMutation } from '../../api/productsApi';
 import { useOpenDocument } from '../../hooks/useOpenDocument';
+import { ImageLightbox } from '../common/ImageLightbox';
 import {
   PRODUCT_STATUS_LABEL,
   PRODUCT_STATUS_TONE,
@@ -43,6 +44,8 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
   /* El motivo se escribe antes de devolver, en el mismo panel: un rechazo sin
      motivo deja al proveedor adivinando, y el backend lo exige. */
   const [rejecting, setRejecting] = useState(false);
+  /* La foto que se mira en grande; nula, ninguna. */
+  const [ampliada, setAmpliada] = useState<number | null>(null);
   const [note, setNote] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -108,7 +111,7 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
     <>
       <Link
         href='/admin/products'
-        className='font-light d-inline-flex align-items-center gap-1 mb-3'
+        className='back-link'
       >
         <ChevronLeft size={16} />
         Revisión de productos
@@ -213,14 +216,32 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
 
           {product.images.length > 0 && (
             <Panel title='Imágenes'>
+              {/* Pequeñas para cotejarlas con la ficha; al hacer clic se ven en
+                  grande, para leer la etiqueta o el registro impreso. */}
               <div className='review-images'>
-                {product.images.map((image) => (
-                  /* eslint-disable-next-line @next/next/no-img-element -- las
-                     imagenes viven en S3 y next/image exigiria declarar el
-                     dominio del bucket en la configuracion. */
-                  <img key={image.id} src={image.url} alt={image.alt ?? product.name} />
+                {product.images.map((image, index) => (
+                  <button
+                    type='button'
+                    key={image.id}
+                    aria-label={`Ampliar la imagen ${index + 1} de ${product.images.length}`}
+                    onClick={() => setAmpliada(index)}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- las
+                        imagenes viven en S3 y next/image exigiria declarar el
+                        dominio del bucket en la configuracion. */}
+                    <img src={image.url} alt={image.alt ?? product.name} />
+                  </button>
                 ))}
               </div>
+              {ampliada !== null && (
+                <ImageLightbox
+                  images={product.images}
+                  index={ampliada}
+                  name={product.name}
+                  onIndexChange={setAmpliada}
+                  onClose={() => setAmpliada(null)}
+                />
+              )}
             </Panel>
           )}
         </div>

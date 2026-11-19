@@ -59,7 +59,7 @@ export const CategoryShowcase = () => {
          Catalogo" chirriaba por el articulo suelto en mayuscula. Y tampoco
          puede sonar a la seccion de encima: alli el titular son las categorias,
          aqui lo son los productos que hay dentro. */
-      title='El Catálogo Completo'
+      title='Todos los productos'
       subtitle='Elige una categoría'
       products={products}
     >

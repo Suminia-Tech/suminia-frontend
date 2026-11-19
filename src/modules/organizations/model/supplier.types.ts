@@ -25,6 +25,7 @@ export interface UpdateSupplierRequest {
   phone?: string | null;
   address?: string | null;
   city?: string | null;
+  department?: string | null;
   /* Solo del proveedor: es lo que exige para despachar. null lo quita, y por eso
      se acepta null y no basta con omitirlo. */
   minOrderValue?: number | null;
@@ -55,7 +56,13 @@ export interface UpdateSupplierRequest {
   contacts?: OrganizationContact[];
   /* La lista entera: con id se actualiza, sin id se crea, y la que no viene
      se borra. */
-  warehouses?: { id?: string; name: string | null; address: string; city: string }[];
+  warehouses?: {
+    id?: string;
+    name: string | null;
+    address: string;
+    city: string;
+    department: string;
+  }[];
   /* La lista entera de tiempos por ciudad; reemplaza a la anterior. */
   deliveryTimes?: SupplierDeliveryTime[];
   /* La lista entera de costos de envio por ciudad; reemplaza a la anterior. */

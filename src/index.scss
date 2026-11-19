@@ -140,6 +140,16 @@ textarea.form-control,
   border-radius: var(--suminia-radio-control);
 }
 
+/* En español los botones y los titulos van en mayuscula inicial y nada mas:
+   "Guardar cambios", no "Guardar Cambios". El tema pone `capitalize` a todo
+   .btn y a los h1 y h2, que sube cada palabra; aqui se respeta el texto tal
+   como se escribio. */
+.btn,
+h1,
+h2 {
+  text-transform: none;
+}
+
 /* Las etiquetas de la ficha de producto. El tema les da 3px, que a 24px de alto
    es practicamente una esquina recta. */
 .product-box .product-details .size-box li {
@@ -271,11 +281,39 @@ textarea.form-control {
   /* El tema define .login-section .materialContainer .box p con color gris
      translucido, centrado y flotado. Esa regla tiene mas especificidad que una
      clase suelta, de modo que hay que igualarla para poder sobreescribirla. */
+  .materialContainer .box p.register-note {
+    float: none;
+    margin: 4px 0 0;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 13px;
+    text-align: left;
+  }
+
   .materialContainer .box p.form-section-title {
     color: #222;
     font-size: 15px;
     font-weight: 600;
     margin: 22px 0 6px;
+  }
+}
+
+/* El NIT y su digito de verificacion en la misma celda: el digito, angosto,
+   gris y de solo lectura, porque lo calcula la formula de la DIAN. */
+.register-section .nit-field {
+  display: flex;
+  gap: 10px;
+
+  > input:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .nit-check-digit {
+    flex: 0 0 72px;
+    text-align: center;
+    font-weight: 600;
+    background-color: rgba($theme-font-color, 0.05);
+    cursor: default;
   }
 }
 
@@ -530,6 +568,65 @@ textarea.form-control {
   }
 }
 
+/* El menu de la tienda: pastillas suaves y juntas. Texto gris normal con su
+   icono; la pagina actual con un fondo azul muy claro y el texto en azul, y
+   las demas con un gris al pasar el cursor. Antes era una pastilla rellena en
+   azul y mayusculas en negrita, que se veia pesada. Solo en escritorio: en el
+   movil el menu es un cajon lateral y conserva el diseño de la plantilla. */
+@media (min-width: 1200px) {
+  /* El tema separa cada pestaña 30px desde la tercera; en pastillas se leen
+     como un grupo, juntas. */
+  header .main-navbar .nav-menu > li + li,
+  header .main-navbar .nav-menu > li + li + li {
+    margin-left: 4px;
+  }
+
+  .main-navbar .nav-menu > li > .nav-link.store-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    @include pastilla(38px);
+    height: 38px;
+    border-radius: var(--suminia-radio-control);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: #4b5563;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
+
+    svg {
+      flex-shrink: 0;
+      color: #9ca3af;
+      transition: color 0.15s;
+    }
+
+    &:hover {
+      background-color: #f3f4f6;
+      color: $theme-font-color;
+    }
+
+    &.is-active {
+      background-color: rgba(var(--theme-color-rgb), 0.1);
+      color: var(--theme-color);
+      font-weight: 600;
+
+      svg {
+        color: var(--theme-color);
+      }
+    }
+
+    /* El tema dibuja una raya bajo el enlace al pasar el cursor; con la
+       pastilla sobra. */
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+}
+
 /* Tarjeta del catalogo que navega el comprador. Las del tema (.product-box)
    traen contador, lista de deseos y boton de compra rapida, que todavia no
    existen; esta se queda en lo que hay: foto, nombre, proveedor y precio. */
@@ -779,13 +876,10 @@ textarea.form-control {
    pagina interior arranca en el vacio —70px entre "HOME TIENDA BLOG" y el
    primer texto, sin nada en medio—.
 
-   Se corta a 10, y no mas, porque el menu ya pone 20px por debajo de su texto:
-   los 24 de antes daban 45px entre "INICIO" y la primera linea de la pagina,
-   dos textos pequeños separados por un vacio que no dice nada. Con 10 quedan
-   31, y las migas se leen como lo que viene despues del menu.
-
-   El hueco entre las migas y el titulo es menor a proposito —14px—: asi el
-   titulo se agrupa con su rastro y el par entero se separa del menu.
+   Se corta a 24px, el mismo aire que dejan la portada y el blog entre el menu
+   y su contenido: todas las paginas de la tienda —productos, carrito, Mis
+   pedidos, Mi cuenta— arrancan a la misma distancia del menu, y al pasar de
+   una a otra el contenido no salta.
 
    Abajo se deja el aire del tema: ahi si separa del pie.
 
@@ -793,7 +887,23 @@ textarea.form-control {
    carrito y confirmacion— y el ritmo entre ellas tiene que ser el mismo.
    --------------------------------------------------------------------------- */
 .store-page > section.section-b-space {
-  padding-top: 10px;
+  padding-top: 24px;
+}
+
+/* El blog, sin la franja de titulo que traia la plantilla: el contenido
+   arrancaba 80px por debajo del menu, el aire que el tema le da a todo
+   <section>. Queda al mismo ritmo que las paginas de la tienda. */
+section.masonary-blog-section,
+section.blog-section,
+section.left-sidebar-section {
+  padding-top: 24px;
+}
+
+/* La portada, al mismo ritmo: el banner venia pegado al menu. Con margen y
+   no con relleno: su fondo celeste pinta el relleno, y la franja blanca de
+   24px entre el menu y el contenido —la que tiene el blog— no se veia. */
+section.home-section-6 {
+  margin-top: 24px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1016,6 +1126,48 @@ textarea.form-control {
          bordes del objeto —el asa del frasco, las ruedas de la camilla—, que
          es lo que deja reconocerlo. Es la misma razon que en la portada. */
       object-fit: contain;
+    }
+  }
+
+  /* La foto es un boton: al hacer clic se amplia. */
+  .product-gallery-zoom {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .product-gallery-zoom-hint {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      @include pastilla(28px);
+      height: 28px;
+      border-radius: var(--suminia-radio-control);
+      background-color: rgba($theme-font-color, 0.72);
+      color: $white;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    &:hover .product-gallery-zoom-hint,
+    &:focus-visible .product-gallery-zoom-hint {
+      opacity: 1;
     }
   }
 
@@ -1948,6 +2100,19 @@ $estado-error: #dc3545;
   flex-wrap: wrap;
   gap: 10px;
 
+  /* Cada foto es un boton que la amplia. */
+  button {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+
+    &:hover img,
+    &:focus-visible img {
+      border-color: var(--theme-color);
+    }
+  }
+
   img {
     width: 96px;
     height: 96px;
@@ -1955,6 +2120,7 @@ $estado-error: #dc3545;
     border: 1px solid $border-color;
     border-radius: 8px;
     background-color: #fff;
+    transition: border-color 0.15s;
   }
 }
 
@@ -2167,6 +2333,30 @@ $estado-error: #dc3545;
 
 /* Esqueleto de carga: conserva el alto de la tabla para que el contenido no
    salte cuando llega. */
+/* Los esqueletos no aparecen de inmediato: esperan un cuarto de segundo y
+   entran con un fundido. Una carga corta —la mayoria— termina antes y la
+   pagina aparece directa; sin la espera, el esqueleto destellaba unas
+   centesimas y se veia como un fallo de la pantalla, no como una carga. */
+@keyframes skeleton-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-skeleton,
+.catalog-skeleton,
+.analysis-loading {
+  animation: skeleton-appear 0.2s ease-out 0.25s both;
+}
+
+/* Dentro de un esqueleto de pagina, el de la lista no espera otra vez. */
+.page-skeleton .catalog-skeleton {
+  animation: none;
+}
+
 .catalog-skeleton {
   padding: 8px 16px;
 
@@ -2506,6 +2696,21 @@ $area-bg: #f1f4f9;
    parte. Se pide a una. */
 .data-list.is-single {
   grid-template-columns: 1fr;
+}
+
+/* Una sede en la ficha del comprador: la direccion y, al lado, la zona que le
+   pone Suminia. En el movil la zona baja debajo de la direccion. */
+.location-zone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+
+  .filter-select {
+    flex-shrink: 0;
+    font-weight: 400;
+  }
 }
 
 /* Lo que la empresa dejo sin llenar, en la ficha que usa el revisor. No es un
@@ -3564,12 +3769,24 @@ $area-bg: #f1f4f9;
 
   &.is-filled {
     border: 1px solid $border-color;
-    background-color: $light-blue;
+    background-color: $white;
+
+    /* La foto es un boton que la amplia. `contain` y blanco, como en el
+       catalogo: el proveedor ve la foto tal como la vera el comprador. */
+    .gallery-zoom {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: zoom-in;
+    }
 
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
   }
 
@@ -6306,6 +6523,13 @@ select.form-control,
   @media (min-width: 992px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  /* Cifras que se leen en parejas —los cuatro renglones de un estado de
+     resultados, o dos que van juntas—: en tres columnas la cuarta quedaba
+     sola en su fila. */
+  &.is-pairs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .kpi-tile {
@@ -6446,8 +6670,10 @@ select.form-control,
 .insight-bar-month {
   position: absolute;
   bottom: 4px;
-  left: 0;
-  right: 0;
+  /* Mas ancho que su barra: "ene 26" no cabe en el hueco de un mes. */
+  left: -50%;
+  right: -50%;
+  white-space: nowrap;
   font-size: 11px;
   text-align: center;
   color: rgba($theme-font-color, 0.6);
@@ -6560,6 +6786,1075 @@ select.form-control,
   margin-left: -1px;
   border-radius: 1px;
   background-color: $theme-font-color;
+}
+
+/* ===== Graficas de analisis =====
+
+   Varias series por mes con su eje (TrendChart). El turquesa de la marca es
+   la serie principal; las demas, tonos que se distinguen de el y entre si con
+   contraste suficiente sobre blanco. `ink` es la tinta del texto: las metas
+   del plan, como en las barras por mes. */
+:root {
+  --chart-tone-1: var(--theme-color);
+  --chart-tone-2: #c77d02;
+  --chart-tone-3: #2e8b57;
+  --chart-tone-4: #7b5cc4;
+}
+
+.trend-chart {
+  margin: 0;
+
+  .tone-1 { --tono: var(--chart-tone-1); }
+  .tone-2 { --tono: var(--chart-tone-2); }
+  .tone-3 { --tono: var(--chart-tone-3); }
+  .tone-4 { --tono: var(--chart-tone-4); }
+  .tone-ink { --tono: #{$theme-font-color}; }
+}
+
+/* La leyenda es el control: cada serie es una pastilla que se prende o se
+   apaga. Apagada queda en gris, con su muestra vacia. */
+.trend-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.trend-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  @include pastilla(28px);
+  height: 28px;
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-control);
+  background-color: $white;
+  font-size: 12px;
+  color: rgba($theme-font-color, 0.5);
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: rgba(var(--theme-color-rgb), 0.5);
+  }
+
+  &.is-on {
+    color: $theme-font-color;
+    border-color: rgba($theme-font-color, 0.25);
+  }
+}
+
+.trend-swatch {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: $white;
+
+  &.is-bar {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--tono);
+    border-radius: 3px;
+  }
+
+  &.is-line,
+  &.is-reference {
+    width: 16px;
+    height: 0;
+    border-top: 2px solid var(--tono);
+  }
+
+  &.is-reference,
+  &.is-dashed {
+    border-top-style: dashed;
+  }
+
+  .is-on > &.is-bar,
+  .trend-tooltip &.is-bar {
+    background-color: var(--tono);
+  }
+}
+
+.trend-body {
+  display: flex;
+  gap: 8px;
+}
+
+/* La escala, a la izquierda y fuera del dibujo: dentro chocaria con las
+   barras del primer mes. */
+.trend-axis {
+  position: relative;
+  flex: 0 0 52px;
+  height: 240px;
+
+  span {
+    position: absolute;
+    right: 0;
+    transform: translateY(50%);
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+    color: rgba($theme-font-color, 0.55);
+  }
+}
+
+.trend-plot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 240px;
+
+  svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+}
+
+.trend-line {
+  fill: none;
+  stroke: var(--tono);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+
+  &.is-dashed {
+    stroke-width: 1.75;
+    stroke-dasharray: 5 4;
+  }
+}
+
+.trend-reference {
+  stroke: var(--tono);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+
+.trend-slot {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  outline: none;
+
+  &.is-active,
+  &:focus-visible {
+    background: rgba(var(--theme-color-rgb), 0.06);
+  }
+}
+
+.trend-bar {
+  position: absolute;
+  border-radius: 3px 3px 0 0;
+  background-color: var(--tono);
+
+  &.is-negative {
+    border-radius: 0 0 3px 3px;
+  }
+}
+
+/* Los puntos de las lineas, en HTML y no en el SVG: el dibujo se estira al
+   ancho y un circulo dentro de el saldria ovalado. */
+.trend-dot {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: 0 0 -3.5px -3.5px;
+  border: 1.5px solid var(--tono);
+  border-radius: 50%;
+  background-color: $white;
+  pointer-events: none;
+}
+
+.trend-month {
+  position: absolute;
+  bottom: 6px;
+  left: -50%;
+  right: -50%;
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba($theme-font-color, 0.6);
+}
+
+/* Sale hacia el lado con sitio: a la derecha en los primeros meses y a la
+   izquierda en los ultimos, para no salirse del panel. */
+.trend-tooltip {
+  position: absolute;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 190px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #102a43;
+  color: $white;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+
+  &.is-right {
+    left: 60%;
+  }
+
+  &.is-left {
+    right: 60%;
+  }
+
+  strong {
+    margin-bottom: 2px;
+    font-weight: 600;
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  b {
+    margin-left: auto;
+    padding-left: 12px;
+    font-weight: 600;
+  }
+
+  .trend-swatch.is-line,
+  .trend-swatch.is-reference {
+    filter: brightness(1.6);
+  }
+
+  .tone-ink {
+    --tono: #{$white};
+  }
+}
+
+/* Un bloque dentro de un panel: su titulo y su grafica, sin abrir otro panel.
+   Dos por fila en escritorio. */
+.panel-subsections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px 32px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid $border-color;
+
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.panel-subsection {
+  min-width: 0;
+  /* Es un <section>, y el tema le pone a todo section 80px arriba. */
+  padding-top: 0;
+
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px 16px;
+    margin-bottom: 12px;
+  }
+
+  h4 {
+    margin: 0 0 2px;
+    font-size: 16px;
+    font-weight: 600;
+    color: $theme-font-color;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+  }
+
+  /* El cambio de vista de una grafica: la misma barra de pastillas que los
+     filtros, sin su margen. */
+  .orders-filter {
+    flex-shrink: 0;
+    margin: 0;
+
+    button {
+      padding: 4px 12px;
+      font-size: 12px;
+    }
+  }
+}
+
+/* Los subanalisis de un panel, uno debajo del otro: cada uno lleva su
+   grafica a lo ancho y su propio periodo, y una linea los separa. */
+.panel-subsections.is-stacked {
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+
+  @media (min-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+
+  > .panel-subsection + .panel-subsection {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid $border-color;
+  }
+}
+
+/* El periodo de una grafica, en su encabezado: un desplegable compacto y,
+   con "Personalizado…", los dos meses a su lado. */
+.range-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .filter-select {
+    min-width: 150px;
+  }
+}
+
+.range-select {
+  font-weight: 600;
+}
+
+.range-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+/* El mes de un rango a mano: se ve como los desplegables de filtro y su
+   lista abre siempre hacia abajo. */
+.month-select {
+  position: relative;
+}
+
+.month-select-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 170px;
+  height: 34px;
+  @include pastilla(34px);
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-control);
+  background-color: $white;
+  color: $theme-font-color;
+  font-size: 13px;
+
+  &:hover,
+  &[aria-expanded='true'] {
+    border-color: var(--theme-color);
+  }
+
+  svg {
+    color: rgba($theme-font-color, 0.55);
+  }
+}
+
+ul.month-select-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  display: block;
+  min-width: 100%;
+  max-height: 280px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-caja);
+  background-color: $white;
+  box-shadow: 0 12px 32px rgba(16, 42, 67, 0.14);
+
+  /* El tema pone todo li en linea. */
+  li {
+    display: block;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: $theme-font-color;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: rgba(var(--theme-color-rgb), 0.08);
+    }
+
+    &.is-chosen {
+      font-weight: 600;
+      color: var(--theme-color);
+    }
+  }
+}
+
+/* Las cifras de un analisis en una sola fila, tantas como quepan. */
+.kpi-grid.is-row {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+.analysis-chart {
+  margin-top: 26px;
+}
+
+/* El titulo de la grafica y, a la derecha, sus vistas. */
+.analysis-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+
+  h5 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: $theme-font-color;
+  }
+
+  .orders-filter {
+    margin: 0;
+
+    button {
+      padding: 4px 12px;
+      font-size: 12px;
+    }
+  }
+}
+
+.analysis-note {
+  margin: 14px 0 0;
+  font-size: 12px;
+}
+
+.analysis-loading {
+  height: 360px;
+  border-radius: var(--suminia-radio-caja);
+  background: linear-gradient(90deg, rgba($theme-font-color, 0.04), rgba($theme-font-color, 0.08), rgba($theme-font-color, 0.04));
+  background-size: 200% 100%;
+  animation:
+    skeleton-appear 0.2s ease-out 0.25s both,
+    analysis-shimmer 1.4s linear infinite;
+}
+
+@keyframes analysis-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.analysis-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px 40px;
+
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* La cartera contra el tope: una barra apilada con lo que esta al dia, lo
+   vencido y lo que queda libre. Mismos tonos que las graficas. */
+.credit-gauge {
+  display: flex;
+  height: 16px;
+  overflow: hidden;
+  border-radius: var(--suminia-radio-control);
+  background-color: rgba($theme-font-color, 0.06);
+}
+
+.credit-gauge-part,
+.credit-gauge-dot {
+  &.tone-1 { background-color: var(--chart-tone-1); }
+  &.tone-2 { background-color: var(--chart-tone-2); }
+  &.is-free { background-color: rgba($theme-font-color, 0.12); }
+}
+
+.credit-gauge-part {
+  height: 100%;
+
+  & + & {
+    border-left: 2px solid $white;
+  }
+}
+
+ul.credit-gauge-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  b {
+    font-weight: 600;
+    color: $theme-font-color;
+  }
+}
+
+.credit-gauge-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+/* El incremento de un producto en la ficha del proveedor: el campo y sus
+   botones en la misma celda. */
+.markup-table .markup-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  .form-control {
+    width: 130px;
+  }
+}
+
+/* Varias acciones en la celda de una fila: juntas y a la derecha. */
+.table-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Los contactos de una empresa, una tarjeta por persona con las areas que
+   atiende. El correo parte donde haga falta: uno largo no cabe en una
+   columna y antes se salia del panel. */
+ul.contact-people {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+ul.contact-people > li.contact-person {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-caja);
+  font-size: 13px;
+
+  strong {
+    font-size: 15px;
+    font-weight: 600;
+    color: $theme-font-color;
+  }
+
+  .contact-person-areas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .contact-person-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 4px;
+    color: $theme-font-color;
+    overflow-wrap: anywhere;
+
+    svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: rgba($theme-font-color, 0.5);
+    }
+
+    &:hover {
+      color: var(--theme-color);
+    }
+  }
+}
+
+.contact-people-missing {
+  margin: 14px 0 0;
+  font-size: 13px;
+}
+
+.data-list.contact-order-emails {
+  margin-top: 18px;
+  padding-top: 4px;
+  border-top: 1px solid $border-color;
+}
+
+/* La fecha estimada de entrega, antes de confirmar el despacho. Ocupa el
+   ancho de las acciones y lleva sus propios botones debajo. */
+.order-ship-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+
+  small {
+    font-size: 12px;
+  }
+
+  .order-actions {
+    margin-top: 6px;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+/* Las indicaciones del comprador para la entrega, bajo la direccion. */
+.order-delivery-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid $border-color;
+  font-size: 13px;
+
+  strong {
+    font-weight: 600;
+    color: $theme-font-color;
+  }
+}
+
+/* La espera de entrar, salir o confirmar un pedido: la pagina se cubre con los
+   esqueletos de la pantalla que viene y una barra fina arriba que avanza. */
+.page-loading-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  overflow: hidden;
+  background-color: #f3f5f8;
+  /* Cerrado: transparente y sin recibir clics. Al cerrarse se desvanece. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease-out,
+    visibility 0s linear 0.2s;
+
+  /* Abierto: bloquea los clics de una vez, pero solo se ve pasado un cuarto
+     de segundo. Una accion rapida no alcanza a cubrir la pantalla. */
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 0.2s ease-out 0.25s,
+      visibility 0s linear 0s;
+  }
+
+  /* Solo la barra, cuando la accion no lleva a otra pantalla: la pagina se
+     queda a la vista y no se tapa con una forma que va a desaparecer. */
+  &.is-bar-only {
+    background-color: transparent;
+    pointer-events: none;
+  }
+
+  /* El esqueleto de dentro no espera otra vez: ya espera el velo. */
+  .page-skeleton {
+    animation: none;
+  }
+}
+
+.page-loading-content {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 88px 24px 24px;
+
+  @media (max-width: 575px) {
+    padding: 72px 16px 16px;
+  }
+}
+
+.page-loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 3px;
+  border-radius: 0 3px 3px 0;
+  background-color: var(--theme-color);
+  animation: page-loading-bar 1.1s ease-in-out infinite;
+}
+
+@keyframes page-loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+/* Volver al listado desde una ficha. En gris claro casi no se veia: va en el
+   color de la marca, con peso, y se marca al pasar el cursor como las
+   pestañas de la tienda. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  /* La pastilla sobresale a la izquierda lo que mide su aire, para que la
+     flecha quede alineada con el titulo de abajo. */
+  margin: 0 0 16px -14px;
+  @include pastilla(34px);
+  height: 34px;
+  border-radius: var(--suminia-radio-control);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-color);
+  transition: background-color 0.15s;
+
+  svg {
+    flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: rgba(var(--theme-color-rgb), 0.08);
+    color: var(--theme-color);
+
+    svg {
+      transform: translateX(-2px);
+    }
+  }
+}
+
+/* La barra de navegacion: sale con el clic en un enlace y se va al llegar la
+   pagina. Encima de todo, incluido el encabezado. */
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2100;
+  width: 40%;
+  height: 3px;
+  border-radius: 0 3px 3px 0;
+  background-color: var(--theme-color);
+  box-shadow: 0 0 8px rgba(var(--theme-color-rgb), 0.5);
+  animation: page-loading-bar 1.1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* El avance del registro en Mi empresa: la barra con su porcentaje y, debajo,
+   cada paso como una fila que lleva a su pagina. */
+.registration-progress {
+  margin-top: 4px;
+}
+
+.registration-progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 14px;
+
+  strong {
+    font-weight: 600;
+    color: $theme-font-color;
+  }
+
+  span {
+    font-weight: 600;
+    color: var(--chart-tone-3);
+  }
+}
+
+.registration-progress-bar {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--suminia-radio-control);
+  background-color: rgba($theme-font-color, 0.08);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--chart-tone-3);
+    transition: width 0.4s ease;
+  }
+}
+
+/* El tema pone todo li en linea. */
+ul.registration-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: block;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid $border-color;
+    border-radius: var(--suminia-radio-caja);
+    color: $theme-font-color;
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+
+    &:hover {
+      border-color: rgba(var(--theme-color-rgb), 0.45);
+      background-color: rgba(var(--theme-color-rgb), 0.03);
+    }
+  }
+
+  .registration-step-icon {
+    flex-shrink: 0;
+    color: rgba($theme-font-color, 0.55);
+  }
+
+  .registration-step-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    strong {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    small {
+      font-size: 12.5px;
+    }
+  }
+
+  .registration-step-state {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #b45309;
+  }
+
+  .is-done .registration-step-state {
+    color: var(--chart-tone-3);
+  }
+
+  .registration-step-go {
+    flex-shrink: 0;
+    color: rgba($theme-font-color, 0.4);
+  }
+}
+
+/* El motivo de rechazar o suspender una empresa, en el panel de la decision. */
+.status-reason {
+  .form-control {
+    resize: vertical;
+  }
+
+  .status-reason-note {
+    margin: 8px 0 14px;
+    font-size: 12px;
+  }
+}
+
+.order-actions .status-reason-note {
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Lo que le pasa a la empresa al suspenderla, antes de escribir el motivo. */
+.status-effects {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background-color: rgba($theme-font-color, 0.04);
+  font-size: 13px;
+
+  p {
+    margin: 0 0 6px;
+    font-weight: 600;
+    color: $theme-font-color;
+  }
+
+  /* El tema pone todo li en linea. */
+  ul {
+    margin: 0;
+    padding-left: 18px;
+    list-style: disc;
+  }
+
+  li {
+    display: list-item;
+    margin-top: 2px;
+  }
+}
+
+/* La constancia de las decisiones sobre una empresa, la mas reciente arriba. */
+ul.status-history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  /* El tema pone todo li en linea. */
+  li {
+    display: block;
+    padding: 12px 0;
+    border-bottom: 1px solid $border-color;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+
+  .status-history-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .status-history-who {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: $theme-font-color;
+  }
+
+  .status-history-reason {
+    margin: 6px 0 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: rgba($theme-font-color, 0.04);
+    font-size: 13px;
+    white-space: pre-line;
+    color: $theme-font-color;
+  }
+}
+
+/* La foto de un producto a pantalla completa. */
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 72px;
+  background-color: rgba(16, 42, 67, 0.88);
+  cursor: zoom-out;
+
+  @media (max-width: 575px) {
+    padding: 56px 12px;
+  }
+
+  > img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    background-color: $white;
+    object-fit: contain;
+    cursor: default;
+  }
+
+  .image-lightbox-close,
+  .image-lightbox-nav {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background-color: rgba($white, 0.14);
+    color: $white;
+    cursor: pointer;
+    transition: background-color 0.15s;
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgba($white, 0.28);
+    }
+  }
+
+  .image-lightbox-close {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .image-lightbox-nav {
+    top: 50%;
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+
+    &.is-prev {
+      left: 12px;
+    }
+
+    &.is-next {
+      right: 12px;
+    }
+  }
+
+  .image-lightbox-count {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba($white, 0.8);
+    font-size: 13px;
+  }
 }
 
 /* Rankings */

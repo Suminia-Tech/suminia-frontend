@@ -19,7 +19,9 @@ import { CLAIM_REASON_LABEL } from '../../lib/orderStatus';
 import type { ClaimReason, Order, OrderClaim } from '../../model/order.types';
 import type { OrderSide } from './OrdersListScreen';
 
-/* El reclamo del comprador sobre lo que recibio.
+/* Las novedades en la entrega: lo que el comprador reporta de lo que
+   recibio —faltantes, vencidos, equivocados, quebrados—. Para el personal
+   de Suminia siguen siendo reclamos, con su bandeja.
 
    Se abre dentro de los dias de reclamo despues de la entrega. Mientras este
    abierto el pedido no se cierra y no entra en la liquidacion del proveedor:
@@ -46,9 +48,13 @@ export const OrderClaimPanel = ({ order, side }: { order: Order; side: OrderSide
 
   return (
     <Panel
-      title={order.claims.length > 0 ? 'Reclamos' : 'Recepción del pedido'}
+      title='Novedades en la entrega'
       aside={
-        abierto && <span className='document-state is-danger'>En reclamo</span>
+        abierto && (
+          <span className='document-state is-danger'>
+            {side === 'buyer' ? 'En revisión' : 'En reclamo'}
+          </span>
+        )
       }
     >
       {order.claims.length > 0 && (
@@ -100,7 +106,7 @@ const ClaimSlot = ({
           <div className='document-slot-title'>
             <strong>{CLAIM_REASON_LABEL[claim.reason]}</strong>
             <span className={`document-state is-${claim.status === 'OPEN' ? 'danger' : 'success'}`}>
-              {claim.status === 'OPEN' ? 'Abierto' : 'Resuelto'}
+              {claim.status === 'OPEN' ? 'En revisión' : 'Resuelta'}
             </span>
           </div>
           <small className='font-light'>
@@ -205,7 +211,7 @@ const ClaimForm = ({
         <p className='font-light mb-0'>
           {enNombre
             ? `Si ${order.buyerOrganizationName} confirmó que lo recibió bien, puedes cerrarlo en su nombre. Si no, se cierra solo el ${formatDateTime(order.claimableUntil)}.`
-            : `Si llegó completo y en buenas condiciones, ciérralo. Si algo no llegó bien, tienes hasta el ${formatDateTime(order.claimableUntil)} para reclamar.`}
+            : `Si llegó completo y en buenas condiciones, ciérralo. Si hubo alguna novedad —productos faltantes, vencidos, equivocados o quebrados—, repórtala antes del ${formatDateTime(order.claimableUntil)}. Si no recibimos novedades hasta entonces, el pedido se cierra automáticamente.`}
         </p>
         <div className='order-claim-actions'>
           <button
@@ -221,7 +227,7 @@ const ClaimForm = ({
               className='btn btn-outline-danger btn-sm btn-with-icon'
               onClick={() => setAbierto(true)}
             >
-              <AlertCircle size={14} /> Tengo un problema con este pedido
+              <AlertCircle size={14} /> Reportar una novedad
             </button>
           )}
         </div>
@@ -245,7 +251,7 @@ const ClaimForm = ({
           ) : (
             <p className='mb-0'>
               ¿Ya revisaste que el pedido llegó completo y en buenas condiciones? Al cerrarlo
-              ya no podrás abrir un reclamo, y Suminia le paga al proveedor.
+              ya no podrás reportar novedades.
             </p>
           )}
         </ConfirmModal>
@@ -257,17 +263,17 @@ const ClaimForm = ({
     if (!reason) return;
     try {
       await open({ id: order.id, reason, description: description.trim() }).unwrap();
-      toast.success('Reclamo enviado. Suminia lo revisa y te contamos');
+      toast.success('Novedad reportada. Suminia la revisa y te contamos');
     } catch (err) {
-      toast.error(extractErrorMessage(err, 'No se pudo enviar el reclamo.'));
+      toast.error(extractErrorMessage(err, 'No se pudo reportar la novedad.'));
     }
   };
 
   return (
     <div className='order-payment-form'>
-      <h3 className='order-subhead'>Cuéntanos qué pasó</h3>
+      <h3 className='order-subhead'>Reportar una novedad</h3>
       <label className='form-label' htmlFor='reclamo-motivo'>
-        Motivo
+        Tipo de novedad
       </label>
       <select
         id='reclamo-motivo'
@@ -285,19 +291,19 @@ const ClaimForm = ({
         ))}
       </select>
       <label className='form-label mt-3' htmlFor='reclamo-detalle'>
-        Qué pasó
+        Cuéntanos qué pasó
       </label>
       <textarea
         id='reclamo-detalle'
         className='form-control'
         rows={3}
         maxLength={1000}
-        placeholder='Llegaron 2 cajas con el sello roto.'
+        placeholder='Llegaron 2 cajas con el sello roto y faltó 1 de guantes talla M.'
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
       <small className='font-light'>
-        Mientras lo revisamos, el pedido no se cierra y no se le paga al proveedor.
+        Mientras la revisamos, el pedido no se cierra.
       </small>
       <div className='order-payment-actions'>
         <button
@@ -306,7 +312,7 @@ const ClaimForm = ({
           disabled={isLoading || !reason || !description.trim()}
           onClick={enviar}
         >
-          {isLoading ? 'Enviando...' : 'Enviar reclamo'}
+          {isLoading ? 'Enviando...' : 'Reportar novedad'}
         </button>
         <button
           type='button'

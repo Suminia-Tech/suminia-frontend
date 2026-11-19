@@ -173,7 +173,7 @@ export const MyProductsScreen = () => {
 
     try {
       await deleteProduct(pendingDelete.id).unwrap();
-      toast.success('Producto retirado del catálogo');
+      toast.success('Producto retirado');
       setPendingDelete(null);
     } catch (err) {
       toast.error(extractErrorMessage(err, 'No se pudo eliminar el producto.'));
@@ -249,7 +249,7 @@ export const MyProductsScreen = () => {
         title='Mis productos'
         description={
           meta
-            ? `${meta.totalCount} ${meta.totalCount === 1 ? 'producto' : 'productos'} en tu catálogo.`
+            ? `${meta.totalCount} ${meta.totalCount === 1 ? 'producto' : 'productos'} publicados o en revisión.`
             : 'Lo que tu empresa ofrece en Suminia.'
         }
         action={
@@ -356,7 +356,7 @@ export const MyProductsScreen = () => {
         ) : isError ? (
           <div className='catalog-empty'>
             <AlertCircle size={30} />
-            <h5>No se pudo cargar el catálogo</h5>
+            <h5>No se pudieron cargar tus productos</h5>
             <p className='font-light'>
               {extractErrorMessage(error, 'Vuelve a intentarlo en un momento.')}
             </p>
@@ -378,7 +378,7 @@ export const MyProductsScreen = () => {
               </>
             ) : (
               <>
-                <h5>Tu catálogo está vacío</h5>
+                <h5>Todavía no tienes productos</h5>
                 <p className='font-light'>
                   Crea tu primer producto. Queda como borrador hasta que lo envíes a
                   revisión, así que puedes prepararlo con calma.
@@ -620,7 +620,7 @@ export const MyProductsScreen = () => {
             <strong>{pendingDelete.name}</strong>
           </p>
           <p className='mb-0'>
-            Se retira del catálogo junto con sus {pendingDelete.presentations.length}{' '}
+            Se retira junto con sus {pendingDelete.presentations.length}{' '}
             {pendingDelete.presentations.length === 1 ? 'presentación' : 'presentaciones'}
             {pendingDelete.images.length > 0 &&
               ` y sus ${pendingDelete.images.length} ${
@@ -647,8 +647,8 @@ export const MyProductsScreen = () => {
           </p>
           <p className={submitMissing.length > 0 ? 'mb-2' : 'mb-0'}>
             Dirección técnica revisa el producto y sus documentos. Aparecerá como
-            &quot;Publicado&quot; cuando lo apruebe; mientras tanto no se muestra en el
-            catálogo.
+            &quot;Publicado&quot; cuando lo apruebe; mientras tanto no se muestra a los
+            compradores.
           </p>
           {submitMissing.length > 0 && (
             <div className='alert alert-danger text-start mb-0'>

@@ -14,6 +14,8 @@ import {
   User,
 } from 'react-feather';
 
+import { CREDIT_AVAILABLE } from '@/shared/config/features';
+
 import type { SidebarGroup } from '../_shell/sidebar.types';
 
 /* Navegacion del personal interno de Suminia.
@@ -78,12 +80,17 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
         icon: DollarSign,
         permission: 'finance:manage',
       },
-      {
-        label: 'Crédito',
-        href: '/admin/finance/credit',
-        icon: ShoppingBag,
-        permission: 'payment:verify',
-      },
+      /* El credito a compradores llega a mediados de 2027. */
+      ...(CREDIT_AVAILABLE
+        ? [
+            {
+              label: 'Crédito',
+              href: '/admin/finance/credit',
+              icon: ShoppingBag,
+              permission: 'payment:verify',
+            },
+          ]
+        : []),
       {
         label: 'Configuración',
         href: '/admin/finance/settings',
@@ -102,11 +109,11 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
     ],
   },
   {
-    label: 'Catálogo',
+    label: 'Productos',
     /* La revision primero: es trabajo que espera, las categorias son
        mantenimiento. */
     items: [
-      { label: 'Productos', href: '/admin/products', icon: CheckSquare },
+      { label: 'Revisión', href: '/admin/products', icon: CheckSquare },
       { label: 'Categorías', href: '/admin/categories', icon: Tag },
     ],
   },

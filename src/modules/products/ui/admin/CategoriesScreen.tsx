@@ -209,7 +209,7 @@ export const CategoriesScreen = () => {
           boton, de modo que arrancaba sangrada respecto a sus vecinas. */}
       <PageHeader
         title='Categorías'
-        description='El vocabulario común del marketplace: las usan los proveedores para clasificar y los compradores para filtrar. El identificador es la URL del catálogo y el nombre del archivo de su ilustración.'
+        description='El vocabulario común del marketplace: las usan los proveedores para clasificar y los compradores para filtrar. El identificador va en la URL de la página de productos y el nombre del archivo de su ilustración.'
         action={
           !isNew &&
           !editingId && (
@@ -312,7 +312,7 @@ export const CategoriesScreen = () => {
         {pendingDelete && (
           <>
             <p>
-              Se elimina <strong>{pendingDelete.name}</strong> del catálogo:
+              Se elimina la categoría <strong>{pendingDelete.name}</strong>:
               dejará de aparecer al clasificar un producto y al filtrar.
             </p>
             {pendingDelete.productCount > 0 && (

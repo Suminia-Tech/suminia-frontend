@@ -20,6 +20,7 @@ export interface UpdateBuyerRequest {
   phone?: string | null;
   address?: string | null;
   city?: string | null;
+  department?: string | null;
   /* El perfil viaja entero: naturaleza y actividad juntas, y el sector o el
      detalle cuando aplican. */
   legalNature?: LegalNature | null;

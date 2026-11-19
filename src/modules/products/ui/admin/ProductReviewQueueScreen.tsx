@@ -151,7 +151,7 @@ export const ProductReviewQueueScreen = () => {
         description={
           reviewing && meta
             ? `${meta.totalCount} ${meta.totalCount === 1 ? 'producto espera' : 'productos esperan'} la revisión de dirección técnica.`
-            : 'Lo que los proveedores envían para publicar en el catálogo.'
+            : 'Lo que los proveedores envían para publicar.'
         }
       />
 
@@ -161,7 +161,7 @@ export const ProductReviewQueueScreen = () => {
         title={
           active.length > 0 || status || debouncedSearch
             ? 'Lo que muestra este filtro'
-            : 'Todo el catálogo'
+            : 'Todos los productos'
         }
         description='Productos, presentaciones e inventario de lo que deja ver el filtro.'
       >

@@ -2,10 +2,11 @@
 
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 
+import { resolvePlace } from '@/shared/lib/colombia';
 import { isColombianMobile, isEmail } from '@/shared/lib/validators';
-import { Panel } from '@/shared/ui';
+import { CitySelect, DepartmentSelect, Panel } from '@/shared/ui';
 
-import { isListedBank, OTHER_BANKS, RECOMMENDED_BANKS } from '../../lib/banks';
+import { isListedBank, OTHER_BANKS, RECOMMENDED_BANKS } from '@/shared/lib/banks';
 import {
   ACTIVITY_OPTIONS,
   BUYER_CONTACT_AREA_OPTIONS,
@@ -74,6 +75,8 @@ export interface OrganizationFormValues {
   email: string;
   phone: string;
   address: string;
+  /* De la lista del DANE: el departamento primero, y la ciudad dentro de el. */
+  department: string;
   city: string;
   /* Solo lo manda el proveedor. Cadena vacia significa "sin minimo", que no es
      lo mismo que cero: cero seria exigir un minimo de nada. */
@@ -170,7 +173,11 @@ interface OrganizationFormProps {
    nombre no se sabe a quien se busca, y sin correo no hay como escribirle. Uno
    entero en blanco si vale: es el que aparece de entrada y nadie lleno. Comun
    a proveedor y comprador. */
-const contactErrorsOf = (contacts: ContactValues[]): Record<number, string> => {
+const contactErrorsOf = (
+  contacts: ContactValues[],
+  /* Del proveedor: quien cubre un area obligatoria necesita celular. */
+  celularObligatorio = false,
+): Record<number, string> => {
   const errors: Record<number, string> = {};
   contacts.forEach((contact, index) => {
     if (isContactEmpty(contact)) return;
@@ -179,6 +186,12 @@ const contactErrorsOf = (contacts: ContactValues[]): Record<number, string> => {
       errors[index] = 'Para guardar este contacto faltan al menos un área, el nombre y el correo.';
     } else if (!isEmail(contact.email.trim())) {
       errors[index] = 'El correo no es válido.';
+    } else if (
+      celularObligatorio &&
+      !contact.phone.trim() &&
+      contact.areas.some((area) => !MULTI_CONTACT_AREAS.includes(area))
+    ) {
+      errors[index] = 'Falta el celular: Suminia lo necesita para coordinar con cada área.';
     } else if (contact.phone.trim() && !isColombianMobile(contact.phone)) {
       errors[index] = 'El celular debe tener 10 dígitos y empezar por 3, por ejemplo 300 123 4567.';
     }
@@ -191,7 +204,9 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   email: organization.email,
   phone: organization.phone ?? '',
   address: organization.address ?? '',
-  city: organization.city ?? '',
+  /* Una ciudad escrita a mano antes de la lista se lleva a ella si se
+     reconoce; si no, queda por elegir. */
+  ...resolvePlace(organization.city, organization.department),
   minOrderValue: organization.minOrderValue === null ? '' : String(organization.minOrderValue),
   delivery: toDeliveryValues(organization.deliveryDaysMin, organization.deliveryDaysMax),
   deliveryTimes: toCityDeliveryValues(organization.deliveryTimes),
@@ -298,6 +313,14 @@ const OrganizationForm = ({
       setValues((current) => ({ ...current, [field]: value }));
     };
 
+  /* Otro departamento deja la ciudad por elegir: la de antes no esta en su
+     lista. */
+  const cambiarDepartamento = (department: string) =>
+    setValues((current) => ({ ...current, department, city: '' }));
+  const cambiarCiudad = (city: string) => setValues((current) => ({ ...current, city }));
+  const claseLugar = (valor: string) =>
+    `form-control${avisoDe(pendientes, 'city') && !valor ? ' is-missing' : ''}`;
+
   const handleToggle =
     <K extends 'activities' | 'productLines'>(
       field: K,
@@ -326,14 +349,14 @@ const OrganizationForm = ({
   /* Devuelve la pestaña del primer error, en el orden de las pestañas, o null
      si se puede guardar. */
   const validateSupplierFields = (): CompanyTab | null => {
-    const nextContactErrors = contactErrorsOf(values.contacts);
+    const nextContactErrors = contactErrorsOf(values.contacts, true);
 
     /* Una bodega a medias no sirve para llegar: sin direccion o sin ciudad,
        nadie sabe a donde ir. Una en blanco se ignora. */
     const nextWarehouseErrors: Record<number, string> = {};
     values.warehouses.forEach((warehouse, index) => {
       if (isWarehouseEmpty(warehouse)) return;
-      if (!warehouse.address.trim() || !warehouse.city.trim()) {
+      if (!warehouse.address.trim() || !warehouse.city) {
         nextWarehouseErrors[index] = 'Indica la dirección y la ciudad de esta bodega.';
       }
     });
@@ -348,21 +371,18 @@ const OrganizationForm = ({
     const nextDeliveryError = deliveryErrorOf(values.delivery);
 
     /* Cada ciudad, con su nombre y su tiempo, y una sola vez: con dos tiempos
-       para la misma, el comprador no sabria cual vale. */
+       para la misma, el comprador no sabria cual vale. La ciudad sale de la
+       lista, de modo que el par departamento y ciudad la identifica. */
     const nextCityDeliveryErrors: Record<number, string> = {};
     const seenCities = new Set<string>();
     values.deliveryTimes.forEach((value, index) => {
       if (isCityDeliveryEmpty(value)) return;
-      const key = value.city
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim()
-        .toLowerCase();
+      const key = value.city && `${value.department}|${value.city}`;
       const error = !key ? 'Indica la ciudad.' : deliveryErrorOf(value.delivery);
       if (error) {
         nextCityDeliveryErrors[index] = error;
       } else if (seenCities.has(key)) {
-        nextCityDeliveryErrors[index] = `${value.city.trim()} ya está en la lista.`;
+        nextCityDeliveryErrors[index] = `${value.city} ya está en la lista.`;
       }
       seenCities.add(key);
     });
@@ -372,17 +392,13 @@ const OrganizationForm = ({
     const seenShipping = new Set<string>();
     values.shippingCosts.forEach((value, index) => {
       if (isCityShippingEmpty(value)) return;
-      const key = value.city
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim()
-        .toLowerCase();
+      const key = value.city && `${value.department}|${value.city}`;
       if (!key) {
         nextCityShippingErrors[index] = 'Indica la ciudad.';
       } else if (value.cost.trim() === '' || !(Number(value.cost) >= 0)) {
         nextCityShippingErrors[index] = 'Indica el costo de envío.';
       } else if (seenShipping.has(key)) {
-        nextCityShippingErrors[index] = `${value.city.trim()} ya está en la lista.`;
+        nextCityShippingErrors[index] = `${value.city} ya está en la lista.`;
       }
       seenShipping.add(key);
     });
@@ -591,7 +607,7 @@ const OrganizationForm = ({
           description='Cómo se llama tu empresa en Suminia y dónde está su oficina principal.'
         >
           <div className='form-grid'>
-            <div>
+            <div className='form-grid-full'>
               <label className='form-label' htmlFor='empresa-nombre'>Nombre comercial</label>
               <input
                 id='empresa-nombre'
@@ -605,15 +621,26 @@ const OrganizationForm = ({
                 tener oficinas pequeñas en varias ciudades, y lo que interesa
                 es su sede. */}
             <div>
+              <label className='form-label' htmlFor='empresa-departamento'>
+                Departamento de la oficina principal
+              </label>
+              <DepartmentSelect
+                id='empresa-departamento'
+                className={claseLugar(values.department)}
+                value={values.department}
+                onChange={cambiarDepartamento}
+              />
+            </div>
+            <div>
               <label className='form-label' htmlFor='empresa-ciudad'>
                 Ciudad de la oficina principal
               </label>
-              <input
+              <CitySelect
                 id='empresa-ciudad'
-                type='text'
-                className={`form-control${avisoDe(pendientes, 'city') && !values.city.trim() ? ' is-missing' : ''}`}
+                className={claseLugar(values.city)}
+                department={values.department}
                 value={values.city}
-                onChange={handleChange('city')}
+                onChange={cambiarCiudad}
               />
             </div>
             <div className='form-grid-full'>
@@ -659,7 +686,7 @@ const OrganizationForm = ({
                 onChange={handleChange('email')}
               />
             </div>
-            <div>
+            <div className='form-grid-full'>
               <label className='form-label' htmlFor='empresa-telefono'>Teléfono</label>
               <input
                 id='empresa-telefono'
@@ -670,13 +697,22 @@ const OrganizationForm = ({
               />
             </div>
             <div>
+              <label className='form-label' htmlFor='empresa-departamento'>Departamento</label>
+              <DepartmentSelect
+                id='empresa-departamento'
+                className={claseLugar(values.department)}
+                value={values.department}
+                onChange={cambiarDepartamento}
+              />
+            </div>
+            <div>
               <label className='form-label' htmlFor='empresa-ciudad'>Ciudad</label>
-              <input
+              <CitySelect
                 id='empresa-ciudad'
-                type='text'
-                className={`form-control${avisoDe(pendientes, 'city') && !values.city.trim() ? ' is-missing' : ''}`}
+                className={claseLugar(values.city)}
+                department={values.department}
                 value={values.city}
-                onChange={handleChange('city')}
+                onChange={cambiarCiudad}
               />
             </div>
             <div className='form-grid-full'>

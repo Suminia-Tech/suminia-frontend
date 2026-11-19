@@ -2,6 +2,9 @@
 
 import { Plus, X } from 'react-feather';
 
+import { resolvePlace } from '@/shared/lib/colombia';
+import { CitySelect, DepartmentSelect } from '@/shared/ui';
+
 import {
   DELIVERY_KIND_OPTIONS,
   emptyDelivery,
@@ -85,6 +88,7 @@ export const DeliveryTimeInput = ({
 
 /* Un tiempo distinto del general en una ciudad. */
 export interface CityDeliveryValues {
+  department: string;
   city: string;
   delivery: DeliveryValues;
 }
@@ -96,12 +100,15 @@ export const toCityDeliveryValues = (
   times: SupplierDeliveryTime[] | undefined,
 ): CityDeliveryValues[] =>
   (times ?? []).map((time) => ({
-    city: time.city,
+    ...resolvePlace(time.city, time.department),
     delivery: toDeliveryValues(time.daysMin, time.daysMax),
   }));
 
 export const isCityDeliveryEmpty = (value: CityDeliveryValues): boolean =>
-  value.city.trim() === '' && value.delivery.min === '' && value.delivery.max === '';
+  value.department === '' &&
+  value.city === '' &&
+  value.delivery.min === '' &&
+  value.delivery.max === '';
 
 /* De vuelta al contrato del backend. Las filas que se añadieron y nadie lleno
    no viajan. */
@@ -110,7 +117,12 @@ export const toDeliveryTimeRows = (values: CityDeliveryValues[]): SupplierDelive
     .filter((value) => !isCityDeliveryEmpty(value))
     .map((value) => {
       const { min, max } = toDeliveryDays(value.delivery);
-      return { city: value.city.trim(), daysMin: min ?? 0, daysMax: max ?? 0 };
+      return {
+        city: value.city,
+        department: value.department,
+        daysMin: min ?? 0,
+        daysMax: max ?? 0,
+      };
     });
 
 interface CityDeliveryTimesFieldsProps {
@@ -137,14 +149,18 @@ export const CityDeliveryTimesFields = ({
       {values.map((value, index) => (
         <div className='delivery-city' key={index}>
           <div className='delivery-city-row'>
-            <input
-              type='text'
-              maxLength={120}
+            <DepartmentSelect
+              className='form-control delivery-city-name'
+              aria-label='Departamento'
+              value={value.department}
+              onChange={(department) => setRow(index, { department, city: '' })}
+            />
+            <CitySelect
               className='form-control delivery-city-name'
               aria-label='Ciudad'
-              placeholder='Ciudad'
+              department={value.department}
               value={value.city}
-              onChange={(event) => setRow(index, { city: event.target.value })}
+              onChange={(city) => setRow(index, { city })}
             />
             <DeliveryTimeInput
               id={`entrega-ciudad-${index}`}
@@ -170,7 +186,10 @@ export const CityDeliveryTimesFields = ({
           type='button'
           className='btn btn-outline-secondary btn-sm btn-with-icon'
           onClick={() =>
-            onChange([...values, { city: '', delivery: { ...emptyDelivery(), kind: 'same-day' } }])
+            onChange([
+              ...values,
+              { department: '', city: '', delivery: { ...emptyDelivery(), kind: 'same-day' } },
+            ])
           }
         >
           <Plus size={15} /> Añadir ciudad

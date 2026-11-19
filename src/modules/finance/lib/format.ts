@@ -60,7 +60,12 @@ const PORCENTAJES = [
 const PESOS = ['creditLimit', 'monthlyFixedCosts', 'cashFloor', 'creditPortfolioCap', 'targetTicket'];
 
 export const formatChangeValue = (field: string, value: string | null): string => {
-  if (value === null) return field === 'commissionRate' ? 'La general' : '—';
+  if (value === null) {
+    if (field === 'commissionRate') return 'La general';
+    if (field.startsWith('productMarkupRate:')) return 'El de su línea';
+    return '—';
+  }
+  if (field.startsWith('productMarkupRate:')) return formatPercent(Number(value));
   /* Los del plan llegan como "line:SUPPLIES:markupRate" o
      "plan:2027-03:sales": se formatean por su ultimo tramo. */
   const [tipo, , campo] = field.split(':');

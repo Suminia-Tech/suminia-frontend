@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { SupplierCommissionPanel } from '@/modules/finance';
+import { SupplierProductMarkupsPanel } from '@/modules/finance';
 import { SupplierDetailScreen } from '@/modules/organizations';
 
 export const metadata: Metadata = {
@@ -15,12 +15,12 @@ export default async function ProveedorDetallePage({
 }) {
   const { id } = await params;
 
-  /* La comision pactada es de finanzas y la ficha de organizations: la
-     pagina las pone una debajo de la otra. */
+  /* El incremento de sus productos es de finanzas y la ficha de
+     organizations: la pagina las pone una debajo de la otra. */
   return (
     <>
       <SupplierDetailScreen supplierId={id} />
-      <SupplierCommissionPanel supplierId={id} />
+      <SupplierProductMarkupsPanel supplierId={id} />
     </>
   );
 }

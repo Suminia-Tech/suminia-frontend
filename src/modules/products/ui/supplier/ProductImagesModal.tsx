@@ -12,6 +12,7 @@ import { useRemoveImageMutation, useUpdateImageMutation } from '../../api/produc
 import { useImageUpload } from '../../hooks/useImageUpload';
 import { MAX_PRODUCT_IMAGES } from '../../model/product.types';
 import type { Product, ProductImage } from '../../model/product.types';
+import { ImageLightbox } from '../common/ImageLightbox';
 
 /* Galeria de un producto, en rejilla de seis huecos.
 
@@ -34,6 +35,8 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
   const [busyImageId, setBusyImageId] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [editingAlt, setEditingAlt] = useState<string | null>(null);
+  /* La foto que se mira en grande; nula, ninguna. */
+  const [ampliada, setAmpliada] = useState<number | null>(null);
   const [altDraft, setAltDraft] = useState('');
 
   const { upload, uploading, error, clearError } = useImageUpload(product.id);
@@ -151,6 +154,8 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
       centered
       isOpen={isOpen}
       toggle={onClose}
+      /* Con una foto ampliada, Escape cierra la foto y no el modal. */
+      keyboard={ampliada === null}
     >
       <ModalHeader toggle={onClose}></ModalHeader>
 
@@ -162,8 +167,23 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
 
         <p className='font-light gallery-hint'>
           Hasta {MAX_PRODUCT_IMAGES} imágenes. La primera es la que representa al
-          producto en el catálogo; arrastra el orden con las flechas.
+          producto ante los compradores; arrastra el orden con las flechas.
         </p>
+        <div className='alert alert-info gallery-guide'>
+          Usa una foto del producto solo, sobre <strong>fondo blanco liso</strong>. Al subirla la
+          centramos en un cuadro blanco de 1200 × 1200 px con el mismo margen, para que todas
+          las fotos de los productos se vean parejas.
+        </div>
+
+        {ampliada !== null && images.length > 0 && (
+          <ImageLightbox
+            images={images}
+            index={Math.min(ampliada, images.length - 1)}
+            name={product.name}
+            onIndexChange={setAmpliada}
+            onClose={() => setAmpliada(null)}
+          />
+        )}
 
         <div className='gallery-grid'>
           {images.map((image, index) => (
@@ -171,10 +191,17 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
               className={`gallery-slot is-filled${busyImageId === image.id ? ' is-busy' : ''}`}
               key={image.id}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element -- las
-                  imagenes viven en S3 y next/image exigiria declarar el dominio
-                  del bucket en la configuracion. */}
-              <img src={image.url} alt={image.alt ?? product.name} />
+              <button
+                type='button'
+                className='gallery-zoom'
+                aria-label='Ampliar la imagen'
+                onClick={() => setAmpliada(index)}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- las
+                    imagenes viven en S3 y next/image exigiria declarar el
+                    dominio del bucket en la configuracion. */}
+                <img src={image.url} alt={image.alt ?? product.name} />
+              </button>
 
               {image.isPrimary && <span className='gallery-badge'>Principal</span>}
 
@@ -307,7 +334,7 @@ const ProductImagesModal = ({ isOpen, onClose, product }: ProductImagesModalProp
           <p className='mb-0'>
             El archivo se borra del almacenamiento y no se puede recuperar.
             {images.length === 1
-              ? ' Es la única que tiene el producto: quedará sin foto en el catálogo.'
+              ? ' Es la única que tiene el producto: quedará sin foto.'
               : images.find((image) => image.id === pendingDelete)?.isPrimary
                 ? ' Es la principal, así que la siguiente ocupará su lugar.'
                 : ''}

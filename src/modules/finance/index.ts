@@ -6,7 +6,7 @@ export { FinanceSummaryScreen } from './ui/staff/FinanceSummaryScreen';
 export { FinanceSettingsScreen } from './ui/staff/FinanceSettingsScreen';
 export { PayoutsScreen } from './ui/staff/PayoutsScreen';
 export { CreditPortfolioScreen } from './ui/staff/CreditPortfolioScreen';
-export { SupplierCommissionPanel } from './ui/staff/SupplierCommissionPanel';
+export { SupplierProductMarkupsPanel } from './ui/staff/SupplierProductMarkupsPanel';
 export { BuyerCreditPanel } from './ui/staff/BuyerCreditPanel';
 export { PayoutDetailScreen } from './ui/common/PayoutDetailScreen';
 export { SupplierPayoutsScreen } from './ui/supplier/SupplierPayoutsScreen';

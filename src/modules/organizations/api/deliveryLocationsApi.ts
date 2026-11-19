@@ -1,5 +1,6 @@
 import { baseApi } from '@/shared/api/baseApi';
 import type { ApiResponse, SignedUrl, UploadTicket } from '@/shared/api/types';
+import type { Zone } from '@/shared/lib/zones';
 
 import type {
   DeliveryLocation,
@@ -75,6 +76,31 @@ export const deliveryLocationsApi = baseApi.injectEndpoints({
       }),
     }),
 
+    /* Lo de Suminia: las sedes de cualquier empresa, desde su ficha, y la zona
+       de cada una. */
+    getOrganizationLocations: builder.query<ApiResponse<DeliveryLocation[]>, string>({
+      query: (organizationId) => `/delivery-locations/organizations/${organizationId}`,
+      providesTags: (_result, _error, organizationId) => [
+        { type: 'DeliveryLocation', id: `ORG-${organizationId}` },
+      ],
+    }),
+
+    setLocationZone: builder.mutation<
+      ApiResponse<DeliveryLocation>,
+      { locationId: string; organizationId: string; zone: Zone | null }
+    >({
+      query: ({ locationId, zone }) => ({
+        url: `/delivery-locations/${locationId}/zone`,
+        method: 'PATCH',
+        body: { zone },
+      }),
+      /* Los pedidos tambien: el filtro por zona la lee de la sede. */
+      invalidatesTags: (_result, _error, { organizationId }) => [
+        { type: 'DeliveryLocation', id: `ORG-${organizationId}` },
+        'Order',
+      ],
+    }),
+
     deleteDeliveryLocation: builder.mutation<ApiResponse<{ id: string }>, string>({
       query: (id) => ({ url: `/delivery-locations/${id}`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'DeliveryLocation', id: 'LIST' }],
@@ -90,4 +116,6 @@ export const {
   useCreateLocationDocumentUploadUrlMutation,
   useConfirmLocationDocumentMutation,
   useGetLocationDocumentUrlMutation,
+  useGetOrganizationLocationsQuery,
+  useSetLocationZoneMutation,
 } = deliveryLocationsApi;

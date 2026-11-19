@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { PublicCatalogScreen } from '@/modules/products';
 
 export const metadata: Metadata = {
-  title: 'Catálogo',
+  title: 'Productos',
   description:
     'Medicamentos e insumos médicos de proveedores verificados en Colombia. Consulta composición, registro INVIMA y presentaciones.',
 };

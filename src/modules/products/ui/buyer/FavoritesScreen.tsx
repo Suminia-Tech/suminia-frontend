@@ -61,7 +61,7 @@ export const FavoritesScreen = () => {
             guardarlo aquí.
           </p>
           <Link href='/catalog' className='btn btn-primary btn-sm'>
-            Ir al catálogo
+            Ver productos
           </Link>
         </div>
       ) : (

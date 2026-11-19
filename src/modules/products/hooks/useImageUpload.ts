@@ -8,6 +8,8 @@ import {
 } from '../api/productsApi';
 import { formatMegabytes, uploadToStorage } from '@/shared/lib/storageUpload';
 
+import { normalizeProductImage } from '../lib/normalizeImage';
+
 /* Debe coincidir con allowedImageMimeTypes del backend. Se valida aqui solo
    para dar un mensaje inmediato: quien decide de verdad es la politica firmada,
    que S3 hace cumplir aunque el cliente mienta. */
@@ -38,16 +40,19 @@ export const useImageUpload = (productId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const upload = useCallback(
-    async (file: File, alt?: string): Promise<boolean> => {
+    async (original: File, alt?: string): Promise<boolean> => {
       setError(null);
 
-      if (!ALLOWED_TYPES.includes(file.type)) {
+      if (!ALLOWED_TYPES.includes(original.type)) {
         setError(`Formato no admitido. Usa ${EXTENSIONS}.`);
         return false;
       }
 
       setUploading(true);
       try {
+        /* Al cuadro blanco de 1200 px, con el producto centrado: todas las
+           fotos del catalogo con el mismo encuadre. */
+        const file = await normalizeProductImage(original).catch(() => original);
         const { data: ticket } = await createUploadUrl({
           productId,
           contentType: file.type,

@@ -182,7 +182,7 @@ const CategoryLines = ({
 
   return (
     <div className='plan-categories'>
-      <h3 className='order-subhead'>Categorías del catálogo</h3>
+      <h3 className='order-subhead'>Categorías de productos</h3>
       <div className='form-grid'>
         {categorias.map((c) => (
           <div key={c.id}>

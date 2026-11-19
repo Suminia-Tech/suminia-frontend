@@ -6,6 +6,27 @@ export type OrganizationType = 'SUPPLIER' | 'BUYER';
 
 export type OrganizationStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'REJECTED';
 
+/* Una decision del personal de Suminia sobre el estado de la empresa, con
+   quien la tomo y por que. El historial es de Suminia; el motivo le llega a
+   la empresa en el correo. */
+export interface OrganizationStatusChange {
+  id: string;
+  fromStatus: OrganizationStatus;
+  toStatus: OrganizationStatus;
+  reason: string | null;
+  userName: string;
+  createdAt: string;
+}
+
+/* El motivo es obligatorio al rechazar y al suspender, y opcional en lo
+   demas. Va en el cuerpo de la ruta de la decision. */
+export interface StatusDecisionRequest {
+  id: string;
+  reason?: string;
+}
+
+export const MIN_REASON_LENGTH = 10;
+
 /* Las dos que maneja un banco colombiano para consignar. */
 export type BankAccountType = 'AHORROS' | 'CORRIENTE';
 
@@ -46,6 +67,9 @@ export type ContactArea =
    habiles: 0 y 0 es el mismo dia, iguales un numero fijo, distintos un rango. */
 export interface SupplierDeliveryTime {
   city: string;
+  /* La ciudad va con su departamento: hay nombres repetidos. Null solo en
+     filas anteriores a la lista del DANE. */
+  department: string | null;
   daysMin: number;
   daysMax: number;
 }
@@ -53,6 +77,7 @@ export interface SupplierDeliveryTime {
 /* El costo de envio a una ciudad, cuando no es el general. Final, con IVA. */
 export interface SupplierShippingCost {
   city: string;
+  department: string | null;
   cost: number;
 }
 
@@ -63,6 +88,7 @@ export interface SupplierWarehouse {
   name: string | null;
   address: string;
   city: string;
+  department: string | null;
 }
 
 export interface OrganizationContact {
@@ -86,21 +112,10 @@ export type OrganizationDocumentType =
   /* Solo del comprador: prueba que la cuenta con la que paga es suya. */
   | 'BANK_CERTIFICATE';
 
-/* Quien es el comprador: decide que documentos se le piden. */
-export type LegalNature = 'LEGAL_ENTITY' | 'NATURAL_PERSON';
-
-export type BuyerActivity =
-  | 'IPS'
-  | 'CLINICAL_LABORATORY'
-  | 'DIAGNOSTIC_CENTER'
-  | 'PHARMACY'
-  | 'NON_PROFIT'
-  | 'NON_HEALTH_ENTITY'
-  | 'PRIVATE_COMPANY'
-  | 'INDEPENDENT_PROFESSIONAL'
-  | 'OTHER';
-
-export type IpsSector = 'PUBLIC' | 'MIXED' | 'PRIVATE';
+/* Quien es el comprador: decide que documentos se le piden. Los tipos y sus
+   opciones viven en shared, porque el registro tambien los pide. */
+import type { BuyerActivity, IpsSector, LegalNature } from '@/shared/lib/buyerProfile';
+export type { BuyerActivity, IpsSector, LegalNature };
 
 /* El estado de una version. EXPIRED no lo guarda el backend: es una aprobada
    cuya fecha de vencimiento ya paso, y la calcula al responder. REPLACED es
@@ -171,6 +186,8 @@ export interface Organization {
   phone: string | null;
   address: string | null;
   city: string | null;
+  /* Opcional: un backend anterior no lo manda. */
+  department?: string | null;
   country: string;
   /* Lo menos que este proveedor despacha, sumado el pedido. Null en un
      comprador, y null en un proveedor que no exige minimo —que no es cero. */

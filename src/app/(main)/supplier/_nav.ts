@@ -31,7 +31,7 @@ export const SUPPLIER_SIDEBAR: SidebarGroup[] = [
     ],
   },
   {
-    label: 'Catálogo',
+    label: 'Productos',
     items: [{ label: 'Mis productos', href: '/supplier/products', icon: Package }],
   },
   {

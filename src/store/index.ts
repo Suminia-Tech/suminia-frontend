@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
 import { authReducer } from '@/modules/auth';
+import { ordersListReducer } from '@/modules/orders';
 import { organizationsReducer } from '@/modules/organizations';
 import { baseApi } from '@/shared/api/baseApi';
 
@@ -23,6 +24,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     organizations: organizationsReducer,
+    ordersList: ordersListReducer,
     [baseApi.reducerPath]: baseApi.reducer,
 
     HeaderScroll,

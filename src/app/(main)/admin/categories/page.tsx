@@ -4,7 +4,7 @@ import { CategoriesScreen } from '@/modules/products';
 
 export const metadata: Metadata = {
   title: 'Categorías',
-  description: 'Categorías del catálogo de Suminia.',
+  description: 'Categorías de los productos de Suminia.',
 };
 
 export default function AdminCategoriesPage() {

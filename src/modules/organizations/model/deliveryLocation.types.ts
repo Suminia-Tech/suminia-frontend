@@ -1,3 +1,5 @@
+import type { Zone } from '@/shared/lib/zones';
+
 /* Contrato de las sedes de entrega con el backend.
 
    Viven en `organizations` y no en un modulo propio porque son de la empresa:
@@ -22,6 +24,8 @@ export interface DeliveryLocation {
   address: string;
   city: string;
   department: string | null;
+  /* Opcional: un backend anterior no la manda. */
+  zone?: Zone | null;
   /** Quien firma la entrega: el transportador llama a la puerta, no a la centralita. */
   contactName: string | null;
   contactPhone: string | null;
@@ -41,6 +45,7 @@ export interface DeliveryLocationInput {
   address: string;
   city: string;
   department?: string | null;
+  zone?: Zone | null;
   contactName?: string | null;
   contactPhone?: string | null;
   receivingHours?: string | null;

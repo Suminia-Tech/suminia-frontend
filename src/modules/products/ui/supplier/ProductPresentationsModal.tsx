@@ -720,7 +720,7 @@ const ProductPresentationsModal = ({
               <strong>{pendingDelete.name}</strong>
             </p>
             <p className='mb-0'>
-              Deja de ofrecerse en el catálogo. Los pedidos que ya lo incluyan lo
+              Deja de ofrecerse a los compradores. Los pedidos que ya lo incluyan lo
               conservan.
             </p>
           </ConfirmModal>

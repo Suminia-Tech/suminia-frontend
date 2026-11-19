@@ -16,7 +16,7 @@ export default function CarritoPage() {
         <Breadcrumbs
           steps={[
             { label: 'Inicio', href: '/' },
-            { label: 'Catálogo', href: '/catalog' },
+            { label: 'Productos', href: '/catalog' },
             { label: 'Mi carrito' },
           ]}
         />

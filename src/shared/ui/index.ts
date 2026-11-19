@@ -14,3 +14,7 @@ export { MonthlyBars } from './charts/MonthlyBars';
 export type { MonthlyBarsDatum } from './charts/MonthlyBars';
 export { TargetBars } from './charts/TargetBars';
 export type { TargetBarRow } from './charts/TargetBars';
+export { TrendChart } from './charts/TrendChart';
+export type { TrendSeries, TrendTone } from './charts/TrendChart';
+export { DepartmentSelect, CitySelect } from './PlaceSelect';
+export { NavigationProgress } from './NavigationProgress';

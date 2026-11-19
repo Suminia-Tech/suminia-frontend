@@ -1,6 +1,5 @@
 "use client";
 import BlogInfiniteScroll from "@/_template/Components/Blog/BlogInfiniteScroll";
-import BreadCrumb from "@/_template/Components/Element/BreadCrumb";
 import { CommonPath } from "@/_template/Constant";
 import Layout6 from "@/_template/Layout/Layout6";
 import { GETBLOGDATA } from "@/_template/ReduxToolkit/Reducers/BlogReducer";
@@ -25,7 +24,6 @@ const Blog_infinite_scroll = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Blog"} title={"Blog"} />
       <BlogInfiniteScroll />
 </Layout6>
   );

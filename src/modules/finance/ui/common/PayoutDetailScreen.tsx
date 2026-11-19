@@ -99,7 +99,7 @@ export const PayoutDetailScreen = ({
     <>
       <Link
         href={copy.base}
-        className="font-light d-inline-flex align-items-center gap-1 mb-3"
+        className="back-link"
       >
         <ChevronLeft size={16} />
         {copy.volver}

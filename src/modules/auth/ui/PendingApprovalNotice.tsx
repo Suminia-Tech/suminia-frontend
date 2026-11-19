@@ -44,12 +44,12 @@ export const PendingApprovalNotice = () => {
           ) : suspendida ? (
             <>
               <strong>Tu cuenta está suspendida.</strong> Mientras tanto puedes
-              navegar el catálogo, pero no ver precios ni comprar.
+              ver los productos, pero no sus precios ni comprar.
             </>
           ) : (
             <>
-              <strong>Estamos verificando tu empresa.</strong> Puedes navegar el
-              catálogo mientras tanto; los precios aparecerán en cuanto quede
+              <strong>Estamos verificando tu empresa.</strong> Puedes ver los
+              productos mientras tanto; los precios aparecerán en cuanto quede
               aprobada.
             </>
           )}

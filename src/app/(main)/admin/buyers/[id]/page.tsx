@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { BuyerCreditPanel } from '@/modules/finance';
+import { CREDIT_AVAILABLE } from '@/shared/config/features';
 import { BuyerDetailScreen } from '@/modules/organizations';
 
 export const metadata: Metadata = {
@@ -16,11 +17,11 @@ export default async function CompradorDetallePage({
   const { id } = await params;
 
   /* El credito es de finanzas y la ficha de organizations: la pagina las
-     pone una debajo de la otra. */
+     pone una debajo de la otra. El credito llega a mediados de 2027. */
   return (
     <>
       <BuyerDetailScreen buyerId={id} />
-      <BuyerCreditPanel buyerId={id} />
+      {CREDIT_AVAILABLE && <BuyerCreditPanel buyerId={id} />}
     </>
   );
 }

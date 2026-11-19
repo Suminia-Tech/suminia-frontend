@@ -3,6 +3,10 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Col, Row } from 'reactstrap';
 
+import { resolvePlace } from '@/shared/lib/colombia';
+import { hasZones, ZONE_LABEL, ZONES, type Zone } from '@/shared/lib/zones';
+import { CitySelect, DepartmentSelect } from '@/shared/ui';
+
 import type {
   DeliveryLocation,
   DeliveryLocationInput,
@@ -10,8 +14,9 @@ import type {
 
 /* El formulario de una sede, para crearla o editarla.
 
-   Solo tres campos son obligatorios —nombre, direccion y ciudad—: es lo minimo
-   para que un transportador llegue. El resto ahorra llamadas el dia de la
+   Solo cuatro campos son obligatorios —nombre, direccion, departamento y
+   ciudad—: es lo minimo para que un transportador llegue. La zona se suma en
+   las ciudades grandes, donde se divide la operacion. El resto ahorra llamadas el dia de la
    entrega, pero exigirlo de entrada solo conseguiria que se rellenara con
    cualquier cosa. */
 
@@ -20,17 +25,20 @@ const VACIA: DeliveryLocationInput = {
   address: '',
   city: '',
   department: '',
+  zone: null,
   contactName: '',
   contactPhone: '',
   receivingHours: '',
   notes: '',
 };
 
+/* Una sede anterior a la lista del DANE trae la ciudad escrita a mano: se
+   lleva a la lista si se reconoce, y si no queda por elegir. */
 const aFormulario = (location: DeliveryLocation): DeliveryLocationInput => ({
   name: location.name,
   address: location.address,
-  city: location.city,
-  department: location.department ?? '',
+  ...resolvePlace(location.city, location.department),
+  zone: location.zone ?? null,
   contactName: location.contactName ?? '',
   contactPhone: location.contactPhone ?? '',
   receivingHours: location.receivingHours ?? '',
@@ -54,6 +62,8 @@ export const DeliveryLocationForm = ({
     location ? aFormulario(location) : VACIA,
   );
 
+  const conZona = hasZones(values.city);
+
   const cambiar =
     (campo: keyof DeliveryLocationInput) =>
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -67,8 +77,9 @@ export const DeliveryLocationForm = ({
     onSubmit({
       name: values.name.trim(),
       address: values.address.trim(),
-      city: values.city.trim(),
-      department: values.department?.trim() || null,
+      city: values.city,
+      department: values.department || null,
+      zone: hasZones(values.city) ? (values.zone ?? null) : null,
       contactName: values.contactName?.trim() || null,
       contactPhone: values.contactPhone?.trim() || null,
       receivingHours: values.receivingHours?.trim() || null,
@@ -91,16 +102,6 @@ export const DeliveryLocationForm = ({
           />
         </Col>
         <Col md='6' className='mb-3'>
-          <label className='form-label'>Ciudad</label>
-          <input
-            type='text'
-            className='form-control'
-            value={values.city}
-            onChange={cambiar('city')}
-            required
-          />
-        </Col>
-        <Col md='8' className='mb-3'>
           <label className='form-label'>Dirección</label>
           <input
             type='text'
@@ -111,15 +112,65 @@ export const DeliveryLocationForm = ({
             required
           />
         </Col>
-        <Col md='4' className='mb-3'>
-          <label className='form-label'>Departamento</label>
-          <input
-            type='text'
-            className='form-control'
+        <Col md={conZona ? 4 : 6} className='mb-3'>
+          <label className='form-label' htmlFor='sede-departamento'>
+            Departamento
+          </label>
+          <DepartmentSelect
+            id='sede-departamento'
             value={values.department ?? ''}
-            onChange={cambiar('department')}
+            onChange={(department) =>
+              setValues((actual) => ({ ...actual, department, city: '', zone: null }))
+            }
+            required
           />
         </Col>
+        <Col md={conZona ? 4 : 6} className='mb-3'>
+          <label className='form-label' htmlFor='sede-ciudad'>
+            Ciudad
+          </label>
+          <CitySelect
+            id='sede-ciudad'
+            department={values.department ?? ''}
+            value={values.city}
+            onChange={(city) =>
+              setValues((actual) => ({
+                ...actual,
+                city,
+                zone: city === actual.city ? actual.zone : null,
+              }))
+            }
+            required
+          />
+        </Col>
+        {/* Solo en las ciudades que se dividen en zonas: en las demas la
+            pregunta no tiene respuesta. */}
+        {conZona && (
+          <Col md='4' className='mb-3'>
+            <label className='form-label' htmlFor='sede-zona'>
+              Zona de la ciudad
+            </label>
+            <select
+              id='sede-zona'
+              className='form-control'
+              value={values.zone ?? ''}
+              onChange={(event) =>
+                setValues((actual) => ({
+                  ...actual,
+                  zone: (event.target.value || null) as Zone | null,
+                }))
+              }
+              required
+            >
+              <option value=''>Elige la zona</option>
+              {ZONES.map((zone) => (
+                <option key={zone} value={zone}>
+                  {ZONE_LABEL[zone]}
+                </option>
+              ))}
+            </select>
+          </Col>
+        )}
         <Col md='6' className='mb-3'>
           <label className='form-label'>Quién recibe</label>
           <input

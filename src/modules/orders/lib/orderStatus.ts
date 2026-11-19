@@ -130,7 +130,7 @@ export const paymentSummary = (
 ): { label: string; tone: 'success' | 'neutral' | 'danger' | 'muted' } | null => {
   if (order.paymentStatus === 'REFUNDED') return { label: 'Pago devuelto', tone: 'muted' };
   if (needsRefund(order)) {
-    return { label: side === 'buyer' ? 'Te devolvemos plata' : 'Por devolver', tone: 'danger' };
+    return { label: side === 'buyer' ? 'Reembolso en proceso' : 'Reembolso pendiente', tone: 'danger' };
   }
   if (MUERTO.includes(order.status)) return null;
   if (order.paymentStatus === 'PAID') return { label: 'Pagado', tone: 'success' };
@@ -211,18 +211,149 @@ export const ORDER_EVENT_LABEL: Record<OrderEventType, string> = {
   PAYOUT_PAID: 'Liquidado al proveedor',
 };
 
+/* El historial contado al comprador. Su relacion es con Suminia y no con el
+   proveedor: los pasos se dicen en los cuatro de su pedido, lo que hizo el
+   proveedor lo firma Suminia, y lo que es solo entre Suminia y el proveedor
+   —su factura a Suminia, la liquidacion— no aparece. Nulo: no se muestra. */
+export const BUYER_EVENT_LABEL: Record<OrderEventType, string | null> = {
+  PLACED: 'Pedido realizado',
+  PAYMENT_SUBMITTED: 'Comprobante de pago enviado',
+  PAYMENT_APPROVED: 'Pedido recibido: pago confirmado',
+  PAYMENT_REJECTED: 'Comprobante de pago rechazado',
+  PAYMENT_EXPIRED: 'Cancelado: no se recibió el pago a tiempo',
+  CONFIRMED: 'En preparación',
+  AVAILABILITY_PROPOSED: 'Novedad: disponibilidad parcial del pedido',
+  AVAILABILITY_ACCEPTED: 'Aprobaste el despacho parcial',
+  REJECTED: 'Pedido no disponible',
+  CANCELLED: 'Pedido cancelado',
+  SHIPPED: 'Despachado',
+  INVOICE_ATTACHED: null,
+  SUMINIA_INVOICE_ATTACHED: 'Suminia emitió tu factura',
+  DELIVERED: 'Entregado',
+  CLAIM_OPENED: 'Reportaste una novedad en la entrega',
+  CLAIM_RESOLVED: 'Suminia resolvió la novedad',
+  RECEIVED: 'Cerrado: llegó completo y en buenas condiciones',
+  REFUNDED: 'Reembolso realizado',
+  PAYOUT_PAID: null,
+};
+
 /* El estado que se muestra. Un pedido entregado pasa a "Cerrado" cuando se
    cierra para quien lo mira —el comprador al pasar los dias de reclamo,
    Suminia y el proveedor al pagarse la liquidacion—: el backend lo calcula y
    manda `closed`. */
 export const displayStatus = (
-  order: Pick<Order, 'status' | 'closed' | 'claims'>,
-): { label: string; className: string } =>
-  order.claims.some((claim) => claim.status === 'OPEN')
-    ? { label: 'En reclamo', className: 'bg-danger' }
-    : order.closed
-    ? { label: 'Cerrado', className: 'bg-secondary' }
-    : { label: ORDER_STATUS_LABEL[order.status], className: ORDER_STATUS_CLASS[order.status] };
+  order: Pick<Order, 'status' | 'closed' | 'claims' | 'paymentMethod' | 'paymentStatus'>,
+  side: 'buyer' | 'supplier' | 'staff' = 'staff',
+): { label: string; className: string } => {
+  if (order.claims.some((claim) => claim.status === 'OPEN')) {
+    return {
+      label: side === 'buyer' ? 'Novedad en revisión' : 'En reclamo',
+      className: 'bg-danger',
+    };
+  }
+  if (order.closed) return { label: 'Cerrado', className: 'bg-secondary' };
+  if (side === 'buyer') {
+    const etapa = buyerStage(order);
+    return { label: BUYER_STAGE_LABEL[etapa], className: BUYER_STAGE_CLASS[etapa] };
+  }
+  return { label: ORDER_STATUS_LABEL[order.status], className: ORDER_STATUS_CLASS[order.status] };
+};
+
+/* ------------------------------------------------------------------------
+   El pedido contado al comprador
+
+   El comprador no ve los estados internos: "esperando confirmacion",
+   "disponibilidad parcial" y "confirmado" le hacian pensar que Suminia no
+   sabe que tiene en bodega. En el sector el cliente asume que hay inventario;
+   lo que le importa es en que paso va su pedido, y son cuatro: recibido, en
+   preparacion, despachado y entregado. Si hay una novedad —el proveedor solo
+   tiene una parte— se le avisa aparte para que la apruebe, sin cambiar de
+   paso.
+
+   "Despachado" y no "en camino": en camino hace pensar que llega hoy, y
+   puede tardar dias en transporte. Por eso va con su fecha estimada.
+   ------------------------------------------------------------------------ */
+
+export type BuyerStage =
+  | 'awaitingPayment'
+  | 'received'
+  | 'preparing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'rejected';
+
+export const buyerStage = (
+  order: Pick<Order, 'status' | 'paymentMethod' | 'paymentStatus'>,
+): BuyerStage => {
+  switch (order.status) {
+    case 'PLACED':
+      /* Recibido es pedido mas pago confirmado. Por transferencia, antes de
+         verificarlo el paso es el pago. */
+      return order.paymentMethod === 'TRANSFER' && order.paymentStatus !== 'PAID'
+        ? 'awaitingPayment'
+        : 'received';
+    case 'AWAITING_BUYER':
+    case 'CONFIRMED':
+      return 'preparing';
+    case 'SHIPPED':
+      return 'shipped';
+    case 'DELIVERED':
+      return 'delivered';
+    case 'CANCELLED':
+      return 'cancelled';
+    case 'REJECTED':
+      return 'rejected';
+  }
+};
+
+export const BUYER_STAGE_LABEL: Record<BuyerStage, string> = {
+  awaitingPayment: 'Pendiente de pago',
+  received: 'Recibido',
+  preparing: 'En preparación',
+  shipped: 'Despachado',
+  delivered: 'Entregado',
+  cancelled: 'Cancelado',
+  rejected: 'No disponible',
+};
+
+const BUYER_STAGE_CLASS: Record<BuyerStage, string> = {
+  awaitingPayment: 'bg-warning',
+  received: 'bg-primary',
+  preparing: 'bg-primary',
+  shipped: 'bg-info',
+  delivered: 'bg-success',
+  cancelled: 'bg-secondary',
+  rejected: 'bg-danger',
+};
+
+/* Lo que significa cada paso, en la ficha del pedido. */
+export const BUYER_STAGE_HINT: Record<BuyerStage, string> = {
+  awaitingPayment: 'Esperando tu pago para enviar el pedido al proveedor.',
+  received: 'Suminia recibió tu pedido y confirmó el pago.',
+  preparing: 'El proveedor confirmó la disponibilidad y está preparando tus productos.',
+  shipped: 'Tu pedido salió del proveedor y está en proceso de transporte.',
+  delivered: 'Recibiste tu pedido.',
+  cancelled: 'Se canceló.',
+  rejected: 'El proveedor no pudo atenderlo.',
+};
+
+/* Los cuatro pasos que ve el comprador. */
+export const BUYER_TIMELINE: { stage: BuyerStage; label: string }[] = [
+  { stage: 'received', label: 'Recibido' },
+  { stage: 'preparing', label: 'En preparación' },
+  { stage: 'shipped', label: 'Despachado' },
+  { stage: 'delivered', label: 'Entregado' },
+];
+
+/* "lunes, 24 de noviembre": la estimada de entrega es un dia, sin hora. */
+export const formatDeliveryDate = (iso: string): string =>
+  new Intl.DateTimeFormat('es-CO', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  }).format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
 
 /* Lo que significa estar cerrado, para cada lado. */
 export const CLOSED_HINT: Record<'buyer' | 'supplier' | 'staff', string> = {
@@ -263,10 +394,13 @@ export const closedHint = (order: Order, side: 'buyer' | 'supplier' | 'staff'): 
     ? 'Recibido. Confirmaste que llegó completo y en buenas condiciones: el pedido quedó cerrado.'
     : CLOSED_HINT[side];
 
+/* Las novedades que el comprador puede reportar de una entrega, en el
+   orden en que suelen pasar. */
 export const CLAIM_REASON_LABEL: Record<ClaimReason, string> = {
+  MISSING_ITEMS: 'Productos faltantes',
+  EXPIRED: 'Producto vencido o con vencimiento corto',
+  WRONG_PRODUCT: 'Producto equivocado',
+  DAMAGED: 'Producto quebrado o en mal estado',
   DEFECTIVE: 'Producto defectuoso',
-  WRONG_PRODUCT: 'Producto incorrecto',
-  MISSING_ITEMS: 'Faltaron productos',
-  DAMAGED: 'Llegó en mal estado',
-  OTHER: 'Otro problema',
+  OTHER: 'Otra novedad',
 };

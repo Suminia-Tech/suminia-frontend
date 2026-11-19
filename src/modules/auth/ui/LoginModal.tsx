@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   useEffect,
   useRef,
@@ -25,6 +25,11 @@ import { authLabels } from '../lib/labels';
 const LoginModal = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const pathname = usePathname();
+  /* Si el login lleva a otra pantalla —el area del proveedor o del personal—
+     se muestran sus esqueletos; si se queda en la misma —el comprador en la
+     tienda—, solo la barra. */
+  const [cambiaDePantalla, setCambiaDePantalla] = useState(true);
   const { loginModal } = useAppSelector((state) => state.ModalReducer);
   const [login, { isLoading }] = useLoginMutation();
   /* El velo no se levanta cuando responde el servidor sino cuando ya hay algo
@@ -63,6 +68,7 @@ const LoginModal = () => {
       setPassword('');
 
       const destino = getHomePath(session.data.user);
+      setCambiaDePantalla(destino !== pathname);
 
       setEntrando(true);
       startTransition(() => router.push(destino));
@@ -94,9 +100,13 @@ const LoginModal = () => {
 
   return (
     <>
-      {/* Sobre el modal mientras se comprueban las credenciales: es el mismo
-          velo que se ve al abrir la tienda, de modo que la espera se reconoce. */}
-      <LoadingOverlay isOpen={isLoading || entrando || navegando} />
+      {/* Sobre el modal mientras se comprueban las credenciales y se llega al
+          area: los esqueletos de un tablero, que es lo que se abre al entrar. */}
+      <LoadingOverlay
+        isOpen={isLoading || entrando || navegando}
+        variant='dashboard'
+        skeleton={!isLoading && cambiaDePantalla}
+      />
     {/* Sin un `.modal-content` propio: reactstrap ya pinta uno, y el que habia
         aqui dentro era un segundo recuadro blanco con su mismo radio, un pixel
         mas pequeño y pegado al de fuera. No se veia, pero duplicaba el marco y

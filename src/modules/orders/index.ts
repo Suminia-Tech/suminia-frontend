@@ -23,3 +23,4 @@ export { QuoteDetailScreen } from './ui/buyer/QuoteDetailScreen';
 export { useGetBillingQuery, useGetOrdersQuery } from './api/ordersApi';
 
 export type { MonthlyBilling, Order, OrderItem, OrderStatus } from './model/order.types';
+export { default as ordersListReducer } from './model/ordersListSlice';

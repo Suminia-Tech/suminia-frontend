@@ -2,7 +2,8 @@
 
 import { Plus, X } from 'react-feather';
 
-import { Panel } from '@/shared/ui';
+import { resolvePlace } from '@/shared/lib/colombia';
+import { CitySelect, DepartmentSelect, Panel } from '@/shared/ui';
 
 import { SECTION } from '../../lib/pendings';
 import type { SupplierWarehouse } from '../../model/organization.types';
@@ -13,13 +14,19 @@ export interface WarehouseValues {
   id?: string;
   name: string;
   address: string;
+  department: string;
   city: string;
 }
 
 /* El tope que acepta el backend. */
 export const MAX_WAREHOUSES = 20;
 
-const emptyWarehouse = (): WarehouseValues => ({ name: '', address: '', city: '' });
+const emptyWarehouse = (): WarehouseValues => ({
+  name: '',
+  address: '',
+  department: '',
+  city: '',
+});
 
 export const toWarehouseValues = (
   warehouses: SupplierWarehouse[] | undefined,
@@ -28,11 +35,13 @@ export const toWarehouseValues = (
     id: warehouse.id,
     name: warehouse.name ?? '',
     address: warehouse.address,
-    city: warehouse.city,
+    ...resolvePlace(warehouse.city, warehouse.department),
   }));
 
 export const isWarehouseEmpty = (warehouse: WarehouseValues): boolean =>
-  [warehouse.name, warehouse.address, warehouse.city].every((value) => value.trim() === '');
+  [warehouse.name, warehouse.address, warehouse.department, warehouse.city].every(
+    (value) => value.trim() === '',
+  );
 
 /* De vuelta al contrato del backend. Las que quedaron en blanco no viajan:
    son las que se añadieron y nadie lleno. */
@@ -43,7 +52,8 @@ export const toWarehouseRows = (warehouses: WarehouseValues[]) =>
       ...(warehouse.id && { id: warehouse.id }),
       name: warehouse.name.trim() || null,
       address: warehouse.address.trim(),
-      city: warehouse.city.trim(),
+      city: warehouse.city,
+      department: warehouse.department,
     }));
 
 interface SupplierWarehousesFieldsProps {
@@ -66,7 +76,16 @@ const SupplierWarehousesFields = ({
   onChange,
 }: SupplierWarehousesFieldsProps) => {
   const setWarehouse = (index: number, field: keyof Omit<WarehouseValues, 'id'>, value: string) =>
-    onChange(warehouses.map((w, i) => (i === index ? { ...w, [field]: value } : w)));
+    onChange(
+      warehouses.map((w, i) => {
+        if (i !== index) return w;
+        /* Otro departamento deja la ciudad por elegir: la de antes no esta en
+           su lista. */
+        return field === 'department'
+          ? { ...w, department: value, city: '' }
+          : { ...w, [field]: value };
+      }),
+    );
 
   return (
     <Panel
@@ -118,6 +137,27 @@ const SupplierWarehousesFields = ({
                   />
                 </div>
                 <div>
+                  <label className='form-label' htmlFor={id('departamento')}>
+                    Departamento
+                  </label>
+                  <DepartmentSelect
+                    id={id('departamento')}
+                    value={warehouse.department}
+                    onChange={(value) => setWarehouse(index, 'department', value)}
+                  />
+                </div>
+                <div>
+                  <label className='form-label' htmlFor={id('ciudad')}>
+                    Ciudad
+                  </label>
+                  <CitySelect
+                    id={id('ciudad')}
+                    department={warehouse.department}
+                    value={warehouse.city}
+                    onChange={(value) => setWarehouse(index, 'city', value)}
+                  />
+                </div>
+                <div className='form-grid-full'>
                   <label className='form-label' htmlFor={id('direccion')}>
                     Dirección
                   </label>
@@ -128,19 +168,6 @@ const SupplierWarehousesFields = ({
                     className='form-control'
                     value={warehouse.address}
                     onChange={(event) => setWarehouse(index, 'address', event.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className='form-label' htmlFor={id('ciudad')}>
-                    Ciudad
-                  </label>
-                  <input
-                    id={id('ciudad')}
-                    type='text'
-                    maxLength={120}
-                    className='form-control'
-                    value={warehouse.city}
-                    onChange={(event) => setWarehouse(index, 'city', event.target.value)}
                   />
                 </div>
               </div>

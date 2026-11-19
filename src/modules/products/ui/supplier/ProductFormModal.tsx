@@ -354,7 +354,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
           <div className='alert alert-warning'>
             Este producto está publicado. Si cambias su nombre, marca, referencia,
             fabricante o registro sanitario, o lo pasas a una categoría con otros
-            requisitos, vuelve a revisión y sale del catálogo hasta que se apruebe.
+            requisitos, vuelve a revisión y deja de mostrarse hasta que se apruebe.
           </div>
         )}
 

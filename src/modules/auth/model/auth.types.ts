@@ -62,8 +62,17 @@ export interface RegisterRequest {
   legalName: string;
   organizationName: string;
   organizationEmail: string;
-  organizationPhone?: string;
-  city?: string;
+  organizationPhone: string;
+  organizationAddress: string;
+  /* Solo del comprador. */
+  legalNature?: string;
+  buyerActivity?: string;
+  ipsSector?: string;
+  activityOther?: string;
+  bankName?: string;
+  bankAccountNumber?: string;
+  city: string;
+  department: string;
   name: string;
   email: string;
   password: string;

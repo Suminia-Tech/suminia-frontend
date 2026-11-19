@@ -5,15 +5,17 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { nitCheckDigit } from '@/shared/lib/nit';
 import { formatDate } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
 import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
+import { CREDIT_AVAILABLE } from '@/shared/config/features';
 import { useAppSelector } from '@/store/hooks';
 
 import {
   useGetFinanceChangesQuery,
   useGetFinanceSettingsQuery,
-  useGetNegotiatedCommissionsQuery,
+  useGetNegotiatedMarkupsQuery,
   useUpdateFinanceSettingsMutation,
 } from '../../api/financeApi';
 import { formatChangeValue, formatPercent, WEEKDAY_LABEL } from '../../lib/format';
@@ -51,12 +53,12 @@ export const FinanceSettingsScreen = () => {
     <>
       <PageHeader
         title='Configuración financiera'
-        description='Los incrementos sobre el costo, los supuestos y metas del plan financiero, los plazos y la cuenta donde se reciben los pagos. Los precios cambian al instante en el catálogo; los pedidos ya hechos conservan los suyos.'
+        description='Los incrementos sobre el costo, los supuestos y metas del plan financiero, los plazos y la cuenta donde se reciben los pagos. Los precios de los productos cambian al instante; los pedidos ya hechos conservan los suyos.'
       />
       {/* La clave reinicia el formulario cuando cambia lo guardado: se
           inicializa una vez con lo que hay, sin copiarlo en un efecto. */}
       <CommercialLinesPanel editable={editable} general={data.data.commissionRate}>
-        <NegotiatedCommissions />
+        <NegotiatedMarkups />
       </CommercialLinesPanel>
       <SettingsForm key={data.data.updatedAt} settings={data.data} editable={editable} />
       <PlanPanel editable={editable} />
@@ -113,6 +115,9 @@ const aCampos = (s: PlatformSettings): Campos => ({
   breBKey: s.breBKey ?? '',
   paymentInstructions: s.paymentInstructions ?? '',
   staffNotificationEmail: s.staffNotificationEmail ?? '',
+  companyLegalName: s.companyLegalName,
+  companyTaxId: s.companyTaxId ?? '',
+  companySlogan: s.companySlogan ?? '',
 });
 
 const SettingsForm = ({
@@ -131,6 +136,16 @@ const SettingsForm = ({
 
   const set = (campo: keyof Campos) => (valor: string) =>
     setCampos((actual) => ({ ...actual, [campo]: valor }));
+
+  /* El aviso del NIT de Suminia: formato y digito de verificacion. */
+  const nit = campos.companyTaxId.trim();
+  const digitoNit = !nit
+    ? null
+    : !/^\d{6,10}-\d$/.test(nit)
+      ? 'Escribe el NIT sin puntos, con guion y el dígito de verificación: 900123456-8.'
+      : nitCheckDigit(nit.split('-')[0]) !== Number(nit.split('-')[1])
+        ? `El dígito de verificación de ${nit.split('-')[0]} es ${nitCheckDigit(nit.split('-')[0])}.`
+        : null;
 
   const guardar = async () => {
     const body = Object.fromEntries(
@@ -213,8 +228,8 @@ const SettingsForm = ({
           {numero('badDebtRate', 'Pérdida de cartera (% de ventas)', 'Reserva para el crédito que no se cobre.', { min: 0, max: 20, step: 0.1 })}
           {numero('otherVariableRate', 'Tributos y otros variables (% de ventas)', 'Impuestos operativos y lo demás que crece con la venta.', { min: 0, max: 20, step: 0.1 })}
           {numero('monthlyFixedCosts', 'Gasto fijo mensual ($)', 'Nómina, asesorías, marketing y tecnología de un mes.', { min: 0, max: 10_000_000_000, step: 100000 })}
-          {numero('cashFloor', 'Piso de caja ($)', 'La caja que no se toca. Bajo este piso se suspende el crédito nuevo.', { min: 0, max: 100_000_000_000, step: 1000000 })}
-          {numero('creditPortfolioCap', 'Tope de cartera a crédito ($)', 'Lo máximo que puede estar prestado entre todas las instituciones.', { min: 0, max: 100_000_000_000, step: 1000000 })}
+          {CREDIT_AVAILABLE && numero('cashFloor', 'Piso de caja ($)', 'La caja que no se toca. Bajo este piso se suspende el crédito nuevo.', { min: 0, max: 100_000_000_000, step: 1000000 })}
+          {CREDIT_AVAILABLE && numero('creditPortfolioCap', 'Tope de cartera a crédito ($)', 'Lo máximo que puede estar prestado entre todas las instituciones.', { min: 0, max: 100_000_000_000, step: 1000000 })}
           {numero('targetTicket', 'Ticket meta por pedido ($)', 'Lo que se espera que pida una institución cada vez.', { min: 0, max: 10_000_000_000, step: 100000 })}
           {numero('targetFrequency', 'Pedidos meta por comprador al mes', 'Cuántas veces al mes compra una institución activa.', { min: 0, max: 100, step: 0.1 })}
           {numero('targetQuoteConversion', 'Conversión meta de cotizaciones (%)', 'De cada 100 cotizaciones, cuántas se vuelven pedido.', { min: 0, max: 100, step: 1 })}
@@ -276,6 +291,42 @@ const SettingsForm = ({
             'Sobre el costo, para una línea comercial que no tenga el suyo.',
             { min: 0, max: 50, step: 0.5 },
           )}
+        </div>
+      </Panel>
+
+      {/* Como sale Suminia en sus documentos. El NIT va con su digito de
+          verificacion, y se avisa si el digito no corresponde antes de
+          guardarlo: el backend lo rechaza igual. */}
+      <Panel
+        title='Datos de Suminia'
+        description='Cómo se presenta Suminia en sus documentos, como las cotizaciones en PDF.'
+        footer={footer}
+      >
+        <div className='form-grid'>
+          {texto('companyLegalName', 'Razón social', 180, 'Suminia S.A.S.')}
+          <div>
+            <label className='form-label' htmlFor='fin-companyTaxId'>
+              NIT
+            </label>
+            <input
+              id='fin-companyTaxId'
+              type='text'
+              className='form-control'
+              maxLength={12}
+              disabled={!editable}
+              placeholder='900123456-8'
+              value={campos.companyTaxId}
+              onChange={(event) =>
+                set('companyTaxId')(event.target.value.replace(/[^\d-]/g, ''))
+              }
+            />
+            <small className={digitoNit ? 'text-danger' : 'font-light'}>
+              {digitoNit ?? 'Sin puntos y con el dígito de verificación, como en el RUT.'}
+            </small>
+          </div>
+          <div className='form-grid-full'>
+            {texto('companySlogan', 'Eslogan (opcional)', 160)}
+          </div>
         </div>
       </Panel>
 
@@ -394,25 +445,34 @@ const ChangesPanel = () => {
   );
 };
 
-/* Quien no paga la general. Sin esto, subir la general parece no hacer nada
-   con el proveedor que la tiene pactada: el pedido sale con la suya. */
-const NegotiatedCommissions = () => {
-  const { data } = useGetNegotiatedCommissionsQuery();
-  const pactadas = data?.data ?? [];
-  if (pactadas.length === 0) return null;
+/* Los productos que no siguen a su linea. Sin esto, subir el incremento de
+   una linea parece no hacer nada con el producto que tiene el suyo pactado:
+   el pedido sale con el suyo. */
+const NegotiatedMarkups = () => {
+  const { data } = useGetNegotiatedMarkupsQuery();
+  const pactados = data?.data ?? [];
+  if (pactados.length === 0) return null;
+  const proveedores = [...new Map(pactados.map((p) => [p.supplierId, p.supplierName]))];
 
   return (
     <p className='panel-warning mt-3 mb-0'>
       <span>
-        {pactadas.length === 1 ? 'Este proveedor tiene' : 'Estos proveedores tienen'} un incremento
-        pactado y no cambian con el de su línea:{' '}
-        {pactadas.map((p, i) => (
-          <span key={p.id}>
+        {pactados.length === 1 ? 'Un producto tiene' : `${pactados.length} productos tienen`} un
+        incremento pactado y no cambian con el de su línea:{' '}
+        {pactados.slice(0, 5).map((p, i) => (
+          <span key={p.productId}>
             {i > 0 && ', '}
-            <Link href={`/admin/suppliers/${p.id}`}>{p.name}</Link> ({formatPercent(p.rate)})
+            {p.name} ({formatPercent(p.rate ?? 0)})
           </span>
         ))}
-        . Se quita en la ficha de cada uno.
+        {pactados.length > 5 && ` y ${pactados.length - 5} más`}. Se cambian en la ficha de{' '}
+        {proveedores.map(([id, nombre], i) => (
+          <span key={id}>
+            {i > 0 && (i === proveedores.length - 1 ? ' y ' : ', ')}
+            <Link href={`/admin/suppliers/${id}`}>{nombre}</Link>
+          </span>
+        ))}
+        .
       </span>
     </p>
   );

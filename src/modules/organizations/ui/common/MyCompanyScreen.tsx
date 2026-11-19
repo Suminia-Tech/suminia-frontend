@@ -1,9 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { AlertTriangle } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { useLocationHash } from '@/shared/hooks/useLocationHash';
@@ -39,6 +37,7 @@ import { toDeliveryTimeRows } from './DeliveryTimeFields';
 import { toShippingCostRows } from './ShippingCostFields';
 import { toContactRows } from './SupplierContactsFields';
 import { toWarehouseRows } from './SupplierWarehousesFields';
+import RegistrationProgress from './RegistrationProgress';
 import StatusBadge from './StatusBadge';
 import { DeclarationStatusPanel } from './DeclarationStatusPanel';
 
@@ -65,10 +64,10 @@ const pesos = (valor: number) =>
 
 const EXPLICACION: Record<OrganizationStatus, string | null> = {
   PENDING:
-    'El equipo de Suminia revisa a mano los datos de cada empresa. Te avisamos por correo en cuanto quede aprobada; mientras tanto puedes navegar el catálogo, pero los precios no se muestran.',
+    'El equipo de Suminia revisa a mano los datos de cada empresa. Te avisamos por correo en cuanto quede aprobada; mientras tanto puedes ver los productos, pero no sus precios.',
   ACTIVE: null,
   SUSPENDED:
-    'Tu empresa está suspendida: puedes entrar y consultar el catálogo, pero no ver precios ni comprar. Escríbenos para saber que hace falta para reactivarla.',
+    'Tu empresa está suspendida: puedes entrar y ver los productos, pero no sus precios ni comprar. Escríbenos para saber que hace falta para reactivarla.',
   REJECTED:
     'Tu solicitud no fue aprobada. Si crees que se trata de un error, escríbenos y la revisamos de nuevo.',
 };
@@ -220,7 +219,8 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
           // Cadena vacia significa "sin dato": el backend acepta null para
           // limpiar el campo, pero rechaza "" en los que valida formato.
           address: values.address.trim() || null,
-          city: values.city.trim() || null,
+          city: values.city || null,
+          department: values.city ? values.department : null,
         },
       }).unwrap();
       toast.success('Datos actualizados');
@@ -313,18 +313,12 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
           <div className={CLASE_AVISO[organization.status]}>{explicacion}</div>
         )}
 
-        {/* Lo que le falta al comprador para que lo aprueben, dicho antes de
-            que lo descubra esperando: Suminia no puede aprobarlo sin ello. */}
-        {kind === 'buyer' && organization.status === 'PENDING' && pendientes.length > 0 && (
-          <ul className='summary-todo'>
-            {pendientes.map((pendiente) => (
-              <li key={pendiente.key}>
-                <AlertTriangle size={17} />
-                <span>{pendiente.texto}</span>
-                <Link href={pendiente.href}>{pendiente.enlace}</Link>
-              </li>
-            ))}
-          </ul>
+        {/* El avance del registro mientras falte algo o la solicitud siga en
+            revision: cuanto lleva, que paso le falta y a donde ir a llenarlo.
+            Reemplaza la lista suelta de pendientes, que decia lo mismo sin
+            decir cuanto faltaba. */}
+        {(organization.status === 'PENDING' || pendientes.length > 0) && (
+          <RegistrationProgress kind={kind} pendientes={pendientes} />
         )}
 
         {/* El estado no se repite aqui: ya esta en la etiqueta de al lado del

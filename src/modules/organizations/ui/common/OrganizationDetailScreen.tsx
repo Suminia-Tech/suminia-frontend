@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { AlertTriangle, ChevronLeft, FileText } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { formatDate } from '@/shared/lib/dates';
+import { formatDate, formatDateTime } from '@/shared/lib/dates';
 import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { hasPermission } from '@/shared/lib/permissions';
 import { useAppSelector } from '@/store/hooks';
@@ -16,6 +16,7 @@ import {
   KIND_COPY,
   useOrganizationDecisions,
   useOrganizationDetail,
+  useOrganizationStatusHistory,
   type OrganizationKind,
 } from '../../hooks/useOrganizationAdmin';
 import {
@@ -28,8 +29,14 @@ import {
   describeProductLines,
 } from '../../lib/commercialProfile';
 import { formatDeliveryTime } from '../../lib/deliveryTime';
-import { formatTaxId } from '../../lib/taxId';
-import type { OrganizationStatus } from '../../model/organization.types';
+import { formatTaxId, wrongCheckDigit } from '../../lib/taxId';
+import { getStatusLabel } from '../../lib/organizationStatus';
+import {
+  MIN_REASON_LENGTH,
+  type OrganizationStatus,
+} from '../../model/organization.types';
+import BuyerLocationsPanel from './BuyerLocationsPanel';
+import ContactPeopleList from './ContactPeopleList';
 import DeclarationSummaryPanel from './DeclarationSummaryPanel';
 import LegalDocumentsPanel from './LegalDocumentsPanel';
 import StatusBadge from './StatusBadge';
@@ -76,6 +83,11 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
   const permissions = useAppSelector((state) => state.auth.user?.permissions);
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  /* Rechazar y suspender piden el motivo antes de ejecutarse, en el mismo
+     panel de la decision: le llega a la empresa en el correo y queda en el
+     historial. */
+  const [conMotivo, setConMotivo] = useState<'reject' | 'suspend' | null>(null);
+  const [motivo, setMotivo] = useState('');
   const copy = KIND_COPY[kind];
   const nombre = capitalizar(copy.singular);
 
@@ -89,6 +101,9 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
     useOrganizationDecisions(kind);
 
   const canDecide = hasPermission(permissions, 'organization:approve');
+  const historial = useOrganizationStatusHistory(kind, organizationId, {
+    skip: !hydrated || !canDecide,
+  });
 
   if (!hydrated || isLoading) {
     return <PageSkeleton variant='detail' />;
@@ -114,6 +129,8 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
     try {
       await action();
       toast.success(successMessage);
+      setConMotivo(null);
+      setMotivo('');
     } catch (err) {
       setErrorMessage(extractErrorMessage(err, fallback));
     }
@@ -129,14 +146,26 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
     { label: 'Dirección', value: organization.address },
   ];
 
-  /* Lo que la empresa dejo en blanco. Son campos opcionales en el registro, de
-     modo que su ausencia no es un error; pero quien decide si la empresa puede
-     operar merece verlo dicho, no deducirlo de una raya. */
+  /* Lo que la empresa dejo en blanco. El registro ya pide telefono, direccion
+     y ciudad, de modo que esto solo pasa con las empresas que se registraron
+     antes; quien decide si la empresa puede operar merece verlo dicho, no
+     deducirlo de una raya. */
   const sinLlenar = datos
     .filter((campo) => !campo.value)
     .map((campo) => campo.label.toLowerCase());
 
   const esProveedor = kind === 'supplier';
+  const digitoCorrecto = wrongCheckDigit(organization.taxId);
+  /* Las areas del proveedor sin una persona con nombre, correo y celular: el
+     backend no deja aprobarlo sin ellas. */
+  const areasSinContacto = esProveedor
+    ? CONTACT_AREA_OPTIONS.filter(
+        ({ value }) =>
+          !organization.contacts?.some(
+            (c) => c.area === value && c.name && c.email && c.phone,
+          ),
+      ).map(({ label }) => label)
+    : [];
   const tieneCuenta = Boolean(
     organization.bankName && organization.bankAccountNumber,
   );
@@ -159,7 +188,7 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
       clase: 'btn btn-primary',
       accion: () =>
         run(
-          () => approve(organization.id).unwrap(),
+          () => approve({ id: organization.id }).unwrap(),
           `${nombre} aprobado`,
           'No se pudo aprobar.',
         ),
@@ -167,29 +196,23 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
     available.includes('reject') && {
       texto: 'Rechazar',
       clase: 'btn btn-outline-danger',
-      accion: () =>
-        run(
-          () => reject(organization.id).unwrap(),
-          `${nombre} rechazado`,
-          'No se pudo rechazar.',
-        ),
+      accion: async () => {
+        setConMotivo('reject');
+      },
     },
     available.includes('suspend') && {
       texto: 'Suspender',
       clase: 'btn btn-outline-danger',
-      accion: () =>
-        run(
-          () => suspend(organization.id).unwrap(),
-          `${nombre} suspendido`,
-          'No se pudo suspender.',
-        ),
+      accion: async () => {
+        setConMotivo('suspend');
+      },
     },
     available.includes('reactivate') && {
       texto: 'Reactivar',
       clase: 'btn btn-primary',
       accion: () =>
         run(
-          () => reactivate(organization.id).unwrap(),
+          () => reactivate({ id: organization.id }).unwrap(),
           `${nombre} reactivado`,
           'No se pudo reactivar.',
         ),
@@ -199,11 +222,42 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
       Boolean(b),
   );
 
+  /* Lo que de verdad le pasa a la empresa al suspenderla, con las mismas
+     reglas que aplica el backend: sus productos salen del catalogo (solo se
+     muestran los de empresas activas) y cada accion de operar pasa por la
+     guarda de empresa activa. Puede entrar y mirar, pero no operar. */
+  const efectosSuspension = esProveedor
+    ? [
+        'Sus productos dejan de aparecer para los compradores.',
+        'No puede crear ni editar productos, ni responder cotizaciones.',
+        'No puede confirmar, despachar ni gestionar pedidos: los que tenga en curso quedan en espera.',
+        'Puede seguir entrando a su cuenta, pero sin operar.',
+      ]
+    : [
+        'Deja de ver precios y no puede usar el carrito ni hacer pedidos.',
+        'No puede pedir cotizaciones ni gestionar los pedidos que tenga en curso.',
+        'Puede seguir entrando y viendo los productos, sin precios.',
+      ];
+
+  const motivoValido = motivo.trim().length >= MIN_REASON_LENGTH;
+  const confirmarConMotivo = () =>
+    conMotivo === 'reject'
+      ? run(
+          () => reject({ id: organization.id, reason: motivo }).unwrap(),
+          `${nombre} rechazado. Le avisamos por correo.`,
+          'No se pudo rechazar.',
+        )
+      : run(
+          () => suspend({ id: organization.id, reason: motivo }).unwrap(),
+          `${nombre} suspendido. Le avisamos por correo.`,
+          'No se pudo suspender.',
+        );
+
   return (
     <>
       <Link
         href={copy.basePath}
-        className='font-light d-inline-flex align-items-center gap-1 mb-3'
+        className='back-link'
       >
         <ChevronLeft size={16} />
         {copy.plural}
@@ -223,21 +277,22 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
 
       <div className='order-layout'>
         <div className='order-main'>
-          <Panel
-            title='Lo que registró la empresa'
-            description={
-              decidiendo
-                ? 'Es lo único que hay para revisar: Suminia todavía no pide documentos al registrarse.'
-                : undefined
-            }
-          >
+          <Panel title='Información de la empresa'>
             {/* El aviso solo mientras se decide: despues de aprobada, que el
                 telefono este vacio ya no cambia nada. */}
             {decidiendo && sinLlenar.length > 0 && (
               <p className='review-missing'>
                 <AlertTriangle size={16} />
-                Dejó sin llenar {sinLlenar.join(', ')}. Son campos opcionales
-                del registro.
+                Dejó sin llenar {sinLlenar.join(', ')}: se registró antes de que
+                fueran obligatorios. Pídeselos antes de aprobar.
+              </p>
+            )}
+
+            {digitoCorrecto !== null && (
+              <p className='review-missing'>
+                <AlertTriangle size={16} />
+                El dígito de verificación registrado no corresponde al NIT: según la fórmula de la
+                DIAN debería ser {digitoCorrecto}. Compáralo con el RUT.
               </p>
             )}
 
@@ -275,6 +330,8 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
               </ul>
             </Panel>
           )}
+
+          {!esProveedor && <BuyerLocationsPanel organizationId={organizationId} />}
 
           {/* La declaracion va justo despues de lo registrado: es lo otro que
               hay que leer para decidir, y sin ella el backend no deja aprobar.
@@ -451,7 +508,8 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
           {/* Con quien hablar en la empresa. Tambien lo llena despues de
               aprobada, y por eso solo aparece si hay algo. */}
           {(Boolean(organization.contacts?.length) ||
-            Boolean(organization.orderEmails?.length)) && (
+            Boolean(organization.orderEmails?.length) ||
+            (decidiendo && areasSinContacto.length > 0)) && (
               <Panel
                 title='Contactos'
                 description={
@@ -459,58 +517,18 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                     ? 'Las personas de cada área y a dónde llegan las órdenes de compra.'
                     : 'Las personas de cada área de la organización.'
                 }
+                warning={
+                  areasSinContacto.length > 0
+                    ? `Falta el contacto de ${areasSinContacto.join(', ')}, con nombre, correo y celular.${decidiendo ? ' No se puede aprobar hasta que el proveedor los registre.' : ''}`
+                    : undefined
+                }
               >
-                <ul className='data-list'>
-                  {(esProveedor ? CONTACT_AREA_OPTIONS : BUYER_CONTACT_AREA_OPTIONS).map(
-                    ({ value: area, label }) => {
-                      /* Varias en los auxiliares de compras; una en las demas. */
-                      const people = organization.contacts?.filter((c) => c.area === area) ?? [];
-                      return (
-                        <li key={area}>
-                          <span className='font-light'>{label}</span>
-                          <span>
-                            {people.length
-                              ? people
-                                  .map((contact) =>
-                                    [contact.name, contact.position, contact.email, contact.phone]
-                                      .filter(Boolean)
-                                      .join(' · '),
-                                  )
-                                  .join(' / ')
-                              : '—'}
-                          </span>
-                        </li>
-                      );
-                    },
-                  )}
-                  {/* Las areas propias de la empresa, despues de las sugeridas
-                      y con su nombre. */}
-                  {[
-                    ...new Set([
-                      ...(organization.customContactAreas ?? []),
-                      ...(organization.contacts ?? [])
-                        .filter((contact) => contact.area === 'OTHER')
-                        .map((contact) => contactAreaLabel(contact)),
-                    ]),
-                  ].map((label) => (
-                    <li key={`propia-${label}`}>
-                      <span className='font-light'>{label}</span>
-                      <span>
-                        {(organization.contacts ?? [])
-                          .filter(
-                            (contact) =>
-                              contact.area === 'OTHER' && contactAreaLabel(contact) === label,
-                          )
-                          .map((contact) =>
-                            [contact.name, contact.position, contact.email, contact.phone]
-                              .filter(Boolean)
-                              .join(' · '),
-                          )
-                          .join(' / ') || '—'}
-                      </span>
-                    </li>
-                  ))}
-                  {esProveedor && (
+                <ContactPeopleList
+                  contacts={organization.contacts ?? []}
+                  areas={esProveedor ? CONTACT_AREA_OPTIONS : BUYER_CONTACT_AREA_OPTIONS}
+                />
+                {esProveedor && (
+                  <ul className='data-list is-single contact-order-emails'>
                     <li>
                       <span className='font-light'>Órdenes de compra</span>
                       <span>
@@ -519,8 +537,8 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                           : '—'}
                       </span>
                     </li>
-                  )}
-                </ul>
+                  </ul>
+                )}
               </Panel>
             )}
 
@@ -546,19 +564,89 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
         <aside className='order-side'>
           {canDecide && botones.length > 0 && (
             <Panel className='order-next'>
-              <div className='order-actions'>
-                {botones.map((boton) => (
-                  <button
-                    key={boton.texto}
-                    type='button'
-                    className={boton.clase}
-                    disabled={isBusy}
-                    onClick={boton.accion}
-                  >
-                    {boton.texto}
-                  </button>
-                ))}
-              </div>
+              {conMotivo ? (
+                <div className='status-reason'>
+                  {conMotivo === 'suspend' && (
+                    <div className='status-effects'>
+                      <p>Al suspender a este {copy.singular}, hasta que lo reactives:</p>
+                      <ul>
+                        {efectosSuspension.map((efecto) => (
+                          <li key={efecto}>{efecto}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <label className='form-label' htmlFor='motivo-decision'>
+                    {conMotivo === 'reject' ? 'Motivo del rechazo' : 'Motivo de la suspensión'}
+                  </label>
+                  <textarea
+                    id='motivo-decision'
+                    className='form-control'
+                    rows={4}
+                    maxLength={1000}
+                    autoFocus
+                    placeholder={
+                      conMotivo === 'reject'
+                        ? 'El RUT no coincide con la razón social registrada.'
+                        : 'Tres pedidos sin despachar en el último mes.'
+                    }
+                    value={motivo}
+                    onChange={(event) => setMotivo(event.target.value)}
+                  />
+                  <p className='font-light status-reason-note'>
+                    Le llega a la empresa en el correo que le avisa la decisión, para que sepa qué
+                    corregir. También queda en el historial, con tu nombre y la fecha.
+                  </p>
+                  <div className='order-actions'>
+                    <button
+                      type='button'
+                      className='btn btn-danger'
+                      disabled={isBusy || !motivoValido}
+                      onClick={confirmarConMotivo}
+                    >
+                      {isBusy
+                        ? 'Guardando...'
+                        : conMotivo === 'reject'
+                          ? `Rechazar ${copy.singular}`
+                          : `Suspender ${copy.singular}`}
+                    </button>
+                    <button
+                      type='button'
+                      className='btn btn-outline-secondary'
+                      disabled={isBusy}
+                      onClick={() => {
+                        setConMotivo(null);
+                        setMotivo('');
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className='order-actions'>
+                  {botones.map((boton) => (
+                    <button
+                      key={boton.texto}
+                      type='button'
+                      className={boton.clase}
+                      disabled={isBusy}
+                      onClick={boton.accion}
+                    >
+                      {boton.texto}
+                    </button>
+                  ))}
+                  {available.includes('suspend') && (
+                    <p className='font-light status-reason-note mb-0'>
+                      Suspender saca al {copy.singular} de la operación hasta que lo reactives:{' '}
+                      {esProveedor
+                        ? 'sus productos dejan de mostrarse y no puede gestionar pedidos.'
+                        : 'deja de ver precios y no puede comprar.'}{' '}
+                      Se le avisa por correo con el motivo.
+                    </p>
+                  )}
+                </div>
+              )}
             </Panel>
           )}
 
@@ -576,6 +664,31 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
               )}
             </ul>
           </Panel>
+
+          {/* La constancia de cada decision sobre la empresa: solo la ve quien
+              puede decidir. A la empresa le llego el motivo por correo. */}
+          {canDecide && Boolean(historial.data?.data.length) && (
+            <Panel
+              title='Historial de decisiones'
+              description='Quién decidió, cuándo y por qué. Solo lo ve el equipo de Suminia.'
+            >
+              <ul className='status-history'>
+                {historial.data?.data.map((cambio) => (
+                  <li key={cambio.id}>
+                    <div className='status-history-head'>
+                      <StatusBadge status={cambio.toStatus} />
+                      <span className='font-light'>{formatDateTime(cambio.createdAt)}</span>
+                    </div>
+                    <p className='status-history-who'>
+                      {getStatusLabel(cambio.fromStatus)} → {getStatusLabel(cambio.toStatus)} · por{' '}
+                      {cambio.userName}
+                    </p>
+                    {cambio.reason && <p className='status-history-reason'>{cambio.reason}</p>}
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
 
           {/* Los soportes que sube la empresa desde su panel. Se listan
               todos, cargados o no: un revisor que no ve el RUT tiene que saber

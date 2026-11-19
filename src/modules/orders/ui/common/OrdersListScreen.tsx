@@ -1,17 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { ArrowRight, Package } from 'react-feather';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate } from '@/shared/lib/dates';
 import { PageHeader, PageSkeleton, Pagination } from '@/shared/ui';
-import { useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 import { useGetOrderMetricsQuery, useGetOrdersQuery } from '../../api/ordersApi';
 import {
   displayStatus,
+  formatDeliveryDate,
   paymentSummary,
   TONE_PILL,
 } from '../../lib/orderStatus';
@@ -23,6 +24,12 @@ import {
   type StaffOrderFilters,
 } from '../../lib/staffFilters';
 import type { OrderStatus } from '../../model/order.types';
+import {
+  EMPTY_ORDERS_LIST,
+  setOrdersPage,
+  setOrdersStaffFilters,
+  setOrdersStatus,
+} from '../../model/ordersListSlice';
 import StaffOrderFiltersPanel from '../staff/StaffOrderFiltersPanel';
 
 /* Los pedidos: los que hizo la empresa si es compradora, los que le hicieron si
@@ -50,7 +57,7 @@ const COPY: Record<
 > = {
   buyer: {
     titulo: 'Mis pedidos',
-    descripcion: 'Lo que has pedido y en qué va cada entrega.',
+    descripcion: 'Consulta tus pedidos y haz seguimiento a sus entregas.',
     vacio: 'Todavía no has hecho ningún pedido.',
     basePath: '/buyer/orders',
   },
@@ -68,6 +75,23 @@ const COPY: Record<
     basePath: '/admin/orders',
   },
 };
+
+/* Las pestañas del comprador: los pasos que ve, no los estados internos.
+   "En preparacion" junta lo que todavia no sale del proveedor. Entregados y
+   cerrados se separan: entregado es lo que todavia esta en plazo para
+   reportar novedades; cerrado, lo que ya no. */
+const ESTADOS_COMPRADOR: { value: string; label: string; filter: Record<string, string> }[] = [
+  { value: '', label: 'Todos', filter: {} },
+  {
+    value: 'preparing',
+    label: 'En preparación',
+    filter: { status: 'PLACED,AWAITING_BUYER,CONFIRMED' },
+  },
+  { value: 'shipped', label: 'Despachados', filter: { status: 'SHIPPED' } },
+  { value: 'delivered', label: 'Entregados', filter: { buyerClosed: 'false' } },
+  { value: 'closed', label: 'Cerrados', filter: { buyerClosed: 'true' } },
+  { value: 'cancelled', label: 'Cancelados', filter: { status: 'CANCELLED,REJECTED' } },
+];
 
 const ESTADOS: { value: OrderStatus | ''; label: string }[] = [
   { value: '', label: 'Todos' },
@@ -108,7 +132,7 @@ const QUEUES: Record<
   refunds: {
     titulo: 'Devoluciones',
     descripcion:
-      'Pedidos que se cancelaron después de pagados. Devuélvele la plata al comprador y registra el comprobante.',
+      'Pedidos que se cancelaron después de pagados. Reembolsa el pago al comprador y registra el comprobante.',
     vacio: 'No hay devoluciones pendientes.',
     filter: { refund: 'true' },
   },
@@ -149,16 +173,25 @@ export const OrdersListScreen = ({
 }) => {
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const copy = queue ? { ...COPY[side], ...QUEUES[queue] } : COPY[side];
-  const [status, setStatus] = useState<OrderStatus | ''>('');
-  const [page, setPage] = useState(1);
+  /* La pestaña, la pagina y los filtros viven en el store: volver de un
+     pedido deja la lista como estaba. */
+  const dispatch = useAppDispatch();
+  const clave = queue ? `queue:${queue}` : side;
+  const lista = useAppSelector((state) => state.ordersList[clave]) ?? EMPTY_ORDERS_LIST;
+  const { status, page, staffFilters } = lista;
+  const setPage = (next: number) => dispatch(setOrdersPage({ key: clave, page: next }));
   /* Los filtros de analisis son solo del personal de Suminia: el proveedor y
      el comprador ven sus propios pedidos, y con el estado les basta. */
-  const [staffFilters, setStaffFilters] = useState<StaffOrderFilters>(EMPTY_STAFF_FILTERS);
+
   const isStaff = side === 'staff';
   const filter = queue
     ? QUEUES[queue].filter
     : {
-        ...(status ? { status } : {}),
+        ...(side === 'buyer'
+          ? (ESTADOS_COMPRADOR.find((e) => e.value === status)?.filter ?? {})
+          : status
+            ? { status }
+            : {}),
         ...(isStaff ? toFilterParams(staffFilters) : {}),
       };
 
@@ -200,14 +233,13 @@ export const OrdersListScreen = ({
 
       {!queue && (
       <div className='orders-filter'>
-        {ESTADOS.map((estado) => (
+        {(side === 'buyer' ? ESTADOS_COMPRADOR : ESTADOS).map((estado) => (
           <button
             type='button'
             key={estado.value}
             className={status === estado.value ? 'is-chosen' : undefined}
             onClick={() => {
-              setStatus(estado.value);
-              setPage(1);
+              dispatch(setOrdersStatus({ key: clave, status: estado.value }));
             }}
           >
             {estado.label}
@@ -221,8 +253,7 @@ export const OrdersListScreen = ({
           filters={staffFilters}
           metrics={metrics?.data}
           onChange={(next) => {
-            setStaffFilters(next);
-            setPage(1);
+            dispatch(setOrdersStaffFilters({ key: clave, filters: next }));
           }}
         />
       )}
@@ -241,7 +272,7 @@ export const OrdersListScreen = ({
               pedido no depende de el. */}
           {side === 'buyer' && (
             <Link href='/catalog' className='btn btn-primary'>
-              Ir al catálogo
+              Ver productos
             </Link>
           )}
         </div>
@@ -283,6 +314,18 @@ export const OrdersListScreen = ({
                       {order.items.length}{' '}
                       {order.items.length === 1 ? 'producto' : 'productos'}
                     </small>
+                    {/* La novedad del despacho parcial se le dice al comprador
+                        aparte: el paso sigue siendo "En preparacion". */}
+                    {side === 'buyer' && order.status === 'AWAITING_BUYER' && (
+                      <span className='status-pill status-danger'>Requiere tu aprobación</span>
+                    )}
+                    {side === 'buyer' &&
+                      order.status === 'SHIPPED' &&
+                      order.estimatedDeliveryAt && (
+                        <small className='font-light'>
+                          Entrega estimada: {formatDeliveryDate(order.estimatedDeliveryAt)}
+                        </small>
+                      )}
                     {(() => {
                       const pago = paymentSummary(order, side);
                       return (
@@ -295,8 +338,8 @@ export const OrdersListScreen = ({
                     })()}
                   </div>
 
-                  <span className={`badge ${displayStatus(order).className}`}>
-                    {displayStatus(order).label}
+                  <span className={`badge ${displayStatus(order, side).className}`}>
+                    {displayStatus(order, side).label}
                   </span>
 
                   <span className='orders-total'>

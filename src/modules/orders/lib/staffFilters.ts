@@ -10,6 +10,8 @@ export interface StaffOrderFilters {
   categoryId: string;
   city: string;
   department: string;
+  /* La zona de la sede dentro de su ciudad; ver shared/lib/zones. */
+  zone: string;
   clientType: string;
   value: string;
   units: string;
@@ -20,6 +22,7 @@ export const EMPTY_STAFF_FILTERS: StaffOrderFilters = {
   categoryId: '',
   city: '',
   department: '',
+  zone: '',
   clientType: '',
   value: '',
   units: '',
@@ -89,6 +92,7 @@ export const toFilterParams = (filters: StaffOrderFilters): Record<string, strin
   if (filters.categoryId) params.categoryId = filters.categoryId;
   if (filters.city) params.city = filters.city;
   if (filters.department) params.department = filters.department;
+  if (filters.zone) params.zone = filters.zone;
   if (filters.clientType) params.clientType = filters.clientType;
   const value = VALUE_RANGES.find((range) => range.key === filters.value);
   if (value?.min !== undefined) params.minTotal = String(value.min);

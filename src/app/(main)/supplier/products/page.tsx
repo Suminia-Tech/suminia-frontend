@@ -4,7 +4,7 @@ import { MyProductsScreen } from '@/modules/products';
 
 export const metadata: Metadata = {
   title: 'Mis productos',
-  description: 'Administra el catálogo que tu empresa publica en Suminia.',
+  description: 'Administra los productos que tu empresa publica en Suminia.',
 };
 
 /* Ancho completo, sin barra lateral: la tabla lleva miniaturas, formatos,

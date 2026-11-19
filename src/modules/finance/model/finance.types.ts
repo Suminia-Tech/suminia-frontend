@@ -34,6 +34,11 @@ export interface PlatformSettings {
   paymentInstructions: string | null;
   /** El buzon del equipo de Suminia para lo que pide su atencion. */
   staffNotificationEmail: string | null;
+  /* Como se presenta Suminia en sus documentos, como la cotizacion. */
+  companyLegalName: string;
+  /** Con digito de verificacion: "900123456-8". */
+  companyTaxId: string | null;
+  companySlogan: string | null;
   updatedAt: string;
 }
 
@@ -65,10 +70,21 @@ export interface OrganizationFinance {
   organizationId: string;
   name: string;
   type: 'SUPPLIER' | 'BUYER';
-  /** Nula: la general. */
-  commissionRate: number | null;
   credit: CreditStatus;
   changes: FinanceChange[];
+}
+
+/* Un producto con su incremento: el de su linea y, si se pacto, el propio. */
+export interface ProductMarkup {
+  productId: string;
+  name: string;
+  supplierId: string;
+  supplierName: string;
+  category: string | null;
+  line: CommercialLine | null;
+  lineLabel: string | null;
+  /** El incremento propio; nulo, el de su linea. */
+  rate: number | null;
 }
 
 export interface CreditPortfolioRow {
@@ -215,13 +231,42 @@ export interface DashboardMonth {
   orders: number;
   activeBuyers: number;
   newBuyers: number;
+  /** Las instituciones que ya compraron alguna vez al cierre del mes; nulo en
+      un mes que todavia no llega. */
+  cumulativeBuyers: number | null;
   plan: { sales: number; newBuyers: number; activeBuyers: number; result: number } | null;
 }
 
-/* El tablero 360: lo real del año contra el plan financiero. */
+/* Un rango de meses, de "2026-01" a "2026-12". */
+export interface MonthRange {
+  from: string;
+  to: string;
+}
+
+/* Las cifras del periodo anterior del mismo largo, para comparar. */
+export interface PeriodTotals {
+  sales: number;
+  grossMargin: number;
+  contribution: number;
+  result: number;
+  orders: number;
+  newBuyers: number;
+  activeBuyers: number;
+}
+
+/* El tablero 360: lo real de un rango de meses contra el plan financiero. */
 export interface FinanceDashboard {
   year: number;
   years: number[];
+  range: MonthRange;
+  previousRange: MonthRange;
+  /** 'year': los mismos meses del año anterior; 'previous': el periodo
+      inmediatamente anterior del mismo largo. */
+  comparison: 'year' | 'previous';
+  /** Hasta que dia van las cifras; nulo si el rango todavia no empieza. */
+  asOf: string | null;
+  /** Los meses que se pueden elegir. */
+  bounds: MonthRange;
   months: DashboardMonth[];
   totals: {
     sales: number;
@@ -230,10 +275,14 @@ export interface FinanceDashboard {
     result: number;
     orders: number;
     newBuyers: number;
+    activeBuyers: number;
+    cumulativeBuyers: number;
+    fixedCosts: number;
     planSales: number;
     planResult: number;
     planNewBuyers: number;
   };
+  previous: PeriodTotals;
   rates: {
     grossMargin: number | null;
     contribution: number | null;

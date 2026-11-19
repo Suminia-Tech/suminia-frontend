@@ -57,6 +57,15 @@ export const MonthlyBars = ({
   const ultimoConValor = data.map((d) => d.value !== 0).lastIndexOf(true);
   const altoUtil = ALTO - MARGEN.top - MARGEN.bottom;
   const conMeta = data.some((d) => d.target !== undefined && d.target !== null);
+  /* Con mas de doce meses no caben todos los nombres: uno de cada dos o tres,
+     y enero con su año para no perderse entre años. */
+  const cada = Math.ceil(data.length / 12);
+  const nombreMes = (month: string, i: number) => {
+    if (i % cada !== 0) return null;
+    return data.length > 12 && (month.endsWith('-01') || i === 0)
+      ? `${mesCorto(month)} ${month.slice(2, 4)}`
+      : mesCorto(month);
+  };
   /* La altura en el SVG de un valor: el cero no esta en la base si hay
      negativos. */
   const y = (valor: number) => MARGEN.top + altoUtil * ((max - valor) / rango);
@@ -151,7 +160,9 @@ export const MonthlyBars = ({
                   {shortFormat(d.value)}
                 </span>
               )}
-              <span className='insight-bar-month'>{mesCorto(d.month)}</span>
+              {nombreMes(d.month, i) && (
+                <span className='insight-bar-month'>{nombreMes(d.month, i)}</span>
+              )}
               {activo === i && (
                 <span
                   className='insight-tooltip'

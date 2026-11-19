@@ -13,6 +13,7 @@ import type {
   FinanceChange,
   FinanceDashboard,
   FinanceSummary,
+  MonthRange,
   MarkPayoutPaidRequest,
   OrganizationFinance,
   PayableSupplier,
@@ -21,6 +22,7 @@ import type {
   PlanMonth,
   PlatformSettings,
   PlatformSettingsUpdate,
+  ProductMarkup,
 } from '../model/finance.types';
 
 /* El dinero de la plataforma. Lo que cambia una liquidacion o una regla
@@ -51,8 +53,8 @@ export const financeApi = baseApi.injectEndpoints({
     ),
 
     /* El tablero 360 del año: lo real contra el plan. */
-    getFinanceDashboard: builder.query<ApiResponse<FinanceDashboard>, number | void>({
-      query: (year) => ({ url: '/finance/dashboard', params: year ? { year } : {} }),
+    getFinanceDashboard: builder.query<ApiResponse<FinanceDashboard>, MonthRange | void>({
+      query: (range) => ({ url: '/finance/dashboard', params: range ? { ...range } : {} }),
       providesTags: [{ type: 'Finance', id: 'DASHBOARD' }, RESUMEN],
     }),
 
@@ -113,13 +115,18 @@ export const financeApi = baseApi.injectEndpoints({
       ],
     }),
 
-    /* Los proveedores con comision pactada: no cambian con la general. */
-    getNegotiatedCommissions: builder.query<
-      ApiResponse<{ id: string; name: string; rate: number }[]>,
-      void
-    >({
-      query: () => '/finance/negotiated-commissions',
+    /* Los productos con un incremento propio: no cambian con su linea. */
+    getNegotiatedMarkups: builder.query<ApiResponse<ProductMarkup[]>, void>({
+      query: () => '/finance/product-markups',
       providesTags: [{ type: 'Finance', id: 'NEGOTIATED' }],
+    }),
+
+    /* Los productos de un proveedor con su incremento. */
+    getSupplierProductMarkups: builder.query<ApiResponse<ProductMarkup[]>, string>({
+      query: (supplierId) => `/finance/suppliers/${supplierId}/product-markups`,
+      providesTags: (_result, _error, supplierId) => [
+        { type: 'Finance', id: `MARKUPS-${supplierId}` },
+      ],
     }),
 
     getFinanceChanges: builder.query<ApiResponse<FinanceChange[]>, void>({
@@ -142,18 +149,22 @@ export const financeApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: 'Finance', id: `ORG-${id}` }],
     }),
 
-    updateSupplierCommission: builder.mutation<
-      ApiResponse<OrganizationFinance>,
-      { id: string; rate: number | null }
+    /* El precio de catalogo cambia al instante: invalida productos y carrito. */
+    updateProductMarkup: builder.mutation<
+      ApiResponse<ProductMarkup>,
+      { productId: string; supplierId: string; rate: number | null }
     >({
-      query: ({ id, rate }) => ({
-        url: `/finance/suppliers/${id}/commission`,
+      query: ({ productId, rate }) => ({
+        url: `/finance/products/${productId}/markup`,
         method: 'PATCH',
         body: { rate },
       }),
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: 'Finance', id: `ORG-${id}` },
+      invalidatesTags: (_result, _error, { supplierId }) => [
+        { type: 'Finance', id: `MARKUPS-${supplierId}` },
+        { type: 'Finance', id: `ORG-${supplierId}` },
         { type: 'Finance', id: 'NEGOTIATED' },
+        { type: 'Product', id: 'LIST' },
+        { type: 'Cart', id: 'MINE' },
       ],
     }),
 
@@ -240,13 +251,14 @@ export const {
   useAssignCategoryLineMutation,
   useGetPlanQuery,
   useSavePlanMonthMutation,
-  useGetNegotiatedCommissionsQuery,
+  useGetNegotiatedMarkupsQuery,
+  useGetSupplierProductMarkupsQuery,
   useUpdateFinanceSettingsMutation,
   useGetFinanceChangesQuery,
   useGetFinanceSummaryQuery,
   useGetCreditPortfolioQuery,
   useGetOrganizationFinanceQuery,
-  useUpdateSupplierCommissionMutation,
+  useUpdateProductMarkupMutation,
   useUpdateBuyerCreditMutation,
   useGetPayableQuery,
   useCreatePayoutMutation,

@@ -167,10 +167,10 @@ export const InsightsScreen = () => {
       </div>
 
       <div className='insight-columns'>
-        <Panel title='Mejores compradores' description={`Por ventas en ${periodo}.`}>
+        <Panel title='Mejores compradores' description={`Por valor de compras en ${periodo}.`}>
           <RankList rows={insights.topBuyers} empty='Todavía no hay compras en este periodo.' />
         </Panel>
-        <Panel title='Mejores proveedores' description={`Por ventas en ${periodo}.`}>
+        <Panel title='Mejores proveedores' description={`Por valor de venta en ${periodo}.`}>
           <RankList rows={insights.topSuppliers} empty='Todavía no hay ventas en este periodo.' />
         </Panel>
         <Panel title='Productos más vendidos' description={`Por ventas en ${periodo}.`}>

@@ -5,6 +5,7 @@ import type { DatatableParams } from '@/shared/api/types';
 import {
   useApproveBuyerMutation,
   useGetBuyerQuery,
+  useGetBuyerStatusHistoryQuery,
   useGetBuyersQuery,
   useReactivateBuyerMutation,
   useRejectBuyerMutation,
@@ -14,6 +15,7 @@ import {
 import {
   useApproveSupplierMutation,
   useGetSupplierQuery,
+  useGetSupplierStatusHistoryQuery,
   useGetSuppliersQuery,
   useReactivateSupplierMutation,
   useRejectSupplierMutation,
@@ -59,6 +61,21 @@ export const useOrganizationDetail = (
 
   const proveedor = useGetSupplierQuery(id, { skip: skip || !esProveedor });
   const comprador = useGetBuyerQuery(id, { skip: skip || esProveedor });
+
+  return esProveedor ? proveedor : comprador;
+};
+
+/* La constancia de las decisiones sobre la empresa: quien, cuando y por que. */
+export const useOrganizationStatusHistory = (
+  kind: OrganizationKind,
+  id: string,
+  options?: { skip?: boolean },
+) => {
+  const esProveedor = kind === 'supplier';
+  const skip = options?.skip ?? false;
+
+  const proveedor = useGetSupplierStatusHistoryQuery(id, { skip: skip || !esProveedor });
+  const comprador = useGetBuyerStatusHistoryQuery(id, { skip: skip || esProveedor });
 
   return esProveedor ? proveedor : comprador;
 };

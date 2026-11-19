@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { Search } from 'react-feather';
+import { toast } from 'react-toastify';
 import { Button } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
@@ -22,6 +24,7 @@ import {
   setStatusFilter,
 } from '../../model/organizationsSlice';
 import OrganizationTable from './OrganizationTable';
+import RejectOrganizationModal from './RejectOrganizationModal';
 
 /* El listado que usa el personal de Suminia para revisar empresas, sea de un
    lado del marketplace o del otro.
@@ -56,7 +59,22 @@ export const OrganizationsScreen = ({ kind }: { kind: OrganizationKind }) => {
     sortDirection: 'desc',
   });
 
-  const { approve, isBusy } = useOrganizationDecisions(kind);
+  const { approve, reject, isBusy } = useOrganizationDecisions(kind);
+  /* La empresa que se va a rechazar: el motivo se pide en un modal. */
+  const [aRechazar, setARechazar] = useState<{ id: string; name: string } | null>(null);
+  const [errorRechazo, setErrorRechazo] = useState<string | null>(null);
+
+  const rechazar = async (reason: string) => {
+    if (!aRechazar) return;
+    setErrorRechazo(null);
+    try {
+      await reject({ id: aRechazar.id, reason }).unwrap();
+      toast.success(`${aRechazar.name} rechazado. Le avisamos por correo.`);
+      setARechazar(null);
+    } catch (err) {
+      setErrorRechazo(extractErrorMessage(err, 'No se pudo rechazar.'));
+    }
+  };
 
   const organizations = data?.data.data ?? [];
   const meta = data?.data.meta;
@@ -113,14 +131,27 @@ export const OrganizationsScreen = ({ kind }: { kind: OrganizationKind }) => {
           emptyMessage={search || status ? copy.sinCoincidencias : copy.vacio}
           actions={(organization) =>
             puedeDecidir && canApprove(organization.status) ? (
-              <Button
-                size='sm'
-                color='primary'
-                disabled={isBusy}
-                onClick={() => approve(organization.id)}
-              >
-                Aprobar
-              </Button>
+              <div className='table-actions'>
+                <Button
+                  size='sm'
+                  color='primary'
+                  disabled={isBusy}
+                  onClick={() => approve({ id: organization.id })}
+                >
+                  Aprobar
+                </Button>
+                <button
+                  type='button'
+                  className='btn btn-sm btn-outline-danger'
+                  disabled={isBusy}
+                  onClick={() => {
+                    setErrorRechazo(null);
+                    setARechazar({ id: organization.id, name: organization.name });
+                  }}
+                >
+                  Rechazar
+                </button>
+              </div>
             ) : null
           }
         />
@@ -152,6 +183,14 @@ export const OrganizationsScreen = ({ kind }: { kind: OrganizationKind }) => {
           </div>
         )}
       </Panel>
+      <RejectOrganizationModal
+        organizationName={aRechazar?.name ?? null}
+        noun={copy.singular}
+        isLoading={isBusy}
+        error={errorRechazo}
+        onClose={() => setARechazar(null)}
+        onConfirm={rechazar}
+      />
     </>
   );
 };

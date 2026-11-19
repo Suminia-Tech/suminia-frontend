@@ -9,7 +9,7 @@ import { Col, Row } from 'reactstrap';
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { useMounted } from '@/shared/hooks/useMounted';
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { Breadcrumbs, Pagination, SkeletonRows } from '@/shared/ui';
+import { PageHeader, Pagination, SkeletonRows } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
@@ -87,13 +87,13 @@ export const PublicCatalogScreen = () => {
   return (
     <section className='section-b-space'>
       <div className='container-fluid-lg'>
-        <Breadcrumbs
-          steps={[{ label: 'Inicio', href: '/' }, { label: 'Catálogo' }]}
+        {/* El mismo encabezado que Mis pedidos y las demas pantallas del
+            comprador: titulo y para que sirve. Sin la ruta "Inicio > ...": el
+            menu de arriba ya dice donde se esta. */}
+        <PageHeader
+          title='Productos'
+          description='Medicamentos, insumos y equipos médicos de proveedores verificados por Suminia.'
         />
-
-        <div className='box-head'>
-          <h3>Catálogo</h3>
-        </div>
 
         {/* Se dice por que no hay precios antes de que el visitante lo note, no
             despues: encontrarse cifras borrosas sin explicacion se lee como un
@@ -142,7 +142,7 @@ export const PublicCatalogScreen = () => {
           <SkeletonRows rows={6} thumb />
         ) : isError ? (
           <div className='alert alert-danger'>
-            {extractErrorMessage(error, 'No se pudo cargar el catálogo.')}
+            {extractErrorMessage(error, 'No se pudieron cargar los productos.')}
           </div>
         ) : products.length === 0 ? (
           <p className='font-light'>

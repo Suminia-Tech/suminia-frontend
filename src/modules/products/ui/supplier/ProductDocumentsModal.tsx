@@ -91,7 +91,7 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
         {product.status === 'ACTIVE' && (
           <div className='alert alert-warning'>
             Este producto está publicado. Si cambias un documento, vuelve a revisión y
-            sale del catálogo hasta que se apruebe.
+            deja de mostrarse hasta que se apruebe.
           </div>
         )}
 

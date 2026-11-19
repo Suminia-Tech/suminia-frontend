@@ -10,6 +10,10 @@ import type {
 
 import type { Buyer, UpdateBuyerRequest } from '../model/buyer.types';
 import type {
+  OrganizationStatusChange,
+  StatusDecisionRequest,
+} from '../model/organization.types';
+import type {
   ConfirmSupplierDocumentRequest,
   ReviewDocumentRequest,
   SaveSupplierDeclarationRequest,
@@ -108,11 +112,22 @@ export const buyersApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { buyerId }) => [{ type: 'Buyer', id: buyerId }],
     }),
 
+    /* La constancia interna de las decisiones sobre la empresa. */
+    getBuyerStatusHistory: builder.query<ApiResponse<OrganizationStatusChange[]>, string>({
+      query: (id) => `/buyers/${id}/status-history`,
+      providesTags: (_result, _error, id) => [{ type: 'Buyer', id: `HISTORY-${id}` }],
+    }),
+
     /* Aprobar pasa la organizacion de PENDING a ACTIVE, que es lo que la
        habilita a operar. Invalida la lista porque el estado se muestra ahi. */
-    approveBuyer: builder.mutation<ApiResponse<Buyer>, string>({
-      query: (id) => ({ url: `/buyers/${id}/approve`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    approveBuyer: builder.mutation<ApiResponse<Buyer>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/buyers/${id}/approve`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Buyer', id: `HISTORY-${id}` },
         { type: 'Buyer', id },
         { type: 'Buyer', id: 'LIST' },
       ],
@@ -121,25 +136,40 @@ export const buyersApi = baseApi.injectEndpoints({
     /* Rechazar, suspender y reactivar son la misma decision del personal
        interno sobre si una empresa puede operar, y el backend valida que la
        transicion tenga sentido desde el estado actual. */
-    rejectBuyer: builder.mutation<ApiResponse<Buyer>, string>({
-      query: (id) => ({ url: `/buyers/${id}/reject`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    rejectBuyer: builder.mutation<ApiResponse<Buyer>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/buyers/${id}/reject`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Buyer', id: `HISTORY-${id}` },
         { type: 'Buyer', id },
         { type: 'Buyer', id: 'LIST' },
       ],
     }),
 
-    suspendBuyer: builder.mutation<ApiResponse<Buyer>, string>({
-      query: (id) => ({ url: `/buyers/${id}/suspend`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    suspendBuyer: builder.mutation<ApiResponse<Buyer>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/buyers/${id}/suspend`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Buyer', id: `HISTORY-${id}` },
         { type: 'Buyer', id },
         { type: 'Buyer', id: 'LIST' },
       ],
     }),
 
-    reactivateBuyer: builder.mutation<ApiResponse<Buyer>, string>({
-      query: (id) => ({ url: `/buyers/${id}/reactivate`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    reactivateBuyer: builder.mutation<ApiResponse<Buyer>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/buyers/${id}/reactivate`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Buyer', id: `HISTORY-${id}` },
         { type: 'Buyer', id },
         { type: 'Buyer', id: 'LIST' },
       ],
@@ -153,6 +183,7 @@ export const buyersApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetBuyerStatusHistoryQuery,
   useGetBuyersQuery,
   useGetBuyerQuery,
   useUpdateBuyerMutation,

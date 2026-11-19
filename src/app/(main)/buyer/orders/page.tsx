@@ -4,7 +4,7 @@ import { MyOrdersScreen } from '@/modules/orders';
 
 export const metadata: Metadata = {
   title: 'Mis pedidos',
-  description: 'Lo que has pedido en Suminia y en qué punto está.',
+  description: 'Consulta tus pedidos y haz seguimiento a sus entregas.',
 };
 
 export default function PedidosPage() {

@@ -208,24 +208,20 @@ const BuyerProfileFields = ({
    sector de una IPS, el detalle de "otra", y banco y cuenta juntos. Vacio el
    perfil entero tambien vale: se puede guardar lo demas y volver despues. */
 export const validateBuyerProfile = (values: BuyerProfileValues): BuyerProfileErrors => {
+  /* Obligatorio, como en el registro: sin quien es y con que cuenta paga,
+     Suminia no puede aprobar al comprador. */
   const errors: BuyerProfileErrors = {};
-  const tocado = values.legalNature || values.buyerActivity;
-
-  if (tocado) {
-    if (!values.legalNature) errors.legalNature = 'Elige la naturaleza de tu organización.';
-    if (!values.buyerActivity) errors.buyerActivity = 'Elige la actividad.';
-    if (values.buyerActivity === 'IPS' && !values.ipsSector) {
-      errors.ipsSector = 'Indica si es pública, mixta o privada.';
-    }
-    if (values.buyerActivity === 'OTHER' && !values.activityOther.trim()) {
-      errors.activityOther = 'Describe la actividad.';
-    }
+  if (!values.legalNature) errors.legalNature = 'Elige la naturaleza de tu organización.';
+  if (!values.buyerActivity) errors.buyerActivity = 'Elige la actividad.';
+  if (values.buyerActivity === 'IPS' && !values.ipsSector) {
+    errors.ipsSector = 'Indica si es pública, mixta o privada.';
   }
-
-  if (!values.bankName.trim() !== !values.bankAccountNumber.trim()) {
-    errors.bankAccountNumber = 'Indica el banco y el número de cuenta juntos.';
+  if (values.buyerActivity === 'OTHER' && !values.activityOther.trim()) {
+    errors.activityOther = 'Describe la actividad.';
   }
-
+  if (!values.bankName.trim() || !values.bankAccountNumber.trim()) {
+    errors.bankAccountNumber = 'Indica el banco y el número de cuenta.';
+  }
   return errors;
 };
 

@@ -9,6 +9,10 @@ import type {
 } from '@/shared/api/types';
 
 import type {
+  OrganizationStatusChange,
+  StatusDecisionRequest,
+} from '../model/organization.types';
+import type {
   ConfirmSupplierDocumentRequest,
   ReviewDocumentRequest,
   SaveSupplierDeclarationRequest,
@@ -45,11 +49,22 @@ export const suppliersApi = baseApi.injectEndpoints({
       ],
     }),
 
+    /* La constancia interna de las decisiones sobre la empresa. */
+    getSupplierStatusHistory: builder.query<ApiResponse<OrganizationStatusChange[]>, string>({
+      query: (id) => `/suppliers/${id}/status-history`,
+      providesTags: (_result, _error, id) => [{ type: 'Supplier', id: `HISTORY-${id}` }],
+    }),
+
     /* Aprobar pasa la organizacion de PENDING a ACTIVE, que es lo que la
        habilita a operar. Invalida la lista porque el estado se muestra ahi. */
-    approveSupplier: builder.mutation<ApiResponse<Supplier>, string>({
-      query: (id) => ({ url: `/suppliers/${id}/approve`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    approveSupplier: builder.mutation<ApiResponse<Supplier>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/suppliers/${id}/approve`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Supplier', id: `HISTORY-${id}` },
         { type: 'Supplier', id },
         { type: 'Supplier', id: 'LIST' },
       ],
@@ -58,25 +73,40 @@ export const suppliersApi = baseApi.injectEndpoints({
     /* Rechazar, suspender y reactivar son la misma decision del personal
        interno sobre si una empresa puede operar, y el backend valida que la
        transicion tenga sentido desde el estado actual. */
-    rejectSupplier: builder.mutation<ApiResponse<Supplier>, string>({
-      query: (id) => ({ url: `/suppliers/${id}/reject`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    rejectSupplier: builder.mutation<ApiResponse<Supplier>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/suppliers/${id}/reject`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Supplier', id: `HISTORY-${id}` },
         { type: 'Supplier', id },
         { type: 'Supplier', id: 'LIST' },
       ],
     }),
 
-    suspendSupplier: builder.mutation<ApiResponse<Supplier>, string>({
-      query: (id) => ({ url: `/suppliers/${id}/suspend`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    suspendSupplier: builder.mutation<ApiResponse<Supplier>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/suppliers/${id}/suspend`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Supplier', id: `HISTORY-${id}` },
         { type: 'Supplier', id },
         { type: 'Supplier', id: 'LIST' },
       ],
     }),
 
-    reactivateSupplier: builder.mutation<ApiResponse<Supplier>, string>({
-      query: (id) => ({ url: `/suppliers/${id}/reactivate`, method: 'PATCH' }),
-      invalidatesTags: (_result, _error, id) => [
+    reactivateSupplier: builder.mutation<ApiResponse<Supplier>, StatusDecisionRequest>({
+      query: ({ id, reason }) => ({
+        url: `/suppliers/${id}/reactivate`,
+        method: 'PATCH',
+        body: { reason: reason?.trim() || undefined },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Supplier', id: `HISTORY-${id}` },
         { type: 'Supplier', id },
         { type: 'Supplier', id: 'LIST' },
       ],
@@ -156,6 +186,7 @@ export const suppliersApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetSupplierStatusHistoryQuery,
   useGetSuppliersQuery,
   useGetSupplierQuery,
   useUpdateSupplierMutation,

@@ -2,12 +2,16 @@
 
 import { Plus, X } from 'react-feather';
 
+import { resolvePlace } from '@/shared/lib/colombia';
+import { CitySelect, DepartmentSelect } from '@/shared/ui';
+
 import type { SupplierShippingCost } from '../../model/organization.types';
 
 /* El costo de envio por ciudad, cuando no es el general. Las mismas filas que
    los tiempos por ciudad: un mismo control se ve igual en toda la app. */
 
 export interface CityShippingValues {
+  department: string;
   city: string;
   cost: string;
 }
@@ -18,16 +22,23 @@ export const MAX_SHIPPING_CITIES = 50;
 export const toCityShippingValues = (
   rows: SupplierShippingCost[] | undefined,
 ): CityShippingValues[] =>
-  (rows ?? []).map((row) => ({ city: row.city, cost: String(row.cost) }));
+  (rows ?? []).map((row) => ({
+    ...resolvePlace(row.city, row.department),
+    cost: String(row.cost),
+  }));
 
 export const isCityShippingEmpty = (value: CityShippingValues): boolean =>
-  value.city.trim() === '' && value.cost.trim() === '';
+  value.department === '' && value.city === '' && value.cost.trim() === '';
 
 /* De vuelta al contrato del backend. Las filas en blanco no viajan. */
 export const toShippingCostRows = (values: CityShippingValues[]): SupplierShippingCost[] =>
   values
     .filter((value) => !isCityShippingEmpty(value))
-    .map((value) => ({ city: value.city.trim(), cost: Number(value.cost) }));
+    .map((value) => ({
+      city: value.city,
+      department: value.department,
+      cost: Number(value.cost),
+    }));
 
 interface CityShippingCostsFieldsProps {
   values: CityShippingValues[];
@@ -48,14 +59,18 @@ export const CityShippingCostsFields = ({
       {values.map((value, index) => (
         <div className='delivery-city' key={index}>
           <div className='delivery-city-row'>
-            <input
-              type='text'
-              maxLength={120}
+            <DepartmentSelect
+              className='form-control delivery-city-name'
+              aria-label='Departamento'
+              value={value.department}
+              onChange={(department) => setRow(index, { department, city: '' })}
+            />
+            <CitySelect
               className='form-control delivery-city-name'
               aria-label='Ciudad'
-              placeholder='Ciudad'
+              department={value.department}
               value={value.city}
-              onChange={(event) => setRow(index, { city: event.target.value })}
+              onChange={(city) => setRow(index, { city })}
             />
             <input
               type='number'
@@ -85,7 +100,7 @@ export const CityShippingCostsFields = ({
         <button
           type='button'
           className='btn btn-outline-secondary btn-sm btn-with-icon'
-          onClick={() => onChange([...values, { city: '', cost: '' }])}
+          onClick={() => onChange([...values, { department: '', city: '', cost: '' }])}
         >
           <Plus size={15} /> Añadir ciudad
         </button>

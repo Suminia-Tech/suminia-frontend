@@ -55,16 +55,20 @@ const tieneCuenta = (org: Organization) =>
   ].every(Boolean);
 
 /* Las areas obligatorias que nadie cubre. Las que admiten varias personas
-   no son obligatorias. */
+   no son obligatorias. En el proveedor el contacto ademas tiene que tener
+   celular: es lo que pide Suminia para aprobarlo. */
 const areasSinContacto = (
   org: Organization,
   options: { value: ContactArea; label: string }[],
+  conCelular = false,
 ): string[] =>
   options
     .filter(
       (option) =>
         !MULTI_CONTACT_AREAS.includes(option.value) &&
-        !org.contacts?.some((contact) => contact.area === option.value),
+        !org.contacts?.some(
+          (contact) => contact.area === option.value && (!conCelular || Boolean(contact.phone)),
+        ),
     )
     .map((option) => option.label);
 
@@ -75,7 +79,7 @@ const faltaContactoDe = (areas: string[]): string =>
     : `Falta el contacto de las áreas ${areas.slice(0, -1).join(', ')} y ${areas.at(-1)}.`;
 
 export const supplierPendings = (supplier: Organization): Pending[] => {
-  const sinContacto = areasSinContacto(supplier, CONTACT_AREA_OPTIONS);
+  const sinContacto = areasSinContacto(supplier, CONTACT_AREA_OPTIONS, true);
   const faltaContacto = faltaContactoDe(sinContacto);
 
   const pendientes: (Pending | false)[] = [
@@ -135,13 +139,14 @@ export const supplierPendings = (supplier: Organization): Pending[] => {
       href: sectionHref('supplier', SECTION.orderEmails),
       aviso: 'Falta llenar al menos un correo para recibir las órdenes de compra.',
     },
-    /* Cada area necesita a alguien; puede ser la misma persona para varias. */
+    /* Cada area necesita a alguien con nombre, correo y celular; puede ser
+       la misma persona para varias. Sin ellos Suminia no aprueba. */
     sinContacto.length > 0 && {
       key: 'contacts',
-      texto: faltaContacto,
+      texto: `${faltaContacto} Sin los contactos de cada área no podemos aprobar tu empresa.`,
       enlace: 'Añadir contactos',
       href: sectionHref('supplier', SECTION.contacts),
-      aviso: `${faltaContacto} Una misma persona puede encargarse de varias áreas.`,
+      aviso: `${faltaContacto} Cada uno con nombre, correo y celular; una misma persona puede encargarse de varias áreas.`,
     },
     /* Lo que nunca se subio, lo rechazado y lo vencido: en los tres casos
        la empresa tiene que subir un archivo. */

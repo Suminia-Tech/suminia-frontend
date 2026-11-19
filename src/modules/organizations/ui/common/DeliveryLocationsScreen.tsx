@@ -5,7 +5,9 @@ import { Clock, Edit2, MapPin, Phone, Trash2, User } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { formatPlace } from '@/shared/lib/colombia';
 import { hasPermission } from '@/shared/lib/permissions';
+import { ZONE_LABEL } from '@/shared/lib/zones';
 import { useAppSelector } from '@/store/hooks';
 import { PageSkeleton } from '@/shared/ui';
 
@@ -182,8 +184,8 @@ export const DeliveryLocationsScreen = () => {
 
                 <p className='location-address'>
                   <MapPin size={14} />
-                  {location.address} · {location.city}
-                  {location.department && `, ${location.department}`}
+                  {location.address} · {formatPlace(location.city, location.department)}
+                  {location.zone && ` · Zona ${ZONE_LABEL[location.zone]}`}
                 </p>
 
                 <ul className='location-details'>

@@ -1,5 +1,4 @@
 "use client";
-import BreadCrumb from "@/_template/Components/Element/BreadCrumb";
 import Layout6 from "@/_template/Layout/Layout6";
 import Head from "next/head";
 import { useEffect } from "react";
@@ -28,7 +27,6 @@ const Blog_details = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/svg+xml" href={`${CommonPath}/favicon/favicon.svg`} />
       </Head>
-      <BreadCrumb parent={"Blog"} title={"Blog"} />
       <BlogDetails articleId={articleId} />
       <RelatedBlog />
     </Layout6>

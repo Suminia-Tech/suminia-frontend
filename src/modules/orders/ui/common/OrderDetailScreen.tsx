@@ -7,6 +7,7 @@ import { Check, ChevronLeft, MapPin, RotateCcw } from 'react-feather';
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { formatPlace } from '@/shared/lib/colombia';
 import { PageSkeleton, Panel } from '@/shared/ui';
 import { formatDate, formatDay } from '@/shared/lib/dates';
 import { useAppSelector } from '@/store/hooks';
@@ -20,9 +21,14 @@ import {
   buyerCanAnswerAvailability,
   buyerCanCancel,
   buyerCanConfirmDelivery,
+  BUYER_STAGE_HINT,
+  BUYER_TIMELINE,
+  buyerStage,
   closedHint,
   deliveredHint,
   displayStatus,
+  formatDeliveryDate,
+  type BuyerStage,
   ORDER_STATUS_HINT,
   ORDER_STATUS_HINT_SUPPLIER,
   ORDER_STATUS_LABEL,
@@ -31,7 +37,7 @@ import {
   supplierCanCancel,
   supplierCanConfirmDelivery,
   supplierCanDecide,
-    supplierCanShip,
+  supplierCanShip,
   supplierWaitsPayment,
 } from '../../lib/orderStatus';
 import type { Order, OrderStatus } from '../../model/order.types';
@@ -60,19 +66,35 @@ const COPY: Record<
   buyer: {
     volver: 'Mis pedidos',
     basePath: '/buyer/orders',
-    nota: 'Tu nota al proveedor',
+    nota: 'Indicaciones para la entrega',
   },
   supplier: {
     volver: 'Pedidos recibidos',
     basePath: '/supplier/orders',
-    nota: 'Nota del comprador',
+    nota: 'Indicaciones del comprador',
   },
   staff: {
     volver: 'Pedidos',
     basePath: '/admin/orders',
-    nota: 'Nota del comprador',
+    nota: 'Indicaciones del comprador',
   },
 };
+
+/* Lo que significa el paso en que va el pedido, dicho al comprador. */
+const buyerHint = (order: Order): string => {
+  if (order.status === 'AWAITING_BUYER') {
+    return 'Hay una novedad: el proveedor no tiene todo lo que pediste. Revisa su propuesta y apruébala para continuar.';
+  }
+  const etapa = buyerStage(order);
+  if (etapa === 'shipped' && order.estimatedDeliveryAt) {
+    return `${BUYER_STAGE_HINT.shipped} Fecha estimada de entrega: ${formatDeliveryDate(order.estimatedDeliveryAt)}.`;
+  }
+  return BUYER_STAGE_HINT[etapa];
+};
+
+/* "2026-11-19" en hora de Colombia: el primer dia que se puede elegir. */
+const hoyEnColombia = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
 
 const pesos = (valor: number, moneda: string) =>
   new Intl.NumberFormat('es-CO', {
@@ -84,6 +106,7 @@ const pesos = (valor: number, moneda: string) =>
 /* El recorrido, con lo andado marcado. Un pedido muerto no lo dibuja: no se
    quedo a medio camino, se salio. */
 const Timeline = ({ order, side }: { order: Order; side: OrderSide }) => {
+  if (side === 'buyer') return <BuyerTimeline order={order} />;
   const posicion = TIMELINE_POSITION[order.status] ?? order.status;
   if (!ORDER_TIMELINE.includes(posicion)) return null;
 
@@ -124,20 +147,59 @@ const Timeline = ({ order, side }: { order: Order; side: OrderSide }) => {
         </Fragment>
       ))}
       {/* Para Suminia y el proveedor, antes de cerrar va el pago al
-          proveedor: es lo que lo cierra de su lado. El comprador cierra cuando
-          lo da por bueno o cuando pasan los dias de reclamo. */}
-      {side !== 'buyer' && (
-        <TimelineStep
-          done={order.payout?.status === 'PAID'}
-          label={side === 'supplier' ? 'Pago recibido' : 'Pagado al proveedor'}
-          date={order.payout?.paidAt ?? null}
-        />
-      )}
+          proveedor: es lo que lo cierra de su lado. El comprador ve sus
+          cuatro pasos aparte, en BuyerTimeline. */}
+      <TimelineStep
+        done={order.payout?.status === 'PAID'}
+        label={side === 'supplier' ? 'Pago recibido' : 'Pagado al proveedor'}
+        date={order.payout?.paidAt ?? null}
+      />
       <TimelineStep
         done={order.closed}
         label='Cerrado'
-        date={side === 'buyer' ? order.payableAt : (order.payout?.paidAt ?? null)}
+        date={order.payout?.paidAt ?? null}
       />
+    </ol>
+  );
+};
+
+/* Los cuatro pasos que ve el comprador. Recibido se marca con el pago
+   confirmado; despachado lleva la fecha estimada de entrega mientras no
+   llega. Un pedido cancelado o no disponible no lo dibuja. */
+const BuyerTimeline = ({ order }: { order: Order }) => {
+  const etapa = buyerStage(order);
+  const orden: BuyerStage[] = ['received', 'preparing', 'shipped', 'delivered'];
+  const actual = orden.indexOf(etapa);
+  if (actual === -1 && etapa !== 'awaitingPayment') return null;
+
+  const fechas: Partial<Record<BuyerStage, string | null>> = {
+    received: order.paidAt ?? (order.paymentMethod === 'CREDIT' ? order.createdAt : null),
+    preparing: order.confirmedAt,
+    shipped: order.shippedAt,
+    delivered: order.deliveredAt,
+  };
+
+  return (
+    <ol className='order-timeline'>
+      {BUYER_TIMELINE.map(({ stage, label }, indice) => {
+        const hecho = indice <= actual;
+        return (
+          <li key={stage} className={hecho ? 'is-done' : undefined}>
+            <span className='order-timeline-dot'>{hecho && <Check size={12} />}</span>
+            <span>
+              {label}
+              {hecho && fechas[stage] && (
+                <small className='font-light'>{formatDate(fechas[stage])}</small>
+              )}
+              {stage === 'delivered' && etapa === 'shipped' && order.estimatedDeliveryAt && (
+                <small className='font-light'>
+                  Estimada: {formatDeliveryDate(order.estimatedDeliveryAt)}
+                </small>
+              )}
+            </span>
+          </li>
+        );
+      })}
     </ol>
   );
 };
@@ -192,6 +254,9 @@ export const OrderDetailScreen = ({
   const [pidiendoMotivo, setPidiendoMotivo] = useState<OrderStatus | null>(null);
   /* El proveedor esta llenando su disponibilidad parcial. */
   const [proponiendo, setProponiendo] = useState(false);
+  /* El proveedor esta diciendo cuando estima entregar, antes de despachar. */
+  const [despachando, setDespachando] = useState(false);
+  const [estimada, setEstimada] = useState('');
   const copy = COPY[side];
 
   if (!hydrated || isLoading) return <PageSkeleton variant='detail' />;
@@ -256,9 +321,11 @@ export const OrderDetailScreen = ({
     status: Order['status'],
     exito: string,
     reason?: string,
+    estimatedDeliveryAt?: string,
   ) => {
     try {
-      await changeStatus({ id: order.id, status, reason }).unwrap();
+      await changeStatus({ id: order.id, status, reason, estimatedDeliveryAt }).unwrap();
+      setDespachando(false);
       toast.success(exito);
       setPidiendoMotivo(null);
       setMotivo('');
@@ -271,7 +338,7 @@ export const OrderDetailScreen = ({
     <>
       <Link
         href={copy.basePath}
-        className='font-light d-inline-flex align-items-center gap-1 mb-3'
+        className='back-link'
       >
         <ChevronLeft size={16} />
         {copy.volver}
@@ -292,8 +359,8 @@ export const OrderDetailScreen = ({
             {side !== 'buyer' && ` · pidió ${order.placedByName}`}
           </p>
         </div>
-        <span className={`badge ${displayStatus(order).className}`}>
-          {displayStatus(order).label}
+        <span className={`badge ${displayStatus(order, side).className}`}>
+          {displayStatus(order, side).label}
         </span>
       </div>
 
@@ -302,7 +369,9 @@ export const OrderDetailScreen = ({
           estados debajo, sin nada que las relacionara. */}
       <Panel className='order-state'>
         <p className='order-hint'>
-          {order.closed
+          {side === 'buyer' && !order.closed && !esperandoPago
+            ? buyerHint(order)
+            : order.closed
             ? closedHint(order, side)
             : deliveredHint(order, side) ??
               (esperandoPago
@@ -428,7 +497,7 @@ export const OrderDetailScreen = ({
       </ul>
       </Panel>
 
-      <OrderHistoryPanel order={order} />
+      <OrderHistoryPanel order={order} side={side} />
         </div>
 
         <aside className='order-side'>
@@ -477,15 +546,56 @@ export const OrderDetailScreen = ({
           </>
         )}
 
-        {side === 'supplier' && puedeDespachar && (
+        {side === 'supplier' && puedeDespachar && !despachando && (
           <button
             type='button'
             className='btn btn-primary btn-sm'
             disabled={isSaving}
-            onClick={() => mover('SHIPPED', 'Pedido despachado')}
+            onClick={() => {
+              setEstimada('');
+              setDespachando(true);
+            }}
           >
             Despachar
           </button>
+        )}
+        {/* Al despachar se dice cuando se estima entregar: el comprador lo ve
+            en su pedido y en el aviso de despacho. */}
+        {side === 'supplier' && puedeDespachar && despachando && (
+          <div className='order-ship-form'>
+            <label className='form-label' htmlFor='fecha-estimada'>
+              Fecha estimada de entrega
+            </label>
+            <input
+              id='fecha-estimada'
+              type='date'
+              className='form-control'
+              min={hoyEnColombia()}
+              value={estimada}
+              onChange={(event) => setEstimada(event.target.value)}
+            />
+            <small className='font-light'>
+              El comprador la ve en su pedido mientras va en transporte.
+            </small>
+            <div className='order-actions'>
+              <button
+                type='button'
+                className='btn btn-primary btn-sm'
+                disabled={isSaving || !estimada}
+                onClick={() => mover('SHIPPED', 'Pedido despachado', undefined, estimada)}
+              >
+                {isSaving ? 'Guardando...' : 'Confirmar despacho'}
+              </button>
+              <button
+                type='button'
+                className='btn btn-outline-secondary btn-sm'
+                disabled={isSaving}
+                onClick={() => setDespachando(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
         )}
 
         {side === 'supplier' && supplierCanConfirmDelivery(order.status) && (
@@ -631,8 +741,8 @@ export const OrderDetailScreen = ({
           <span>
             <strong>{order.delivery.name}</strong>
             <br />
-            {order.delivery.address} · {order.delivery.city}
-            {order.delivery.department && `, ${order.delivery.department}`}
+            {order.delivery.address} ·{' '}
+            {formatPlace(order.delivery.city, order.delivery.department)}
           </span>
         </p>
         <ul className='location-details'>
@@ -643,15 +753,19 @@ export const OrderDetailScreen = ({
         {order.delivery.notes && (
           <p className='location-notes font-light'>{order.delivery.notes}</p>
         )}
+        {/* Lo que el comprador escribio para esta entrega —el piso, el
+            consultorio, la orden de compra—. Va con la direccion porque es
+            de la entrega: antes era un panel aparte, "Tu nota al proveedor",
+            que se confundia con un canal para reportar novedades. */}
+        {order.buyerNotes && (
+          <p className='order-delivery-notes'>
+            <strong>{copy.nota}</strong>
+            <span>{order.buyerNotes}</span>
+          </p>
+        )}
       </div>
 
       </Panel>
-
-      {order.buyerNotes && (
-        <Panel title={copy.nota}>
-          <p className='font-light mb-0'>{order.buyerNotes}</p>
-        </Panel>
-      )}
 
       {/* La liquidacion. El proveedor mira lo que le queda; el personal de
           Suminia, lo que se queda Suminia. Es el mismo desglose leido desde los

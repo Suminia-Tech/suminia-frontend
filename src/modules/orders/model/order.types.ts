@@ -60,7 +60,13 @@ export type OrderEventType =
   | 'REFUNDED'
   | 'PAYOUT_PAID';
 
-export type ClaimReason = 'DEFECTIVE' | 'WRONG_PRODUCT' | 'MISSING_ITEMS' | 'DAMAGED' | 'OTHER';
+export type ClaimReason =
+  | 'DEFECTIVE'
+  | 'WRONG_PRODUCT'
+  | 'MISSING_ITEMS'
+  | 'DAMAGED'
+  | 'EXPIRED'
+  | 'OTHER';
 
 /* Un reclamo del comprador sobre lo entregado. Mientras este abierto, el
    pedido no se cierra ni se le liquida al proveedor. */
@@ -221,6 +227,8 @@ export interface Order {
 
   confirmedAt: string | null;
   shippedAt: string | null;
+  /** "2026-11-24": cuando estima entregar el proveedor; lo dice al despachar. */
+  estimatedDeliveryAt: string | null;
   deliveredAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -366,6 +374,8 @@ export interface ChangeOrderStatusRequest {
   id: string;
   status: OrderStatus;
   reason?: string;
+  /** "2026-11-24": obligatoria al despachar. */
+  estimatedDeliveryAt?: string;
 }
 
 /* El proveedor no tiene todo: cuanto tiene de cada producto y para cuando

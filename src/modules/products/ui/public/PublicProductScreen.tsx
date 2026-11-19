@@ -6,6 +6,7 @@ import {
   FileText,
   Image as ImageIcon,
   Lock,
+  Maximize2,
   Package,
   Percent,
   ShieldOff,
@@ -24,6 +25,7 @@ import { humanizeAttributeKey, toDisplayPairs } from '../../lib/attributes';
 import { formatPrice } from '../../lib/productLabels';
 import { priceTaxSuffix, taxConditionLabel } from '../../lib/tax';
 import { Price } from '../common/Price';
+import { ImageLightbox } from '../common/ImageLightbox';
 import { ProductActions } from './ProductActions';
 import { ProductDocumentsSection } from './ProductDocumentsSection';
 import { RelatedProducts } from './RelatedProducts';
@@ -110,6 +112,7 @@ export const PublicProductScreen = ({
   BuyBox,
 }: PublicProductScreenProps) => {
   const [activeImage, setActiveImage] = useState(0);
+  const [ampliada, setAmpliada] = useState(false);
   const mounted = useMounted();
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -148,7 +151,7 @@ export const PublicProductScreen = ({
             {extractErrorMessage(error, 'Este producto no está disponible.')}
           </div>
           <Link href='/catalog' className='btn btn-primary'>
-            Volver al catálogo
+            Ver productos
           </Link>
         </div>
       </section>
@@ -194,7 +197,7 @@ export const PublicProductScreen = ({
         <Breadcrumbs
           steps={[
             { label: 'Inicio', href: '/' },
-            { label: 'Catálogo', href: '/catalog' },
+            { label: 'Productos', href: '/catalog' },
             ...(product.categoryName
               ? [
                   {
@@ -212,14 +215,35 @@ export const PublicProductScreen = ({
             <div className='product-gallery'>
               <div className='product-gallery-main'>
                 {cover ? (
-                  /* eslint-disable-next-line @next/next/no-img-element -- las
-                     imagenes viven en S3 y next/image exigiria declarar el
-                     dominio del bucket en la configuracion. */
-                  <img src={cover.url} alt={cover.alt ?? product.name} />
+                  /* La foto se amplia al hacer clic: una etiqueta o un registro
+                     impreso en la caja no se lee al tamaño de la columna. */
+                  <button
+                    type='button'
+                    className='product-gallery-zoom'
+                    aria-label='Ampliar la imagen'
+                    onClick={() => setAmpliada(true)}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- las
+                        imagenes viven en S3 y next/image exigiria declarar el
+                        dominio del bucket en la configuracion. */}
+                    <img src={cover.url} alt={cover.alt ?? product.name} />
+                    <span className='product-gallery-zoom-hint'>
+                      <Maximize2 size={14} /> Ampliar
+                    </span>
+                  </button>
                 ) : (
                   <ImageIcon size={32} />
                 )}
               </div>
+              {ampliada && images.length > 0 && (
+                <ImageLightbox
+                  images={images}
+                  index={Math.min(activeImage, images.length - 1)}
+                  name={product.name}
+                  onIndexChange={setActiveImage}
+                  onClose={() => setAmpliada(false)}
+                />
+              )}
 
               {images.length > 1 && (
                 <div className='product-gallery-thumbs'>
