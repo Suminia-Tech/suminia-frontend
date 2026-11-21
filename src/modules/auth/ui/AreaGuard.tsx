@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 
+import { useMounted } from '@/shared/hooks/useMounted';
 import { useAppSelector } from '@/store/hooks';
 import { PageSkeleton } from '@/shared/ui';
 
@@ -41,7 +42,14 @@ export const AreaGuard = ({ area, children }: AreaGuardProps) => {
     router.replace(isAuthenticated ? getHomePath(user) : '/');
   }, [hydrated, allowed, isAuthenticated, user, router]);
 
-  if (!hydrated) {
+  /* Con useMounted ademas de `hydrated`: entrando directo a una pagina con
+     `loading.tsx`, el contenido cuelga de un <Suspense> y se pinta por
+     primera vez con `hydrated` ya encendido, mientras el servidor habia
+     pintado el esqueleto. React tiraba la pagina y la volvia a pintar. Ver
+     useMounted. */
+  const mounted = useMounted();
+
+  if (!hydrated || !mounted) {
     return (
       <section className='section-b-space'>
         <div className='container-fluid-lg'>

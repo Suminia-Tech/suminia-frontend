@@ -127,8 +127,12 @@ export interface FinanceSummary {
 
 export interface PayoutOrder {
   id: string;
+  /** El pedido de venta, SUM-…; al proveedor le llega su orden de compra. */
   code: string;
-  buyerName: string;
+  /** La orden de compra al proveedor, OC-…: lo que se le liquida. */
+  purchaseCode: string;
+  /** Solo para el personal: al proveedor no se le dice a quien se le vendio. */
+  buyerName: string | null;
   deliveredAt: string | null;
   payableAt: string | null;
   paymentMethod: 'TRANSFER' | 'CREDIT';

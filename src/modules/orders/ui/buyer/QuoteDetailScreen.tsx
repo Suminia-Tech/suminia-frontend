@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { formatDate, formatDay } from '@/shared/lib/dates';
 import { PageSkeleton, Panel } from '@/shared/ui';
+import { presentationLabel } from '@/shared/lib/presentation';
 import { useAppSelector } from '@/store/hooks';
 
 import { useConvertQuoteMutation, useGetQuoteQuery } from '../../api/ordersApi';
@@ -41,7 +42,7 @@ interface QuoteDetailScreenProps {
   }>;
 }
 
-/* La ficha de una cotizacion: lo cotizado por proveedor, el PDF y, mientras
+/* La ficha de una cotizacion: lo cotizado por envio, el PDF y, mientras
    este vigente, convertirla en pedido a esos precios. */
 export const QuoteDetailScreen = ({ quoteId, LocationPicker }: QuoteDetailScreenProps) => {
   const hydrated = useAppSelector((state) => state.auth.hydrated);
@@ -59,6 +60,8 @@ export const QuoteDetailScreen = ({ quoteId, LocationPicker }: QuoteDetailScreen
 
   const quote = data.data;
   const estado = quoteState(quote);
+  /* Agrupado por envio. El backend ya manda "Envío 1", "Envío 2" en lugar
+     del proveedor: el comprador no sabe quien despacha. */
   const proveedores = [...new Set(quote.items.map((item) => item.supplierName))];
 
   return (
@@ -96,10 +99,9 @@ export const QuoteDetailScreen = ({ quoteId, LocationPicker }: QuoteDetailScreen
                         <span className='order-item-name'>
                           {item.productName}
                           <small className='font-light'>
-                            {item.presentationName === item.packaging
-                              ? item.presentationName
-                              : `${item.presentationName} · ${item.packaging}`}
+                            {presentationLabel(item.presentationName, item.packaging)}
                             {item.cum && ` · CUM ${item.cum}`}
+                            {` · ${item.referenceCode}`}
                           </small>
                         </span>
                         <span className='order-item-qty'>
@@ -123,7 +125,7 @@ export const QuoteDetailScreen = ({ quoteId, LocationPicker }: QuoteDetailScreen
               </li>
               {quote.shippingDetail.map((envio) => (
                 <li key={envio.supplierOrganizationId}>
-                  <span className='font-light'>Envío {envio.supplierName}</span>
+                  <span className='font-light'>{envio.supplierName}</span>
                   <span>{envio.cost > 0 ? pesos(envio.cost, quote.currency) : 'Gratis'}</span>
                 </li>
               ))}
@@ -205,8 +207,8 @@ const ConvertQuote = ({
       ).data;
       toast.success(
         pedidos.length === 1
-          ? `Pedido ${pedidos[0].code} enviado a ${pedidos[0].supplierOrganizationName}`
-          : `${pedidos.length} pedidos enviados, uno a cada proveedor`,
+          ? `Pedido ${pedidos[0].code} confirmado`
+          : `${pedidos.length} pedidos confirmados, uno por cada envío`,
       );
       router.push(pedidos.length === 1 ? `/buyer/orders/${pedidos[0].id}` : '/buyer/orders');
     } catch (err) {

@@ -1,5 +1,7 @@
 import type {
+  ActivityLines,
   BankAccountType,
+  BeneficialOwner,
   Organization,
   OrganizationContact,
   InternationalOperationType,
@@ -49,6 +51,9 @@ export interface UpdateSupplierRequest {
      y una vacia las borra. */
   activities?: SupplierActivity[];
   productLines?: SupplierProductLine[];
+  /* La relacion actividad → lineas. El backend recalcula con ella las dos
+     listas de arriba. */
+  activityLines?: ActivityLines[];
   exporter?: boolean | null;
   issuesElectronicInvoices?: boolean | null;
   orderEmails?: string[];
@@ -103,4 +108,5 @@ export interface SaveSupplierDeclarationRequest {
   operationCountries: string | null;
   currencies: string[];
   marketingConsent: boolean;
+  beneficialOwners: BeneficialOwner[];
 }

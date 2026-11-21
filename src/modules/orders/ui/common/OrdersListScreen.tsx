@@ -23,7 +23,7 @@ import {
   toFilterParams,
   type StaffOrderFilters,
 } from '../../lib/staffFilters';
-import type { OrderStatus } from '../../model/order.types';
+import type { Order, OrderStatus } from '../../model/order.types';
 import {
   EMPTY_ORDERS_LIST,
   setOrdersPage,
@@ -104,6 +104,19 @@ const ESTADOS: { value: OrderStatus | ''; label: string }[] = [
   { value: 'REJECTED', label: 'Rechazados' },
 ];
 
+/* Las del proveedor, con los nombres de su orden de compra: lo que tiene por
+   confirmar y lo que esta preparando. */
+const ESTADOS_PROVEEDOR: { value: OrderStatus | ''; label: string }[] = [
+  { value: '', label: 'Todas' },
+  { value: 'PLACED', label: 'Por confirmar' },
+  { value: 'AWAITING_BUYER', label: 'Novedad reportada' },
+  { value: 'CONFIRMED', label: 'En preparación' },
+  { value: 'SHIPPED', label: 'Despachadas' },
+  { value: 'DELIVERED', label: 'Entregadas' },
+  { value: 'CANCELLED', label: 'Canceladas' },
+  { value: 'REJECTED', label: 'Rechazadas' },
+];
+
 const PAGE_SIZE = 10;
 
 /* Las bandejas del dinero del superadmin: la misma lista con un filtro fijo y
@@ -155,6 +168,16 @@ const QUEUES: Record<
     vacio: 'No hay pagos vencidos.',
     filter: { overdue: 'true' },
   },
+};
+
+/* Que se pidio, para el comprador y el proveedor: en lugar de la otra
+   empresa, que ninguno de los dos conoce. "Guantes de nitrilo y 2 más". */
+const resumenDe = (order: Order) => {
+  const [primero, ...resto] = order.items;
+  if (!primero) return '';
+  return resto.length === 0
+    ? primero.productName
+    : `${primero.productName} y ${resto.length} más`;
 };
 
 const pesos = (valor: number, moneda: string) =>
@@ -233,7 +256,12 @@ export const OrdersListScreen = ({
 
       {!queue && (
       <div className='orders-filter'>
-        {(side === 'buyer' ? ESTADOS_COMPRADOR : ESTADOS).map((estado) => (
+        {(side === 'buyer'
+          ? ESTADOS_COMPRADOR
+          : side === 'supplier'
+            ? ESTADOS_PROVEEDOR
+            : ESTADOS
+        ).map((estado) => (
           <button
             type='button'
             key={estado.value}
@@ -292,21 +320,19 @@ export const OrdersListScreen = ({
                 <Link href={`${copy.basePath}/${order.id}`}>
                   <div className='orders-line-main'>
                     <span className='orders-number'>{order.code}</span>
-                    {/* La otra empresa: quien vende si miro como comprador, y
-                        quien compra si miro como proveedor. Para el personal
-                        interno no hay "la otra": van las dos, porque lo que se
-                        mira es la operacion entera. */}
+                    {/* Para el personal, las dos empresas: lo que se mira es la
+                        operacion entera. Comprador y proveedor no saben nada el
+                        uno del otro, de modo que a ellos se les dice que se
+                        pidio, no a quien. */}
                     <span className='orders-supplier'>
                       {side === 'staff' ? (
                         <>
-                          {order.buyerOrganizationName}
-                          <ArrowRight size={13} className='orders-arrow' />
                           {order.supplierOrganizationName}
+                          <ArrowRight size={13} className='orders-arrow' />
+                          {order.buyerOrganizationName}
                         </>
-                      ) : side === 'buyer' ? (
-                        order.supplierOrganizationName
                       ) : (
-                        order.buyerOrganizationName
+                        resumenDe(order)
                       )}
                     </span>
                     <small className='font-light'>
@@ -326,6 +352,20 @@ export const OrdersListScreen = ({
                           Entrega estimada: {formatDeliveryDate(order.estimatedDeliveryAt)}
                         </small>
                       )}
+                    {/* El despacho parcial deja dos pedidos en la lista: el
+                        primero, con lo que salio, y la segunda entrega, con lo
+                        que faltaba. Se marca cual es cual. */}
+                    {order.backorderOf && (
+                      <span className='order-hint-tag is-sm'>
+                        <Package size={12} /> Segunda entrega de {order.backorderOf.code}
+                      </span>
+                    )}
+                    {order.backorders.length > 0 && (
+                      <span className='order-hint-tag is-sm'>
+                        <Package size={12} /> En dos entregas · la segunda es{' '}
+                        {order.backorders.map((b) => b.code).join(', ')}
+                      </span>
+                    )}
                     {(() => {
                       const pago = paymentSummary(order, side);
                       return (

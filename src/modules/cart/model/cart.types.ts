@@ -15,6 +15,8 @@ export interface CartItem {
   presentationName: string;
   packaging: string;
   imageUrl: string | null;
+  /** El codigo de Suminia del producto, CRS-20417. */
+  referenceCode: string;
 
   quantity: number;
   /** El de esta cantidad: si alcanza un escalon, ya viene rebajado. */
@@ -35,8 +37,10 @@ export interface CartItem {
 /* Un proveedor y lo que se le va a pedir. Cada uno despacha y factura por su
    cuenta, de modo que un carrito con tres es, al confirmar, tres pedidos. */
 export interface CartSupplierGroup {
-  organizationId: string;
-  organizationName: string;
+  /** Clave del grupo dentro del carrito; no identifica a nadie. */
+  key: string;
+  /** "Envío 1", "Envío 2": el comprador no sabe quien despacha. */
+  label: string;
   items: CartItem[];
   subtotal: number;
   tax: number;

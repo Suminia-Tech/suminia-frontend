@@ -16,6 +16,17 @@ export type OrderStatus =
      resto, y espera a que el comprador decida. */
   | 'AWAITING_BUYER';
 
+/* La novedad que reporta el proveedor sobre una orden que no puede atender
+   como se emitio. Lista fija: Suminia la cuenta para evaluar proveedores. */
+export type SupplierIssue =
+  | 'OUT_OF_STOCK'
+  | 'PARTIAL_AVAILABILITY'
+  | 'PRICE_DIFFERENCE'
+  | 'INSUFFICIENT_CREDIT'
+  | 'OVERDUE_BALANCE'
+  | 'DELIVERY_PROBLEM'
+  | 'OTHER';
+
 /* SUBMITTED: el comprador subio el comprobante y Suminia lo esta verificando. */
 export type PaymentStatus = 'PENDING' | 'SUBMITTED' | 'PAID' | 'REFUNDED';
 export type PayoutStatus = 'PENDING' | 'PAID';
@@ -75,7 +86,8 @@ export interface OrderClaim {
   reason: ClaimReason;
   description: string;
   status: 'OPEN' | 'RESOLVED';
-  createdByName: string;
+  /** La persona de la clinica que la reporto; null para el proveedor. */
+  createdByName: string | null;
   resolution: string | null;
   resolvedByName: string | null;
   resolvedAt: string | null;
@@ -98,7 +110,10 @@ export interface OrderItem {
   productName: string;
   presentationName: string;
   packaging: string;
+  /** El codigo interno del proveedor; null para el comprador. */
   sku: string | null;
+  /** El codigo de Suminia del producto, CRS-20417. */
+  referenceCode: string;
   cum: string | null;
   quantity: number;
   /** Lo que el proveedor dijo tener, si propuso un despacho parcial. */
@@ -131,8 +146,12 @@ export interface Order {
   id: string;
   /** Clave interna. Para nombrar el pedido se usa `code`. */
   number: number;
-  /** Como se nombra el pedido: SUM-2026-010257. */
+  /** Como se nombra el pedido. El comprador y el personal ven el de venta,
+      SUM-2026-010257; el proveedor, su orden de compra, OC-2026-004718. */
   code: string;
+  /** La orden de compra al proveedor. Solo llega al personal, que ve los dos:
+      con la reventa son dos operaciones y cada una lleva su numero. */
+  purchaseCode: string | null;
   /* Falso solo en un pendiente de despacho parcial que no se ha confirmado:
      todavia no aparta inventario. */
   stockReserved: boolean;
@@ -143,17 +162,26 @@ export interface Order {
   /** Los pendientes que salieron de este. */
   backorders: { id: string; code: string; status: OrderStatus }[];
 
-  buyerOrganizationId: string;
-  buyerOrganizationName: string;
-  supplierOrganizationId: string;
-  supplierOrganizationName: string;
-  placedByUserId: string;
-  placedByName: string;
+  /* Comprador y proveedor no saben nada el uno del otro: para cada uno, al
+     otro lado esta Suminia. El backend manda null en los datos de la otra
+     empresa; solo el personal recibe los de las dos. */
+  buyerOrganizationId: string | null;
+  buyerOrganizationName: string | null;
+  supplierOrganizationId: string | null;
+  supplierOrganizationName: string | null;
+  /** Quien de la clinica hizo el pedido; null para el proveedor. */
+  placedByUserId: string | null;
+  placedByName: string | null;
 
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   payoutStatus: PayoutStatus;
+  /** Solo para quien lo escribio y para Suminia: el otro lado recibe null. */
   statusReason: string | null;
+  /** La novedad del proveedor. Null para el comprador. */
+  supplierIssue: SupplierIssue | null;
+  /** En cuantos dias le paga Suminia al proveedor. Null para el comprador. */
+  supplierPaymentTermDays: number | null;
 
   paymentMethod: PaymentMethod;
   creditDays: number | null;
@@ -204,7 +232,11 @@ export interface Order {
   payments: OrderPayment[];
   events: OrderEvent[];
 
-  delivery: OrderDelivery;
+  /** Null para el proveedor cuando ya se le retiro: ver `deliveryRetired`. */
+  delivery: OrderDelivery | null;
+  /** Al proveedor se le retira la entrega 90 dias despues de cerrado el
+      pedido; al comprador y al personal de Suminia, nunca. */
+  deliveryRetired: boolean;
   buyerNotes: string | null;
 
   items: OrderItem[];
@@ -229,6 +261,9 @@ export interface Order {
   shippedAt: string | null;
   /** "2026-11-24": cuando estima entregar el proveedor; lo dice al despachar. */
   estimatedDeliveryAt: string | null;
+  /** Con que transportadora y guia salio. Null para el comprador. */
+  carrierName: string | null;
+  trackingNumber: string | null;
   deliveredAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -303,8 +338,12 @@ export interface CreditStatus {
 export interface QuoteItem {
   id: string;
   presentationId: string;
+  /** Para el comprador, "envio-1": no identifica al proveedor. */
   supplierOrganizationId: string;
+  /** Para el comprador, "Envío 1": nunca el nombre del proveedor. */
   supplierName: string;
+  /** El codigo de Suminia del producto, CRS-20417. */
+  referenceCode: string;
   productName: string;
   presentationName: string;
   packaging: string;
@@ -374,8 +413,13 @@ export interface ChangeOrderStatusRequest {
   id: string;
   status: OrderStatus;
   reason?: string;
+  /** Obligatoria cuando el proveedor rechaza o cancela. */
+  issue?: SupplierIssue;
   /** "2026-11-24": obligatoria al despachar. */
   estimatedDeliveryAt?: string;
+  /** Obligatoria al despachar. */
+  carrierName?: string;
+  trackingNumber?: string;
 }
 
 /* El proveedor no tiene todo: cuanto tiene de cada producto y para cuando
@@ -424,9 +468,10 @@ export interface OrderMetrics {
    depende de la ciudad. Lo enseña el checkout antes de confirmar. */
 export interface OrderPreview {
   city: string | null;
+  /* Un envio por proveedor, sin decir de quien: "Envío 1", "Envío 2". */
   suppliers: {
-    supplierOrganizationId: string;
-    supplierName: string;
+    key: string;
+    label: string;
     subtotal: number;
     tax: number;
     shippingCost: number;

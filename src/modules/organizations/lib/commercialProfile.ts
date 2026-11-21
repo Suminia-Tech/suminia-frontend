@@ -1,4 +1,5 @@
 import type {
+  ActivityLines,
   BuyerActivity,
   ContactArea,
   IpsSector,
@@ -44,6 +45,26 @@ export const describeActivities = (selected: SupplierActivity[] | undefined) =>
 
 export const describeProductLines = (selected: SupplierProductLine[] | undefined) =>
   describe(PRODUCT_LINE_OPTIONS, selected);
+
+/* Que vende en cada actividad, en una linea por actividad: "Fabricante:
+   Mobiliario hospitalario". Con un perfil viejo, sin la relacion, cae a las
+   dos listas sueltas. */
+export const describeActivityLines = (organization: {
+  activityLines?: ActivityLines[];
+  activities?: SupplierActivity[];
+  productLines?: SupplierProductLine[];
+}): string[] => {
+  const relacion = (organization.activityLines ?? []).filter((l) => l.productLines.length > 0);
+  if (relacion.length === 0) {
+    const actividades = describeActivities(organization.activities);
+    const lineas = describeProductLines(organization.productLines);
+    return actividades || lineas ? [[actividades, lineas].filter(Boolean).join(': ')] : [];
+  }
+  return ACTIVITY_OPTIONS.flatMap((option) => {
+    const entrada = relacion.find((l) => l.activity === option.value);
+    return entrada ? [`${option.label}: ${describeProductLines(entrada.productLines)}`] : [];
+  });
+};
 
 export const describeExporter = (
   exporter: boolean | null | undefined,
@@ -98,6 +119,11 @@ export interface LegalDocumentOption {
   help: string;
   /* Sin el, Suminia no aprueba la empresa. */
   required: boolean;
+  /* Solo se sube si Suminia lo pide, o si aplica: sin cargar no es un
+     faltante. */
+  onRequest?: boolean;
+  /* Como se marca mientras no se ha subido: "Opcional" por defecto. */
+  optionalLabel?: string;
 }
 
 /* Los documentos que se le piden a cada lado, con la ayuda que va debajo.
@@ -133,11 +159,15 @@ export const legalDocumentOptions = (
       help: 'El Registro Único Tributario vigente.',
       required: esComprador,
     },
+    /* No se exige: los accionistas y beneficiarios finales ya van en la
+       declaracion. Se sube solo si Suminia lo pide para una revision mas
+       profunda. */
     {
       value: 'SHAREHOLDING',
       label: 'Certificado de composición accionaria',
-      help: 'Firmado por el revisor fiscal o el representante legal.',
-      required: esComprador,
+      help: 'Solo si Suminia te lo solicita. Firmado por el revisor fiscal o el representante legal.',
+      required: false,
+      onRequest: true,
     },
   ];
 
@@ -159,6 +189,44 @@ export const legalDocumentOptions = (
 
 /* Los del proveedor, que no dependen de nada. */
 export const LEGAL_DOCUMENT_OPTIONS = legalDocumentOptions('supplier');
+
+/* Las certificaciones sanitarias del proveedor. Ninguna se exige: no todos
+   fabrican, importan o almacenan, y cada una aplica a quien hace eso. Se
+   suben cuando aplican, y Suminia las revisa como los documentos legales. */
+export const SANITARY_CERTIFICATION_OPTIONS: LegalDocumentOption[] = [
+  {
+    value: 'CCAA',
+    label: 'Certificado de Capacidad de Almacenamiento y Acondicionamiento (CCAA)',
+    help: 'Expedido por el INVIMA. Aplica si fabricas o importas dispositivos médicos.',
+    required: false,
+    onRequest: true,
+    optionalLabel: 'Si aplica',
+  },
+  {
+    value: 'GMP_CERTIFICATE',
+    label: 'Certificado de Buenas Prácticas de Manufactura (BPM)',
+    help: 'Expedido por el INVIMA. Aplica si fabricas.',
+    required: false,
+    onRequest: true,
+    optionalLabel: 'Si aplica',
+  },
+  {
+    value: 'GSP_CERTIFICATE',
+    label: 'Certificado de Buenas Prácticas de Almacenamiento (BPA)',
+    help: 'Aplica si almacenas medicamentos o dispositivos médicos.',
+    required: false,
+    onRequest: true,
+    optionalLabel: 'Si aplica',
+  },
+  {
+    value: 'HEALTH_AUTHORITY_VISIT',
+    label: 'Acta de visita del ente territorial de salud',
+    help: 'La última acta de la secretaría de salud de tu departamento o municipio.',
+    required: false,
+    onRequest: true,
+    optionalLabel: 'Si aplica',
+  },
+];
 
 /* Las opciones del perfil del comprador: las mismas del registro. */
 export {
@@ -201,7 +269,7 @@ export const buyerMissing = (organization: {
   bankName?: string | null;
   bankAccountNumber?: string | null;
   documents?: OrganizationDocument[];
-  declaration?: unknown;
+  declaration?: { beneficialOwners?: unknown[] } | null;
 }): string[] => {
   const faltan: string[] = [];
   if (!organization.legalNature || !organization.buyerActivity) {
@@ -221,6 +289,8 @@ export const buyerMissing = (organization: {
      aprueba. */
   if (!organization.declaration) {
     faltan.push('la declaración de autocontrol');
+  } else if (!organization.declaration.beneficialOwners?.length) {
+    faltan.push('los accionistas y beneficiarios finales en la declaración');
   }
   return faltan;
 };

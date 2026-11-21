@@ -1,7 +1,11 @@
 import { formatDateTime } from '@/shared/lib/dates';
 import { Panel } from '@/shared/ui';
 
-import { BUYER_EVENT_LABEL, ORDER_EVENT_LABEL } from '../../lib/orderStatus';
+import {
+  BUYER_EVENT_LABEL,
+  ORDER_EVENT_LABEL,
+  SUPPLIER_EVENT_LABEL,
+} from '../../lib/orderStatus';
 import type { Order, OrderEvent } from '../../model/order.types';
 import type { OrderSide } from './OrdersListScreen';
 
@@ -22,14 +26,16 @@ const QUIEN: Record<OrderEvent['actorSide'], string> = {
   system: 'Suminia',
 };
 
-/* Quien firma un paso, dicho al comprador: el, o Suminia. */
-const firmaComprador = (event: OrderEvent): string =>
-  event.actorSide === 'buyer' && event.actorName ? ` · ${event.actorName}` : ' · Suminia';
+/* Quien firma un paso, dicho al comprador o al proveedor: alguien de su
+   propia empresa, o Suminia. La otra empresa no aparece nunca. */
+const firmaDe = (event: OrderEvent, side: 'buyer' | 'supplier'): string =>
+  event.actorSide === side && event.actorName ? ` · ${event.actorName}` : ' · Suminia';
 
 export const OrderHistoryPanel = ({ order, side }: { order: Order; side: OrderSide }) => {
-  const esComprador = side === 'buyer';
-  const eventos = esComprador
-    ? order.events.filter((event) => BUYER_EVENT_LABEL[event.type] !== null)
+  const etiquetas =
+    side === 'buyer' ? BUYER_EVENT_LABEL : side === 'supplier' ? SUPPLIER_EVENT_LABEL : null;
+  const eventos = etiquetas
+    ? order.events.filter((event) => etiquetas[event.type] !== null)
     : order.events;
   if (eventos.length === 0) return null;
 
@@ -41,12 +47,12 @@ export const OrderHistoryPanel = ({ order, side }: { order: Order; side: OrderSi
             <span className='order-history-dot' />
             <div>
               <strong>
-                {esComprador ? BUYER_EVENT_LABEL[event.type] : ORDER_EVENT_LABEL[event.type]}
+                {etiquetas ? etiquetas[event.type] : ORDER_EVENT_LABEL[event.type]}
               </strong>
               <small className='font-light'>
                 {formatDateTime(event.createdAt)}
-                {esComprador
-                  ? firmaComprador(event)
+                {side !== 'staff'
+                  ? firmaDe(event, side)
                   : event.actorSide === 'system'
                     ? ' · automático'
                     : event.actorName

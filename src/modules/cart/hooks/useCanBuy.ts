@@ -1,5 +1,6 @@
 'use client';
 
+import { useMounted } from '@/shared/hooks/useMounted';
 import { useAppSelector } from '@/store/hooks';
 
 /* Quien puede comprar: alguien con sesion, que pertenezca a una empresa y que
@@ -20,7 +21,11 @@ export const useCanBuy = (): {
      y al segundo eso le sonaria a que su solicitud no existe. */
   reason: 'anonymous' | 'pending' | 'no-organization' | null;
 } => {
-  const hydrated = useAppSelector((state) => state.auth.hydrated);
+  /* Con useMounted: lo que cuelga de la cabecera o de un <Suspense> puede
+     pintarse por primera vez con `hydrated` ya encendido, y el servidor lo
+     habia pintado apagado. Ver useMounted. */
+  const mounted = useMounted();
+  const hydrated = useAppSelector((state) => state.auth.hydrated) && mounted;
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const user = useAppSelector((state) => state.auth.user);
 

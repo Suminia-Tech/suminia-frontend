@@ -55,13 +55,22 @@ export const DOCUMENT_HELP: Record<ProductDocumentType, string> = {
 
 /* Los soportes que se exigen. Debe coincidir con requiredDocuments del
    backend, que es quien lo hace cumplir al enviar a revision: aqui solo sirve
-   para pintar los huecos y no ofrecer un envio que va a acabar en 422. */
+   para pintar los huecos y no ofrecer un envio que va a acabar en 422.
+
+   No todo producto de salud tiene registro sanitario ni ficha tecnica —un
+   esparadrapo, una mesa auxiliar—. El registro se exige en un medicamento y
+   donde el proveedor declaro un numero de registro; la ficha tecnica nunca. */
 export const requiredDocuments = (
   type: ProductType,
   isManufacturerOrImporter: boolean,
+  sanitaryRegistration: string | null,
 ): ProductDocumentType[] => [
-  /* En todo producto: sin ellos no se le muestra al comprador. */
-  'SANITARY_REGISTRATION',
-  'TECHNICAL_SHEET',
+  ...(type === 'MEDICINE' || sanitaryRegistration?.trim()
+    ? (['SANITARY_REGISTRATION'] as const)
+    : []),
   ...(type === 'MEDICAL_DEVICE' && isManufacturerOrImporter ? (['CCAA'] as const) : []),
 ];
+
+/* Los que se ofrecen siempre en el modal, se exijan o no: el registro
+   sanitario y la ficha tecnica se adjuntan si existen. */
+export const OFFERED_DOCUMENTS: ProductDocumentType[] = ['SANITARY_REGISTRATION', 'TECHNICAL_SHEET'];

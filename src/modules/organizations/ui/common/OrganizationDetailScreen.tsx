@@ -24,9 +24,8 @@ import {
   CONTACT_AREA_OPTIONS,
   contactAreaLabel,
   describeBuyerProfile,
-  describeActivities,
+  describeActivityLines,
   describeExporter,
-  describeProductLines,
 } from '../../lib/commercialProfile';
 import { formatDeliveryTime } from '../../lib/deliveryTime';
 import { formatTaxId, wrongCheckDigit } from '../../lib/taxId';
@@ -171,10 +170,10 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
   );
 
   const perfil = [
-    { label: 'Actividades', value: describeActivities(organization.activities) },
+    /* Que vende en cada actividad: "Fabricante: Mobiliario hospitalario". */
     {
-      label: 'Categorías que comercializa',
-      value: describeProductLines(organization.productLines),
+      label: 'Actividades y líneas',
+      value: describeActivityLines(organization).join(' · ') || null,
     },
     { label: 'Exporta', value: describeExporter(organization.exporter) },
   ];
@@ -701,6 +700,16 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
             reviewable={canDecide}
             legalNature={organization.legalNature}
           />
+          {kind === 'supplier' && (
+            <LegalDocumentsPanel
+              group='sanitary'
+              kind={kind}
+              organizationId={organization.id}
+              documents={organization.documents ?? []}
+              editable={false}
+              reviewable={canDecide}
+            />
+          )}
         </aside>
       </div>
     </>

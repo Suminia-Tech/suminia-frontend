@@ -55,8 +55,8 @@ export const CheckoutScreen = ({
       const pedidos = respuesta.data;
       toast.success(
         pedidos.length === 1
-          ? `Pedido ${pedidos[0].code} enviado a ${pedidos[0].supplierOrganizationName}`
-          : `${pedidos.length} pedidos enviados, uno a cada proveedor`,
+          ? `Pedido ${pedidos[0].code} confirmado`
+          : `${pedidos.length} pedidos confirmados, uno por cada envío`,
       );
 
       /* A la ficha si es uno solo, y al listado si son varios: con uno hay algo
@@ -75,7 +75,7 @@ export const CheckoutScreen = ({
 
   return (
     <>
-      <LoadingOverlay isOpen={isLoading} variant='detail' />
+      <LoadingOverlay isOpen={isLoading} />
 
       <div className='checkout-layout'>
         <div>
@@ -118,10 +118,10 @@ export const CheckoutScreen = ({
 
           {error && <div className='alert alert-danger mt-3'>{error}</div>}
 
-          {/* Se avisa antes y no despues: quien llega aqui con tres proveedores
+          {/* Se avisa antes y no despues: quien llega aqui con tres envios
               esta haciendo tres pedidos, y enterarse al confirmar sorprende. */}
           <p className='checkout-note font-light'>
-            Cada proveedor recibe su propio pedido y lo despacha por su cuenta.
+            Cada envío sale por separado y lleva su propio pedido.
           </p>
 
           <button

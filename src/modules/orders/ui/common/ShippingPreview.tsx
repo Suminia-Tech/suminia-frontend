@@ -27,9 +27,9 @@ export const ShippingPreview = ({ locationId }: { locationId: string }) => {
   return (
     <ul className={`cart-summary-lines shipping-preview${isFetching ? ' is-loading' : ''}`}>
       {preview.suppliers.map((proveedor) => (
-        <li key={proveedor.supplierOrganizationId}>
+        <li key={proveedor.key}>
           <span className='font-light'>
-            Envío {preview.suppliers.length > 1 ? proveedor.supplierName : ''}
+            {preview.suppliers.length > 1 ? proveedor.label : 'Envío'}
             {proveedor.missingForFreeShipping !== null && (
               <small className='d-block'>
                 Te faltan {pesos(proveedor.missingForFreeShipping)} + IVA para envío gratis

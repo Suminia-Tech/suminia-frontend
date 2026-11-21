@@ -112,7 +112,10 @@ const ClaimSlot = ({
           <small className='font-light'>
             {claim.description}
             <br />
-            {claim.createdByName} · {formatDateTime(claim.createdAt)}
+            {/* Quien la reporto es una persona de la clinica: al proveedor no
+                le llega el nombre. */}
+            {claim.createdByName && `${claim.createdByName} · `}
+            {formatDateTime(claim.createdAt)}
             {claim.resolution && (
               <>
                 <br />

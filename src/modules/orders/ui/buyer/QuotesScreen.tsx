@@ -71,7 +71,7 @@ export const QuotesScreen = () => {
                   <div className='orders-line-main'>
                     <span className='orders-number'>{quote.code}</span>
                     <span className='orders-supplier'>
-                      {quote.suppliers} {quote.suppliers === 1 ? 'proveedor' : 'proveedores'}
+                      {quote.suppliers} {quote.suppliers === 1 ? 'envío' : 'envíos'}
                     </span>
                     <small className='font-light'>
                       {formatDate(quote.createdAt)} · {quote.items}{' '}

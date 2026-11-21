@@ -286,8 +286,9 @@ export const PublicProductScreen = ({
               <h1 className='product-detail-title'>{product.name}</h1>
 
               <p className='product-detail-supplier'>
-                Vendido por{' '}
-                <strong>{product.organizationName ?? 'Proveedor'}</strong>
+                {/* Lo vende Suminia: el comprador nunca sabe quien es el
+                    proveedor, y el producto se reconoce por su codigo. */}
+                <strong>{product.referenceCode}</strong>
                 {product.brand && (
                   <>
                     {' · '}
@@ -306,7 +307,7 @@ export const PublicProductScreen = ({
                 {registro ? (
                   <strong>{registro}</strong>
                 ) : (
-                  <span className='font-light'>· no informado por el proveedor</span>
+                  <span className='font-light'>· no informado</span>
                 )}
               </p>
 
@@ -586,7 +587,7 @@ export const PublicProductScreen = ({
             <section className='product-detail-block'>
               <div className='box-head'>
                 <h3>
-                  Otros proveedores de este medicamento
+                  Otras ofertas de este medicamento
                   <span className='font-light'> · {offers.length}</span>
                 </h3>
               </div>
@@ -595,7 +596,7 @@ export const PublicProductScreen = ({
                   <li key={offer.productId}>
                     <Link href={`/catalog/${offer.productId}`}>
                       <span className='offer-supplier'>
-                        <strong>{offer.organizationName ?? 'Proveedor'}</strong>
+                        <strong>{offer.referenceCode}</strong>
                         <small className='font-light'>
                           {offer.presentationCount}{' '}
                           {offer.presentationCount === 1

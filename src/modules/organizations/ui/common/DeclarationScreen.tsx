@@ -30,6 +30,12 @@ import type {
   SupplierDeclaration,
 } from '../../model/organization.types';
 import type { SaveSupplierDeclarationRequest } from '../../model/supplier.types';
+import BeneficialOwnersFields, {
+  emptyOwner,
+  ownerErrorsOf,
+  parseOwnership,
+  type OwnerValues,
+} from './BeneficialOwnersFields';
 import DeclarationSummaryPanel from './DeclarationSummaryPanel';
 
 /* La declaracion de autocontrol de riesgos (antes SAGRILAFT) que proveedores
@@ -58,6 +64,7 @@ interface DeclarationValues {
   otherCurrency: string;
   dataPolicy: boolean;
   marketingConsent: boolean;
+  beneficialOwners: OwnerValues[];
 }
 
 type Errors = Partial<Record<keyof DeclarationValues, string>>;
@@ -67,7 +74,10 @@ const toYesNo = (value: boolean | undefined): YesNo =>
 
 /* Una declaracion ya enviada vuelve con las casillas marcadas: se aceptaron al
    enviarla, y volver a pedirlas al corregir un dato seria fingir que no. */
-const toValues = (declaration: SupplierDeclaration | null | undefined): DeclarationValues => {
+const toValues = (
+  declaration: SupplierDeclaration | null | undefined,
+  company: { name: string; taxId: string },
+): DeclarationValues => {
   const listed = (declaration?.currencies ?? []).filter((currency) =>
     (LISTED_CURRENCIES as readonly string[]).includes(currency),
   );
@@ -90,6 +100,14 @@ const toValues = (declaration: SupplierDeclaration | null | undefined): Declarat
     otherCurrency: other.join(', '),
     dataPolicy: Boolean(declaration),
     marketingConsent: declaration?.marketingConsent ?? false,
+    /* Una fila de entrada, con la propia empresa como sociedad: es el caso
+       comun, el accionista directo. */
+    beneficialOwners: declaration?.beneficialOwners?.length
+      ? declaration.beneficialOwners.map((owner) => ({
+          ...owner,
+          ownership: String(owner.ownership).replace('.', ','),
+        }))
+      : [emptyOwner(company.name, company.taxId)],
   };
 };
 
@@ -121,6 +139,12 @@ const validate = (values: DeclarationValues): Errors => {
     if (values.currencies.length === 0 && !values.otherCurrency.trim()) {
       errors.currencies = 'Indica las monedas que utilizas.';
     }
+  }
+
+  if (values.beneficialOwners.length === 0) {
+    errors.beneficialOwners = 'Agrega al menos un accionista o beneficiario final.';
+  } else if (Object.keys(ownerErrorsOf(values.beneficialOwners)).length > 0) {
+    errors.beneficialOwners = 'Revisa los datos de los accionistas.';
   }
 
   if (!values.dataPolicy) {
@@ -229,7 +253,13 @@ const DeclarationForm = ({
   kind: OrganizationKind;
   organization: Organization;
 }) => {
-  const [values, setValues] = useState<DeclarationValues>(() => toValues(supplier.declaration));
+  const empresa = { name: supplier.legalName, taxId: supplier.taxId };
+  const [values, setValues] = useState<DeclarationValues>(() =>
+    toValues(supplier.declaration, empresa),
+  );
+  /* Los errores de cada accionista se muestran despues del primer intento de
+     enviar, no mientras se escribe. */
+  const [intentado, setIntentado] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const { save, isLoading } = useSaveDeclaration(kind);
@@ -252,6 +282,7 @@ const DeclarationForm = ({
     });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    setIntentado(true);
     event.preventDefault();
     setServerError(null);
 
@@ -286,6 +317,14 @@ const DeclarationForm = ({
           operationCountries: international ? values.operationCountries.trim() : null,
           currencies: international ? [...values.currencies, ...otherCurrencies] : [],
           marketingConsent: values.marketingConsent,
+          beneficialOwners: values.beneficialOwners.map((owner) => ({
+            idType: owner.idType,
+            idNumber: owner.idNumber.trim(),
+            name: owner.name.trim(),
+            companyName: owner.companyName.trim(),
+            companyTaxId: owner.companyTaxId.trim(),
+            ownership: parseOwnership(owner.ownership) ?? 0,
+          })),
       });
       toast.success(supplier.declaration ? 'Declaración actualizada' : 'Declaración enviada');
     } catch (err) {
@@ -368,6 +407,14 @@ const DeclarationForm = ({
           <FieldError message={errors.isPep} />
         </fieldset>
       </Panel>
+
+      <BeneficialOwnersFields
+        owners={values.beneficialOwners}
+        onChange={(owners) => set('beneficialOwners', owners)}
+        errors={intentado ? ownerErrorsOf(values.beneficialOwners) : {}}
+        emptyError={intentado ? errors.beneficialOwners : undefined}
+        defaultCompany={empresa}
+      />
 
       <Panel title='Operaciones internacionales'>
         <div className='form-grid'>
@@ -486,11 +533,12 @@ const DeclarationForm = ({
           title='Política de Tratamiento de Datos'
           text={
             <>
-              {DATA_POLICY_TEXT}{' '}
+              {DATA_POLICY_TEXT.before}
               {/* En otra pestaña: abrirla aqui perderia lo que ya se lleno. */}
               <a href={DATA_POLICY_PATH} target='_blank' rel='noreferrer'>
-                Ver Política de Tratamiento de Datos
+                {DATA_POLICY_TEXT.link}
               </a>
+              {DATA_POLICY_TEXT.after}
             </>
           }
           checked={values.dataPolicy}

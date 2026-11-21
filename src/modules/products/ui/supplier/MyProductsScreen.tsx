@@ -399,24 +399,30 @@ export const MyProductsScreen = () => {
         ) : (
           <>
             <div className='catalog-table-scroll'>
-              <table className='catalog-table'>
+              <table className='catalog-table is-wide'>
                 <thead>
                   <tr>
                     {sortableHeader('Producto', 'name', 'col-product')}
                     <th className='col-category'>Categoría</th>
                     {/* Precio e inventario viven en las presentaciones, no en el
                         producto: el backend no puede ordenar por ellos sin
-                        decidir antes cual de ellas manda.
-
-                        Las presentaciones no tienen columna propia: tenian una,
-                        "Formatos", con solo un numero, y la revision la leyo
-                        como referencias distintas del mismo producto. Ahora el
-                        numero va bajo el precio, que es lo que explica: un
-                        rango de precios sale de vender la misma referencia en
-                        varias presentaciones. */}
+                        decidir antes cual de ellas manda. Cuantas presentaciones
+                        tiene va en su columna, con su nombre arriba y el boton
+                        para gestionarlas. */}
                     <th className='num col-price'>Precio</th>
                     <th className='num col-tight'>Inventario</th>
                     {sortableHeader('Estado', 'status', 'col-status')}
+                    {/* Lo que se le carga a cada producto, una columna por cosa y
+                        con su nombre arriba: juntos al final de la fila, como
+                        iconos sueltos, no se sabia que eran ni donde estaba
+                        cada uno. */}
+                    {canUpdate && (
+                      <>
+                        <th className='text-center'>Presentaciones</th>
+                        <th className='text-center'>Imágenes</th>
+                        <th className='text-center'>Documentos</th>
+                      </>
+                    )}
                     {(canUpdate || canDelete) && <th className='actions'></th>}
                   </tr>
                 </thead>
@@ -427,6 +433,7 @@ export const MyProductsScreen = () => {
                     const docsRequired = requiredDocuments(
                       product.type,
                       product.isManufacturerOrImporter,
+                      product.sanitaryRegistration,
                     );
                     const docsMissing = docsRequired.filter(
                       (type) => !product.documents.some((document) => document.type === type),
@@ -460,12 +467,6 @@ export const MyProductsScreen = () => {
                         </td>
                         <td className='num'>
                           <strong>{formatPriceRange(product)}</strong>
-                          <small className='font-light d-block'>
-                            {product.presentations.length}{' '}
-                            {product.presentations.length === 1
-                              ? 'presentación'
-                              : 'presentaciones'}
-                          </small>
                         </td>
                         <td className={`num${stock === 0 ? ' text-danger' : ' font-light'}`}>
                           {stock === 0 ? 'Agotado' : stock}
@@ -498,61 +499,79 @@ export const MyProductsScreen = () => {
                             </button>
                           )}
                         </td>
+                        {canUpdate && (
+                          <>
+                            <td className='text-center'>
+                              <div className='row-actions'>
+                                {/* El contador va dentro del boton: saber cuantas
+                                    presentaciones, imagenes y documentos tiene
+                                    cada producto es lo que dice cual esta a
+                                    medio preparar. */}
+                                <button
+                                  type='button'
+                                  title='Presentaciones'
+                                  aria-label='Presentaciones'
+                                  onClick={() => setFormatsFor(product)}
+                                >
+                                  <Layers size={15} />
+                                  <span>{product.presentations.length}</span>
+                                </button>
+                              </div>
+                            </td>
+                            <td className='text-center'>
+                              <div className='row-actions'>
+                                <button
+                                  type='button'
+                                  title='Imágenes'
+                                  aria-label='Imágenes'
+                                  className={
+                                    product.images.length === 0 ? 'is-empty' : undefined
+                                  }
+                                  onClick={() => setImagesFor(product)}
+                                >
+                                  <ImageIcon size={15} />
+                                  <span>{product.images.length}</span>
+                                </button>
+                              </div>
+                            </td>
+                            <td className='text-center'>
+                              <div className='row-actions'>
+                                {/* En todo producto: aunque no se le exija
+                                    ninguno, el registro sanitario y la ficha
+                                    tecnica se adjuntan si existen. Donde se
+                                    exigen, la cuenta es de lo exigido que ya
+                                    tiene, y se marca mientras falte alguno;
+                                    donde no, cuantos lleva. */}
+                                <button
+                                  type='button'
+                                  title='Documentos técnicos y sanitarios'
+                                  aria-label='Documentos'
+                                  className={docsMissing > 0 ? 'is-empty' : undefined}
+                                  onClick={() => setDocumentsFor(product)}
+                                >
+                                  <FileText size={15} />
+                                  <span>
+                                    {docsRequired.length > 0
+                                      ? `${docsRequired.length - docsMissing}/${docsRequired.length}`
+                                      : product.documents.length}
+                                  </span>
+                                </button>
+                              </div>
+                            </td>
+                          </>
+                        )}
                         {(canUpdate || canDelete) && (
                           <td className='actions'>
                             <div className='row-actions'>
                               {canUpdate && (
-                                <>
-                                  <button
-                                    type='button'
-                                    title='Editar producto'
-                                    aria-label='Editar producto'
-                                    onClick={() => openEdit(product)}
-                                  >
-                                    <Edit2 size={15} />
-                                  </button>
-                                  {/* El contador va dentro del boton: saber cuantas
-                                      presentaciones e imagenes tiene cada producto
-                                      es lo que dice cual esta a medio preparar. */}
-                                  <button
-                                    type='button'
-                                    title='Presentaciones'
-                                    aria-label='Presentaciones'
-                                    onClick={() => setFormatsFor(product)}
-                                  >
-                                    <Layers size={15} />
-                                    <span>{product.presentations.length}</span>
-                                  </button>
-                                  <button
-                                    type='button'
-                                    title='Imágenes'
-                                    aria-label='Imágenes'
-                                    className={
-                                      product.images.length === 0 ? 'is-empty' : undefined
-                                    }
-                                    onClick={() => setImagesFor(product)}
-                                  >
-                                    <ImageIcon size={15} />
-                                    <span>{product.images.length}</span>
-                                  </button>
-                                  {/* Solo donde se exigen. La cuenta es de lo que
-                                      tiene sobre lo que se le pide, y se marca
-                                      mientras falte alguno. */}
-                                  {docsRequired.length > 0 && (
-                                    <button
-                                      type='button'
-                                      title='Documentos'
-                                      aria-label='Documentos'
-                                      className={docsMissing > 0 ? 'is-empty' : undefined}
-                                      onClick={() => setDocumentsFor(product)}
-                                    >
-                                      <FileText size={15} />
-                                      <span>
-                                        {docsRequired.length - docsMissing}/{docsRequired.length}
-                                      </span>
-                                    </button>
-                                  )}
-                                </>
+                                <button
+                                  type='button'
+                                  title='Editar producto'
+                                  aria-label='Editar producto'
+                                  onClick={() => openEdit(product)}
+                                >
+                                  <Edit2 size={15} />
+                                </button>
                               )}
                               {canDelete && (
                                 <button

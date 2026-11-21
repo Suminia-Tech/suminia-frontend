@@ -373,6 +373,7 @@ export const ProductReviewQueueScreen = () => {
                     const required = requiredDocuments(
                       product.type,
                       product.isManufacturerOrImporter,
+                      product.sanitaryRegistration,
                     );
                     const loaded = required.filter((type) =>
                       product.documents.some((document) => document.type === type),
@@ -430,7 +431,11 @@ export const ProductReviewQueueScreen = () => {
                         <td
                           className={`num${loaded < required.length ? ' text-danger' : ' font-light'}`}
                         >
-                          {required.length === 0 ? '—' : `${loaded}/${required.length}`}
+                          {/* Sin exigidos, cuantos adjunto: los opcionales tambien
+                              se revisan. */}
+                          {required.length === 0
+                            ? product.documents.length || '—'
+                            : `${loaded}/${required.length}`}
                         </td>
                         <td className='font-light text-nowrap'>
                           {formatDate(

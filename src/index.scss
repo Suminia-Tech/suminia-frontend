@@ -789,6 +789,16 @@ textarea.form-control {
   .form-label {
     margin-bottom: 6px;
   }
+
+  /* La pregunta de temperatura: la leyenda hace de etiqueta, como en el
+     formulario de empresa. Sin esto Bootstrap la pinta al tamaño de un
+     titulo. */
+  fieldset legend {
+    float: none;
+    width: auto;
+    padding: 0;
+    font-size: 14px;
+  }
 }
 
 /* Recarga con datos ya en pantalla: se atenua en vez de vaciarse, para que la
@@ -870,40 +880,24 @@ textarea.form-control {
 /* ---------------------------------------------------------------------------
    El aire de arriba de las pantallas de tienda
 
-   El tema le da 70px de padding vertical a `.section-b-space`, que es el ritmo
-   de la portada: secciones una detras de otra, cada una un bloque, y ese aire
-   es lo que las separa. Pegada al menu, en cambio, la primera seccion de una
-   pagina interior arranca en el vacio —70px entre "HOME TIENDA BLOG" y el
-   primer texto, sin nada en medio—.
+   El tema le da 70px de padding vertical a `.section-b-space` y 80px a todo
+   <section>, que es el ritmo de la portada: secciones una detras de otra. Pegada
+   al menu, en cambio, la primera seccion de una pagina interior arrancaba en el
+   vacio.
 
-   Se corta a 24px, el mismo aire que dejan la portada y el blog entre el menu
-   y su contenido: todas las paginas de la tienda —productos, carrito, Mis
-   pedidos, Mi cuenta— arrancan a la misma distancia del menu, y al pasar de
-   una a otra el contenido no salta.
+   Se deja en cero: el aire lo pone la cabecera, que ya deja 20px arriba y 20px
+   abajo de la barra de opciones. Con cualquier relleno mas, el de abajo se veia
+   mas grande que el de arriba. Todas las paginas de la tienda —portada,
+   productos, carrito, Mis pedidos, Mi cuenta, blog— arrancan a la misma
+   distancia del menu, y al pasar de una a otra el contenido no salta.
 
    Abajo se deja el aire del tema: ahi si separa del pie.
-
-   Va en el chasis y no en cada pantalla porque son cuatro —catalogo, ficha,
-   carrito y confirmacion— y el ritmo entre ellas tiene que ser el mismo.
    --------------------------------------------------------------------------- */
-.store-page > section.section-b-space {
-  padding-top: 24px;
-}
-
-/* El blog, sin la franja de titulo que traia la plantilla: el contenido
-   arrancaba 80px por debajo del menu, el aire que el tema le da a todo
-   <section>. Queda al mismo ritmo que las paginas de la tienda. */
+.store-page > section.section-b-space,
 section.masonary-blog-section,
 section.blog-section,
 section.left-sidebar-section {
-  padding-top: 24px;
-}
-
-/* La portada, al mismo ritmo: el banner venia pegado al menu. Con margen y
-   no con relleno: su fondo celeste pinta el relleno, y la franja blanca de
-   24px entre el menu y el contenido —la que tiene el blog— no se veia. */
-section.home-section-6 {
-  margin-top: 24px;
+  padding-top: 0;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1855,7 +1849,7 @@ $estado-error: #dc3545;
   }
 
   th {
-    padding: 12px 16px;
+    padding: 12px var(--cell-gap, 16px);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -1867,7 +1861,7 @@ $estado-error: #dc3545;
   }
 
   td {
-    padding: var(--row-gap, 12px) 16px;
+    padding: var(--row-gap, 12px) var(--cell-gap, 16px);
     border-bottom: 1px solid rgba($border-color, 0.5);
     vertical-align: middle;
   }
@@ -1895,6 +1889,13 @@ $estado-error: #dc3545;
     width: 1%;
     text-align: right;
   }
+}
+
+/* Una tabla con muchas columnas —Mis productos, con presentaciones, imagenes y
+   documentos cada una en la suya—: menos aire a los lados de cada celda para
+   que quepan sin desplazar la tabla. */
+.catalog-table.is-wide {
+  --cell-gap: 10px;
 }
 
 .catalog-product {
@@ -2877,7 +2878,77 @@ $area-bg: #f1f4f9;
 
   /* Las casillas de una pregunta van juntas: con el hueco de la rejilla de
      campos parecerian preguntas distintas. */
-  .check-grid {
+  /* Las actividades del proveedor y, frente a cada una, las lineas que maneja
+   en ella. Una fila por actividad; las lineas son pastillas que se prenden y
+   se apagan, y solo aparecen con la actividad marcada. `li` es inline-block en
+   el tema: aqui va en columna. */
+ul.activity-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 8px;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 12px 16px;
+    border: 1px solid $border-color;
+    border-radius: var(--suminia-radio-caja);
+
+    &.is-on {
+      border-color: rgba(var(--theme-color-rgb), 0.35);
+      background-color: rgba(var(--theme-color-rgb), 0.03);
+    }
+
+    > .form-check {
+      flex: 0 0 150px;
+      margin: 0;
+    }
+
+    > small {
+      flex: 1;
+    }
+  }
+}
+
+.activity-lines-options {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  button {
+    @include pastilla(30px);
+    height: 30px;
+    border: 1px solid $border-color;
+    background-color: $white;
+    color: rgba($theme-font-color, 0.75);
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease,
+      border-color 0.12s ease;
+
+    &:hover {
+      border-color: rgba(var(--theme-color-rgb), 0.5);
+      color: var(--theme-color);
+    }
+
+    &.is-on {
+      border-color: var(--theme-color);
+      background-color: rgba(var(--theme-color-rgb), 0.1);
+      color: var(--theme-color);
+      font-weight: 600;
+    }
+  }
+}
+
+.check-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 6px 22px;
@@ -4025,6 +4096,17 @@ select.form-control,
    activo con su concentracion y el registro sanitario — no el nombre.
    --------------------------------------------------------------------------- */
 
+/* El buscador del INVIMA, en columna: el campo a todo el ancho y debajo el
+   error, el aviso y los resultados. */
+.medicine-search {
+  display: flex;
+  flex-direction: column;
+
+  .field-error {
+    margin-top: 6px;
+  }
+}
+
 .catalog-search-field {
   position: relative;
 
@@ -4133,12 +4215,6 @@ select.form-control,
   background-color: $light-blue;
   font-size: 11px;
   font-weight: 600;
-  color: var(--theme-color);
-}
-
-.catalog-picked-principios {
-  margin-bottom: 8px;
-  font-size: 13px;
   color: var(--theme-color);
 }
 
@@ -5716,11 +5792,199 @@ select.form-control,
   }
 }
 
+/* Cuando se hizo el pedido y quien, para el personal: cada dato con su icono
+   y su etiqueta, en el color del texto y no en el gris de lo secundario. */
+/* El titulo del pedido para el comprador y el proveedor: el numero en una
+   pastilla del color del tema, para que se lea primero. */
+.order-head h1.order-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 19px;
+}
+
+.order-title-code {
+  @include pastilla(30px);
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--theme-color);
+  background-color: rgba(var(--theme-color-rgb), 0.1);
+}
+
+.order-head h1 + .order-meta {
+  margin-top: 6px;
+}
+
+.order-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.order-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  color: $black1;
+
+  svg {
+    color: var(--theme-color);
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+/* Las dos operaciones de un pedido, para el personal: la venta al comprador
+   y la compra al proveedor, cada una con su numero. Lado a lado y con el
+   mismo tamaño porque pesan lo mismo; en el celular, una debajo de la otra. */
+.order-codes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Proveedor -> Suminia -> comprador, entre las dos tarjetas. En el celular,
+   donde van una debajo de la otra, las flechas apuntan hacia abajo. */
+.order-codes-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--theme-color);
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+
+    svg {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.order-codes-hub {
+  @include pastilla(30px);
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-color);
+  background-color: rgba(var(--theme-color-rgb), 0.1);
+}
+
+.order-code-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 20px;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-caja);
+  font-size: 14px;
+}
+
+.order-code-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba($theme-font-color, 0.6);
+}
+
+/* El tipo y la empresa en la misma linea, y el numero debajo: la tarjeta
+   queda en dos filas. */
+.order-code-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+}
+
+/* El nombre de la empresa, en el color del tema para que se lea de un vistazo
+   quien es quien. */
+.order-code-org {
+  font-weight: 600;
+  color: var(--theme-color);
+
+  &:hover {
+    color: var(--theme-color);
+    text-decoration: underline;
+  }
+}
+
+.order-code-value {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: $black1;
+  overflow-wrap: anywhere;
+}
+
 /* Lo que significa el estado en el que esta el pedido, dentro del panel del
    recorrido y justo encima de el. */
 .order-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
   margin-bottom: 18px;
   font-size: 14px;
+}
+
+/* El pedido enlazado de un despacho parcial, resaltado junto al estado. */
+.order-hint-tag {
+  @include pastilla(30px);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-color);
+  background-color: rgba(var(--theme-color-rgb), 0.1);
+
+  svg {
+    flex-shrink: 0;
+    margin-right: 2px;
+  }
+
+  a {
+    font-weight: 700;
+    color: var(--theme-color);
+    text-decoration: underline;
+  }
+}
+
+/* Una segunda entrega cuya fecha prevista ya paso: en rojo, para que se note. */
+.order-hint-tag.is-late {
+  color: #c62828;
+  background-color: rgba(198, 40, 40, 0.08);
+
+  a {
+    color: #c62828;
+  }
+}
+
+/* En la lista de pedidos, mas chica: va debajo del numero. */
+.order-hint-tag.is-sm {
+  @include pastilla(24px);
+  min-height: 24px;
+  margin-top: 4px;
+  font-size: 12px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -5820,6 +6084,18 @@ select.form-control,
         border-color: var(--theme-color);
         background-color: var(--theme-color);
         color: $white;
+      }
+    }
+
+    /* El paso que le toca al proveedor: resaltado y sin check, porque
+       todavia no se ha dado. */
+    &.is-current {
+      color: $theme-font-color;
+      font-weight: 600;
+
+      .order-timeline-dot {
+        border-color: var(--theme-color);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-color) 18%, transparent);
       }
     }
 
@@ -5933,6 +6209,7 @@ select.form-control,
     grid-template-columns: minmax(0, 1fr) 70px 110px 110px;
   }
 
+
   .availability-head {
     padding-top: 0;
     font-size: 12.5px;
@@ -5962,6 +6239,16 @@ select.form-control,
 .availability-note {
   margin-bottom: 14px;
   font-size: 13.5px;
+}
+
+/* Los productos del pedido, en tabla; los totales van debajo. */
+.order-items-table {
+  margin-bottom: 16px;
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-caja);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
 }
 
 .order-totals {
@@ -7421,24 +7708,148 @@ ul.contact-people > li.contact-person {
   border-top: 1px solid $border-color;
 }
 
-/* La fecha estimada de entrega, antes de confirmar el despacho. Ocupa el
-   ancho de las acciones y lleva sus propios botones debajo. */
-.order-ship-form {
+/* La novedad del proveedor se abre desde la columna lateral y la vista baja
+   hasta ella: este margen la deja debajo de la cabecera, no pegada al borde. */
+.scroll-anchor {
+  scroll-margin-top: 90px;
+}
+
+/* El boton cuya peticion esta en curso (ver shared/ui/BusyButtons). No se
+   le toca la estructura: conserva su tamaño y su forma, el texto se vuelve
+   transparente —sigue ahi, y por eso el ancho no cambia— y un indicador
+   girando ocupa su lugar, centrado y del color que tenia el texto
+   (--busy-color, que pone BusyButtons al marcarlo). Menos opaco que un boton
+   deshabilitado, para que se lea como "cargando" y no como "apagado".
+
+   Con ::after, que ningun boton de la app usa; las variantes de la plantilla
+   que si lo usan quedan fuera. */
+@keyframes suminia-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn.is-busy:not([class*='default-']):not(.btn-light-white) {
+  position: relative;
+  color: transparent !important;
+  cursor: progress;
+
+  &:disabled {
+    opacity: 0.85;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid var(--busy-color, currentColor);
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: suminia-girar 0.7s linear infinite;
+  }
+}
+
+/* Una pregunta de opciones suelta en un panel: la leyenda hace de etiqueta.
+   Sin esto Bootstrap la pinta al tamaño de un titulo. */
+.form-question legend {
+  float: none;
+  width: auto;
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* El aviso de lo que sigue, encima del boton que lleva hasta alli. */
+.order-next-hint {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-  text-align: left;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: $theme-font-color;
+
+  svg {
+    flex: 0 0 auto;
+    color: var(--bs-success);
+  }
+}
+
+/* El motivo de la novedad no necesita el ancho entero del panel. */
+.issue-reason {
+  max-width: 420px;
+}
+
+/* La disponibilidad parcial, producto por producto: a la izquierda que es y
+   cuanto se solicito; a la derecha lo disponible y, debajo, lo que falta. */
+.availability-title {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+ul.availability-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid $border-color;
+  border-radius: var(--suminia-radio-caja);
+
+  /* El tema pone todo li en linea: aqui cada producto es un bloque. */
+  > li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px;
+
+    & + li {
+      border-top: 1px solid $border-color;
+    }
+
+    @media (max-width: 575px) {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+
+  .form-label {
+    margin-bottom: 4px;
+    font-size: 12.5px;
+  }
 
   small {
-    font-size: 12px;
+    display: block;
+    margin-top: 5px;
+    font-size: 12.5px;
+  }
+}
+
+.availability-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+
+  strong {
+    font-size: 14px;
+    font-weight: 600;
   }
 
-  .order-actions {
-    margin-top: 6px;
-    padding-top: 0;
-    border-top: 0;
+  span {
+    font-size: 13px;
   }
+}
+
+/* Lo que falta: es lo que Suminia mira. */
+.availability-missing {
+  font-weight: 600;
+  color: var(--bs-danger);
 }
 
 /* Las indicaciones del comprador para la entrega, bajo la direccion. */
@@ -7495,6 +7906,43 @@ ul.contact-people > li.contact-person {
   .page-skeleton {
     animation: none;
   }
+
+  /* Con el chasis de un area: el panel lateral va fijo, como el real. */
+  &.is-shell .area-layout {
+    min-height: 100vh;
+  }
+}
+
+/* Las piezas del esqueleto del chasis: el logo, las entradas del menu
+   lateral y la persona de la barra de arriba. */
+.sk-logo {
+  width: 128px;
+  height: 28px;
+}
+
+.area-sidebar-nav .sk-nav-label {
+  display: block;
+  width: 70px;
+  height: 10px;
+  margin: 6px 10px 12px;
+}
+
+.area-sidebar-nav .sk-nav-item {
+  display: block;
+  width: calc(100% - 20px);
+  height: 16px;
+  margin: 0 10px 14px;
+}
+
+.area-topbar .sk-short {
+  width: 180px;
+  height: 14px;
+}
+
+.area-topbar .sk-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
 }
 
 .page-loading-content {

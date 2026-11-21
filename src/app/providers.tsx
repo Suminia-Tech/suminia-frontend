@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 
 import { AuthInitializer, LoginModal, SessionOverlay } from '@/modules/auth';
-import { NavigationProgress } from '@/shared/ui';
+import { BusyButtons, NavigationProgress } from '@/shared/ui';
 import { store } from '@/store';
 
 export default function Providers({ children }: { children: ReactNode }) {
@@ -13,6 +13,7 @@ export default function Providers({ children }: { children: ReactNode }) {
     <Provider store={store}>
       <AuthInitializer />
       <NavigationProgress />
+      <BusyButtons />
       {children}
       <LoginModal />
       <SessionOverlay />

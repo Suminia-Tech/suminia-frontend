@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Bell } from 'react-feather';
 import { Dropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
 
+import { useMounted } from '@/shared/hooks/useMounted';
 import { useAppSelector } from '@/store/hooks';
 
 import {
@@ -37,7 +38,12 @@ export const NotificationBell = ({ variant }: NotificationBellProps) => {
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [open, setOpen] = useState(false);
-  const skip = !hydrated || !isAuthenticated;
+  /* `hydrated` solo no basta: en la tienda la campana puede pintarse por
+     primera vez despues de que AuthInitializer ya lo encendio, y el servidor
+     la habia pintado vacia —React tiraba la cabecera y la volvia a pintar—.
+     Con useMounted las dos partes arrancan sin campana. Ver useMounted. */
+  const mounted = useMounted();
+  const skip = !mounted || !hydrated || !isAuthenticated;
   const { data } = useGetNotificationsQuery(undefined, {
     skip,
     pollingInterval: POLLING_MS,

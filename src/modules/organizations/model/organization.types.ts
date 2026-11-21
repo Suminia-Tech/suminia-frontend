@@ -35,6 +35,13 @@ export type BankAccountType = 'AHORROS' | 'CORRIENTE';
    presenta la empresa. */
 export type SupplierActivity = 'MANUFACTURER' | 'IMPORTER' | 'DISTRIBUTOR';
 
+/* Que lineas vende el proveedor en cada actividad: una misma empresa puede
+   fabricar mobiliario, importar dispositivos y distribuir reactivos. */
+export interface ActivityLines {
+  activity: SupplierActivity;
+  productLines: SupplierProductLine[];
+}
+
 export type SupplierProductLine =
   | 'MEDICAL_DEVICES'
   | 'IN_VITRO_DIAGNOSTICS'
@@ -110,7 +117,12 @@ export type OrganizationDocumentType =
   | 'SHAREHOLDING'
   | 'LEGAL_REPRESENTATIVE_ID'
   /* Solo del comprador: prueba que la cuenta con la que paga es suya. */
-  | 'BANK_CERTIFICATE';
+  | 'BANK_CERTIFICATE'
+  /* Las certificaciones sanitarias del proveedor, cuando aplican. */
+  | 'CCAA'
+  | 'GMP_CERTIFICATE'
+  | 'GSP_CERTIFICATE'
+  | 'HEALTH_AUTHORITY_VISIT';
 
 /* Quien es el comprador: decide que documentos se le piden. Los tipos y sus
    opciones viven en shared, porque el registro tambien los pide. */
@@ -161,6 +173,21 @@ export type InternationalOperationType =
   | 'INTERNATIONAL_TRANSFERS'
   | 'OTHER';
 
+/* Como se identifica un accionista o beneficiario final. */
+export type IdentificationType = 'CC' | 'CE' | 'NIT' | 'PASSPORT' | 'OTHER';
+
+/* Un accionista o beneficiario final: quien es, de que sociedad es accionista
+   y con cuanto. */
+export interface BeneficialOwner {
+  idType: IdentificationType;
+  idNumber: string;
+  name: string;
+  companyName: string;
+  companyTaxId: string;
+  /** De 0 a 100. */
+  ownership: number;
+}
+
 export interface SupplierDeclaration {
   fundsOrigin: string;
   isPep: boolean;
@@ -170,6 +197,8 @@ export interface SupplierDeclaration {
   operationCountries: string | null;
   currencies: string[];
   marketingConsent: boolean;
+  /** Vacio en una declaracion firmada antes de que se pidieran. */
+  beneficialOwners: BeneficialOwner[];
   declarationsAcceptedAt: string;
   dataPolicyAcceptedAt: string;
   submittedAt: string;
@@ -228,6 +257,9 @@ export interface Organization {
      por tres datos de perfil. */
   activities?: SupplierActivity[];
   productLines?: SupplierProductLine[];
+  /** Que lineas vende en cada actividad. Las dos listas de arriba salen de
+      aqui al guardar. */
+  activityLines?: ActivityLines[];
   exporter?: boolean | null;
   /* Si expide factura electronica de venta validada por la DIAN. Null: no ha
      respondido. Sin un si, Suminia no lo aprueba. */

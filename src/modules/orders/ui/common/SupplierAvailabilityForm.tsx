@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { todayInColombia } from '@/shared/lib/dates';
-import { Panel } from '@/shared/ui';
+import { presentationLabel } from '@/shared/lib/presentation';
 
 import { useProposeAvailabilityMutation } from '../../api/ordersApi';
 import type { Order } from '../../model/order.types';
@@ -15,12 +15,22 @@ interface SupplierAvailabilityFormProps {
   onClose: () => void;
 }
 
-/* Lo que hace el proveedor cuando no tiene todo, en vez de rechazar: dice
-   cuanto tiene de cada producto y para cuando llega el resto. El comprador
-   decide despues si se lleva lo que hay y deja pendiente lo demas.
+/* Lo que falta de un producto: lo pedido menos lo disponible, nunca menos de
+   cero. Mientras el campo no sea un numero valido, todo falta. */
+const faltanteDe = (pedida: number, disponible: string): number => {
+  const valor = Number(disponible);
+  if (disponible.trim() === '' || !Number.isFinite(valor)) return pedida;
+  return Math.max(0, pedida - Math.min(Math.max(0, Math.trunc(valor)), pedida));
+};
 
-   Arranca con todo disponible: lo normal es que falte uno o dos productos, y
-   asi solo se tocan esos. */
+/* La novedad "Disponibilidad parcial": el proveedor dice cuanto tiene de cada
+   producto y para cuando tendra el resto. Va dentro del panel de la novedad,
+   en el mismo lugar donde eligio el motivo, y no en otra parte de la pantalla.
+
+   Producto por producto, como un bloque: lo solicitado, el campo de lo
+   disponible y, debajo, lo que falta, que se calcula solo. Arranca con todo
+   disponible: lo normal es que falte uno o dos productos, y asi solo se tocan
+   esos. */
 const SupplierAvailabilityForm = ({ order, onClose }: SupplierAvailabilityFormProps) => {
   const [available, setAvailable] = useState<Record<string, string>>(() =>
     Object.fromEntries(order.items.map((item) => [item.id, String(item.quantity)])),
@@ -49,16 +59,16 @@ const SupplierAvailabilityForm = ({ order, onClose }: SupplierAvailabilityFormPr
     );
     if (invalida) {
       setError(
-        `De "${invalida.item.productName}" puedes ofrecer entre 0 y ${invalida.item.quantity} unidades.`,
+        `La cantidad disponible de "${invalida.item.productName}" debe estar entre 0 y ${invalida.item.quantity}.`,
       );
       return;
     }
     if (!faltaAlgo) {
-      setError('Tienes todo lo que te pidieron: confirma el pedido en vez de proponer.');
+      setError('Tienes disponible todo lo solicitado. En ese caso, confirma la orden.');
       return;
     }
     if (!restockDate) {
-      setError('Indica para cuándo tendrás lo que falta.');
+      setError('Indica la fecha en que tendrás el faltante.');
       return;
     }
 
@@ -72,99 +82,102 @@ const SupplierAvailabilityForm = ({ order, onClose }: SupplierAvailabilityFormPr
         restockDate,
         note: note.trim() || undefined,
       }).unwrap();
-      toast.success('Le enviamos tu disponibilidad al comprador');
+      toast.success('Novedad enviada a Suminia');
       onClose();
     } catch (err) {
-      setError(extractErrorMessage(err, 'No se pudo enviar la disponibilidad.'));
+      setError(extractErrorMessage(err, 'No se pudo enviar la novedad.'));
     }
   };
 
   return (
-    <Panel
-      title='Informar disponibilidad'
-      description='Indica cuántas unidades tienes de cada producto y para cuándo llega el resto. El comprador decide si recibe ahora lo disponible y deja pendiente lo que falta.'
-    >
-      <form onSubmit={handleSubmit} noValidate>
-        <ul className='availability-lines'>
-          <li className='availability-head'>
-            <span>Producto</span>
-            <span>Pedido</span>
-            <span>Disponible</span>
-          </li>
-          {order.items.map((item) => (
+    <form onSubmit={handleSubmit} noValidate>
+      <h6 className='availability-title'>Información de los productos</h6>
+      <ul className='availability-items'>
+        {order.items.map((item) => {
+          const faltante = faltanteDe(item.quantity, available[item.id]);
+          return (
             <li key={item.id}>
-              <span className='order-item-name'>
-                {item.productName}
-                <small className='font-light'>
-                  {item.presentationName} · {item.packaging}
-                </small>
-              </span>
-              <span>{item.quantity}</span>
-              <span>
+              <div className='availability-item-info'>
+                <strong>{item.productName}</strong>
+                <span className='font-light'>
+                  {presentationLabel(item.presentationName, item.packaging)} · Cantidad
+                  solicitada: {item.quantity}
+                </span>
+              </div>
+              <div className='availability-item-field'>
+                <label className='form-label' htmlFor={`disponible-${item.id}`}>
+                  Cantidad disponible
+                </label>
                 <input
+                  id={`disponible-${item.id}`}
                   type='number'
                   min={0}
                   max={item.quantity}
                   className='form-control'
-                  aria-label={`Unidades disponibles de ${item.productName}`}
                   value={available[item.id]}
                   onChange={(event) =>
                     setAvailable((current) => ({ ...current, [item.id]: event.target.value }))
                   }
                 />
-              </span>
+                <small className={faltante > 0 ? 'availability-missing' : 'font-light'}>
+                  Cantidad faltante: {faltante}
+                </small>
+              </div>
             </li>
-          ))}
-        </ul>
+          );
+        })}
+      </ul>
 
-        <div className='form-grid mt-3'>
-          <div>
-            <label className='form-label' htmlFor='disponibilidad-fecha'>
-              Fecha del nuevo inventario
-            </label>
-            <input
-              id='disponibilidad-fecha'
-              type='date'
-              className='form-control'
-              min={todayInColombia()}
-              value={restockDate}
-              onChange={(event) => setRestockDate(event.target.value)}
-            />
-            <small className='font-light'>Para cuándo puedes despachar lo que falta.</small>
-          </div>
-          <div>
-            <label className='form-label' htmlFor='disponibilidad-nota'>
-              Nota para el comprador (opcional)
-            </label>
-            <input
-              id='disponibilidad-nota'
-              type='text'
-              className='form-control'
-              maxLength={500}
-              placeholder='Llega un contenedor el 18'
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-            />
-          </div>
+      <div className='form-grid mt-3'>
+        <div>
+          <label className='form-label' htmlFor='disponibilidad-fecha'>
+            Fecha en que tendrás el faltante
+          </label>
+          <input
+            id='disponibilidad-fecha'
+            type='date'
+            className='form-control'
+            min={todayInColombia()}
+            value={restockDate}
+            onChange={(event) => setRestockDate(event.target.value)}
+          />
         </div>
-
-        {error && <div className='alert alert-danger mt-3 mb-0'>{error}</div>}
-
-        <div className='d-flex gap-2 mt-3'>
-          <button type='submit' className='btn btn-primary btn-sm' disabled={isLoading}>
-            {isLoading ? 'Enviando...' : 'Enviar al comprador'}
-          </button>
-          <button
-            type='button'
-            className='btn btn-outline-secondary btn-sm'
-            disabled={isLoading}
-            onClick={onClose}
-          >
-            Mejor no
-          </button>
+        <div>
+          <label className='form-label' htmlFor='disponibilidad-nota'>
+            Detalle (opcional)
+          </label>
+          <input
+            id='disponibilidad-nota'
+            type='text'
+            className='form-control'
+            maxLength={500}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+          />
         </div>
-      </form>
-    </Panel>
+      </div>
+
+      <small className='font-light d-block mt-2'>
+        Esta información es visible únicamente para Suminia, que define si se despacha
+        ahora lo disponible y el faltante en una segunda entrega.
+      </small>
+
+      {error && <div className='alert alert-danger mt-3 mb-0'>{error}</div>}
+
+      <div className='d-flex gap-2 mt-3'>
+        <button type='submit' className='btn btn-primary btn-sm' disabled={isLoading}>
+          {isLoading ? 'Enviando...' : 'Enviar novedad'}
+        </button>
+        <button
+          type='button'
+          className='btn btn-outline-secondary btn-sm'
+          disabled={isLoading}
+          onClick={onClose}
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
   );
 };
 

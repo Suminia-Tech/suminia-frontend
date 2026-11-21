@@ -37,9 +37,9 @@ export const CartSummary = ({ totalLabel = 'Total' }: { totalLabel?: string } = 
   return (
     <div className='checkout-summary'>
       {cart.groups.map((group) => (
-        <div className='checkout-group' key={group.organizationId}>
+        <div className='checkout-group' key={group.key}>
           <div className='checkout-group-head'>
-            <h4>{group.organizationName}</h4>
+            <h4>{group.label}</h4>
             <strong>{pesos(group.subtotal, cart.currency)}</strong>
           </div>
 
@@ -61,7 +61,7 @@ export const CartSummary = ({ totalLabel = 'Total' }: { totalLabel?: string } = 
           {!group.meetsMinimum && group.minOrderValue !== null && (
             <p className='cart-group-min'>
               <AlertCircle size={15} />
-              Este proveedor despacha desde{' '}
+              Este envío sale desde{' '}
               {pesos(group.minOrderValue, cart.currency)}. Te faltan{' '}
               <strong>
                 {pesos(group.minOrderValue - group.subtotal, cart.currency)}

@@ -4,6 +4,7 @@ import type {
   OrderEventType,
   OrderStatus,
   PaymentMethod,
+  SupplierIssue,
 } from '../model/order.types';
 
 /* Como se cuenta el estado de un pedido, y que puede hacer cada lado.
@@ -22,6 +23,38 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   AWAITING_BUYER: 'Disponibilidad parcial',
 };
 
+/* Como se llama cada estado para el proveedor: los pasos de su orden de
+   compra. "Por confirmar" es lo que tiene que hacer, no lo que hizo otro; y
+   confirmada, para el, es que ya la esta preparando. */
+export const ORDER_STATUS_LABEL_SUPPLIER: Record<OrderStatus, string> = {
+  ...ORDER_STATUS_LABEL,
+  PLACED: 'Por confirmar',
+  CONFIRMED: 'En preparación',
+  AWAITING_BUYER: 'Novedad reportada',
+};
+
+/* La novedad del proveedor, de la lista fija. */
+export const SUPPLIER_ISSUE_LABEL: Record<SupplierIssue, string> = {
+  OUT_OF_STOCK: 'Producto agotado',
+  PARTIAL_AVAILABILITY: 'Disponibilidad parcial',
+  PRICE_DIFFERENCE: 'Diferencia de precio',
+  INSUFFICIENT_CREDIT: 'Cupo de crédito insuficiente',
+  OVERDUE_BALANCE: 'Cartera vencida',
+  DELIVERY_PROBLEM: 'Problema de despacho o entrega',
+  OTHER: 'Otro motivo',
+};
+
+/* El orden en que se ofrecen. */
+export const SUPPLIER_ISSUES: SupplierIssue[] = [
+  'OUT_OF_STOCK',
+  'PARTIAL_AVAILABILITY',
+  'PRICE_DIFFERENCE',
+  'INSUFFICIENT_CREDIT',
+  'OVERDUE_BALANCE',
+  'DELIVERY_PROBLEM',
+  'OTHER',
+];
+
 /* Lo que significa para quien lo mira, que es distinto de como se llama. */
 export const ORDER_STATUS_HINT: Record<OrderStatus, string> = {
   PLACED: 'Esperando que el proveedor lo confirme.',
@@ -33,9 +66,14 @@ export const ORDER_STATUS_HINT: Record<OrderStatus, string> = {
   AWAITING_BUYER: 'El proveedor no tiene todo lo que pediste. Revisa su propuesta y decide.',
 };
 
-/* Lo mismo dicho al proveedor, donde cambia. */
+/* Lo mismo dicho al proveedor: en segunda persona, porque es el quien
+   confirma y despacha, y con Suminia al otro lado —nunca el comprador—. */
 export const ORDER_STATUS_HINT_SUPPLIER: Partial<Record<OrderStatus, string>> = {
-  AWAITING_BUYER: 'Enviaste tu disponibilidad. Esperando a que el comprador decida.',
+  PLACED: 'Nueva orden de compra de Suminia. Confírmala o reporta una novedad.',
+  CONFIRMED: 'Confirmaste la orden. Prepárala y despáchala.',
+  DELIVERED: 'Entregada.',
+  REJECTED: 'No pudiste atender esta orden.',
+  AWAITING_BUYER: 'Enviaste tu disponibilidad. Esperando la respuesta de Suminia.',
 };
 
 /* Las mismas clases de color que las empresas, para que un pedido y una empresa
@@ -237,6 +275,32 @@ export const BUYER_EVENT_LABEL: Record<OrderEventType, string | null> = {
   PAYOUT_PAID: null,
 };
 
+/* El historial contado al proveedor. Su relacion es con Suminia, que le
+   compra: lo que hizo la clinica lo firma Suminia, y lo que es solo entre
+   Suminia y el comprador —su pago, su factura, su reembolso— no aparece. Nulo:
+   no se muestra. */
+export const SUPPLIER_EVENT_LABEL: Record<OrderEventType, string | null> = {
+  PLACED: 'Orden de compra emitida por Suminia',
+  PAYMENT_SUBMITTED: null,
+  PAYMENT_APPROVED: null,
+  PAYMENT_REJECTED: null,
+  PAYMENT_EXPIRED: 'Cancelada por Suminia',
+  CONFIRMED: 'Confirmaste la orden',
+  AVAILABILITY_PROPOSED: 'Propusiste un despacho parcial',
+  AVAILABILITY_ACCEPTED: 'Suminia aceptó el despacho parcial',
+  REJECTED: 'Rechazaste la orden',
+  CANCELLED: 'Orden cancelada',
+  SHIPPED: 'Despachada',
+  INVOICE_ATTACHED: 'Adjuntaste tu factura a Suminia',
+  SUMINIA_INVOICE_ATTACHED: null,
+  DELIVERED: 'Entregada',
+  CLAIM_OPENED: 'Suminia reportó una novedad en la entrega',
+  CLAIM_RESOLVED: 'Suminia resolvió la novedad',
+  RECEIVED: 'Cerrada: llegó completa y en buenas condiciones',
+  REFUNDED: null,
+  PAYOUT_PAID: 'Liquidada',
+};
+
 /* El estado que se muestra. Un pedido entregado pasa a "Cerrado" cuando se
    cierra para quien lo mira —el comprador al pasar los dias de reclamo,
    Suminia y el proveedor al pagarse la liquidacion—: el backend lo calcula y
@@ -256,7 +320,10 @@ export const displayStatus = (
     const etapa = buyerStage(order);
     return { label: BUYER_STAGE_LABEL[etapa], className: BUYER_STAGE_CLASS[etapa] };
   }
-  return { label: ORDER_STATUS_LABEL[order.status], className: ORDER_STATUS_CLASS[order.status] };
+  return {
+    label: (side === 'supplier' ? ORDER_STATUS_LABEL_SUPPLIER : ORDER_STATUS_LABEL)[order.status],
+    className: ORDER_STATUS_CLASS[order.status],
+  };
 };
 
 /* ------------------------------------------------------------------------
@@ -309,7 +376,7 @@ export const buyerStage = (
 
 export const BUYER_STAGE_LABEL: Record<BuyerStage, string> = {
   awaitingPayment: 'Pendiente de pago',
-  received: 'Recibido',
+  received: 'Confirmado',
   preparing: 'En preparación',
   shipped: 'Despachado',
   delivered: 'Entregado',
@@ -340,7 +407,7 @@ export const BUYER_STAGE_HINT: Record<BuyerStage, string> = {
 
 /* Los cuatro pasos que ve el comprador. */
 export const BUYER_TIMELINE: { stage: BuyerStage; label: string }[] = [
-  { stage: 'received', label: 'Recibido' },
+  { stage: 'received', label: 'Confirmado' },
   { stage: 'preparing', label: 'En preparación' },
   { stage: 'shipped', label: 'Despachado' },
   { stage: 'delivered', label: 'Entregado' },
@@ -357,14 +424,14 @@ export const formatDeliveryDate = (iso: string): string =>
 
 /* Lo que significa estar cerrado, para cada lado. */
 export const CLOSED_HINT: Record<'buyer' | 'supplier' | 'staff', string> = {
-  buyer: 'Recibido. Pasaron los días de reclamo: el pedido quedó cerrado.',
+  buyer: 'Entregado. Pasaron los días de reclamo: el pedido quedó cerrado.',
   supplier: 'Entregado y liquidado: el pedido quedó cerrado.',
   staff: 'Entregado y liquidado al proveedor: el pedido quedó cerrado.',
 };
 
 /* Entregado y todavia abierto para Suminia y el proveedor: lo que falta es
    pagarle al proveedor, y la frase dice en que punto va. Nulo para el
-   comprador, o si aun corren los dias de reclamo: ahi basta con "Recibido". */
+   comprador, o si aun corren los dias de reclamo: ahi basta con "Entregado". */
 export const deliveredHint = (order: Order, side: 'buyer' | 'supplier' | 'staff'): string | null => {
   if (side === 'buyer' || order.status !== 'DELIVERED' || order.closed) return null;
   if (order.claims.some((claim) => claim.status === 'OPEN')) {

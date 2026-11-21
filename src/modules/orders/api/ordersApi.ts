@@ -94,13 +94,16 @@ export const ordersApi = baseApi.injectEndpoints({
       ApiResponse<Order>,
       ChangeOrderStatusRequest
     >({
-      query: ({ id, status, reason, estimatedDeliveryAt }) => ({
+      query: ({ id, status, reason, issue, estimatedDeliveryAt, carrierName, trackingNumber }) => ({
         url: `/orders/${id}/status`,
         method: 'PATCH',
         body: {
           status,
           ...(reason ? { reason } : {}),
+          ...(issue ? { issue } : {}),
           ...(estimatedDeliveryAt ? { estimatedDeliveryAt } : {}),
+          ...(carrierName ? { carrierName } : {}),
+          ...(trackingNumber ? { trackingNumber } : {}),
         },
       }),
       invalidatesTags: (_result, _error, { id }) => [

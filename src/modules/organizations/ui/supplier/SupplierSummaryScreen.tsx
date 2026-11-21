@@ -9,12 +9,12 @@ import { useAppSelector } from '@/store/hooks';
 
 import { useGetSupplierQuery } from '../../api/suppliersApi';
 import {
-  describeActivities,
+  describeActivityLines,
   describeExporter,
-  describeProductLines,
   contactAreaLabel,
 } from '../../lib/commercialProfile';
 import { supplierPendings } from '../../lib/pendings';
+import RegistrationProgress from '../common/RegistrationProgress';
 import { formatTaxId } from '../../lib/taxId';
 import StatusBadge from '../common/StatusBadge';
 
@@ -87,10 +87,17 @@ export const SupplierSummaryScreen = () => {
         }
         aside={<StatusBadge status={supplier.status} />}
       >
-        {/* Lo que falta, antes que lo que ya esta: es lo unico que se puede
+        {/* Mientras la empresa esta en revision, el avance del registro: cuanto
+            lleva, que paso le falta y a donde ir a llenarlo. Al quedar
+            aprobada ya no hay registro que avanzar, y vuelve la lista de lo que
+            falte.
+
+            Lo que falta, antes que lo que ya esta: es lo unico que se puede
             hacer desde esta pantalla. Cuando no falta nada tampoco se calla
             —decirlo es la mitad de la respuesta a "¿ya puedo operar?"—. */}
-        {pendientes.length > 0 ? (
+        {supplier.status === 'PENDING' ? (
+          <RegistrationProgress kind='supplier' pendientes={pendientes} />
+        ) : pendientes.length > 0 ? (
           <ul className='summary-todo'>
             {pendientes.map((pendiente) => (
               <li key={pendiente.texto}>
@@ -130,13 +137,10 @@ export const SupplierSummaryScreen = () => {
             <span className='font-light'>Ciudad</span>
             <span>{supplier.city ?? '—'}</span>
           </li>
+          {/* Que vende en cada actividad: "Fabricante: Mobiliario hospitalario". */}
           <li>
-            <span className='font-light'>Actividades</span>
-            <span>{describeActivities(supplier.activities) ?? '—'}</span>
-          </li>
-          <li>
-            <span className='font-light'>Categorías que comercializa</span>
-            <span>{describeProductLines(supplier.productLines) ?? '—'}</span>
+            <span className='font-light'>Actividades y líneas</span>
+            <span>{describeActivityLines(supplier).join(' · ') || '—'}</span>
           </li>
           <li>
             <span className='font-light'>Exporta</span>

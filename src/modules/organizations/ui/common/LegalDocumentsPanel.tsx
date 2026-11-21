@@ -11,7 +11,10 @@ import {
   useOrganizationDocuments,
   useReviewOrganizationDocument,
 } from '../../hooks/useOrganizationDocuments';
-import { legalDocumentOptions } from '../../lib/commercialProfile';
+import {
+  legalDocumentOptions,
+  SANITARY_CERTIFICATION_OPTIONS,
+} from '../../lib/commercialProfile';
 import { documentSlot } from '../../lib/documentStatus';
 import type {
   LegalNature,
@@ -33,6 +36,9 @@ interface LegalDocumentsPanelProps {
   /* Del comprador: una persona natural no sube camara de comercio ni
      composicion accionaria. */
   legalNature?: LegalNature | null;
+  /* Los legales, o las certificaciones sanitarias del proveedor: la misma
+     pieza —versiones, revision, vencimiento—, otro panel. */
+  group?: 'legal' | 'sanitary';
 }
 
 /* Los soportes con los que Suminia verifica a la empresa. Un hueco por tipo,
@@ -53,7 +59,9 @@ const LegalDocumentsPanel = ({
   editable,
   reviewable = false,
   legalNature,
+  group = 'legal',
 }: LegalDocumentsPanelProps) => {
+  const sanitarias = group === 'sanitary';
   const inputRef = useRef<HTMLInputElement>(null);
   const [target, setTarget] = useState<OrganizationDocumentType | null>(null);
   const { upload, uploading, open, opening, error, clearError } = useOrganizationDocuments(
@@ -61,7 +69,9 @@ const LegalDocumentsPanel = ({
     organizationId,
   );
   const revision = useReviewOrganizationDocument(kind, organizationId);
-  const opciones = legalDocumentOptions(kind, legalNature);
+  const opciones = sanitarias
+    ? SANITARY_CERTIFICATION_OPTIONS
+    : legalDocumentOptions(kind, legalNature);
 
   const pick = (type: OrganizationDocumentType) => {
     setTarget(type);
@@ -86,9 +96,13 @@ const LegalDocumentsPanel = ({
     <Panel
       id={id}
       warning={warning}
-      title='Documentos legales'
+      title={sanitarias ? 'Certificaciones sanitarias' : 'Documentos legales'}
       description={
-        editable
+        sanitarias
+          ? editable
+            ? 'Súbelas cuando apliquen a tu operación. Suminia las revisa y registra su fecha de vencimiento. PDF, JPG o PNG.'
+            : 'Las certificaciones sanitarias que subió la empresa, cuando le aplican.'
+          : editable
           ? kind === 'buyer'
             ? 'Con estos soportes Suminia verifica tu empresa. Los marcados como obligatorios son necesarios para aprobarla. PDF, JPG o PNG.'
             : 'Con estos soportes Suminia verifica tu empresa. PDF, JPG o PNG.'

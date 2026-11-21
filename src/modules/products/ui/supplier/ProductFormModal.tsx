@@ -143,6 +143,12 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
   );
   const catalogPresentations = catalogDetail?.data.presentations ?? [];
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+  /* Si necesita frio o temperatura controlada. Suminia todavia no los vende,
+     de modo que un si no se guarda: frena el alta. Por eso no viaja al
+     backend ni se pregunta al editar —todo producto existente ya dijo que
+     no—. Vacia es "no ha respondido". */
+  const [needsTemperature, setNeedsTemperature] = useState<'' | 'yes' | 'no'>('');
+  const blockedByTemperature = !isEditing && needsTemperature === 'yes';
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const setField = (field: keyof FormState, value: string) => {
@@ -231,6 +237,8 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     const next: Record<string, string> = {};
     if (!form.name.trim()) next.name = 'Ingresa el nombre del producto';
     if (!form.categoryId) next.categoryId = 'Selecciona una categoría';
+    if (!isEditing && !needsTemperature)
+      next.needsTemperature = 'Responde si requiere condiciones especiales de temperatura';
 
     /* Un medicamento se elige del maestro: es lo que lo identifica y lo que
        pone su oferta al lado de las de otros proveedores. El backend lo rechaza
@@ -265,6 +273,8 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (blockedByTemperature) return;
 
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -328,6 +338,30 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
     }
   };
 
+  /* No se deduce del tipo: los medicamentos estan excluidos, pero entre los
+     insumos hay gravados al 19%, al 5% y excluidos. Sin esto no se puede
+     facturar. Al crear va al lado del precio, que es con lo que se lee: el
+     precio se declara sin IVA y el IVA es lo que se le suma. */
+  const ivaField = (
+    <>
+      <label className='form-label font-light'>IVA</label>
+      <select
+        className='form-control'
+        value={form.taxCategory}
+        onChange={handleChange('taxCategory')}
+      >
+        {TAX_OPTIONS.map((option) => (
+          <option value={option.value} key={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <small className='font-light'>
+        {TAX_OPTIONS.find((option) => option.value === form.taxCategory)?.help}
+      </small>
+    </>
+  );
+
   return (
     <Modal
       className='add-address-modal product-form-modal'
@@ -352,9 +386,9 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
         )}
         {product?.status === 'ACTIVE' && (
           <div className='alert alert-warning'>
-            Este producto está publicado. Si cambias su nombre, marca, referencia,
-            fabricante o registro sanitario, o lo pasas a una categoría con otros
-            requisitos, vuelve a revisión y deja de mostrarse hasta que se apruebe.
+            Si modificas información técnica o sanitaria del producto, su publicación
+            se suspenderá temporalmente al guardar los cambios. Volverá a estar
+            disponible para compras una vez Suminia apruebe la actualización.
           </div>
         )}
 
@@ -389,6 +423,53 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   </small>
                 )}
               </div>
+
+              {/* Justo despues de la categoria y antes de todo lo demas: si la
+                  respuesta frena el alta, que lo sepa antes de llenar el resto. */}
+              {!isEditing && (
+                <fieldset className='mb-3'>
+                  <legend className='form-label font-light'>
+                    ¿Este producto requiere condiciones especiales de temperatura para su
+                    almacenamiento o transporte?
+                  </legend>
+                  {(
+                    [
+                      { value: 'no', label: 'No' },
+                      { value: 'yes', label: 'Sí' },
+                    ] as const
+                  ).map((option) => (
+                    <div className='form-check form-check-inline' key={option.value}>
+                      <input
+                        id={`producto-temperatura-${option.value}`}
+                        type='radio'
+                        name='producto-temperatura'
+                        className='form-check-input'
+                        checked={needsTemperature === option.value}
+                        onChange={() => {
+                          setNeedsTemperature(option.value);
+                          setErrors((current) => ({ ...current, needsTemperature: undefined }));
+                        }}
+                      />
+                      <label
+                        className='form-check-label'
+                        htmlFor={`producto-temperatura-${option.value}`}
+                      >
+                        {option.label}
+                      </label>
+                    </div>
+                  ))}
+                  {errors.needsTemperature && (
+                    <small className='text-danger d-block'>{errors.needsTemperature}</small>
+                  )}
+                  {blockedByTemperature && (
+                    <div className='alert alert-warning mt-2 mb-0'>
+                      En el momento Suminia no comercializará productos que requieran
+                      condiciones especiales de temperatura. Estamos avanzando para
+                      brindarte un mejor servicio.
+                    </div>
+                  )}
+                </fieldset>
+              )}
 
               <div className='mb-3'>
                 <label className='form-label font-light'>Nombre del producto</label>
@@ -520,26 +601,8 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                 </div>
               )}
 
-              {/* No se deduce del tipo: los medicamentos estan excluidos, pero
-                  entre los insumos hay gravados al 19%, al 5% y excluidos. Sin
-                  esto no se puede facturar. */}
-              <div className='mb-3'>
-                <label className='form-label font-light'>IVA</label>
-                <select
-                  className='form-control'
-                  value={form.taxCategory}
-                  onChange={handleChange('taxCategory')}
-                >
-                  {TAX_OPTIONS.map((option) => (
-                    <option value={option.value} key={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <small className='font-light'>
-                  {TAX_OPTIONS.find((option) => option.value === form.taxCategory)?.help}
-                </small>
-              </div>
+              {/* Al editar no hay columna de presentacion: el IVA queda aqui. */}
+              {isEditing && <div className='mb-3'>{ivaField}</div>}
 
               {/* Caracteristicas propias del producto: material y esterilidad
                   en un insumo, y manana el CUM y el registro INVIMA de un
@@ -652,17 +715,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                 </Row>
 
 
-                <Row>
-                  <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>SKU</label>
-                    <input
-                      type='text'
-                      className='form-control'
-                      value={form.sku}
-                      onChange={handleChange('sku')}
-                    />
-                  </Col>
-                </Row>
 
                 <Row>
                   <Col sm='6' className='mb-3'>
@@ -683,7 +735,18 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     )}
                   </Col>
                   <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>Inventario</label>
+                    {ivaField}
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col sm='6' className='mb-3'>
+                    {/* No todo lo que tiene en bodega: lo que reserva para Suminia.
+                        Si pone todo, un comprador puede pedir lo que ya vendio
+                        por otro lado. */}
+                    <label className='form-label font-light'>
+                      Inventario disponible para Suminia
+                    </label>
                     <input
                       type='number'
                       min='0'
@@ -691,6 +754,22 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       value={form.stock}
                       onChange={handleChange('stock')}
                     />
+                    <small className='font-light'>
+                      Solo las unidades que reservas para vender por Suminia, no todo tu
+                      inventario.
+                    </small>
+                  </Col>
+                  <Col sm='6' className='mb-3'>
+                    {/* "del proveedor": el codigo de Suminia es otro (CRS), y un
+                        "SKU" a secas se confundia con el. */}
+                    <label className='form-label font-light'>SKU del proveedor</label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      value={form.sku}
+                      onChange={handleChange('sku')}
+                    />
+                    <small className='font-light'>Tu código interno. Opcional.</small>
                   </Col>
                 </Row>
 
@@ -699,7 +778,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     caja de 100 sale mejor que la de 10. */}
                 <Row>
                   <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>Cantidad</label>
+                    <label className='form-label font-light'>Cantidad por presentación</label>
                     <input
                       type='number'
                       min='0'
@@ -762,7 +841,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
           type='submit'
           form={FORM_ID}
           className='btn btn-primary'
-          disabled={isSaving}
+          disabled={isSaving || blockedByTemperature}
         >
           {isSaving ? 'Guardando...' : isEditing ? 'Guardar cambios' : 'Crear producto'}
         </button>

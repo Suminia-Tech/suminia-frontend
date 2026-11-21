@@ -64,3 +64,38 @@ export const formatDateTime = (iso: string | null | undefined): string | null =>
 
   return FORMATO_HORA.format(fecha);
 };
+
+/* El momento de un paso, en dos piezas cortas para que quepa bajo su nombre
+   en la linea de pasos del pedido: "5 nov 2026" y "3:40 p. m.", en hora de
+   Colombia. La hora es la traza de cada paso —cuanto tardo el proveedor en
+   confirmar, en despachar— y no solo el dia. */
+const FORMATO_CORTO = new Intl.DateTimeFormat('es-CO', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'America/Bogota',
+});
+
+const FORMATO_SOLO_HORA = new Intl.DateTimeFormat('es-CO', {
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZone: 'America/Bogota',
+});
+
+/** { dia: "5 nov 2026", hora: "3:40 p. m." }, o null. */
+export const formatMoment = (
+  iso: string | null | undefined,
+): { dia: string; hora: string } | null => {
+  if (!iso) return null;
+  const fecha = new Date(iso);
+  if (Number.isNaN(fecha.getTime())) return null;
+  return {
+    /* Por piezas: el formato corto de es-CO dice "5 de nov. de 2026". */
+    dia: (() => {
+      const pieza = (tipo: Intl.DateTimeFormatPartTypes) =>
+        FORMATO_CORTO.formatToParts(fecha).find((p) => p.type === tipo)?.value ?? '';
+      return `${pieza('day')} ${pieza('month').replace('.', '')} ${pieza('year')}`;
+    })(),
+    hora: FORMATO_SOLO_HORA.format(fecha),
+  };
+};

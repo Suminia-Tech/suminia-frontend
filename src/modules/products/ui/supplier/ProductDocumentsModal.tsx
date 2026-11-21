@@ -6,13 +6,20 @@ import { toast } from 'react-toastify';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
+import { formatDateTime } from '@/shared/lib/dates';
 import { ConfirmModal } from '@/shared/ui';
 
 import { useRemoveDocumentMutation } from '../../api/productsApi';
 import { DOCUMENT_ACCEPT, useDocumentUpload } from '../../hooks/useDocumentUpload';
 import { useOpenDocument } from '../../hooks/useOpenDocument';
-import { DOCUMENT_HELP, DOCUMENT_LABEL, requiredDocuments } from '../../lib/productTypes';
+import {
+  DOCUMENT_HELP,
+  DOCUMENT_LABEL,
+  OFFERED_DOCUMENTS,
+  requiredDocuments,
+} from '../../lib/productTypes';
 import type { Product, ProductDocumentType } from '../../model/product.types';
+import { DocumentHistory } from '../common/DocumentHistory';
 
 interface ProductDocumentsModalProps {
   isOpen: boolean;
@@ -20,12 +27,14 @@ interface ProductDocumentsModalProps {
   product: Product;
 }
 
-/* Los soportes que direccion tecnica revisa antes de publicar un dispositivo
-   medico. Un hueco por tipo exigido: subir otro del mismo tipo reemplaza al
-   anterior, de modo que nunca hay dos registros sanitarios que comparar.
+/* Los documentos tecnicos y sanitarios que direccion tecnica revisa antes de
+   publicar el producto. Un hueco por tipo: subir otro del mismo tipo reemplaza
+   al anterior, de modo que nunca hay dos registros sanitarios que comparar. El
+   anterior no se borra: queda como version anterior, con su fecha.
 
-   Los que ya no se exigen —el CCAA de quien dejo de marcarse como importador—
-   se siguen mostrando mientras existan, para poder quitarlos. */
+   El registro sanitario y la ficha tecnica se ofrecen siempre, y cada uno dice
+   si se exige o es opcional: no todo producto los tiene. Los demas —el CCAA—
+   aparecen cuando se exigen o mientras existan, para poder quitarlos. */
 const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [target, setTarget] = useState<ProductDocumentType | null>(null);
@@ -35,11 +44,18 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
   const { open, opening } = useOpenDocument(product.id);
   const [removeDocument, { isLoading: isRemoving }] = useRemoveDocumentMutation();
 
-  const required = requiredDocuments(product.type, product.isManufacturerOrImporter);
-  const extra = product.documents
-    .map((document) => document.type)
-    .filter((type) => !required.includes(type));
-  const slots = [...required, ...extra];
+  const required = requiredDocuments(
+    product.type,
+    product.isManufacturerOrImporter,
+    product.sanitaryRegistration,
+  );
+  const slots = [
+    ...new Set<ProductDocumentType>([
+      ...OFFERED_DOCUMENTS,
+      ...required,
+      ...product.documents.map((document) => document.type),
+    ]),
+  ];
 
   /* A un producto publicado o en revision no se le quita un soporte exigido:
      el backend lo rechaza. Se reemplaza subiendo otro. */
@@ -81,22 +97,25 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
 
       <ModalBody>
         <div className='box-head'>
-          <h3>Documentos</h3>
+          <h3>Documentos técnicos y sanitarios</h3>
         </div>
         <p className='font-light'>
-          {product.name}. Dirección técnica los revisa antes de publicar el producto.
-          PDF, JPG o PNG.
+          {product.name}. Adjunta los documentos técnicos y sanitarios aplicables al
+          producto. Nuestro equipo los revisará antes de aprobar su publicación. Los
+          documentos deben estar completos, legibles y vigentes cuando corresponda. PDF,
+          JPG o PNG.
         </p>
 
         {product.status === 'ACTIVE' && (
           <div className='alert alert-warning'>
-            Este producto está publicado. Si cambias un documento, vuelve a revisión y
-            deja de mostrarse hasta que se apruebe.
+            Si modificas un documento técnico o sanitario del producto, su publicación se
+            suspenderá temporalmente. Volverá a estar disponible para compras una vez
+            Suminia apruebe la actualización.
           </div>
         )}
 
         {slots.length === 0 ? (
-          <p className='font-light mb-0'>Esta categoría no requiere documentos.</p>
+          <p className='font-light mb-0'>Este producto no requiere documentos.</p>
         ) : (
           <div className='document-slots'>
             {slots.map((type) => {
@@ -104,18 +123,28 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
               const isRequired = required.includes(type);
 
               return (
-                <div className={`document-slot${document ? ' is-filled' : ''}`} key={type}>
+                <div
+                  className={`document-slot is-versioned${document ? ' is-filled' : ''}`}
+                  key={type}
+                >
+                  <div className='document-slot-row'>
                   <span className='document-slot-icon'>
                     {document ? <CheckCircle size={18} /> : <FileText size={18} />}
                   </span>
 
                   <div className='document-slot-text'>
-                    <strong>
-                      {DOCUMENT_LABEL[type]}
-                      {!isRequired && <span className='font-light'> · ya no se exige</span>}
-                    </strong>
+                    {/* Si se exige o no, como etiqueta junto al nombre: igual
+                        que el estado de los documentos de la empresa. */}
+                    <div className='document-slot-title'>
+                      <strong>{DOCUMENT_LABEL[type]}</strong>
+                      <span className={`document-state ${isRequired ? 'is-neutral' : 'is-muted'}`}>
+                        {isRequired ? 'Obligatorio' : 'Opcional'}
+                      </span>
+                    </div>
                     <small className='font-light'>
-                      {document ? (document.filename ?? 'Documento cargado') : DOCUMENT_HELP[type]}
+                      {document
+                        ? `${document.filename ?? 'Documento cargado'} · subido el ${formatDateTime(document.createdAt)}`
+                        : DOCUMENT_HELP[type]}
                     </small>
                   </div>
 
@@ -155,6 +184,13 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
                       </button>
                     )}
                   </div>
+                  </div>
+                  <DocumentHistory
+                    product={product}
+                    type={type}
+                    opening={opening}
+                    onOpen={open}
+                  />
                 </div>
               );
             })}
@@ -185,7 +221,10 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
           title='¿Retirar este documento?'
           confirmLabel='Sí, retirar'
         >
-          <p className='mb-0'>El archivo se borra del almacenamiento y no se puede recuperar.</p>
+          <p className='mb-0'>
+            Deja de estar vigente, pero Suminia lo conserva como versión anterior, con
+            su fecha.
+          </p>
         </ConfirmModal>
       )}
 

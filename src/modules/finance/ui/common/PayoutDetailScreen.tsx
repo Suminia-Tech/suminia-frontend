@@ -128,8 +128,10 @@ export const PayoutDetailScreen = ({
               <table className="catalog-table">
                 <thead>
                   <tr>
-                    <th>Pedido</th>
-                    <th>Comprador</th>
+                    <th>Orden de compra</th>
+                    {/* A quien se le vendio, solo para el personal: el
+                        proveedor no sabe quien compra. */}
+                    {side === "staff" && <th>Comprador</th>}
                     <th>Entregado</th>
                     <th>Factura</th>
                     {side === "staff" && (
@@ -147,11 +149,15 @@ export const PayoutDetailScreen = ({
                   {payout.items.map((order) => (
                     <tr key={order.id}>
                       <td className="is-nowrap">
+                        {/* La liquidacion paga ordenes de compra: se nombran
+                            por la suya, que es la que conoce el proveedor. */}
                         <Link href={`${copy.pedidos}/${order.id}`}>
-                          {order.code}
+                          {order.purchaseCode}
                         </Link>
                       </td>
-                      <td className="is-nowrap">{order.buyerName}</td>
+                      {side === "staff" && (
+                        <td className="is-nowrap">{order.buyerName}</td>
+                      )}
                       <td className="is-nowrap">
                         {order.deliveredAt ? formatDay(order.deliveredAt) : "—"}
                       </td>

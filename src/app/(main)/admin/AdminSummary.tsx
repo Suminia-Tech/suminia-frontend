@@ -7,7 +7,7 @@ import { AlertTriangle, Check, ChevronDown } from 'react-feather';
 import { useGetBuyersQuery, useGetSuppliersQuery } from '@/modules/organizations';
 import { useGetBillingQuery } from '@/modules/orders';
 import { useGetProductsQuery } from '@/modules/products';
-import { PageHeader, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 
 /* El resumen del personal de Suminia: que hay que hacer hoy y cuanto se movio.
 
@@ -57,21 +57,26 @@ const mesActual = () =>
 const SOLO_EL_TOTAL = { page: 1, limit: 1 } as const;
 
 export const AdminSummary = () => {
-  const { data: proveedores } = useGetSuppliersQuery({
+  const { data: proveedores, isLoading: cargandoProveedores } = useGetSuppliersQuery({
     ...SOLO_EL_TOTAL,
     filter: { status: 'PENDING' },
   });
-  const { data: compradores } = useGetBuyersQuery({
+  const { data: compradores, isLoading: cargandoCompradores } = useGetBuyersQuery({
     ...SOLO_EL_TOTAL,
     filter: { status: 'PENDING' },
   });
-  const { data: productos } = useGetProductsQuery({
+  const { data: productos, isLoading: cargandoProductos } = useGetProductsQuery({
     ...SOLO_EL_TOTAL,
     filter: { status: 'PENDING_REVIEW' },
   });
 
-  const { data: facturacion } = useGetBillingQuery();
+  const { data: facturacion, isLoading: cargandoFacturacion } = useGetBillingQuery();
   const [verAnteriores, setVerAnteriores] = useState(false);
+  /* Mientras llegan las cuentas, el esqueleto del resumen: antes se pintaba
+     con todo en cero —"no hay pendientes", facturado $0— y despues cambiaba,
+     que se leia como un dato falso. */
+  const cargando =
+    cargandoProveedores || cargandoCompradores || cargandoProductos || cargandoFacturacion;
 
   const proveedoresPendientes = proveedores?.data.meta.totalCount ?? 0;
   const compradoresPendientes = compradores?.data.meta.totalCount ?? 0;
@@ -107,6 +112,8 @@ export const AdminSummary = () => {
       enlace: 'Revisar',
     },
   ].filter((p): p is { texto: string; href: string; enlace: string } => Boolean(p));
+
+  if (cargando) return <PageSkeleton variant='summary' />;
 
   return (
     <>

@@ -45,13 +45,14 @@ const SkeletonFields = ({ count }: { count: number }) => (
   </div>
 );
 
-type Variant = 'list' | 'detail' | 'form' | 'dashboard';
+type Variant = 'list' | 'detail' | 'form' | 'dashboard' | 'summary';
 
 /* La pantalla entera: titulo y el cuerpo segun el tipo de pagina.
    - list: una lista o tabla dentro de un panel.
    - detail: la ficha a dos columnas, como la de un pedido.
    - form: paneles con campos.
-   - dashboard: tarjetas de cifras y un bloque grande. */
+   - dashboard: tarjetas de cifras y un bloque grande.
+   - summary: el resumen del personal, lo pendiente y la facturacion del mes. */
 export const PageSkeleton = ({
   variant = 'list',
   header = true,
@@ -108,6 +109,24 @@ export const PageSkeleton = ({
         </>
       )}
 
+      {variant === 'summary' && (
+        <>
+          <SkeletonPanel>
+            <SkeletonRows rows={3} />
+          </SkeletonPanel>
+          <SkeletonPanel>
+            <div className='data-list'>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div className='skeleton-field' key={index}>
+                  <span className='sk sk-label' />
+                  <span className='sk sk-short' />
+                </div>
+              ))}
+            </div>
+          </SkeletonPanel>
+        </>
+      )}
+
       {variant === 'dashboard' && (
         <>
           <SkeletonPanel>
@@ -128,6 +147,41 @@ export const PageSkeleton = ({
           </SkeletonPanel>
         </>
       )}
+    </div>
+  </div>
+);
+
+/* El chasis de las areas de trabajo —panel lateral, barra de arriba y el
+   cuerpo— mientras se entra a una. Con las mismas clases que SidebarShell,
+   de modo que al llegar la pantalla real ocupa exactamente el mismo sitio:
+   el esqueleto de una pagina suelta, a todo el ancho, no se parecia a lo que
+   aparecia despues. */
+export const ShellSkeleton = ({ variant = 'list' }: { variant?: Variant }) => (
+  <div className='area-layout' aria-busy='true'>
+    <span className='visually-hidden'>Cargando</span>
+    <aside className='area-sidebar' aria-hidden='true'>
+      <div className='area-sidebar-brand'>
+        <span className='sk sk-logo' />
+      </div>
+      <div className='area-sidebar-nav'>
+        {[3, 2, 2, 3].map((items, grupo) => (
+          <div className='area-sidebar-group' key={grupo}>
+            <span className='sk sk-nav-label' />
+            {Array.from({ length: items }).map((_, index) => (
+              <span className='sk sk-nav-item' key={index} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </aside>
+    <div className='area-main'>
+      <header className='area-topbar' aria-hidden='true'>
+        <span className='sk sk-short' />
+        <span className='sk sk-avatar' />
+      </header>
+      <main className='area-content'>
+        <PageSkeleton variant={variant} />
+      </main>
     </div>
   </div>
 );

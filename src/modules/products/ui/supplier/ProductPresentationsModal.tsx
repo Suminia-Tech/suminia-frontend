@@ -366,7 +366,7 @@ const ProductPresentationsModal = ({
                 <th className='num'>Contenido</th>
                 <th className='num'>Pedido</th>
                 <th className='num'>Precio</th>
-                <th className='num'>Inventario</th>
+                <th className='num'>Disponible para Suminia</th>
                 <th className='actions'></th>
               </tr>
             </thead>
@@ -511,19 +511,22 @@ const ProductPresentationsModal = ({
 
             <Row>
               <Col md='4' className='mb-3'>
-                {field('Precio (COP)', 'price', { type: 'number' })}
+                {field('Tu precio a Suminia (COP, sin IVA)', 'price', { type: 'number' })}
               </Col>
               <Col md='4' className='mb-3'>
-                {field('Inventario', 'stock', { type: 'number' })}
+                {field('Inventario disponible para Suminia', 'stock', { type: 'number' })}
+                <small className='font-light'>
+                  Solo lo que reservas para vender por Suminia.
+                </small>
               </Col>
               <Col md='4' className='mb-3'>
-                {field('SKU', 'sku')}
+                {field('SKU del proveedor', 'sku')}
               </Col>
             </Row>
 
             <Row>
               <Col md='4' className='mb-3'>
-                {field('Cantidad', 'contentQuantity', { type: 'number' })}
+                {field('Cantidad por presentación', 'contentQuantity', { type: 'number' })}
               </Col>
               <Col md='4' className='mb-3'>
                 <label className='form-label font-light'>Unidad</label>

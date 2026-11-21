@@ -18,7 +18,7 @@ import { LoadingOverlay, PasswordToggle, SubmitButton } from '@/shared/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 import { useLoginMutation } from '../api/authApi';
-import { getHomePath } from '../lib/area';
+import { getHomePath, getUserArea } from '../lib/area';
 import { SESSION_FEEDBACK_MS } from '../lib/session';
 import { authLabels } from '../lib/labels';
 
@@ -26,10 +26,11 @@ const LoginModal = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
-  /* Si el login lleva a otra pantalla —el area del proveedor o del personal—
-     se muestran sus esqueletos; si se queda en la misma —el comprador en la
-     tienda—, solo la barra. */
-  const [cambiaDePantalla, setCambiaDePantalla] = useState(true);
+  /* A donde lleva el login, para que el esqueleto sea el de esa pantalla:
+     el area del proveedor o del personal tiene panel lateral, y su inicio es
+     un tablero o un resumen. El comprador se queda en la tienda: ahi basta la
+     barra, porque la pagina no cambia. */
+  const [llegada, setLlegada] = useState<'supplier' | 'admin' | null>(null);
   const { loginModal } = useAppSelector((state) => state.ModalReducer);
   const [login, { isLoading }] = useLoginMutation();
   /* El velo no se levanta cuando responde el servidor sino cuando ya hay algo
@@ -68,7 +69,10 @@ const LoginModal = () => {
       setPassword('');
 
       const destino = getHomePath(session.data.user);
-      setCambiaDePantalla(destino !== pathname);
+      const area = getUserArea(session.data.user);
+      setLlegada(
+        destino !== pathname && (area === 'supplier' || area === 'admin') ? area : null,
+      );
 
       setEntrando(true);
       startTransition(() => router.push(destino));
@@ -104,8 +108,8 @@ const LoginModal = () => {
           area: los esqueletos de un tablero, que es lo que se abre al entrar. */}
       <LoadingOverlay
         isOpen={isLoading || entrando || navegando}
-        variant='dashboard'
-        skeleton={!isLoading && cambiaDePantalla}
+        variant={llegada === 'admin' ? 'summary' : 'dashboard'}
+        skeleton={!isLoading && llegada ? 'shell' : 'none'}
       />
     {/* Sin un `.modal-content` propio: reactstrap ya pinta uno, y el que habia
         aqui dentro era un segundo recuadro blanco con su mismo radio, un pixel

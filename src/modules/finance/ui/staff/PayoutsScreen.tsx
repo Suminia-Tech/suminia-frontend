@@ -65,7 +65,7 @@ export const PayoutsScreen = () => {
                 {sinFactura.map((order) => (
                   <li key={order.id}>
                     <span>
-                      <Link href={`/admin/orders/${order.id}`}>{order.code}</Link>
+                      <Link href={`/admin/orders/${order.id}`}>{order.purchaseCode}</Link>
                       <span className='font-light'> · {order.supplier}</span>
                     </span>
                     <span>{pesos(order.supplierPayout)}</span>
@@ -141,7 +141,7 @@ const PayableBlock = ({ payable }: { payable: PayableSupplier }) => {
         <table className='catalog-table'>
           <thead>
             <tr>
-              <th>Pedido</th>
+              <th>Orden de compra</th>
               <th>Comprador</th>
               <th>Entregado</th>
               <th>Factura</th>
@@ -154,7 +154,7 @@ const PayableBlock = ({ payable }: { payable: PayableSupplier }) => {
             {payable.ready.map((order) => (
               <tr key={order.id}>
                 <td className='is-nowrap'>
-                  <Link href={`/admin/orders/${order.id}`}>{order.code}</Link>
+                  <Link href={`/admin/orders/${order.id}`}>{order.purchaseCode}</Link>
                 </td>
                 <td className="is-nowrap">{order.buyerName}</td>
                 <td className='is-nowrap'>{order.deliveredAt ? formatDay(order.deliveredAt) : '—'}</td>

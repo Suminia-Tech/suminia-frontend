@@ -18,9 +18,8 @@ import {
   type OrganizationKind,
 } from '../../hooks/useOrganizationAdmin';
 import {
-  describeActivities,
+  describeActivityLines,
   describeExporter,
-  describeProductLines,
 } from '../../lib/commercialProfile';
 import {
   COMPANY_SECTIONS,
@@ -174,8 +173,9 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
                         values.earlyPayment === 'yes' ? Number(values.earlyPaymentDays) : null,
                     }
                   : {}),
-                activities: values.activities,
-                productLines: values.productLines,
+                /* La relacion actividad → lineas; el backend saca de ella las
+                   dos listas de siempre. */
+                activityLines: values.activityLines,
                 exporter:
                   values.exporter === '' ? null : values.exporter === 'yes',
                 issuesElectronicInvoices:
@@ -276,10 +276,9 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
                   ? 'Sí'
                   : 'No',
           },
-          { label: 'Actividades', value: describeActivities(organization.activities) },
           {
-            label: 'Categorías que comercializa',
-            value: describeProductLines(organization.productLines),
+            label: 'Actividades y líneas',
+            value: describeActivityLines(organization).join(' · ') || null,
           },
           { label: 'Exporta', value: describeExporter(organization.exporter) },
         ]
@@ -317,6 +316,9 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
             revision: cuanto lleva, que paso le falta y a donde ir a llenarlo.
             Reemplaza la lista suelta de pendientes, que decia lo mismo sin
             decir cuanto faltaba. */}
+        {/* Para los dos lados: Mi empresa es donde se llena el registro, y
+            ahi es donde tiene que verse cuanto falta. El proveedor lo ve
+            ademas en su Resumen mientras esta en revision. */}
         {(organization.status === 'PENDING' || pendientes.length > 0) && (
           <RegistrationProgress kind={kind} pendientes={pendientes} />
         )}
@@ -365,6 +367,17 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
                 editable
                 legalNature={organization.legalNature}
               />
+              {/* Las del proveedor, en su propio panel: no se exigen, y
+                  mezcladas con las legales parecerian faltantes. */}
+              {kind === 'supplier' && (
+                <LegalDocumentsPanel
+                  group='sanitary'
+                  kind={kind}
+                  organizationId={organization.id}
+                  documents={organization.documents ?? []}
+                  editable
+                />
+              )}
               {/* Lo legal junto: la declaracion se firma en su pantalla, pero
                   se busca aqui. */}
               <DeclarationStatusPanel kind={kind} organization={organization} />
@@ -475,13 +488,24 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
           )}
 
           {section === 'documentos' && (
-            <LegalDocumentsPanel
-              kind={kind}
-              organizationId={organization.id}
-              documents={organization.documents ?? []}
-              editable={false}
-              legalNature={organization.legalNature}
-            />
+            <>
+              <LegalDocumentsPanel
+                kind={kind}
+                organizationId={organization.id}
+                documents={organization.documents ?? []}
+                editable={false}
+                legalNature={organization.legalNature}
+              />
+              {kind === 'supplier' && (
+                <LegalDocumentsPanel
+                  group='sanitary'
+                  kind={kind}
+                  organizationId={organization.id}
+                  documents={organization.documents ?? []}
+                  editable={false}
+                />
+              )}
+            </>
           )}
         </>
       )}

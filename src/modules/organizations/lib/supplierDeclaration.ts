@@ -31,8 +31,16 @@ export const TRUTHFUL_INFORMATION = {
 export const PEP_QUESTION =
   '¿El representante legal, alguno de los beneficiarios finales, administradores o personas vinculadas a la empresa tiene o ha tenido la calidad de Persona Expuesta Políticamente (PEP), de acuerdo con la normativa colombiana?';
 
-export const DATA_POLICY_TEXT =
-  'He leído y acepto la Política de Tratamiento de Datos Personales de Suminia y autorizo el tratamiento de mis datos personales de acuerdo con ella.';
+/* La autorizacion de datos, con la politica enlazada dentro del enunciado y
+   no en un "Ver politica" suelto al final: se acepta lo que se puede abrir
+   ahi mismo. Va en tres tramos para que la pantalla ponga el enlace en
+   medio. */
+export const DATA_POLICY_TEXT = {
+  before: 'He leído y acepto la ',
+  link: 'Política de Tratamiento de Datos Personales de Suminia',
+  after:
+    ' y autorizo de manera previa, expresa e informada el tratamiento de mis datos personales para las finalidades allí descritas.',
+};
 
 export const MARKETING_TEXT =
   'Autorizo a Suminia para enviarme información sobre nuevos productos, promociones, ofertas, lanzamientos, novedades, contenidos y otros beneficios comerciales relacionados con sus servicios, a través de los canales que seleccione.';

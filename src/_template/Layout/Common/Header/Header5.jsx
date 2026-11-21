@@ -10,6 +10,7 @@ import { CartWidget } from '@/modules/cart';
 import { NotificationBell } from '@/modules/notifications';
 import NavBar from '@/_template/Layout/Element/NavBar';
 import { useAuth } from '@/modules/auth';
+import { useMounted } from '@/shared/hooks/useMounted';
 import { getAccountLabel, getAccountPath } from '@/modules/auth';
 import { LOGINMODAL } from '@/_template/ReduxToolkit/Reducers/ModalReducer';
 import { useDispatch } from 'react-redux';
@@ -17,7 +18,11 @@ import { useDispatch } from 'react-redux';
 const Header5 = ({ noStyle, isCategories }) => {
   const UpScroll = useHeaderScroll(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated: conSesion, logout } = useAuth();
+  /* El servidor no ve la sesion: hasta hidratar se pinta "Iniciar Sesion" en
+     las dos partes. Ver useMounted. */
+  const mounted = useMounted();
+  const isAuthenticated = mounted && conSesion;
   const dispatch = useDispatch();
 
   const handleLogout = () => {

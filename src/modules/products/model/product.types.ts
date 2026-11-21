@@ -132,8 +132,8 @@ export interface CatalogMedicineDetail extends CatalogMedicine {
    otras cuatro empresas vendiendo exactamente lo mismo. */
 export interface MedicineOffer {
   productId: string;
-  organizationId: string;
-  organizationName: string | null;
+  /** La oferta no dice quien la vende: se distingue por este codigo. */
+  referenceCode: string;
   brand: string | null;
   fromPrice: number | null;
   currency: string;
@@ -158,8 +158,13 @@ export interface ProductImage {
 
 export interface Product {
   id: string;
+  /* El proveedor solo lo reciben su dueño y el personal de Suminia. A
+     cualquier otro le llega vacio: lo vende Suminia, y el producto se
+     reconoce por su codigo de referencia. */
   organizationId: string;
   organizationName: string | null;
+  /** El codigo de Suminia, CRS-20417. */
+  referenceCode: string;
   categoryId: string;
   categoryName: string | null;
   type: ProductType;
@@ -185,6 +190,10 @@ export interface Product {
   images: ProductImage[];
   /* Vacio para quien no es el dueño ni personal de Suminia. */
   documents: ProductDocument[];
+  /* Las versiones anteriores de cada documento —lo que se reemplazo o se
+     retiro—, la mas reciente primero. Solo para el dueño y el personal de
+     Suminia; opcional porque un backend anterior no lo manda. */
+  documentHistory?: (ProductDocument & { retiredAt: string })[];
   /* Los que cualquiera puede abrir desde la ficha: registro sanitario y ficha
      tecnica de un producto publicado. */
   publicDocuments?: ProductDocument[];

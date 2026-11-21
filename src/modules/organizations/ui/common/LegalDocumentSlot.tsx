@@ -91,11 +91,16 @@ const LegalDocumentSlot = ({
   const [expiresAt, setExpiresAt] = useState('');
 
   const { state, latest } = slot;
-  const meta = DOCUMENT_STATE_META[state];
+  /* Uno que se sube solo a pedido no esta "pendiente" mientras nadie lo pida. */
+  const aPedido = option.onRequest && state === 'MISSING';
+  const meta = aPedido
+    ? { label: option.optionalLabel ?? 'Opcional', tone: 'muted' as const }
+    : DOCUMENT_STATE_META[state];
   const pending = reviewable && state === 'IN_REVIEW' && latest;
   /* Lo que la empresa tiene que resolver se marca en el borde, como antes lo
      que faltaba. */
-  const highlight = editable && (state === 'MISSING' || state === 'REJECTED' || state === 'EXPIRED');
+  const highlight =
+    editable && !aPedido && (state === 'MISSING' || state === 'REJECTED' || state === 'EXPIRED');
 
   const submit = async (decision: ReviewDocumentRequest['decision']) => {
     if (!latest) return;
@@ -114,7 +119,11 @@ const LegalDocumentSlot = ({
 
   return (
     <div
-      className={`document-slot is-versioned is-${state.toLowerCase().replace('_', '-')}${highlight ? ' is-missing' : ''}`}
+      className={`document-slot is-versioned${
+        /* Uno opcional sin subir no lleva la clase de su estado: `is-missing`
+           le pondria el borde de lo que falta, y no falta. */
+        aPedido ? '' : ` is-${state.toLowerCase().replace('_', '-')}`
+      }${highlight ? ' is-missing' : ''}`}
     >
       <div className='document-slot-row'>
         <div className='document-slot-text'>

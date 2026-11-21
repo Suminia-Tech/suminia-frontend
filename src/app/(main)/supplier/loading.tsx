@@ -1,9 +1,8 @@
 import { PageSkeleton } from '@/shared/ui';
 
-/* Lo que se ve al navegar dentro del area mientras llega la pagina: el
-   chasis —encabezado o panel lateral— es del layout y se queda; el cuerpo
-   muestra su esqueleto. Sin esto Next esperaba la respuesta del servidor con
-   la pagina anterior congelada, y el clic parecia no hacer nada. */
+/* El resumen del proveedor mientras llega: cifras y bloques. El chasis del area se queda —es del layout— y el cuerpo muestra la
+   misma forma que pinta la pantalla mientras carga sus datos, para que al
+   llegar no cambie de figura. */
 export default function Loading() {
-  return <PageSkeleton variant='list' />;
+  return <PageSkeleton variant='dashboard' />;
 }

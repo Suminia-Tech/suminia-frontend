@@ -168,7 +168,7 @@ const PaymentHint = ({ order, side }: OrderPaymentPanelProps) => {
     if (needsRefund(order)) {
       const monto = pesos(refundDue(order), order.currency);
       return side === 'buyer'
-        ? `Suminia te devuelve ${monto} a tu cuenta: lo que el proveedor no pudo atender.`
+        ? `Suminia te devuelve ${monto} a tu cuenta: lo que no se pudo despachar.`
         : side === 'staff'
           ? `Hay que devolverle ${monto} al comprador.`
           : null;
@@ -181,7 +181,7 @@ const PaymentHint = ({ order, side }: OrderPaymentPanelProps) => {
     }
     if (order.paymentStatus === 'SUBMITTED') {
       return side === 'buyer'
-        ? `Recibimos tu comprobante. En cuanto lo verifiquemos, le enviamos el pedido a ${order.supplierOrganizationName}.`
+        ? 'Recibimos tu comprobante. En cuanto lo verifiquemos, despachamos tu pedido.'
         : side === 'supplier'
           ? null
           : 'Verifica el comprobante contra el banco: al aprobarlo, el proveedor recibe el pedido.';
@@ -194,7 +194,7 @@ const PaymentHint = ({ order, side }: OrderPaymentPanelProps) => {
     }
     if (order.status === 'PLACED' || supplierWaitsPayment(order)) {
       return side === 'buyer'
-        ? `Paga ahora: ${order.supplierOrganizationName} recibe el pedido en cuanto verifiquemos tu pago. Si no lo recibimos a tiempo, se cancela.`
+        ? 'Paga ahora: despachamos tu pedido en cuanto verifiquemos tu pago. Si no lo recibimos a tiempo, se cancela.'
         : side === 'staff'
           ? 'Esperando el comprobante del comprador. El proveedor todavía no ve el pedido; si vence el plazo, se cancela solo.'
           : null;

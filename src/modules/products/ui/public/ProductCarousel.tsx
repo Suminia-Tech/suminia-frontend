@@ -142,10 +142,10 @@ export const ProductCarousel = ({
                           <h5>{product.name}</h5>
                         </Link>
 
-                        {/* Quien lo vende. En un marketplace no es un detalle:
-                            es la mitad de lo que se esta mirando. */}
+                        {/* El codigo de Suminia y no el proveedor: el comprador
+                            nunca sabe quien lo vende. */}
                         <p className='font-light product-box-supplier'>
-                          {product.organizationName ?? 'Proveedor'}
+                          {product.referenceCode}
                         </p>
 
                         {(product.categoryName || formatos.length > 0) && (

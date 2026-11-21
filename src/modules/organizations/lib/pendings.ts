@@ -78,6 +78,31 @@ const faltaContactoDe = (areas: string[]): string =>
     ? `Falta el contacto del área ${areas[0]}.`
     : `Falta el contacto de las áreas ${areas.slice(0, -1).join(', ')} y ${areas.at(-1)}.`;
 
+/* La declaracion cuenta como hecha cuando trae los accionistas y
+   beneficiarios finales: una firmada antes de que se pidieran tiene que
+   completarse. */
+const declaracionCompleta = (org: Organization) =>
+  Boolean(org.declaration?.beneficialOwners?.length);
+
+const declaracionPendiente = (org: Organization, href: string): Pending =>
+  org.declaration
+    ? {
+        key: 'declaration',
+        texto:
+          'Falta completar en tu declaración los accionistas y beneficiarios finales: sin ellos no podemos aprobar tu empresa.',
+        enlace: 'Completar la declaración',
+        href,
+        aviso: 'Faltan los accionistas y beneficiarios finales.',
+      }
+    : {
+        key: 'declaration',
+        texto:
+          'Falta tu declaración de autocontrol de riesgos (SAGRILAFT): sin ella no podemos aprobar tu empresa.',
+        enlace: 'Llenar la declaración',
+        href,
+        aviso: 'Falta enviar la declaración.',
+      };
+
 export const supplierPendings = (supplier: Organization): Pending[] => {
   const sinContacto = areasSinContacto(supplier, CONTACT_AREA_OPTIONS, true);
   const faltaContacto = faltaContactoDe(sinContacto);
@@ -86,14 +111,8 @@ export const supplierPendings = (supplier: Organization): Pending[] => {
     /* La declaracion va primero: sin ella Suminia no puede aprobar la
        empresa, y lo demas se completa igual despues. */
     supplier.status === 'PENDING' &&
-      !supplier.declaration && {
-        key: 'declaration',
-        texto:
-          'Falta tu declaración de autocontrol de riesgos (SAGRILAFT): sin ella no podemos aprobar tu empresa.',
-        enlace: 'Llenar la declaración',
-        href: '/supplier/account/declaration',
-        aviso: 'Falta enviar la declaración.',
-      },
+      !declaracionCompleta(supplier) &&
+      declaracionPendiente(supplier, '/supplier/account/declaration'),
     /* Despues de la declaracion y antes que el resto: es la otra condicion
        sin la cual no se aprueba. Un "no" tambien queda pendiente, porque
        mientras lo sea no hay aprobacion posible. */
@@ -116,7 +135,7 @@ export const supplierPendings = (supplier: Organization): Pending[] => {
         texto: 'Falta contar qué haces y qué categorías de productos vendes.',
         enlace: 'Completar el perfil',
         href: sectionHref('supplier', SECTION.profile),
-        aviso: 'Falta llenar tus actividades y las categorías de productos que comercializas.',
+        aviso: 'Falta definir tus actividades y las líneas de productos de cada una.',
       },
     !tieneCuenta(supplier) && {
       key: 'bank',
@@ -150,9 +169,11 @@ export const supplierPendings = (supplier: Organization): Pending[] => {
     },
     /* Lo que nunca se subio, lo rechazado y lo vencido: en los tres casos
        la empresa tiene que subir un archivo. */
-    LEGAL_DOCUMENT_OPTIONS.some((option) =>
-      needsAction(documentSlot(supplier.documents, option.value)),
-    ) && {
+    LEGAL_DOCUMENT_OPTIONS.some((option) => {
+      const slot = documentSlot(supplier.documents, option.value);
+      /* El que se sube a pedido no falta mientras no se haya subido. */
+      return needsAction(slot) && !(option.onRequest && slot.state === 'MISSING');
+    }) && {
       key: 'documents',
       texto: 'Hay documentos legales por subir, corregir o renovar.',
       enlace: 'Revisar documentos',
@@ -170,15 +191,8 @@ export const buyerPendings = (buyer: Organization): Pending[] => {
   const pendientes: Pending[] = [];
 
   /* Primero, como en el proveedor: sin ella Suminia no puede aprobar. */
-  if (buyer.status === 'PENDING' && !buyer.declaration) {
-    pendientes.push({
-      key: 'declaration',
-      texto:
-        'Falta tu declaración de autocontrol de riesgos (SAGRILAFT): sin ella no podemos aprobar tu empresa.',
-      enlace: 'Llenar la declaración',
-      href: '/buyer/account/declaration',
-      aviso: 'Falta enviar la declaración.',
-    });
+  if (buyer.status === 'PENDING' && !declaracionCompleta(buyer)) {
+    pendientes.push(declaracionPendiente(buyer, '/buyer/account/declaration'));
   }
 
   if (!buyer.legalNature || !buyer.buyerActivity) {
@@ -206,7 +220,7 @@ export const buyerPendings = (buyer: Organization): Pending[] => {
   const otrosFaltantes =
     Number(!buyer.legalNature || !buyer.buyerActivity) +
     Number(!buyer.bankName || !buyer.bankAccountNumber) +
-    Number(!buyer.declaration);
+    Number(!declaracionCompleta(buyer));
   const documentosFaltantes = buyerMissing(buyer).length - otrosFaltantes;
   if (documentosFaltantes > 0) {
     pendientes.push({

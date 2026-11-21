@@ -11,6 +11,7 @@ import AddToHome from "./AddToHome";
 import ThreeBarToggle from "./ThreeBarToggle";
 import { OVERLAY, TOPMENUTOGGLE } from "@/_template/ReduxToolkit/Reducers/ModalReducer";
 import { getAccountPath, getUserArea, useAuth } from "@/modules/auth";
+import { useMounted } from "@/shared/hooks/useMounted";
 
 /* El menu de la tienda, escrito aqui. Antes se pedia a una ruta falsa de la
    plantilla (/api/header) cada vez que el encabezado se montaba, y hasta que
@@ -34,7 +35,11 @@ const NavBar = ({ customClass }) => {
   /* La cuenta va en esta barra y no solo en el desplegable de la esquina: es
      donde el comprador la busca, junto a los productos y el blog. Solo aparece con sesion
      iniciada, que es cuando lleva a algun sitio. */
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated: conSesion } = useAuth();
+  /* El servidor no ve la sesion: hasta hidratar, el menu es el del visitante
+     en las dos partes. Ver useMounted. */
+  const mounted = useMounted();
+  const isAuthenticated = mounted && conSesion;
   const accountPath = getAccountPath(user);
   /* El orden sigue el recorrido del comprador y lo que mas usa: PRODUCTOS para
      comprar y MIS PEDIDOS, justo despues, para seguir lo comprado. BLOG, que

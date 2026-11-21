@@ -6,13 +6,14 @@ import { AlertTriangle, ChevronLeft, ExternalLink, FileText } from 'react-feathe
 import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
-import { formatDate } from '@/shared/lib/dates';
+import { formatDate, formatDateTime } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
 import { PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useGetProductQuery, useReviewProductMutation } from '../../api/productsApi';
 import { useOpenDocument } from '../../hooks/useOpenDocument';
+import { DocumentHistory } from '../common/DocumentHistory';
 import { ImageLightbox } from '../common/ImageLightbox';
 import {
   PRODUCT_STATUS_LABEL,
@@ -63,7 +64,11 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
 
   const product = data.data;
   const isMedicine = product.type === 'MEDICINE';
-  const required = requiredDocuments(product.type, product.isManufacturerOrImporter);
+  const required = requiredDocuments(
+    product.type,
+    product.isManufacturerOrImporter,
+    product.sanitaryRegistration,
+  );
   const missingDocuments = required.filter(
     (type) => !product.documents.some((document) => document.type === type),
   );
@@ -316,29 +321,49 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
             </Panel>
           )}
 
-          <Panel title='Documentos'>
-            {required.length === 0 && product.documents.length === 0 ? (
+          <Panel title='Documentos técnicos y sanitarios'>
+            {required.length === 0 &&
+            product.documents.length === 0 &&
+            (product.documentHistory ?? []).length === 0 ? (
               <p className='review-note'>
                 <FileText size={16} />
-                Esta categoría no requiere documentos.
+                Este producto no requiere documentos y no adjuntó ninguno.
               </p>
             ) : (
               <div className='document-slots'>
-                {[...new Set([...required, ...product.documents.map((d) => d.type)])].map(
+                {[
+                  ...new Set([
+                    ...required,
+                    ...product.documents.map((d) => d.type),
+                    ...(product.documentHistory ?? []).map((d) => d.type),
+                  ]),
+                ].map(
                   (type) => {
                     const document = product.documents.find((item) => item.type === type);
+                    const exigido = required.includes(type);
 
                     return (
                       <div
-                        className={`document-slot${document ? ' is-filled' : ''}`}
+                        className={`document-slot is-versioned${document ? ' is-filled' : ''}`}
                         key={type}
                       >
+                        <div className='document-slot-row'>
                         <div className='document-slot-text'>
-                          <strong>{DOCUMENT_LABEL[type]}</strong>
-                          <small className={document ? 'font-light' : 'text-danger'}>
+                          <div className='document-slot-title'>
+                            <strong>{DOCUMENT_LABEL[type]}</strong>
+                            <span className={`document-state ${exigido ? 'is-neutral' : 'is-muted'}`}>
+                              {exigido ? 'Obligatorio' : 'Opcional'}
+                            </span>
+                          </div>
+                          {/* Subido el: la fecha y hora de la version vigente. */}
+                          <small
+                            className={document || !exigido ? 'font-light' : 'text-danger'}
+                          >
                             {document
-                              ? (document.filename ?? 'Documento cargado')
-                              : 'No lo adjuntó'}
+                              ? `${document.filename ?? 'Documento cargado'} · subido el ${formatDateTime(document.createdAt)}`
+                              : exigido
+                                ? 'No lo adjuntó'
+                                : 'Sin documento vigente'}
                           </small>
                         </div>
                         {document && (
@@ -354,6 +379,13 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
                             </button>
                           </div>
                         )}
+                        </div>
+                        <DocumentHistory
+                          product={product}
+                          type={type}
+                          opening={opening}
+                          onOpen={open}
+                        />
                       </div>
                     );
                   },

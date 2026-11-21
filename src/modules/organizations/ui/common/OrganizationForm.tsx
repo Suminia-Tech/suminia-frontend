@@ -18,6 +18,7 @@ import { avisoDe, SECTION, type Pending } from '../../lib/pendings';
 import { deliveryError as deliveryErrorOf, toDeliveryValues, type DeliveryValues } from '../../lib/deliveryTime';
 import { formatTaxId } from '../../lib/taxId';
 import type {
+  ActivityLines,
   Organization,
   SupplierActivity,
   SupplierProductLine,
@@ -107,8 +108,9 @@ export interface OrganizationFormValues {
 
   /* El perfil comercial, tambien solo del proveedor. exporter va como cadena
      porque son tres respuestas y no dos: vacia es "no lo ha dicho". */
-  activities: SupplierActivity[];
-  productLines: SupplierProductLine[];
+  /* Que lineas vende en cada actividad. Una actividad marcada esta en la
+     lista aunque todavia no tenga lineas: la validacion se las pide. */
+  activityLines: ActivityLines[];
   exporter: '' | 'yes' | 'no';
   /* Igual que exporter: vacia es "no ha respondido". */
   electronicInvoicing: '' | 'yes' | 'no';
@@ -133,8 +135,7 @@ export interface OrganizationFormValues {
 /* Los campos que se escriben; las listas y los contactos van por su lado. */
 type TextField = Exclude<
   keyof OrganizationFormValues,
-  | 'activities'
-  | 'productLines'
+  | 'activityLines'
   | 'contacts'
   | 'customAreas'
   | 'warehouses'
@@ -236,8 +237,15 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   breBKey: organization.breBKey ?? '',
   paymentTermDays:
     organization.paymentTermDays == null ? '' : String(organization.paymentTermDays),
-  activities: organization.activities ?? [],
-  productLines: organization.productLines ?? [],
+  /* Un perfil de antes de la relacion trae solo las dos listas sueltas: cada
+     actividad arranca con todas las lineas, para que el proveedor las afine. */
+  activityLines:
+    organization.activityLines && organization.activityLines.length > 0
+      ? organization.activityLines
+      : (organization.activities ?? []).map((activity) => ({
+          activity,
+          productLines: organization.productLines ?? [],
+        })),
   exporter:
     organization.exporter === null || organization.exporter === undefined
       ? ''
@@ -306,6 +314,7 @@ const OrganizationForm = ({
   const [cityShippingErrors, setCityShippingErrors] = useState<Record<number, string>>({});
   const [earlyPaymentError, setEarlyPaymentError] = useState<string | null>(null);
   const [paymentTermError, setPaymentTermError] = useState<string | null>(null);
+  const [activityLinesError, setActivityLinesError] = useState<string | null>(null);
 
   const handleChange =
     (field: TextField) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -321,22 +330,34 @@ const OrganizationForm = ({
   const claseLugar = (valor: string) =>
     `form-control${avisoDe(pendientes, 'city') && !valor ? ' is-missing' : ''}`;
 
-  const handleToggle =
-    <K extends 'activities' | 'productLines'>(
-      field: K,
-      option: OrganizationFormValues[K][number],
-    ) =>
-    () => {
-      setValues((current) => {
-        const list = current[field] as OrganizationFormValues[K][number][];
-        return {
-          ...current,
-          [field]: list.includes(option)
-            ? list.filter((item) => item !== option)
-            : [...list, option],
-        };
-      });
-    };
+  /* Marcar una actividad la agrega sin lineas; desmarcarla se lleva las
+     suyas. */
+  const toggleActivity = (activity: SupplierActivity) => () => {
+    setValues((current) => ({
+      ...current,
+      activityLines: current.activityLines.some((l) => l.activity === activity)
+        ? current.activityLines.filter((l) => l.activity !== activity)
+        : [...current.activityLines, { activity, productLines: [] }],
+    }));
+    setActivityLinesError(null);
+  };
+
+  const toggleLine = (activity: SupplierActivity, line: SupplierProductLine) => () => {
+    setValues((current) => ({
+      ...current,
+      activityLines: current.activityLines.map((l) =>
+        l.activity !== activity
+          ? l
+          : {
+              ...l,
+              productLines: l.productLines.includes(line)
+                ? l.productLines.filter((item) => item !== line)
+                : [...l.productLines, line],
+            },
+      ),
+    }));
+    setActivityLinesError(null);
+  };
 
   /* Un contacto a medias no sirve: sin area no se sabe de que se le habla, sin
      nombre no se sabe a quien se busca, y sin correo no hay como escribirle. Un
@@ -350,6 +371,15 @@ const OrganizationForm = ({
      si se puede guardar. */
   const validateSupplierFields = (): CompanyTab | null => {
     const nextContactErrors = contactErrorsOf(values.contacts, true);
+
+    /* Una actividad marcada sin lineas no dice nada: que fabrica, que importa. */
+    const sinLineas = ACTIVITY_OPTIONS.filter((option) =>
+      values.activityLines.some((l) => l.activity === option.value && l.productLines.length === 0),
+    ).map((option) => option.label.toLowerCase());
+    const nextActivityLinesError =
+      sinLineas.length > 0
+        ? `Elige qué líneas manejas como ${sinLineas.join(' y como ')}.`
+        : null;
 
     /* Una bodega a medias no sirve para llegar: sin direccion o sin ciudad,
        nadie sabe a donde ir. Una en blanco se ignora. */
@@ -432,7 +462,10 @@ const OrganizationForm = ({
     setCityShippingErrors(nextCityShippingErrors);
     setEarlyPaymentError(nextEarlyPaymentError);
     setPaymentTermError(nextPaymentTermError);
-    if (Object.keys(nextWarehouseErrors).length > 0) return 'empresa';
+    setActivityLinesError(nextActivityLinesError);
+    if (Object.keys(nextWarehouseErrors).length > 0 || nextActivityLinesError !== null) {
+      return 'empresa';
+    }
     if (
       Object.keys(nextContactErrors).length > 0 ||
       Object.keys(nextOrderEmailErrors).length > 0
@@ -776,29 +809,70 @@ const OrganizationForm = ({
             id={SECTION.profile}
             warning={avisoDe(pendientes, 'profile')}
             title='Perfil comercial'
-            description='Qué haces en la cadena y qué vendes. Con esto Suminia te presenta a los compradores que buscan lo que ofreces.'
+            description='Define las actividades y líneas de productos de tu empresa para facilitar su visibilidad ante compradores potenciales.'
           >
             <div className='form-grid'>
-              <fieldset>
-                <legend className='form-label'>¿Cuáles son tus actividades?</legend>
-                {ACTIVITY_OPTIONS.map((option) => (
-                  <div className='form-check' key={option.value}>
-                    <input
-                      id={`empresa-actividad-${option.value}`}
-                      type='checkbox'
-                      className='form-check-input'
-                      checked={values.activities.includes(option.value)}
-                      onChange={handleToggle('activities', option.value)}
-                    />
-                    <label
-                      className='form-check-label'
-                      htmlFor={`empresa-actividad-${option.value}`}
-                    >
-                      {option.label}
-                    </label>
-                  </div>
-                ))}
-                <small className='font-light'>Puedes marcar varias.</small>
+              {/* Una fila por actividad y, frente a cada una, las lineas que
+                  maneja en ella: una misma empresa puede fabricar mobiliario,
+                  importar dispositivos y distribuir reactivos. Dos listas
+                  sueltas no decian que hacia con cada cosa. */}
+              <fieldset className='form-grid-full'>
+                <legend className='form-label'>
+                  ¿Qué actividades realizas y con qué líneas de productos?
+                </legend>
+                <ul className='activity-lines'>
+                  {ACTIVITY_OPTIONS.map((option) => {
+                    const entrada = values.activityLines.find((l) => l.activity === option.value);
+                    return (
+                      <li key={option.value} className={entrada ? 'is-on' : undefined}>
+                        <div className='form-check'>
+                          <input
+                            id={`empresa-actividad-${option.value}`}
+                            type='checkbox'
+                            className='form-check-input'
+                            checked={Boolean(entrada)}
+                            onChange={toggleActivity(option.value)}
+                          />
+                          <label
+                            className='form-check-label'
+                            htmlFor={`empresa-actividad-${option.value}`}
+                          >
+                            {option.label}
+                          </label>
+                        </div>
+                        {entrada ? (
+                          <div className='activity-lines-options'>
+                            {PRODUCT_LINE_OPTIONS.map((line) => {
+                              const marcada = entrada.productLines.includes(line.value);
+                              return (
+                                <button
+                                  type='button'
+                                  key={line.value}
+                                  aria-pressed={marcada}
+                                  className={marcada ? 'is-on' : undefined}
+                                  onClick={toggleLine(option.value, line.value)}
+                                >
+                                  {line.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <small className='font-light'>
+                            Márcala para elegir sus líneas de productos.
+                          </small>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+                {activityLinesError ? (
+                  <small className='text-danger'>{activityLinesError}</small>
+                ) : (
+                  <small className='font-light'>
+                    Puedes marcar varias actividades y varias líneas en cada una.
+                  </small>
+                )}
               </fieldset>
 
               <fieldset>
@@ -832,26 +906,6 @@ const OrganizationForm = ({
                 ))}
               </fieldset>
 
-              <fieldset className='form-grid-full'>
-                <legend className='form-label'>¿Qué categorías de productos comercializas?</legend>
-                <div className='check-grid'>
-                  {PRODUCT_LINE_OPTIONS.map((option) => (
-                    <div className='form-check' key={option.value}>
-                      <input
-                        id={`empresa-linea-${option.value}`}
-                        type='checkbox'
-                        className='form-check-input'
-                        checked={values.productLines.includes(option.value)}
-                        onChange={handleToggle('productLines', option.value)}
-                      />
-                      <label className='form-check-label' htmlFor={`empresa-linea-${option.value}`}>
-                        {option.label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                <small className='font-light'>Puedes marcar varias.</small>
-              </fieldset>
             </div>
           </Panel>
           )}

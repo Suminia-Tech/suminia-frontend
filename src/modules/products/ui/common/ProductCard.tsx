@@ -75,7 +75,7 @@ export const ProductCard = ({ product, href }: ProductCardProps) => {
         {principios && <p className='catalog-card-principios'>{principios}</p>}
 
         <p className='font-light catalog-card-supplier'>
-          {product.organizationName ?? 'Proveedor'}
+          {product.referenceCode}
         </p>
 
         <div className='catalog-card-foot'>
@@ -88,7 +88,7 @@ export const ProductCard = ({ product, href }: ProductCardProps) => {
 
           {product.offerCount > 1 && (
             <span className='catalog-card-offers'>
-              {product.offerCount} proveedores lo venden
+              {product.offerCount} ofertas
             </span>
           )}
         </div>

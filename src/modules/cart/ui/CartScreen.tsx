@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { PageSkeleton } from '@/shared/ui';
+import { presentationLabel } from '@/shared/lib/presentation';
 
 import {
   useClearCartMutation,
@@ -65,7 +66,7 @@ const CartLine = ({
       <div className='cart-line-name'>
         <Link href={`/catalog/${item.productId}`}>{item.productName}</Link>
         <small className='font-light'>
-          {item.presentationName} · {item.packaging}
+          {presentationLabel(item.presentationName, item.packaging)}
         </small>
       </div>
 
@@ -194,9 +195,10 @@ export const CartScreen = ({ extra }: CartScreenProps = {}) => {
     <div className='cart-layout'>
       <div className='cart-groups'>
         {cart.groups.map((group) => (
-          <section className='cart-group' key={group.organizationId}>
+          <section className='cart-group' key={group.key}>
             <header className='cart-group-head'>
-              <h3>{group.organizationName}</h3>
+              {/* "Envío 1", "Envío 2": el comprador no sabe quien despacha. */}
+              <h3>{group.label}</h3>
               <span className='font-light'>
                 {group.items.length}{' '}
                 {group.items.length === 1 ? 'producto' : 'productos'}
@@ -225,13 +227,13 @@ export const CartScreen = ({ extra }: CartScreenProps = {}) => {
               ))}
             </ul>
 
-            {/* El minimo del proveedor se avisa en su grupo y no al final:
-                es lo que le falta a ese pedido, no al carrito entero, y
-                enterarse al confirmar obliga a volver atras. */}
+            {/* El minimo del envio se avisa en su grupo y no al final: es lo
+                que le falta a ese pedido, no al carrito entero, y enterarse al
+                confirmar obliga a volver atras. */}
             {!group.meetsMinimum && group.minOrderValue !== null && (
               <p className='cart-group-min'>
                 <AlertCircle size={15} />
-                Este proveedor despacha desde{' '}
+                Este envío sale desde{' '}
                 {pesos(group.minOrderValue, cart.currency)}. Te faltan{' '}
                 <strong>
                   {pesos(group.minOrderValue - group.subtotal, cart.currency)}
@@ -241,7 +243,7 @@ export const CartScreen = ({ extra }: CartScreenProps = {}) => {
             )}
 
             <footer className='cart-group-foot'>
-              <span className='font-light'>Subtotal {group.organizationName}</span>
+              <span className='font-light'>Subtotal {group.label}</span>
               <strong>{pesos(group.subtotal, cart.currency)}</strong>
             </footer>
           </section>
@@ -271,18 +273,18 @@ export const CartScreen = ({ extra }: CartScreenProps = {}) => {
         {cart.groups.some((group) => !group.meetsMinimum) && (
           <p className='cart-summary-warn'>
             <AlertCircle size={14} />
-            Algún proveedor no llega a su pedido mínimo.
+            Algún envío no llega a su pedido mínimo.
           </p>
         )}
 
         {cart.groups.length > 1 && (
           <p className='cart-summary-note font-light'>
-            Tu carrito tiene {cart.groups.length} proveedores: al confirmar se
-            convierte en {cart.groups.length} pedidos, uno para cada uno.
+            Tu carrito sale en {cart.groups.length} envíos: al confirmar se
+            convierte en {cart.groups.length} pedidos, uno por cada envío.
           </p>
         )}
 
-        {/* Deshabilitado si algun proveedor no llega a su minimo: dejar pulsar
+        {/* Deshabilitado si algun envio no llega a su minimo: dejar pulsar
             para que el servidor lo rechace seria pasear al comprador. */}
         <Link
           href='/checkout'
