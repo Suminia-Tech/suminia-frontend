@@ -43,7 +43,9 @@ const AreaSidebar = ({
      mientras se esta dentro de el. */
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
 
-  const allHrefs = groups.flatMap((group) => group.items.map((item) => item.href));
+  const allHrefs = groups.flatMap((group) =>
+    group.items.flatMap((item) => [item.href, ...(item.matches ?? [])]),
+  );
 
   const isActive = (href: string): boolean => {
     if (pathname === href) return true;
@@ -134,7 +136,8 @@ const AreaSidebar = ({
                 <ul>
                   {visible.map((item) => {
                     const Icon = item.icon;
-                    const active = isActive(item.href);
+                    const active =
+                      isActive(item.href) || (item.matches ?? []).some(isActive);
                     const children = (item.children ?? []).filter(
                       (child) =>
                         !child.permission || hasPermission(user?.permissions, child.permission),

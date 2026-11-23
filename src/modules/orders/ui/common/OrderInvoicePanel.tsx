@@ -38,7 +38,7 @@ const COPY: Record<
   supplier: {
     titulo: 'Factura a Suminia',
     vacio:
-      'Factura a nombre de Suminia tus productos a tus precios, con su IVA, y despacha con remisión. Sin ella no se te puede liquidar.',
+      'Factura a nombre de Suminia tus productos a tus precios, con su IVA y con el lote y el vencimiento de los que los lleven, y despacha con remisión. Sin ella no se te puede liquidar.',
     pendienteQuien: 'El proveedor todavía no adjunta su factura a Suminia.',
   },
   suminia: {
@@ -109,6 +109,22 @@ export const OrderInvoicePanel = ({
   };
 
   const formulario = puedeAdjuntar && (editing || !factura);
+
+  /* El lote y el vencimiento tienen que ir en la factura de Suminia al
+     comprador, que se emite fuera de la plataforma. Aqui se le recuerda a
+     quien la adjunta: cuales lo llevan lo dice el proveedor, producto por
+     producto, antes de despachar. Mientras no lo diga, se le pide esperar;
+     si nada lleva lote, no hay nada que recordar. */
+  const sinRespuesta = order.items.filter((item) => item.hasLot === null).length;
+  const conLote = order.items.filter((item) => item.hasLot === true).length;
+  const avisoLote =
+    variant !== 'suminia' || side !== 'staff' || !puedeAdjuntar || factura
+      ? null
+      : sinRespuesta > 0
+        ? 'El proveedor indica el lote y el vencimiento de cada producto antes de despachar. Si los productos llevan lote, espera a que los registre para incluirlos en la factura.'
+        : conLote > 0
+          ? `Incluye en la factura el lote y el vencimiento de ${conLote === 1 ? 'el producto que lo tiene' : `los ${conLote} productos que lo tienen`}. Están en el detalle del pedido.`
+          : null;
 
   return (
     <Panel title={copy.titulo}>
@@ -209,6 +225,7 @@ export const OrderInvoicePanel = ({
           )}
         </div>
       </div>
+      {avisoLote && <div className='alert alert-info mt-3 mb-0'>{avisoLote}</div>}
     </Panel>
   );
 };

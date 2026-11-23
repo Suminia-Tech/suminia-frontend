@@ -3,6 +3,8 @@ export type { BreadcrumbStep } from './Breadcrumbs';
 export { default as ConfirmModal } from './ConfirmModal';
 export { default as LoadingOverlay } from './LoadingOverlay';
 export { default as PageHeader } from './PageHeader';
+export { default as PageTabs } from './PageTabs';
+export type { PageTab } from './PageTabs';
 export { default as Pagination } from './Pagination';
 export { default as Panel } from './Panel';
 export { default as SelectWithCustom } from './SelectWithCustom';

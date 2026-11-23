@@ -90,11 +90,62 @@ export const ordersApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: 'Order', id }],
     }),
 
+    /* La vigencia minima del lote, para validar la fecha en el campo. Cambia
+       rara vez: se guarda mientras dure la sesion. */
+    getLotRules: builder.query<ApiResponse<{ minShelfLifeMonths: number }>, void>({
+      query: () => '/orders/lot-rules',
+      keepUnusedDataFor: 3600,
+    }),
+
+    /* Si una linea sale con lote y, si sale, cual y cuando vence. */
+    setOrderItemLot: builder.mutation<
+      ApiResponse<Order>,
+      { id: string; itemId: string; hasLot: boolean; lotNumber?: string; expiresAt?: string }
+    >({
+      query: ({ id, itemId, hasLot, lotNumber, expiresAt }) => ({
+        url: `/orders/${id}/items/${itemId}/lot`,
+        method: 'PATCH',
+        body: hasLot ? { hasLot, lotNumber, expiresAt } : { hasLot },
+      }),
+      /* La respuesta se ve en cuanto se marca, sin recargar el pedido: al
+         invalidarlo, la tabla entera se volvia a pintar y parpadeaba en cada
+         producto. Si el servidor la rechaza, se deshace. El lote no cambia ni
+         la lista ni las finanzas, de modo que no hay nada mas que refrescar. */
+      async onQueryStarted(
+        { id, itemId, hasLot, lotNumber, expiresAt },
+        { dispatch, queryFulfilled },
+      ) {
+        const parche = dispatch(
+          ordersApi.util.updateQueryData('getOrder', id, (draft) => {
+            const item = draft.data.items.find((linea) => linea.id === itemId);
+            if (!item) return;
+            item.hasLot = hasLot;
+            item.lotNumber = hasLot ? (lotNumber ?? null) : null;
+            item.expiresAt = hasLot ? (expiresAt ?? null) : null;
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          parche.undo();
+        }
+      },
+    }),
+
     changeOrderStatus: builder.mutation<
       ApiResponse<Order>,
       ChangeOrderStatusRequest
     >({
-      query: ({ id, status, reason, issue, estimatedDeliveryAt, carrierName, trackingNumber }) => ({
+      query: ({
+        id,
+        status,
+        reason,
+        issue,
+        estimatedDeliveryAt,
+        carrierName,
+        trackingNumber,
+        delivery,
+      }) => ({
         url: `/orders/${id}/status`,
         method: 'PATCH',
         body: {
@@ -104,6 +155,7 @@ export const ordersApi = baseApi.injectEndpoints({
           ...(estimatedDeliveryAt ? { estimatedDeliveryAt } : {}),
           ...(carrierName ? { carrierName } : {}),
           ...(trackingNumber ? { trackingNumber } : {}),
+          ...(delivery ? { delivery } : {}),
         },
       }),
       invalidatesTags: (_result, _error, { id }) => [
@@ -212,6 +264,15 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => dineroDe(id),
     }),
 
+    addOrderNote: builder.mutation<ApiResponse<Order>, { id: string; body: string }>({
+      query: ({ id, body }) => ({
+        url: `/orders/${id}/notes`,
+        method: 'POST',
+        body: { body },
+      }),
+      invalidatesTags: (_result, _error, { id }) => dineroDe(id),
+    }),
+
     recordRefund: builder.mutation<ApiResponse<Order>, RecordRefundRequest>({
       query: ({ id, ...body }) => ({ url: `/orders/${id}/refund`, method: 'POST', body }),
       invalidatesTags: (_result, _error, { id }) => dineroDe(id),
@@ -273,6 +334,16 @@ export const ordersApi = baseApi.injectEndpoints({
       }),
     }),
 
+    /* La orden de compra en PDF, igual que la cotizacion: llega como URL de
+       objeto para descargarla. */
+    downloadPurchaseOrderPdf: builder.mutation<string, string>({
+      query: (id) => ({
+        url: `/orders/${id}/purchase-order/pdf`,
+        responseHandler: async (response) =>
+          response.ok ? URL.createObjectURL(await response.blob()) : response.json(),
+      }),
+    }),
+
     convertQuote: builder.mutation<ApiResponse<Order[]>, ConvertQuoteRequest>({
       query: ({ id, ...body }) => ({ url: `/quotes/${id}/convert`, method: 'POST', body }),
       invalidatesTags: (_result, _error, { id }) => [
@@ -293,6 +364,8 @@ export const {
   useGetOrdersQuery,
   useGetOrderQuery,
   useChangeOrderStatusMutation,
+  useSetOrderItemLotMutation,
+  useGetLotRulesQuery,
   useProposeAvailabilityMutation,
   useAcceptAvailabilityMutation,
   useRequestOrderUploadMutation,
@@ -302,6 +375,7 @@ export const {
   useAttachSuminiaInvoiceMutation,
   useOpenClaimMutation,
   useResolveClaimMutation,
+  useAddOrderNoteMutation,
   useRecordRefundMutation,
   useGetOrderFileUrlMutation,
   useReorderMutation,
@@ -313,5 +387,6 @@ export const {
   useGetQuotesQuery,
   useGetQuoteQuery,
   useDownloadQuotePdfMutation,
+  useDownloadPurchaseOrderPdfMutation,
   useConvertQuoteMutation,
 } = ordersApi;

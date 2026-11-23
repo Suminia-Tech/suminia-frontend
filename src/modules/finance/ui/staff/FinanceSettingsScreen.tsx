@@ -8,7 +8,7 @@ import { extractErrorMessage } from '@/shared/lib/apiError';
 import { nitCheckDigit } from '@/shared/lib/nit';
 import { formatDate } from '@/shared/lib/dates';
 import { hasPermission } from '@/shared/lib/permissions';
-import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
+import { PageHeader, PageSkeleton, PageTabs, Panel } from '@/shared/ui';
 import { CREDIT_AVAILABLE } from '@/shared/config/features';
 import { useAppSelector } from '@/store/hooks';
 
@@ -31,8 +31,25 @@ import type { PlatformSettings, PlatformSettingsUpdate } from '../../model/finan
    los pedidos nuevos —cada pedido se graba la comision y los plazos con que
    se hizo—, y cada cambio queda en el historial de abajo con quien lo hizo.
 
-   Quien solo verifica pagos lo ve sin poder cambiarlo. */
+   Quien solo verifica pagos lo ve sin poder cambiarlo.
+
+   Va en pestañas: eran ocho bloques seguidos y para cambiar un plazo habia
+   que recorrer la pantalla entera. Cada pestaña muestra lo suyo, y lo que no
+   se ha guardado en una se conserva al pasar a otra. */
+type Seccion = 'incrementos' | 'plan' | 'plazos' | 'datos' | 'cuenta' | 'avisos' | 'historial';
+
+const SECCIONES: { key: Seccion; label: string; soloEditor?: boolean }[] = [
+  { key: 'incrementos', label: 'Incrementos' },
+  { key: 'plan', label: 'Plan financiero' },
+  { key: 'plazos', label: 'Plazos' },
+  { key: 'datos', label: 'Datos de Suminia' },
+  { key: 'cuenta', label: 'Cuenta de pagos' },
+  { key: 'avisos', label: 'Avisos al equipo' },
+  { key: 'historial', label: 'Historial de cambios', soloEditor: true },
+];
+
 export const FinanceSettingsScreen = () => {
+  const [seccion, setSeccion] = useState<Seccion>('incrementos');
   const hydrated = useAppSelector((state) => state.auth.hydrated);
   const permissions = useAppSelector((state) => state.auth.user?.permissions);
   const editable = hasPermission(permissions, 'finance:manage');
@@ -57,12 +74,25 @@ export const FinanceSettingsScreen = () => {
       />
       {/* La clave reinicia el formulario cuando cambia lo guardado: se
           inicializa una vez con lo que hay, sin copiarlo en un efecto. */}
-      <CommercialLinesPanel editable={editable} general={data.data.commissionRate}>
-        <NegotiatedMarkups />
-      </CommercialLinesPanel>
-      <SettingsForm key={data.data.updatedAt} settings={data.data} editable={editable} />
-      <PlanPanel editable={editable} />
-      {editable && <ChangesPanel />}
+      <PageTabs
+        label='Secciones de la configuración'
+        tabs={SECCIONES.filter((s) => editable || !s.soloEditor)}
+        active={seccion}
+        onSelect={(key) => setSeccion(key as Seccion)}
+      />
+      {seccion === 'incrementos' && (
+        <CommercialLinesPanel editable={editable} general={data.data.commissionRate}>
+          <NegotiatedMarkups />
+        </CommercialLinesPanel>
+      )}
+      <SettingsForm
+        key={data.data.updatedAt}
+        settings={data.data}
+        editable={editable}
+        seccion={seccion}
+      />
+      {seccion === 'plan' && <PlanPanel editable={editable} />}
+      {editable && seccion === 'historial' && <ChangesPanel />}
     </>
   );
 };
@@ -76,6 +106,7 @@ const NUMERICOS: (keyof PlatformSettingsUpdate)[] = [
   'claimWindowDays',
   'payoutWeekday',
   'quoteValidityDays',
+  'minShelfLifeMonths',
   'freightRate',
   'collectionRate',
   'returnsRate',
@@ -96,6 +127,7 @@ const aCampos = (s: PlatformSettings): Campos => ({
   claimWindowDays: String(s.claimWindowDays),
   payoutWeekday: String(s.payoutWeekday),
   quoteValidityDays: String(s.quoteValidityDays),
+  minShelfLifeMonths: String(s.minShelfLifeMonths),
   freightRate: String(s.freightRate),
   collectionRate: String(s.collectionRate),
   returnsRate: String(s.returnsRate),
@@ -123,9 +155,11 @@ const aCampos = (s: PlatformSettings): Campos => ({
 const SettingsForm = ({
   settings,
   editable,
+  seccion,
 }: {
   settings: PlatformSettings;
   editable: boolean;
+  seccion: Seccion;
 }) => {
   const [update, { isLoading }] = useUpdateFinanceSettingsMutation();
   const [campos, setCampos] = useState<Campos>(() => aCampos(settings));
@@ -216,6 +250,7 @@ const SettingsForm = ({
 
   return (
     <>
+      {seccion === 'plan' && (
       <Panel
         title='Supuestos del plan'
         description='Lo que el informe financiero reserva sobre cada venta y lo que cuesta operar. Con esto se calculan el aporte, el resultado y el equilibrio del tablero.'
@@ -235,7 +270,9 @@ const SettingsForm = ({
           {numero('targetQuoteConversion', 'Conversión meta de cotizaciones (%)', 'De cada 100 cotizaciones, cuántas se vuelven pedido.', { min: 0, max: 100, step: 1 })}
         </div>
       </Panel>
+      )}
 
+      {seccion === 'plazos' && (
       <Panel
         title='Plazos'
         description={`Actualizado el ${formatDate(settings.updatedAt)}.`}
@@ -286,6 +323,12 @@ const SettingsForm = ({
             { min: 1, max: 90 },
           )}
           {numero(
+            'minShelfLifeMonths',
+            'Vigencia mínima del lote (meses)',
+            'Meses mínimos entre la fecha de despacho y la fecha de vencimiento del lote. Con el valor 0 solo se exige que el producto no esté vencido.',
+            { min: 0, max: 600 },
+          )}
+          {numero(
             'commissionRate',
             'Incremento general (%)',
             'Sobre el costo, para una línea comercial que no tenga el suyo.',
@@ -293,10 +336,12 @@ const SettingsForm = ({
           )}
         </div>
       </Panel>
+      )}
 
       {/* Como sale Suminia en sus documentos. El NIT va con su digito de
           verificacion, y se avisa si el digito no corresponde antes de
           guardarlo: el backend lo rechaza igual. */}
+      {seccion === 'datos' && (
       <Panel
         title='Datos de Suminia'
         description='Cómo se presenta Suminia en sus documentos, como las cotizaciones en PDF.'
@@ -329,7 +374,9 @@ const SettingsForm = ({
           </div>
         </div>
       </Panel>
+      )}
 
+      {seccion === 'cuenta' && (
       <Panel
         title='Cuenta para recibir pagos'
         description='Lo que ven los compradores al pagar y lo que sale en las cotizaciones.'
@@ -374,7 +421,9 @@ const SettingsForm = ({
           </div>
         </div>
       </Panel>
+      )}
 
+      {seccion === 'avisos' && (
       <Panel
         title='Avisos al equipo'
         description='A dónde le llega por correo a Suminia lo que pide su atención: comprobantes por verificar, documentos por revisar, reclamos.'
@@ -402,6 +451,7 @@ const SettingsForm = ({
           </div>
         </div>
       </Panel>
+      )}
     </>
   );
 };

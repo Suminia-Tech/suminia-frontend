@@ -65,13 +65,13 @@ export const ADMIN_SIDEBAR: SidebarGroup[] = [
         href: '/admin/finance/payments',
         icon: CreditCard,
         permission: 'payment:verify',
-        children: [
-          { label: 'Por verificar', href: '/admin/finance/payments' },
-          { label: 'Por facturar', href: '/admin/finance/to-invoice' },
-          { label: 'Reclamos', href: '/admin/finance/claims' },
-          { label: 'Devoluciones', href: '/admin/finance/refunds' },
-          { label: 'Facturas de proveedores', href: '/admin/finance/invoices' },
-          { label: 'Vencidos', href: '/admin/finance/overdue' },
+        /* Las bandejas van en pestañas dentro de la pantalla. */
+        matches: [
+          '/admin/finance/to-invoice',
+          '/admin/finance/claims',
+          '/admin/finance/refunds',
+          '/admin/finance/invoices',
+          '/admin/finance/overdue',
         ],
       },
       {

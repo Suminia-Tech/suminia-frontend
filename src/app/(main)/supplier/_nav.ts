@@ -19,14 +19,15 @@ import type { SidebarGroup } from '../_shell/sidebar.types';
    Nada de la tienda B2C —categorias, buscador, carrito— porque un proveedor
    vende, no compra. */
 export const SUPPLIER_SIDEBAR: SidebarGroup[] = [
-  /* Los pedidos primero: es lo que el proveedor abre cada dia, y el catalogo
-     se toca cuando cambia algo. */
+  /* Las ordenes de compra primero: es lo que el proveedor abre cada dia, y el
+     catalogo se toca cuando cambia algo. Al proveedor no le hace pedidos el
+     comprador: le compra Suminia, con una orden de compra. */
   {
     label: 'Ventas',
     /* Las liquidaciones junto a los pedidos: son lo que el proveedor cobra
        por lo que vendio. */
     items: [
-      { label: 'Pedidos', href: '/supplier/orders', icon: Clipboard },
+      { label: 'Órdenes de compra', href: '/supplier/orders', icon: Clipboard },
       { label: 'Liquidaciones', href: '/supplier/payouts', icon: DollarSign },
     ],
   },

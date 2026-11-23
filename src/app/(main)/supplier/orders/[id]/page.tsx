@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { SupplierOrderDetailScreen } from '@/modules/orders';
 
 export const metadata: Metadata = {
-  title: 'Pedido',
-  description: 'Detalle de un pedido que te hicieron.',
+  title: 'Orden de compra',
+  description: 'Detalle de una orden de compra que te emitió Suminia.',
 };
 
 export default async function PedidoPage({

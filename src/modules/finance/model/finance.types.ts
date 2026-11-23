@@ -25,6 +25,8 @@ export interface PlatformSettings {
   /** 1 lunes ... 5 viernes. */
   payoutWeekday: number;
   quoteValidityDays: number;
+  /** Meses de vida util que tiene que tener un lote para despacharse. */
+  minShelfLifeMonths: number;
   bankName: string | null;
   accountType: string | null;
   accountNumber: string | null;

@@ -25,11 +25,15 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
 
 /* Como se llama cada estado para el proveedor: los pasos de su orden de
    compra. "Por confirmar" es lo que tiene que hacer, no lo que hizo otro; y
-   confirmada, para el, es que ya la esta preparando. */
+   confirmada, para el, es que ya la esta preparando. En femenino, porque
+   concuerdan con "orden": una orden despachada, no despachado. */
 export const ORDER_STATUS_LABEL_SUPPLIER: Record<OrderStatus, string> = {
-  ...ORDER_STATUS_LABEL,
   PLACED: 'Por confirmar',
   CONFIRMED: 'En preparación',
+  SHIPPED: 'Despachada',
+  DELIVERED: 'Entregada',
+  CANCELLED: 'Cancelada',
+  REJECTED: 'Rechazada',
   AWAITING_BUYER: 'Novedad reportada',
 };
 
@@ -41,6 +45,7 @@ export const SUPPLIER_ISSUE_LABEL: Record<SupplierIssue, string> = {
   INSUFFICIENT_CREDIT: 'Cupo de crédito insuficiente',
   OVERDUE_BALANCE: 'Cartera vencida',
   DELIVERY_PROBLEM: 'Problema de despacho o entrega',
+  SHORT_EXPIRY: 'Producto próximo a vencer',
   OTHER: 'Otro motivo',
 };
 
@@ -52,6 +57,7 @@ export const SUPPLIER_ISSUES: SupplierIssue[] = [
   'INSUFFICIENT_CREDIT',
   'OVERDUE_BALANCE',
   'DELIVERY_PROBLEM',
+  'SHORT_EXPIRY',
   'OTHER',
 ];
 

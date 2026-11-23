@@ -43,13 +43,21 @@ export const formatDay = (iso: string | null | undefined): string | null => {
 export const todayInColombia = (): string =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
 
-/* Con hora, en Colombia: para los plazos que se cuentan en horas —"paga antes
-   del 4 de noviembre a las 3:20 p. m."— y para el historial de un pedido,
-   donde el orden de lo que paso el mismo dia importa. */
-const FORMATO_HORA = new Intl.DateTimeFormat('es-CO', {
+/* Con hora, en Colombia: para los plazos que se cuentan en horas y para el
+   historial de un pedido, donde el orden de lo que paso el mismo dia importa.
+
+   Fecha y hora se arman por separado y se unen con una coma: "4 de noviembre
+   de 2026, 3:20 p. m.". Con las dos en un mismo formato, el navegador escribe
+   "4 de noviembre de 2026 a las 3:20 p. m.", que es lenguaje hablado y no el
+   de un documento. */
+const FORMATO_FECHA_LARGA = new Intl.DateTimeFormat('es-CO', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
+  timeZone: 'America/Bogota',
+});
+
+const FORMATO_HORA = new Intl.DateTimeFormat('es-CO', {
   hour: 'numeric',
   minute: '2-digit',
   timeZone: 'America/Bogota',
@@ -62,7 +70,10 @@ export const formatDateTime = (iso: string | null | undefined): string | null =>
   const fecha = new Date(iso);
   if (Number.isNaN(fecha.getTime())) return null;
 
-  return FORMATO_HORA.format(fecha);
+  /* La hora no se parte: "1:42 p." en una linea y "m." en la siguiente no se
+     lee como hora. */
+  const hora = FORMATO_HORA.format(fecha).replace(/\s/g, '\u00a0');
+  return `${FORMATO_FECHA_LARGA.format(fecha)}, ${hora}`;
 };
 
 /* El momento de un paso, en dos piezas cortas para que quepa bajo su nombre

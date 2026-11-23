@@ -18,6 +18,10 @@ export interface SidebarItem {
   /* Se despliegan debajo mientras se esta dentro de la entrada. La primera
      suele tener el mismo href que la entrada: es su portada. */
   children?: SidebarSubItem[];
+  /* Otras rutas que tambien son esta entrada: las pestañas de una pantalla
+     que viven cada una en su URL —Pagos: por facturar, reclamos—. Sin esto
+     el menu no encenderia la entrada estando en ellas. */
+  matches?: string[];
 }
 
 /* La navegacion va agrupada y no en una lista corrida: con ocho entradas

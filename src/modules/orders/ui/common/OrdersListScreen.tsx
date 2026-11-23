@@ -62,9 +62,9 @@ const COPY: Record<
     basePath: '/buyer/orders',
   },
   supplier: {
-    titulo: 'Pedidos recibidos',
-    descripcion: 'Lo que te han pedido y lo que falta por despachar.',
-    vacio: 'Todavía no te han hecho ningún pedido.',
+    titulo: 'Órdenes de compra',
+    descripcion: 'Las órdenes de compra que te ha emitido Suminia y las que faltan por despachar.',
+    vacio: 'Todavía no tienes órdenes de compra.',
     basePath: '/supplier/orders',
   },
   staff: {
@@ -124,7 +124,20 @@ const PAGE_SIZE = 10;
    bandeja ya dice que se mira. */
 export type OrdersQueue = 'payments' | 'toInvoice' | 'claims' | 'refunds' | 'invoices' | 'overdue';
 
-const QUEUES: Record<
+/* Las bandejas van en pestañas dentro de "Pagos", cada una en su ruta. Antes
+   colgaban del menu lateral; ahi solo van cuando una seccion crece tanto que
+   merece su propia entrada. La cabecera y las pestañas las pinta el layout
+   de las bandejas (StaffPaymentsLayout), no la lista. */
+export const PAYMENT_QUEUE_TABS: { key: OrdersQueue; label: string; href: string }[] = [
+  { key: 'payments', label: 'Por verificar', href: '/admin/finance/payments' },
+  { key: 'toInvoice', label: 'Por facturar', href: '/admin/finance/to-invoice' },
+  { key: 'claims', label: 'Reclamos', href: '/admin/finance/claims' },
+  { key: 'refunds', label: 'Devoluciones', href: '/admin/finance/refunds' },
+  { key: 'invoices', label: 'Facturas de proveedores', href: '/admin/finance/invoices' },
+  { key: 'overdue', label: 'Vencidos', href: '/admin/finance/overdue' },
+];
+
+export const QUEUES: Record<
   OrdersQueue,
   { titulo: string; descripcion: string; vacio: string; filter: Record<string, string> }
 > = {
@@ -232,7 +245,8 @@ export const OrdersListScreen = ({
     skip: !hydrated || !isStaff || Boolean(queue),
   });
 
-  if (!hydrated || isLoading) return <PageSkeleton variant='list' />;
+  /* En una bandeja, la cabecera es del layout: el esqueleto es solo la lista. */
+  if (!hydrated || isLoading) return <PageSkeleton variant='list' header={!queue} />;
 
   if (isError) {
     return (
@@ -252,7 +266,7 @@ export const OrdersListScreen = ({
 
   return (
     <>
-      <PageHeader title={copy.titulo} description={copy.descripcion} />
+      {!queue && <PageHeader title={copy.titulo} description={copy.descripcion} />}
 
       {!queue && (
       <div className='orders-filter'>
@@ -407,7 +421,11 @@ export const OrdersListScreen = ({
       )}
 
       {meta && meta.totalPages > 1 && (
-        <Pagination meta={meta} onChange={setPage} label='pedidos' />
+        <Pagination
+          meta={meta}
+          onChange={setPage}
+          label={side === 'supplier' ? 'órdenes de compra' : 'pedidos'}
+        />
       )}
     </>
   );

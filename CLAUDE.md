@@ -164,7 +164,7 @@ verificacion de correo— va en `(suminia)/`.
   | Estado de algo | `status-pill`, o `document-state` junto al nombre |
   | Bloque de un formulario o de una pantalla de cuenta | `Panel` de `@/shared/ui` |
   | Lista etiqueta/valor dentro de un panel | `data-list` |
-  | Subsecciones de una pantalla larga | Una ruta por subsección y su entrada anidada en el menú lateral (`children` en el `_nav.ts` del área), no pestañas dentro de la pantalla |
+  | Subsecciones de una pantalla | Pestañas dentro de la pantalla con `PageTabs` de `@/shared/ui`: botones si cambian lo que se ve, enlaces si cada subsección tiene su ruta (entonces la entrada del menú las declara en `matches`). Solo cuando una subsección crece mucho pasa al menú lateral como entrada anidada (`children` en el `_nav.ts`) |
 
   Ningún `<button>`, `<ul>` o `<input>` se queda sin clase: el navegador lo pinta con
   sus estilos por defecto —borde gris en relieve, texto pegado— y se ve roto. Pasó
@@ -196,6 +196,20 @@ verificacion de correo— va en `(suminia)/`.
   Si el tema no cubre un caso, se añade el estilo en `src/index.scss` siguiendo sus
   convenciones — no se resuelve con estilos en línea ni con clases sueltas de Bootstrap.
 
+- **Textos: lenguaje formal, SIEMPRE. Nunca lenguaje informal.** Suminia es del sector
+  salud: la leen regentes de farmacia, químicos farmacéuticos y áreas de compras de
+  clínicas. Todo texto que ve el usuario —etiquetas, ayudas, descripciones, avisos,
+  errores, correos, PDF— se escribe como un documento profesional del sector, no como
+  se habla. Esto incluye los textos que devuelve el backend.
+  - Usar el término técnico del sector: *vigencia*, *vencimiento*, *lote*, *remisión*,
+    *novedad*, *orden de compra*. No "vida útil", "se te venció", "lo que pediste".
+  - Nada de giros hablados: ni "a las" en fechas (`22 de noviembre de 2026, 1:42 p. m.`,
+    con `formatDateTime` de `shared/lib/dates`), ni "ojo", "listo", "ya casi", "porfa",
+    signos de exclamación o emojis.
+  - Enumeraciones en lista, no separadas por comas: "Falta registrar lote para los
+    siguientes productos:" y debajo la lista.
+  - Directo y corto: qué pasó y qué hacer. Se trata de "tú", como el resto de la app.
+  - Ante la duda sobre un término, se ofrecen opciones y decide Camilo; no se inventa.
 - **Comentarios:** un bloque explicando el *porqué* donde la decisión no sea obvia, no
   narración línea a línea. Sin emojis.
 

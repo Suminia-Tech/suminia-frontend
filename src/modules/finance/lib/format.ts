@@ -85,6 +85,8 @@ export const formatChangeValue = (field: string, value: string | null): string =
       return `${value} días`;
     case 'claimWindowDays':
       return `${value} días hábiles`;
+    case 'minShelfLifeMonths':
+      return value === '1' ? '1 mes' : `${value} meses`;
     case 'paymentWindowHours':
     case 'paymentReminderHours':
       return `${value} horas`;

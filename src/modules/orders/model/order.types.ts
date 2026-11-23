@@ -25,6 +25,7 @@ export type SupplierIssue =
   | 'INSUFFICIENT_CREDIT'
   | 'OVERDUE_BALANCE'
   | 'DELIVERY_PROBLEM'
+  | 'SHORT_EXPIRY'
   | 'OTHER';
 
 /* SUBMITTED: el comprador subio el comprobante y Suminia lo esta verificando. */
@@ -128,6 +129,21 @@ export interface OrderItem {
   /** Solo el equipo de Suminia: lo que se le compra al proveedor. */
   unitCost: number | null;
   markupRate: number | null;
+  /** Si sale con lote; null mientras el proveedor no lo dice. Sin respuesta no despacha. */
+  hasLot: boolean | null;
+  /** Con que lote y vencimiento ("2028-03-31") salio, si lo tiene. */
+  lotNumber: string | null;
+  expiresAt: string | null;
+}
+
+/* Una observacion del pedido: una devolucion, una nota credito, un reporte
+   de calidad. La escriben el comprador y el proveedor; Suminia ve las de los dos. */
+export interface OrderNote {
+  id: string;
+  body: string;
+  authorName: string;
+  authorSide: 'buyer' | 'supplier';
+  createdAt: string;
 }
 
 export interface OrderDelivery {
@@ -211,6 +227,9 @@ export interface Order {
   /** Hasta cuando puede reclamar el comprador. Null si no esta entregado. */
   claimableUntil: string | null;
   claims: OrderClaim[];
+  /** El equipo de Suminia las ve todas; el proveedor, las de su lado; el
+      comprador, ninguna. */
+  notes: OrderNote[];
   /** La liquidacion en que se le pago al proveedor. Null para el comprador. */
   payout: {
     id: string;
@@ -264,6 +283,8 @@ export interface Order {
   /** Con que transportadora y guia salio. Null para el comprador. */
   carrierName: string | null;
   trackingNumber: string | null;
+  /** La prueba de entrega del proveedor. Null para el comprador. */
+  deliveryProof: DeliveryProof | null;
   deliveredAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -277,7 +298,20 @@ export interface PlaceOrdersRequest {
 }
 
 /* Que archivo del pedido: el comprobante, la factura o la devolucion. */
-export type OrderFileKind = 'payment' | 'invoice' | 'refund' | 'suminia_invoice';
+export type OrderFileKind = 'payment' | 'invoice' | 'refund' | 'suminia_invoice' | 'delivery';
+
+/* Con que soporta el proveedor que entrego. */
+export type DeliveryProofType = 'REMISSION' | 'CARRIER' | 'DIGITAL' | 'PHOTO';
+
+export interface DeliveryProof {
+  receivedAt: string;
+  receivedBy: string;
+  type: DeliveryProofType;
+  storageKey: string;
+  filename: string | null;
+  /** Si el cliente recibio el pedido completo. Nulo en entregas anteriores a la pregunta. */
+  complete: boolean | null;
+}
 
 export interface SubmitPaymentRequest {
   id: string;
@@ -420,6 +454,15 @@ export interface ChangeOrderStatusRequest {
   /** Obligatoria al despachar. */
   carrierName?: string;
   trackingNumber?: string;
+  /** Al entregar el proveedor: su prueba, ya subida. */
+  delivery?: {
+    receivedAt: string;
+    receivedBy: string;
+    proofType: DeliveryProofType;
+    storageKey: string;
+    filename?: string;
+    complete: boolean;
+  };
 }
 
 /* El proveedor no tiene todo: cuanto tiene de cada producto y para cuando

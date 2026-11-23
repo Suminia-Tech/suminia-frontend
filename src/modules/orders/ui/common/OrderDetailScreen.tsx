@@ -8,6 +8,7 @@ import {
   Calendar,
   Check,
   ChevronLeft,
+  Download,
   MapPin,
   Package,
   RotateCcw,
@@ -53,11 +54,16 @@ import {
   supplierCanShip,
   supplierWaitsPayment,
 } from '../../lib/orderStatus';
+import { condicionDePago, pesos } from '../../lib/orderFormat';
+import { usePurchaseOrderPdf } from '../../hooks/usePurchaseOrderPdf';
 import type { Order, OrderStatus } from '../../model/order.types';
 import BuyerAvailabilityResponse from './BuyerAvailabilityResponse';
 import OrderClaimPanel from './OrderClaimPanel';
 import OrderHistoryPanel from './OrderHistoryPanel';
 import OrderInvoicePanel from './OrderInvoicePanel';
+import OrderNotesPanel from './OrderNotesPanel';
+import { OrderItemLotForm, OrderItemLotInfo } from './OrderItemLot';
+import OrderDeliveryPanel, { DELIVERY_FORM_ID } from './OrderDeliveryPanel';
 import OrderPaymentPanel from './OrderPaymentPanel';
 import type { OrderSide } from './OrdersListScreen';
 import SupplierIssueForm from './SupplierIssueForm';
@@ -83,7 +89,7 @@ const COPY: Record<
     nota: 'Indicaciones para la entrega',
   },
   supplier: {
-    volver: 'Pedidos recibidos',
+    volver: 'Órdenes de compra',
     basePath: '/supplier/orders',
     nota: 'Indicaciones del comprador',
   },
@@ -116,18 +122,6 @@ const segundaAtrasada = (order: Order): boolean =>
   order.restockDate !== null &&
   ['PLACED', 'AWAITING_BUYER', 'CONFIRMED'].includes(order.status) &&
   order.restockDate.slice(0, 10) < hoyEnColombia();
-
-const pesos = (valor: number, moneda: string) =>
-  new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: moneda,
-    maximumFractionDigits: 0,
-  }).format(valor);
-
-/* La condicion de pago de Suminia al proveedor, como la declaro en su perfil
-   comercial. */
-const condicionDePago = (dias: number | null): string =>
-  dias === null ? 'Por definir' : dias === 0 ? 'De contado' : `Crédito a ${dias} días`;
 
 /* Los pasos de la orden de compra contados al proveedor. Lo que ya paso con
    check —la orden recibida cuando Suminia la emitio, la confirmacion—, y lo
@@ -313,6 +307,7 @@ export const OrderDetailScreen = ({
   });
   const [changeStatus, { isLoading: isSaving }] = useChangeOrderStatusMutation();
   const [reorder, { isLoading: isReordering }] = useReorderMutation();
+  const ordenDeCompra = usePurchaseOrderPdf();
   const router = useRouter();
   const [motivo, setMotivo] = useState('');
   /* Que accion esta pidiendo motivo, o null. Cancelar y rechazar lo exigen; las
@@ -321,6 +316,8 @@ export const OrderDetailScreen = ({
   /* El proveedor esta reportando una novedad: antes de confirmar la orden la
      devuelve, despues la cancela. */
   const [reportando, setReportando] = useState(false);
+  /* El producto cuyo lote se esta anotando: uno a la vez. */
+  const [loteAbierto, setLoteAbierto] = useState<string | null>(null);
   const copy = COPY[side];
 
   if (!hydrated || isLoading) return <PageSkeleton variant='detail' />;
@@ -351,6 +348,8 @@ export const OrderDetailScreen = ({
   /* Por transferencia, el proveedor no despacha hasta que Suminia verifica el
      pago: el boton no aparece, y el panel de pago dice por que. */
   const puedeDespachar = supplierCanShip(order.status) && !supplierWaitsPayment(order);
+  const anotaLotes =
+    side === 'supplier' && (order.status === 'CONFIRMED' || order.status === 'SHIPPED');
 
   /* El comprador siempre tiene una: volver a pedir lo mismo. */
   const hayAcciones =
@@ -396,6 +395,13 @@ export const OrderDetailScreen = ({
       toast.error(extractErrorMessage(err, 'No se pudo actualizar el pedido.'));
     }
   };
+
+  /* La orden de compra se descarga del lado de quien la tiene: el proveedor,
+     a quien se le emite, y Suminia. Por transferencia se emite al verificar
+     el pago; antes no existe. */
+  const codigoOrdenDeCompra =
+    side === 'supplier' ? order.code : side === 'staff' ? order.purchaseCode : null;
+  const puedeDescargarOrden = codigoOrdenDeCompra !== null && !esperandoPago;
 
   const entrega = order.delivery;
   const novedad =
@@ -628,9 +634,26 @@ export const OrderDetailScreen = ({
         <BuyerAvailabilityResponse order={order} pesos={pesos} />
       )}
 
-      {/* "Detalles del pedido" para los tres: antes cada lado tenia su frase
-          —"Qué pediste", "Qué te pidieron"— y se leian como conversacion. */}
-      <Panel title='Detalles del pedido'>
+      {/* El mismo titulo para todos, salvo el nombre del documento: antes cada
+          lado tenia su frase —"Qué pediste", "Qué te pidieron"— y se leian
+          como conversacion. Al proveedor le compra Suminia: para el es una
+          orden de compra. */}
+      <Panel
+        title={side === 'supplier' ? 'Detalles de la orden de compra' : 'Detalles del pedido'}
+        aside={
+          puedeDescargarOrden && codigoOrdenDeCompra ? (
+            <button
+              type='button'
+              className='btn btn-outline-secondary btn-sm btn-with-icon'
+              disabled={ordenDeCompra.downloading}
+              onClick={() => ordenDeCompra.download(order.id, codigoOrdenDeCompra)}
+            >
+              <Download size={14} />
+              {ordenDeCompra.downloading ? 'Descargando...' : 'Descargar orden de compra'}
+            </button>
+          ) : undefined
+        }
+      >
       {/* Una tabla, con una columna por cifra: cantidad, precio, IVA y total
           se leen en vertical y se comparan de un vistazo. Antes iban juntos en
           una sola linea ("2 × $ 890.000") y habia que descifrarlos. Las mismas
@@ -648,7 +671,11 @@ export const OrderDetailScreen = ({
           </thead>
           <tbody>
             {order.items.map((item) => (
-              <tr key={item.id}>
+              <Fragment key={item.id}>
+              <tr
+                id={`producto-${item.id}`}
+                className={loteAbierto === item.id ? 'is-expanded' : undefined}
+              >
                 <td>
                   <span className='order-item-name'>
                     {item.productName}
@@ -660,6 +687,14 @@ export const OrderDetailScreen = ({
                         ? ` · SKU ${item.sku}`
                         : ` · ${item.referenceCode}`}
                     </small>
+                    <OrderItemLotInfo
+                      item={item}
+                      editable={anotaLotes}
+                      open={loteAbierto === item.id}
+                      onToggle={() =>
+                        setLoteAbierto((actual) => (actual === item.id ? null : item.id))
+                      }
+                    />
                   </span>
                 </td>
                 <td className='num is-nowrap'>
@@ -676,6 +711,17 @@ export const OrderDetailScreen = ({
                   <strong>{pesos(item.total, order.currency)}</strong>
                 </td>
               </tr>
+              {anotaLotes && loteAbierto === item.id && (
+                <tr className='order-item-lot-row'>
+                  <td colSpan={5}>
+                    <OrderItemLotForm
+                      orderId={order.id}
+                      item={item}
+                    />
+                  </td>
+                </tr>
+              )}
+              </Fragment>
             ))}
           </tbody>
         </table>
@@ -709,11 +755,23 @@ export const OrderDetailScreen = ({
       </ul>
       </Panel>
 
+      <OrderNotesPanel order={order} side={side} />
+
       {/* Confirmada la orden, despacharla es lo que le queda al proveedor: el
           formulario va abierto debajo del detalle, no detras de un boton. */}
       {side === 'supplier' && puedeDespachar && (
-        <SupplierShipmentForm order={order} />
+        <SupplierShipmentForm
+          order={order}
+          onGoToItem={(itemId) => {
+            setLoteAbierto(itemId);
+            document
+              .getElementById(`producto-${itemId}`)
+              ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }}
+        />
       )}
+
+      <OrderDeliveryPanel order={order} side={side} />
 
       <OrderHistoryPanel order={order} side={side} />
         </div>
@@ -783,12 +841,17 @@ export const OrderDetailScreen = ({
           </>
         )}
 
+        {/* La entrega se confirma con su prueba: el formulario esta en la
+            columna principal, y el boton lleva hasta el. */}
         {side === 'supplier' && supplierCanConfirmDelivery(order.status) && (
           <button
             type='button'
             className='btn btn-primary btn-sm'
-            disabled={isSaving}
-            onClick={() => mover('DELIVERED', 'Pedido entregado')}
+            onClick={() => {
+              const destino = document.getElementById(DELIVERY_FORM_ID);
+              destino?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              destino?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
+            }}
           >
             Confirmar entrega
           </button>

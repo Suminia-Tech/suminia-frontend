@@ -38,10 +38,18 @@ const AreaTopbar = ({ groups, homeHref, onOpenMenu }: AreaTopbarProps) => {
 
   /* La entrada mas larga que casa con la ruta actual: asi una subruta como
      /account/company encuentra "Mi empresa" y no se queda en "Resumen". */
+  const casa = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  /* Cuanto casa una entrada: por su ruta o por las que tambien son suyas, las
+     pestañas con URL propia (Pagos > Por facturar). */
+  const largo = (item: { href: string; matches?: string[] }) =>
+    Math.max(
+      -1,
+      ...[item.href, ...(item.matches ?? [])].filter(casa).map((href) => href.length),
+    );
   const current = groups
     .flatMap((group) => group.items.map((item) => ({ ...item, group: group.label })))
-    .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
-    .sort((a, b) => b.href.length - a.href.length)[0];
+    .filter((item) => largo(item) >= 0)
+    .sort((a, b) => largo(b) - largo(a))[0];
 
   return (
     <header className='area-topbar'>
