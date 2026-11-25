@@ -6,7 +6,8 @@ import { resolvePlace } from '@/shared/lib/colombia';
 import { CitySelect, DepartmentSelect, Panel } from '@/shared/ui';
 
 import { SECTION } from '../../lib/pendings';
-import type { SupplierWarehouse } from '../../model/organization.types';
+import type { OrganizationDocument, SupplierWarehouse } from '../../model/organization.types';
+import WarehouseCcaaSlot from './WarehouseCcaaSlot';
 
 /* Lo que se escribe de cada bodega. El id viaja de vuelta para que el backend
    actualice la misma y no cree otra; las nuevas no lo tienen. */
@@ -61,6 +62,10 @@ interface SupplierWarehousesFieldsProps {
   /* Por indice; el formulario los calcula al guardar. */
   errors: Record<number, string>;
   onChange: (warehouses: WarehouseValues[]) => void;
+  /* Para el CCAA de cada bodega, que se sube al momento como los demas
+     documentos y no con "Guardar cambios". */
+  organizationId: string;
+  documents: OrganizationDocument[];
 }
 
 /* Las bodegas y puntos de inventario. Aparte de la oficina principal: la sede
@@ -74,6 +79,8 @@ const SupplierWarehousesFields = ({
   warehouses,
   errors,
   onChange,
+  organizationId,
+  documents,
 }: SupplierWarehousesFieldsProps) => {
   const setWarehouse = (index: number, field: keyof Omit<WarehouseValues, 'id'>, value: string) =>
     onChange(
@@ -168,6 +175,16 @@ const SupplierWarehousesFields = ({
                     className='form-control'
                     value={warehouse.address}
                     onChange={(event) => setWarehouse(index, 'address', event.target.value)}
+                  />
+                </div>
+                {/* El CCAA se asocia a una bodega guardada: en una recien
+                    agregada el boton de subir queda inactivo hasta guardar. */}
+                <div className='form-grid-full document-slots'>
+                  <WarehouseCcaaSlot
+                    organizationId={organizationId}
+                    warehouseId={warehouse.id}
+                    documents={documents}
+                    editable
                   />
                 </div>
               </div>

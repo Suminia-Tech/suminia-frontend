@@ -29,8 +29,12 @@ const byNewest = (a: OrganizationDocument, b: OrganizationDocument) =>
 export const documentSlot = (
   documents: OrganizationDocument[] | undefined,
   type: OrganizationDocumentType,
+  /* El CCAA se cuenta por bodega; los demas, sin bodega. */
+  warehouseId: string | null = null,
 ): DocumentSlot => {
-  const history = (documents ?? []).filter((d) => d.type === type).sort(byNewest);
+  const history = (documents ?? [])
+    .filter((d) => d.type === type && (d.warehouseId ?? null) === warehouseId)
+    .sort(byNewest);
   const latest = history.find((d) => statusOf(d) !== 'REPLACED') ?? null;
   const current =
     history.find((d) => statusOf(d) === 'APPROVED' || statusOf(d) === 'EXPIRED') ?? null;

@@ -32,9 +32,9 @@ interface ProductDocumentsModalProps {
    al anterior, de modo que nunca hay dos registros sanitarios que comparar. El
    anterior no se borra: queda como version anterior, con su fecha.
 
-   El registro sanitario y la ficha tecnica se ofrecen siempre, y cada uno dice
-   si se exige o es opcional: no todo producto los tiene. Los demas —el CCAA—
-   aparecen cuando se exigen o mientras existan, para poder quitarlos. */
+   El registro sanitario y la ficha tecnica se ofrecen siempre. El CCAA ya no:
+   es de la empresa y se sube en Mi empresa; un CCAA que un producto ya tenia
+   sigue apareciendo mientras exista, para poder quitarlo. */
 const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [target, setTarget] = useState<ProductDocumentType | null>(null);
@@ -46,7 +46,6 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
 
   const required = requiredDocuments(
     product.type,
-    product.isManufacturerOrImporter,
     product.sanitaryRegistration,
   );
   const slots = [
@@ -133,13 +132,12 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
                   </span>
 
                   <div className='document-slot-text'>
-                    {/* Si se exige o no, como etiqueta junto al nombre: igual
-                        que el estado de los documentos de la empresa. */}
+                    {/* Sin "Obligatorio" ni "Opcional": no todo producto tiene
+                        registro sanitario, y la etiqueta confundia mas de lo
+                        que aclaraba. Lo que falte para enviar a revision lo
+                        dice el envio. */}
                     <div className='document-slot-title'>
                       <strong>{DOCUMENT_LABEL[type]}</strong>
-                      <span className={`document-state ${isRequired ? 'is-neutral' : 'is-muted'}`}>
-                        {isRequired ? 'Obligatorio' : 'Opcional'}
-                      </span>
                     </div>
                     <small className='font-light'>
                       {document

@@ -100,6 +100,14 @@ const COPY: Record<
   },
 };
 
+/* Que hay dentro del pago al proveedor, segun el pedido: uno exento de IVA
+   y con envio sin costo no puede decir "con IVA y envío". */
+const composicionDelPago = (iva: number, envio: number): string =>
+  [
+    iva > 0 ? 'Incluye IVA.' : 'Productos exentos de IVA.',
+    envio > 0 ? 'Incluye el costo de envío.' : 'Envío sin costo.',
+  ].join(' ');
+
 /* Lo que significa el paso en que va el pedido, dicho al comprador. */
 const buyerHint = (order: Order): string => {
   if (order.status === 'AWAITING_BUYER') {
@@ -1081,7 +1089,10 @@ export const OrderDetailScreen = ({
             )}
             <li className='cart-summary-total'>
               <span>
-                {side === 'staff' ? 'Al proveedor, con IVA y envío' : 'Te pagamos, con IVA y envío'}
+                {side === 'staff' ? 'Valor a pagar al proveedor' : 'Valor a recibir'}
+                <small className='font-light d-block'>
+                  {composicionDelPago(order.costTax ?? order.tax, order.shippingCost)}
+                </small>
               </span>
               <strong>{pesos(order.supplierPayout, order.currency)}</strong>
             </li>

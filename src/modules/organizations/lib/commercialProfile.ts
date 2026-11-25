@@ -124,6 +124,8 @@ export interface LegalDocumentOption {
   onRequest?: boolean;
   /* Como se marca mientras no se ha subido: "Opcional" por defecto. */
   optionalLabel?: string;
+  /* Sin etiqueta mientras no se ha subido: ni "Opcional" ni "Si aplica". */
+  quiet?: boolean;
 }
 
 /* Los documentos que se le piden a cada lado, con la ayuda que va debajo.
@@ -190,18 +192,21 @@ export const legalDocumentOptions = (
 /* Los del proveedor, que no dependen de nada. */
 export const LEGAL_DOCUMENT_OPTIONS = legalDocumentOptions('supplier');
 
+/* El CCAA va en cada bodega y no aqui: el INVIMA lo expide por
+   establecimiento. No se exige, y no lleva etiqueta mientras no se sube. */
+export const WAREHOUSE_CCAA_OPTION: LegalDocumentOption = {
+  value: 'CCAA',
+  label: 'CCAA',
+  help: 'Certificado de Capacidad de Almacenamiento y Acondicionamiento de esta bodega, expedido por el INVIMA.',
+  required: false,
+  onRequest: true,
+  quiet: true,
+};
+
 /* Las certificaciones sanitarias del proveedor. Ninguna se exige: no todos
    fabrican, importan o almacenan, y cada una aplica a quien hace eso. Se
    suben cuando aplican, y Suminia las revisa como los documentos legales. */
 export const SANITARY_CERTIFICATION_OPTIONS: LegalDocumentOption[] = [
-  {
-    value: 'CCAA',
-    label: 'Certificado de Capacidad de Almacenamiento y Acondicionamiento (CCAA)',
-    help: 'Expedido por el INVIMA. Aplica si fabricas o importas dispositivos médicos.',
-    required: false,
-    onRequest: true,
-    optionalLabel: 'Si aplica',
-  },
   {
     value: 'GMP_CERTIFICATE',
     label: 'Certificado de Buenas Prácticas de Manufactura (BPM)',

@@ -17,6 +17,22 @@ interface NameParts {
   variant?: string;
 }
 
+/* Como se escribe el contenido: "Caja x 10", "Caja x 50 pares", "Frasco x
+   500 mL". La unidad suelta no se nombra —"Caja x 10" ya dice diez unidades,
+   y es como lo escribe el sector—; las demas palabras van en plural cuando
+   son varias, y los simbolos del SI no cambian. */
+const PLURALES: Record<string, string> = {
+  par: 'pares',
+  prueba: 'pruebas',
+  kit: 'kits',
+  juego: 'juegos',
+};
+
+const unidadDelContenido = (unidad: string, cantidad: number): string => {
+  if (unidad.toLowerCase() === 'unidad') return '';
+  return ` ${cantidad === 1 ? unidad : (PLURALES[unidad] ?? unidad)}`;
+};
+
 export const composePresentationName = ({
   packaging,
   contentQuantity,
@@ -37,7 +53,31 @@ export const composePresentationName = ({
   const base =
     esPiezaSuelta || !cantidad || !unidad
       ? empaque
-      : `${empaque} × ${cantidad} ${unidad}`;
+      : `${empaque} x ${cantidad}${unidadDelContenido(unidad, Number(cantidad))}`;
 
   return calificador ? `${calificador} · ${base}` : base;
+};
+
+/* Como lo vera el comprador: el producto y, tras una coma, su presentacion
+   —"Catéter intravenoso, caja x 50"—. La vista previa enseñaba solo la
+   presentacion ("Paquete") y parecia que el producto se iba a llamar asi. */
+export const composeDisplayName = (productName: string, presentation: string): string => {
+  const producto = productName.trim();
+  const formato = presentation.trim();
+  if (!producto) return formato;
+  if (!formato) return producto;
+  return `${producto}, ${formato.charAt(0).toLocaleLowerCase('es')}${formato.slice(1)}`;
+};
+
+/* La cantidad con su unidad, para leerla suelta: "100 unidades", "1 par",
+   "500 mL". A diferencia del nombre, aqui "unidad" si se escribe. */
+export const cantidadConUnidad = (cantidad: string, unidad: string): string => {
+  const numero = cantidad.trim();
+  const medida = normalizeUnit(unidad);
+  if (!numero) return '';
+  if (!medida) return numero;
+  const varias = Number(numero) !== 1;
+  const palabra =
+    medida === 'unidad' ? (varias ? 'unidades' : 'unidad') : varias ? (PLURALES[medida] ?? medida) : medida;
+  return `${numero} ${palabra}`;
 };

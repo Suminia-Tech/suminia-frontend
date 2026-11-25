@@ -160,6 +160,8 @@ export interface OrganizationDocument {
   reviewedBy?: DocumentActor | null;
   rejectionReason?: string | null;
   expiresAt?: string | null;
+  /** La bodega del CCAA; nulo en los demas documentos. */
+  warehouseId?: string | null;
 }
 
 /* La declaracion del Sistema de Autocontrol y Gestion de Riesgos LA/FT/FP y

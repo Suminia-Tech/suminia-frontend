@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ExternalLink } from "react-feather";
+import { ChevronLeft, Download, ExternalLink } from "react-feather";
 
 import { extractErrorMessage } from "@/shared/lib/apiError";
 import { formatDate, formatDay } from "@/shared/lib/dates";
@@ -89,6 +89,14 @@ export const PayoutDetailScreen = ({
             >
               <ExternalLink size={14} /> Ver
             </button>
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm btn-with-icon"
+              disabled={files.downloading === file.storageKey}
+              onClick={() => files.download(file.storageKey)}
+            >
+              <Download size={14} /> Descargar
+            </button>
           </div>
         )}
       </div>
@@ -123,7 +131,7 @@ export const PayoutDetailScreen = ({
 
       <div className="order-layout">
         <div className="order-main">
-          <Panel title="Pedidos">
+          <Panel title={side === "staff" ? "Pedidos" : "Órdenes de compra"}>
             <div className="catalog-table-scroll">
               <table className="catalog-table">
                 <thead>
@@ -141,7 +149,7 @@ export const PayoutDetailScreen = ({
                       </>
                     )}
                     <th className="num">
-                      {side === "staff" ? "Al proveedor" : "Te pagamos"}
+                      {side === "staff" ? "Al proveedor" : "Valor a recibir"}
                     </th>
                   </tr>
                 </thead>

@@ -237,8 +237,15 @@ export const financeApi = baseApi.injectEndpoints({
       ],
     }),
 
-    getPayoutFileUrl: builder.mutation<ApiResponse<SignedUrl>, { id: string; key: string }>({
-      query: ({ id, key }) => ({ url: `/payouts/${id}/file`, params: { key } }),
+    /* Con download, el enlace guarda el archivo en vez de abrirlo. */
+    getPayoutFileUrl: builder.mutation<
+      ApiResponse<SignedUrl>,
+      { id: string; key: string; download?: boolean }
+    >({
+      query: ({ id, key, download }) => ({
+        url: `/payouts/${id}/file`,
+        params: download ? { key, download: 'true' } : { key },
+      }),
     }),
   }),
 });

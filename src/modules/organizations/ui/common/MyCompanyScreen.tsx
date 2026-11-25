@@ -158,7 +158,11 @@ export const MyCompanyScreen = ({ kind, section }: MyCompanyScreenProps) => {
                 bankAccountNumber: values.bankAccountNumber.trim() || null,
                 breBKey: values.breBKey.trim() || null,
                 paymentTermDays:
-                  values.paymentTermDays.trim() === '' ? null : Number(values.paymentTermDays),
+                  values.paymentCondition === 'cash'
+                    ? 0
+                    : values.paymentCondition === 'credit'
+                      ? Number(values.paymentTermDays)
+                      : null,
                 /* Titular y NIT son los de la empresa: el backend los fija desde
                    los datos legales, y aqui se mandan igual para que la cuenta
                    viaje entera. Sin banco no hay cuenta, ni titular. */

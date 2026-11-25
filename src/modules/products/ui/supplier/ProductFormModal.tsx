@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Plus, X } from 'react-feather';
+import { Eye, Plus, X } from 'react-feather';
 import { Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 
 import { extractErrorMessage, extractFieldErrors } from '@/shared/lib/apiError';
@@ -18,9 +18,13 @@ import {
   toAttributePairs,
   type AttributePair,
 } from '../../lib/attributes';
-import { composePresentationName } from '../../lib/presentationName';
+import {
+  cantidadConUnidad,
+  composePresentationName,
+} from '../../lib/presentationName';
 import { PRODUCT_TYPE_HELP } from '../../lib/productTypes';
-import { TAX_OPTIONS, defaultTaxCategory } from '../../lib/tax';
+import { TAX_OPTIONS, defaultTaxCategory, taxLabel } from '../../lib/tax';
+import { formatPrice } from '../../lib/productLabels';
 import { CONTENT_UNITS, PACKAGING_SUGGESTIONS } from '../../lib/units';
 import type {
   CatalogMedicine,
@@ -30,6 +34,7 @@ import type {
   TaxCategory,
 } from '../../model/product.types';
 import CatalogMedicinePicker from './CatalogMedicinePicker';
+import ProductPreviewModal, { type ProductPreviewData } from './ProductPreviewModal';
 
 /* Alta y edicion de un producto. La empresa no se pide: el backend la toma de
    la sesion de quien crea, de modo que no hay forma de publicar en el catalogo
@@ -110,11 +115,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
   const isSaving = isCreating || isUpdating;
 
   const [form, setForm] = useState<FormState>(() => toFormState(product));
-  /* Aparte del resto porque es un si o no, no un texto. Solo cuenta en un
-     dispositivo medico: decide si se le exige el CCAA. */
-  const [isManufacturerOrImporter, setManufacturerOrImporter] = useState(
-    () => product?.isManufacturerOrImporter ?? false,
-  );
   /* El tipo no se elige: es el de la categoria. Al editar, mientras llegan las
      categorias, vale el que ya tiene el producto. */
   const type: ProductType | null =
@@ -293,7 +293,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
       reference: form.reference.trim() || null,
       /* Un medicamento no lo declara: lo lee del maestro del INVIMA. */
       sanitaryRegistration: isMedicine ? null : form.sanitaryRegistration.trim() || null,
-      isManufacturerOrImporter: type === 'MEDICAL_DEVICE' && isManufacturerOrImporter,
       description: form.description.trim() || undefined,
       taxCategory: form.taxCategory,
       /* null y no undefined al quitarlo: undefined significaria "no lo toques"
@@ -342,6 +341,42 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
      insumos hay gravados al 19%, al 5% y excluidos. Sin esto no se puede
      facturar. Al crear va al lado del precio, que es con lo que se lee: el
      precio se declara sin IVA y el IVA es lo que se le suma. */
+  /* La vista previa: lo escrito hasta ahora, con la forma de la ficha que
+     vera el comprador. Sin presentacion al editar: ahi se edita solo el
+     producto. */
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const presentacion = isEditing
+    ? ''
+    : composePresentationName({
+        packaging: form.packaging,
+        contentQuantity: form.contentQuantity,
+        contentUnit: form.contentUnit,
+        variant: form.variant,
+      });
+  const vistaPrevia: ProductPreviewData = {
+    name: form.name.trim(),
+    categoryName: categories.find((category) => category.id === form.categoryId)?.name ?? '',
+    brand: form.brand.trim(),
+    manufacturer: form.manufacturer.trim(),
+    sanitaryRegistration: form.sanitaryRegistration.trim(),
+    description: form.description.trim(),
+    attributes,
+    presentation: isEditing
+      ? null
+      : {
+          name: presentacion,
+          packaging: form.packaging,
+          content: cantidadConUnidad(form.contentQuantity, form.contentUnit),
+          stock: form.stock.trim(),
+        },
+    internal: {
+      price: form.price.trim() ? formatPrice(Number(form.price)) : '',
+      stock: form.stock.trim(),
+      sku: form.sku.trim(),
+      tax: taxLabel(form.taxCategory),
+    },
+  };
+
   const ivaField = (
     <>
       <label className='form-label font-light'>IVA</label>
@@ -545,27 +580,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                 )}
               </Row>
 
-              {/* Solo en un dispositivo medico: quien lo fabrica o lo importa
-                  tiene que aportar ademas el CCAA. */}
-              {type === 'MEDICAL_DEVICE' && (
-                <div className='form-check mb-3'>
-                  <input
-                    id='manufacturer-or-importer'
-                    type='checkbox'
-                    className='form-check-input'
-                    checked={isManufacturerOrImporter}
-                    onChange={(event) => setManufacturerOrImporter(event.target.checked)}
-                  />
-                  <label className='form-check-label' htmlFor='manufacturer-or-importer'>
-                    Soy fabricante o importador de este producto
-                    <small className='font-light d-block'>
-                      Te pediremos el CCAA junto con el registro sanitario y la ficha
-                      técnica.
-                    </small>
-                  </label>
-                </div>
-              )}
-
               <div className='mb-3'>
                 <label className='form-label font-light'>Descripción</label>
                 <textarea
@@ -652,8 +666,9 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
               <Col lg='6' className='product-form-aside'>
                 <h5 className='mb-1'>Primera presentación</h5>
                 <p className='font-light'>
-                  Las formas de vender esta misma referencia: caja x 100, talla M,
-                  frasco de 500 mL. Empieza con una y agrega las demás después.
+                  Cada presentación es una forma de vender esta referencia, según su
+                  unidad de venta y su contenido: caja x 10, caja x 100, frasco x 500 mL.
+                  Empieza con una y agrega las demás después.
                 </p>
 
                 {/* Que presentacion comercial se vende. De aqui sale el CUM,
@@ -697,7 +712,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       value={form.variant}
                       onChange={handleChange('variant')}
                     />
-                    <small className='font-light'>Talla, calibre, color.</small>
+                    <small className='font-light'>Talla, calibre o color, si aplica.</small>
                   </Col>
                   <Col sm='6' className='mb-3'>
                     <label className='form-label font-light'>Unidad de venta</label>
@@ -710,6 +725,46 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     />
                     {errors.packaging && (
                       <small className='text-danger'>{errors.packaging}</small>
+                    )}
+                  </Col>
+                </Row>
+
+                {/* El contenido va pegado a la unidad de venta porque es su
+                    otra mitad: "Caja" sola no dice nada, "Caja x 50" si. Al
+                    final del formulario nadie lo encontraba. De cantidad y
+                    unidad sale ademas el precio por unidad, que es lo que
+                    revela que la caja de 100 sale mejor que la de 10. */}
+                <Row>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Contenido</label>
+                    <input
+                      type='number'
+                      min='0'
+                      step='any'
+                      className='form-control'
+                      placeholder='50'
+                      value={form.contentQuantity}
+                      onChange={handleChange('contentQuantity')}
+                    />
+                    {errors.contentQuantity ? (
+                      <small className='text-danger'>{errors.contentQuantity}</small>
+                    ) : (
+                      <small className='font-light'>
+                        Cuánto trae cada unidad de venta. Ej.: caja x 50, frasco x 500 mL.
+                      </small>
+                    )}
+                  </Col>
+                  <Col sm='6' className='mb-3'>
+                    <label className='form-label font-light'>Unidad de medida</label>
+                    <SelectWithCustom
+                      options={CONTENT_UNITS}
+                      value={form.contentUnit}
+                      onChange={(value) => setField('contentUnit', value)}
+                      emptyLabel='Selecciona la unidad de medida'
+                      customPlaceholder='Escribe la unidad de medida'
+                    />
+                    {errors.contentUnit && (
+                      <small className='text-danger'>{errors.contentUnit}</small>
                     )}
                   </Col>
                 </Row>
@@ -730,7 +785,7 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       <small className='text-danger'>{errors.price}</small>
                     ) : (
                       <small className='font-light'>
-                        Lo que Suminia te paga por unidad y lo que le facturas.
+                        Lo que Suminia te paga por cada unidad de venta (por ejemplo, por caja) y lo que le facturas.
                       </small>
                     )}
                   </Col>
@@ -773,54 +828,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                   </Col>
                 </Row>
 
-                {/* Cantidad y unidad son lo que hace comparable el formato: de
-                    ellas sale el precio por unidad, que es lo que revela que la
-                    caja de 100 sale mejor que la de 10. */}
-                <Row>
-                  <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>Cantidad por presentación</label>
-                    <input
-                      type='number'
-                      min='0'
-                      step='any'
-                      className='form-control'
-                      placeholder='100'
-                      value={form.contentQuantity}
-                      onChange={handleChange('contentQuantity')}
-                    />
-                    {errors.contentQuantity && (
-                      <small className='text-danger'>{errors.contentQuantity}</small>
-                    )}
-                  </Col>
-                  <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>Unidad</label>
-                    <SelectWithCustom
-                      options={CONTENT_UNITS}
-                      value={form.contentUnit}
-                      onChange={(value) => setField('contentUnit', value)}
-                      emptyLabel='Selecciona la unidad'
-                      customPlaceholder='Escribe la unidad'
-                    />
-                    {errors.contentUnit && (
-                      <small className='text-danger'>{errors.contentUnit}</small>
-                    )}
-                  </Col>
-                </Row>
-
-                {/* El nombre no se escribe: se compone de lo de arriba. Verlo
-                    mientras se rellena es lo que hace evidente para que sirve
-                    cada campo, sin un parrafo que lo explique. */}
-                <div className='name-preview'>
-                  <span className='font-light'>Se guardará como</span>
-                  <strong>
-                    {composePresentationName({
-                      packaging: form.packaging,
-                      contentQuantity: form.contentQuantity,
-                      contentUnit: form.contentUnit,
-                      variant: form.variant,
-                    }) || '—'}
-                  </strong>
-                </div>
               </Col>
             )}
           </Row>
@@ -829,10 +836,19 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
         </form>
       </ModalBody>
 
-      <ModalFooter className='pt-0 text-end d-block'>
+      {/* La vista previa a la izquierda, separada de cancelar y guardar: es
+          para revisar, no una de las dos salidas del formulario. */}
+      <ModalFooter className='pt-0 d-flex flex-wrap gap-2 product-form-footer'>
         <button
           type='button'
-          className='btn btn-outline-secondary me-2'
+          className='btn btn-outline-secondary btn-with-icon me-auto'
+          onClick={() => setPreviewOpen(true)}
+        >
+          <Eye size={15} /> Vista previa del producto
+        </button>
+        <button
+          type='button'
+          className='btn btn-outline-secondary'
           onClick={onClose}
         >
           Cancelar
@@ -846,6 +862,12 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
           {isSaving ? 'Guardando...' : isEditing ? 'Guardar cambios' : 'Crear producto'}
         </button>
       </ModalFooter>
+
+      <ProductPreviewModal
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        data={vistaPrevia}
+      />
     </Modal>
   );
 };

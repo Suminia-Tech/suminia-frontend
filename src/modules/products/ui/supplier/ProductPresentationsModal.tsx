@@ -14,7 +14,7 @@ import {
   useRemovePresentationMutation,
   useUpdatePresentationMutation,
 } from '../../api/productsApi';
-import { composePresentationName } from '../../lib/presentationName';
+import { composeDisplayName, composePresentationName } from '../../lib/presentationName';
 import {
   MAX_PRICE_TIERS,
   validateOrderQuantities,
@@ -353,8 +353,10 @@ const ProductPresentationsModal = ({
         <p className='font-light'>
           {product.name}
           {product.reference && ` · Ref. ${product.reference}`}. Las presentaciones son
-          las formas de vender esta misma referencia: caja x 10, caja x 100, talla M.
-          Otra referencia o modelo se crea como un producto aparte.
+          las formas de vender esta misma referencia, según su unidad de venta y su
+          contenido: caja x 10, caja x 100, frasco x 500 mL. La talla, el calibre o el
+          color se indican como variante. Otra referencia o modelo se crea como un
+          producto aparte.
         </p>
 
         <div className='catalog-panel'>
@@ -364,7 +366,6 @@ const ProductPresentationsModal = ({
                 <th>Presentación</th>
                 <th>Unidad de venta</th>
                 <th className='num'>Contenido</th>
-                <th className='num'>Pedido</th>
                 <th className='num'>Precio</th>
                 <th className='num'>Disponible para Suminia</th>
                 <th className='actions'></th>
@@ -393,18 +394,6 @@ const ProductPresentationsModal = ({
                   <td className='num font-light'>
                     {presentation.contentQuantity
                       ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
-                      : '—'}
-                  </td>
-                  {/* Minimo y multiplo juntos: son la misma regla —lo que de
-                      verdad se puede pedir— y separarlos en dos columnas obliga
-                      a recomponerla mentalmente. */}
-                  <td className='num font-light'>
-                    {presentation.minOrderQuantity > 1 || presentation.orderMultiple > 1
-                      ? `${presentation.minOrderQuantity}${
-                          presentation.orderMultiple > 1
-                            ? ` · de ${presentation.orderMultiple} en ${presentation.orderMultiple}`
-                            : ''
-                        }`
                       : '—'}
                   </td>
                   <td className='num'>
@@ -492,7 +481,7 @@ const ProductPresentationsModal = ({
             <Row>
               <Col md='6' className='mb-3'>
                 {field('Variante (opcional)', 'variant', { placeholder: 'Talla M' })}
-                <small className='font-light'>Talla, calibre, color.</small>
+                <small className='font-light'>Talla, calibre o color, si aplica.</small>
               </Col>
               <Col md='6' className='mb-3'>
                 <label className='form-label font-light'>Unidad de venta</label>
@@ -511,31 +500,17 @@ const ProductPresentationsModal = ({
 
             <Row>
               <Col md='4' className='mb-3'>
-                {field('Tu precio a Suminia (COP, sin IVA)', 'price', { type: 'number' })}
+                {field('Contenido', 'contentQuantity', { type: 'number', placeholder: '50' })}
+                <small className='font-light'>Cuánto trae cada unidad de venta.</small>
               </Col>
               <Col md='4' className='mb-3'>
-                {field('Inventario disponible para Suminia', 'stock', { type: 'number' })}
-                <small className='font-light'>
-                  Solo lo que reservas para vender por Suminia.
-                </small>
-              </Col>
-              <Col md='4' className='mb-3'>
-                {field('SKU del proveedor', 'sku')}
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md='4' className='mb-3'>
-                {field('Cantidad por presentación', 'contentQuantity', { type: 'number' })}
-              </Col>
-              <Col md='4' className='mb-3'>
-                <label className='form-label font-light'>Unidad</label>
+                <label className='form-label font-light'>Unidad de medida</label>
                 <SelectWithCustom
                   options={CONTENT_UNITS}
                   value={draft.contentUnit}
                   onChange={set('contentUnit')}
-                  emptyLabel='Selecciona la unidad'
-                  customPlaceholder='Escribe la unidad'
+                  emptyLabel='Selecciona la unidad de medida'
+                  customPlaceholder='Escribe la unidad de medida'
                 />
                 {errors.contentUnit && (
                   <small className='text-danger'>{errors.contentUnit}</small>
@@ -587,23 +562,18 @@ const ProductPresentationsModal = ({
               )}
             </Row>
 
-            {/* Nadie despacha una caja suelta, y casi nadie empaca de uno en
-                uno. Sin esto el comprador arma un pedido que no se le va a
-                despachar, y lo descubre cuando ya esta hecho. */}
             <Row>
               <Col md='4' className='mb-3'>
-                {field('Pedido mínimo', 'minOrderQuantity', { type: 'number' })}
-                {errors.minOrderQuantity ? (
-                  <small className='text-danger'>{errors.minOrderQuantity}</small>
-                ) : (
-                  <small className='font-light'>Lo mínimo que despachas.</small>
-                )}
+                {field('Tu precio a Suminia (COP, sin IVA)', 'price', { type: 'number' })}
               </Col>
               <Col md='4' className='mb-3'>
-                {field('Múltiplo de venta', 'orderMultiple', { type: 'number' })}
+                {field('Inventario disponible para Suminia', 'stock', { type: 'number' })}
                 <small className='font-light'>
-                  Se vende de {draft.orderMultiple || 1} en {draft.orderMultiple || 1}.
+                  Solo lo que reservas para vender por Suminia.
                 </small>
+              </Col>
+              <Col md='4' className='mb-3'>
+                {field('SKU del proveedor', 'sku')}
               </Col>
             </Row>
 
@@ -678,14 +648,17 @@ const ProductPresentationsModal = ({
             {/* El nombre no se escribe: se compone de lo de arriba. Verlo
                 mientras se rellena hace evidente para que sirve cada campo. */}
             <div className='name-preview'>
-              <span className='font-light'>Se guardará como</span>
+              <span className='font-light'>Se mostrará como</span>
               <strong>
-                {composePresentationName({
-                  packaging: draft.packaging,
-                  contentQuantity: draft.contentQuantity,
-                  contentUnit: draft.contentUnit,
-                  variant: draft.variant,
-                }) || '—'}
+                {composeDisplayName(
+                  product.name,
+                  composePresentationName({
+                    packaging: draft.packaging,
+                    contentQuantity: draft.contentQuantity,
+                    contentUnit: draft.contentUnit,
+                    variant: draft.variant,
+                  }),
+                ) || '—'}
               </strong>
             </div>
 

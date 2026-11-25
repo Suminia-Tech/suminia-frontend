@@ -66,7 +66,6 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
   const isMedicine = product.type === 'MEDICINE';
   const required = requiredDocuments(
     product.type,
-    product.isManufacturerOrImporter,
     product.sanitaryRegistration,
   );
   const missingDocuments = required.filter(
@@ -102,14 +101,6 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
         : product.sanitaryRegistration,
     },
     { label: 'IVA', value: taxLabel(product.taxCategory) },
-    ...(product.type === 'MEDICAL_DEVICE'
-      ? [
-          {
-            label: 'Fabricante o importador',
-            value: product.isManufacturerOrImporter ? 'Sí' : 'No',
-          },
-        ]
-      : []),
   ];
 
   return (

@@ -29,7 +29,12 @@ import { useDocumentFlow } from './useDocumentFlow';
    por rutas distintas —/suppliers y /buyers—, de modo que se piden las dos
    mutaciones y se usa la del lado que toca: los hooks no se pueden llamar de
    forma condicional. */
-export const useOrganizationDocuments = (kind: OrganizationKind, organizationId: string) => {
+export const useOrganizationDocuments = (
+  kind: OrganizationKind,
+  organizationId: string,
+  /* El CCAA va por bodega: con ella, lo subido queda asociado a esa bodega. */
+  warehouseId?: string,
+) => {
   const [supplierUpload] = useCreateSupplierDocumentUploadUrlMutation();
   const [supplierConfirm] = useConfirmSupplierDocumentMutation();
   const [supplierUrl] = useGetSupplierDocumentUrlMutation();
@@ -46,7 +51,7 @@ export const useOrganizationDocuments = (kind: OrganizationKind, organizationId:
             confirm: (type: OrganizationDocumentType, storageKey: string, filename: string) =>
               supplierConfirm({
                 supplierId: organizationId,
-                data: { type, storageKey, filename },
+                data: { type, storageKey, filename, ...(warehouseId && { warehouseId }) },
               }).unwrap(),
             getUrl: async (documentId: string) =>
               (await supplierUrl({ supplierId: organizationId, documentId }).unwrap()).data.url,
@@ -62,6 +67,7 @@ export const useOrganizationDocuments = (kind: OrganizationKind, organizationId:
     [
       kind,
       organizationId,
+      warehouseId,
       supplierUpload,
       supplierConfirm,
       supplierUrl,

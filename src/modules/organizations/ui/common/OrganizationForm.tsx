@@ -95,7 +95,11 @@ export interface OrganizationFormValues {
   earlyPayment: '' | 'yes' | 'no';
   earlyPaymentRate: string;
   earlyPaymentDays: string;
-  /* El plazo neto en dias. Vacio: no lo ha dicho; cero: de contado. */
+  /* La condicion de pago: de contado o a credito, y a credito el plazo en
+     dias. Se pregunta asi, y no con un numero donde 0 era "de contado",
+     porque un campo de dias en blanco salia en la orden de compra como "Por
+     definir" y nadie sabia que faltaba. */
+  paymentCondition: '' | 'cash' | 'credit';
   paymentTermDays: string;
 
   /* La cuenta a donde se le consigna. Tambien solo del proveedor. */
@@ -235,8 +239,16 @@ const toValues = (organization: Organization): OrganizationFormValues => ({
   bankAccountHolder: organization.bankAccountHolder ?? '',
   bankAccountHolderTaxId: organization.bankAccountHolderTaxId ?? '',
   breBKey: organization.breBKey ?? '',
+  paymentCondition:
+    organization.paymentTermDays == null
+      ? ''
+      : organization.paymentTermDays === 0
+        ? 'cash'
+        : 'credit',
   paymentTermDays:
-    organization.paymentTermDays == null ? '' : String(organization.paymentTermDays),
+    organization.paymentTermDays == null || organization.paymentTermDays === 0
+      ? ''
+      : String(organization.paymentTermDays),
   /* Un perfil de antes de la relacion trae solo las dos listas sueltas: cada
      actividad arranca con todas las lineas, para que el proveedor las afine. */
   activityLines:
@@ -433,10 +445,15 @@ const OrganizationForm = ({
       seenShipping.add(key);
     });
 
-    const plazo = values.paymentTermDays.trim();
+    const plazo = values.paymentCondition === 'credit' ? values.paymentTermDays.trim() : '';
     let nextPaymentTermError: string | null = null;
-    if (plazo !== '' && !(Number.isInteger(Number(plazo)) && Number(plazo) >= 0 && Number(plazo) <= 365)) {
-      nextPaymentTermError = 'Indica el plazo en días, entre 0 y 365.';
+    if (values.paymentCondition === '') {
+      nextPaymentTermError = 'Indica si vendes de contado o a crédito.';
+    } else if (
+      values.paymentCondition === 'credit' &&
+      !(plazo !== '' && Number.isInteger(Number(plazo)) && Number(plazo) >= 1 && Number(plazo) <= 365)
+    ) {
+      nextPaymentTermError = 'Indica el plazo del crédito en días, entre 1 y 365.';
     }
 
     /* Si ofrece pronto pago, el porcentaje y los dias son lo que lo define, y
@@ -445,7 +462,9 @@ const OrganizationForm = ({
     if (values.earlyPayment === 'yes') {
       const tasa = Number(values.earlyPaymentRate);
       const dias = Number(values.earlyPaymentDays);
-      if (!values.earlyPaymentRate.trim() || !(tasa > 0 && tasa <= 100)) {
+      if (values.paymentCondition === 'cash') {
+        nextEarlyPaymentError = 'El descuento por pronto pago aplica solo a la venta a crédito.';
+      } else if (!values.earlyPaymentRate.trim() || !(tasa > 0 && tasa <= 100)) {
         nextEarlyPaymentError = 'Indica el porcentaje del descuento, entre 0 y 100.';
       } else if (!values.earlyPaymentDays.trim() || !(Number.isInteger(dias) && dias >= 1)) {
         nextEarlyPaymentError = 'Indica en cuántos días hay que pagar para tener el descuento.';
@@ -769,6 +788,8 @@ const OrganizationForm = ({
           warehouses={values.warehouses}
           errors={warehouseErrors}
           onChange={(warehouses) => setValues((current) => ({ ...current, warehouses }))}
+          organizationId={organization.id}
+          documents={organization.documents ?? []}
         />
       )}
 
@@ -1044,28 +1065,63 @@ const OrganizationForm = ({
 
               {/* Va antes del pronto pago porque este se entiende contra el:
                   "2 % si paga en 15 días" dice algo solo si el plazo es 30. */}
-              <div>
-                <label className='form-label' htmlFor='empresa-plazo-neto'>
-                  Plazo neto
-                </label>
-                <div className='delivery-days'>
-                  <input
-                    id='empresa-plazo-neto'
-                    type='number'
-                    min={0}
-                    max={365}
-                    className='form-control'
-                    placeholder='30'
-                    value={values.paymentTermDays}
-                    onChange={handleChange('paymentTermDays')}
-                  />
-                  <span className='font-light'>días</span>
-                </div>
-                <small className='font-light'>
-                  En cuántos días, desde la factura, esperas el pago. Pon 0 si vendes de contado.
+              <fieldset className='form-grid-full'>
+                <legend className='form-label'>Condición de pago</legend>
+                <small className='font-light d-block mb-2'>
+                  Aparece en cada orden de compra que te emite Suminia.
                 </small>
-                {paymentTermError && <small className='text-danger'>{paymentTermError}</small>}
-              </div>
+                <div className='yes-no'>
+                  {(
+                    [
+                      { value: 'cash', label: 'De contado' },
+                      { value: 'credit', label: 'Crédito' },
+                    ] as const
+                  ).map((option) => (
+                    <div className='form-check' key={option.value}>
+                      <input
+                        id={`condicion-pago-${option.value}`}
+                        type='radio'
+                        name='condicion-pago'
+                        className='form-check-input'
+                        checked={values.paymentCondition === option.value}
+                        onChange={() =>
+                          setValues((current) => ({ ...current, paymentCondition: option.value }))
+                        }
+                      />
+                      <label className='form-check-label' htmlFor={`condicion-pago-${option.value}`}>
+                        {option.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {values.paymentCondition !== 'credit' && paymentTermError && (
+                  <small className='text-danger'>{paymentTermError}</small>
+                )}
+              </fieldset>
+
+              {/* El plazo solo a credito: de contado no hay plazo que pedir. */}
+              {values.paymentCondition === 'credit' && (
+                <div>
+                  <label className='form-label' htmlFor='empresa-plazo-neto'>
+                    Plazo del crédito
+                  </label>
+                  <div className='delivery-days'>
+                    <input
+                      id='empresa-plazo-neto'
+                      type='number'
+                      min={1}
+                      max={365}
+                      className='form-control'
+                      placeholder='30'
+                      value={values.paymentTermDays}
+                      onChange={handleChange('paymentTermDays')}
+                    />
+                    <span className='font-light'>días</span>
+                  </div>
+                  <small className='font-light'>Contados desde la fecha de la factura.</small>
+                  {paymentTermError && <small className='text-danger'>{paymentTermError}</small>}
+                </div>
+              )}
 
               <fieldset className='form-grid-full'>
                 <legend className='form-label'>¿Ofrece descuentos financieros por pronto pago?</legend>

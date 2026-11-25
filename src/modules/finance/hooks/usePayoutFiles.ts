@@ -61,5 +61,23 @@ export const usePayoutFiles = (payoutId: string) => {
     [payoutId, getUrl],
   );
 
-  return { upload, uploading, open, opening };
+  /* La descarga no abre pestaña: el enlace firmado responde como adjunto y el
+     navegador lo guarda sin salir de la pagina. */
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const download = useCallback(
+    async (key: string) => {
+      setDownloading(key);
+      try {
+        const { url } = (await getUrl({ id: payoutId, key, download: true }).unwrap()).data;
+        window.location.assign(url);
+      } catch (err) {
+        toast.error(extractErrorMessage(err, 'No se pudo descargar el archivo.'));
+      } finally {
+        setDownloading(null);
+      }
+    },
+    [payoutId, getUrl],
+  );
+
+  return { upload, uploading, open, opening, download, downloading };
 };

@@ -17,6 +17,8 @@ export const PACKAGING_SUGGESTIONS = [
   'Rollo',
   'Kit',
   'Bolsa',
+  'Garrafa',
+  'Juego',
   'Ampolla',
   'Vial',
 ];
@@ -40,6 +42,7 @@ export const CONTENT_UNITS: ContentUnit[] = [
   { value: 'par', label: 'Par' },
   { value: 'prueba', label: 'Prueba' },
   { value: 'kit', label: 'Kit' },
+  { value: 'juego', label: 'Juego' },
   { value: 'mL', label: 'Mililitro (mL)' },
   { value: 'L', label: 'Litro (L)' },
   { value: 'mg', label: 'Miligramo (mg)' },
@@ -65,6 +68,7 @@ const ALIASES: Record<string, string> = {
   pares: 'par',
   metro: 'm',
   metros: 'm',
+  juegos: 'juego',
 };
 
 const BY_LOWERCASE = new Map(

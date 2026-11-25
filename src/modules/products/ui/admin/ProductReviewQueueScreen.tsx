@@ -372,7 +372,6 @@ export const ProductReviewQueueScreen = () => {
                     const image = getPrimaryImage(product);
                     const required = requiredDocuments(
                       product.type,
-                      product.isManufacturerOrImporter,
                       product.sanitaryRegistration,
                     );
                     const loaded = required.filter((type) =>

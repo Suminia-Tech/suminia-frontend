@@ -432,7 +432,6 @@ export const MyProductsScreen = () => {
                     const stock = getTotalStock(product);
                     const docsRequired = requiredDocuments(
                       product.type,
-                      product.isManufacturerOrImporter,
                       product.sanitaryRegistration,
                     );
                     const docsMissing = docsRequired.filter(

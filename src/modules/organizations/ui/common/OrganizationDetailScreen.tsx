@@ -37,6 +37,7 @@ import {
 import BuyerLocationsPanel from './BuyerLocationsPanel';
 import ContactPeopleList from './ContactPeopleList';
 import DeclarationSummaryPanel from './DeclarationSummaryPanel';
+import WarehouseCcaaSlot from './WarehouseCcaaSlot';
 import LegalDocumentsPanel from './LegalDocumentsPanel';
 import StatusBadge from './StatusBadge';
 
@@ -369,6 +370,21 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                   </li>
                 ))}
               </ul>
+              {/* El CCAA de cada bodega, para abrirlo y revisarlo como los
+                  demas documentos. */}
+              <div className='document-slots mt-3'>
+                {organization.warehouses?.map((warehouse, index) => (
+                  <WarehouseCcaaSlot
+                    key={warehouse.id}
+                    organizationId={organization.id}
+                    warehouseId={warehouse.id}
+                    documents={organization.documents ?? []}
+                    editable={false}
+                    reviewable={canDecide}
+                    label={`CCAA · ${warehouse.name ?? `Bodega ${index + 1}`}`}
+                  />
+                ))}
+              </div>
             </Panel>
           )}
 
@@ -452,13 +468,13 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
                   </li>
                 ))}
                 <li>
-                  <span className='font-light'>Plazo neto</span>
+                  <span className='font-light'>Condición de pago</span>
                   <span>
                     {organization.paymentTermDays == null
-                      ? '—'
+                      ? 'Sin registrar'
                       : organization.paymentTermDays === 0
                         ? 'De contado'
-                        : `${organization.paymentTermDays} días`}
+                        : `Crédito a ${organization.paymentTermDays} días`}
                   </span>
                 </li>
                 <li>

@@ -94,7 +94,9 @@ const LegalDocumentSlot = ({
   /* Uno que se sube solo a pedido no esta "pendiente" mientras nadie lo pida. */
   const aPedido = option.onRequest && state === 'MISSING';
   const meta = aPedido
-    ? { label: option.optionalLabel ?? 'Opcional', tone: 'muted' as const }
+    ? option.quiet
+      ? null
+      : { label: option.optionalLabel ?? 'Opcional', tone: 'muted' as const }
     : DOCUMENT_STATE_META[state];
   const pending = reviewable && state === 'IN_REVIEW' && latest;
   /* Lo que la empresa tiene que resolver se marca en el borde, como antes lo
@@ -134,7 +136,7 @@ const LegalDocumentSlot = ({
                 <span className='document-required'> · obligatorio</span>
               )}
             </strong>
-            <span className={`document-state is-${meta.tone}`}>{meta.label}</span>
+            {meta && <span className={`document-state is-${meta.tone}`}>{meta.label}</span>}
           </div>
           <small className='font-light'>{describeSlot(slot, option, editable)}</small>
         </div>

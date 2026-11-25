@@ -8577,3 +8577,83 @@ ul.status-history {
     }
   }
 }
+
+/* El texto de ejemplo de un campo se lee como ejemplo, no como un valor ya
+   escrito. Con el color del tema, "Talla M" en la variante parecia lleno. Es
+   el mismo tono que el del buscador del catalogo, para todos los campos. */
+.form-control::placeholder {
+  color: rgba($theme-font-color, 0.42);
+  opacity: 1;
+}
+
+/* La vista previa del producto, encima del formulario: la ficha que vera el
+   comprador, con las clases de la ficha publica, y debajo los datos internos.
+   Con margen arriba y abajo; si no cabe, se desplaza por dentro. */
+.product-preview-modal {
+  &.modal-dialog {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 80px);
+    border-radius: var(--suminia-radio-modal);
+  }
+
+  .modal-body {
+    padding: 0 32px 8px;
+  }
+
+  .product-preview-note {
+    margin-bottom: 20px;
+  }
+
+  /* Donde ira la foto: la misma proporcion que la galeria, con el borde
+     punteado de lo que todavia no esta. */
+  /* Mas pequeña que en la ficha: aqui solo dice donde va la foto, y a tamaño
+     real empujaba todo lo demas hacia abajo. */
+  .product-preview-image {
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    text-align: center;
+    color: rgba($theme-font-color, 0.5);
+    background-color: #f7f8fa;
+    border: 1px dashed $border-color;
+    border-radius: var(--suminia-radio-caja);
+
+    span {
+      font-weight: 600;
+    }
+  }
+
+  .product-detail .product-detail-title {
+    font-size: 24px;
+  }
+
+  .product-detail-sheet {
+    margin-top: 24px;
+  }
+
+  /* Lo que solo ven el proveedor y Suminia, en una caja aparte para que no
+     se confunda con lo que ve el comprador. */
+  .product-preview-internal {
+    padding: 16px 20px;
+    background-color: #f7f8fa;
+    border-radius: var(--suminia-radio-caja);
+  }
+
+  /* Lo que falta, tenue y sin negrilla: un dato vacio no se lee como dato. */
+  .is-empty {
+    font-weight: 400;
+    color: rgba($theme-font-color, 0.45);
+  }
+
+  .modal-footer {
+    padding: 12px 32px 24px;
+  }
+}

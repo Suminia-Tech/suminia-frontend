@@ -62,14 +62,9 @@ export const DOCUMENT_HELP: Record<ProductDocumentType, string> = {
    donde el proveedor declaro un numero de registro; la ficha tecnica nunca. */
 export const requiredDocuments = (
   type: ProductType,
-  isManufacturerOrImporter: boolean,
   sanitaryRegistration: string | null,
-): ProductDocumentType[] => [
-  ...(type === 'MEDICINE' || sanitaryRegistration?.trim()
-    ? (['SANITARY_REGISTRATION'] as const)
-    : []),
-  ...(type === 'MEDICAL_DEVICE' && isManufacturerOrImporter ? (['CCAA'] as const) : []),
-];
+): ProductDocumentType[] =>
+  type === 'MEDICINE' || sanitaryRegistration?.trim() ? ['SANITARY_REGISTRATION'] : [];
 
 /* Los que se ofrecen siempre en el modal, se exijan o no: el registro
    sanitario y la ficha tecnica se adjuntan si existen. */

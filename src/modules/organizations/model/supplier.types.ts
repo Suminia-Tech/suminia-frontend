@@ -80,6 +80,8 @@ export interface ConfirmSupplierDocumentRequest {
   type: OrganizationDocumentType;
   storageKey: string;
   filename?: string;
+  /* Solo en el CCAA: la bodega a la que corresponde. */
+  warehouseId?: string;
 }
 
 /* La revision de una version, por el personal de Suminia. El motivo lo exige
