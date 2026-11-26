@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
 import { Lock } from 'react-feather';
 import { Col, Row } from 'reactstrap';
 
@@ -15,6 +15,7 @@ import { useAppSelector } from '@/store/hooks';
 import { useGetPublicCategoriesQuery } from '../../api/productsApi';
 import { useCatalogProducts } from '../../hooks/useCatalogProducts';
 import { ProductCard } from '../common/ProductCard';
+import type { BuyableFormatProps } from './PublicProductScreen';
 
 /* El catalogo que se ve sin haber entrado.
 
@@ -27,7 +28,12 @@ import { ProductCard } from '../common/ProductCard';
    desde una busqueda. */
 const PAGE_SIZE = 24;
 
-export const PublicCatalogScreen = () => {
+export const PublicCatalogScreen = ({
+  CardAction,
+}: {
+  /* Agregar al carrito desde la tarjeta; lo pone la pagina. */
+  CardAction?: ComponentType<BuyableFormatProps>;
+} = {}) => {
   /* El aviso de precios no lo puede pintar el servidor: depende de la sesion,
      que se lee de localStorage y el servidor no ve. Hacen falta las dos
      condiciones.
@@ -153,7 +159,11 @@ export const PublicCatalogScreen = () => {
             <Row className='g-3'>
               {products.map((product) => (
                 <Col key={product.id} xs='6' md='4' lg='3'>
-                  <ProductCard product={product} href={`/catalog/${product.id}`} />
+                  <ProductCard
+                    product={product}
+                    href={`/catalog/${product.id}`}
+                    CardAction={CardAction}
+                  />
                 </Col>
               ))}
             </Row>

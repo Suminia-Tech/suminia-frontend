@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
+import { QuickAddToCart } from '@/modules/cart';
 import { PublicCatalogScreen } from '@/modules/products';
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default function PublicCatalogPage() {
   return (
     <Suspense fallback={null}>
-      <PublicCatalogScreen />
+      <PublicCatalogScreen CardAction={QuickAddToCart} />
     </Suspense>
   );
 }

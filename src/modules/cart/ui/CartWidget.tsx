@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { ShoppingCart } from 'react-feather';
 
 import { useGetCartQuery } from '../api/cartApi';
@@ -23,9 +24,22 @@ export const CartWidget = () => {
   const { canBuy, hydrated } = useCanBuy();
   const { data } = useGetCartQuery(undefined, { skip: !hydrated || !canBuy });
 
-  if (!hydrated || !canBuy) return null;
-
   const cuantos = data?.data.itemCount ?? 0;
+
+  /* Cuando el carrito cambia —se agrega algo, aunque sea mas del mismo
+     producto—, el icono y el numero rebotan: es lo que hace sentir que lo
+     agregado llego al carrito. Se compara en el render y no en un efecto, y
+     la key nueva vuelve a montar el icono, que es lo que repite la animacion.
+     La primera carga no rebota. */
+  const huella = data ? `${data.data.itemCount}|${data.data.subtotal}` : null;
+  const [previa, setPrevia] = useState(huella);
+  const [rebotes, setRebotes] = useState(0);
+  if (huella !== previa) {
+    setPrevia(huella);
+    if (previa !== null && huella !== null) setRebotes((n) => n + 1);
+  }
+
+  if (!hydrated || !canBuy) return null;
 
   return (
     <li className='onhover-dropdown cart-dropdown'>
@@ -38,13 +52,19 @@ export const CartWidget = () => {
             : `Mi carrito, ${cuantos} ${cuantos === 1 ? 'producto' : 'productos'}`
         }
       >
-        <ShoppingCart />
+        <span key={rebotes} className={rebotes > 0 ? 'cart-bump' : undefined}>
+          <ShoppingCart />
+        </span>
       </Link>
       {/* Fuera del boton y no dentro: `.btn` recorta con `overflow: hidden`, de
           modo que ahi dentro la esquina redondeada se come el numero.
           `aria-hidden` porque la cuenta ya va dicha en el `aria-label`. */}
       {cuantos > 0 && (
-        <span className='cart-badge' aria-hidden='true'>
+        <span
+          key={`n${rebotes}`}
+          className={`cart-badge${rebotes > 0 ? ' cart-bump' : ''}`}
+          aria-hidden='true'
+        >
           {cuantos}
         </span>
       )}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ComponentType } from 'react';
 import { Image as ImageIcon } from 'react-feather';
 
 import {
@@ -9,6 +10,7 @@ import {
   unitPriceText,
 } from '../../lib/productLabels';
 import type { Product } from '../../model/product.types';
+import type { BuyableFormatProps } from '../public/PublicProductScreen';
 import { Price } from './Price';
 
 /* La tarjeta de producto, una sola para los tres sitios que la pintan: el
@@ -33,6 +35,9 @@ interface ProductCardProps {
   product: Product;
   /** A donde lleva. Cambia entre el area del comprador y lo publico. */
   href: string;
+  /** El boton de agregar al carrito, que pone el modulo del carrito: este
+      modulo no puede importarlo. Lo pasa la pagina. */
+  CardAction?: ComponentType<BuyableFormatProps>;
 }
 
 const principiosResumen = (product: Product): string | null => {
@@ -48,7 +53,7 @@ const principiosResumen = (product: Product): string | null => {
     .join(' + ');
 };
 
-export const ProductCard = ({ product, href }: ProductCardProps) => {
+export const ProductCard = ({ product, href, CardAction }: ProductCardProps) => {
   const image = getPrimaryImage(product);
   const principios = principiosResumen(product);
   const formatos = product.presentations.length;
@@ -57,7 +62,7 @@ export const ProductCard = ({ product, href }: ProductCardProps) => {
   const destacada = featuredPresentation(product);
   const precio = destacada?.price ?? null;
 
-  return (
+  const card = (
     <Link href={href} className='catalog-card'>
       <div className='catalog-card-media'>
         {image ? (
@@ -124,6 +129,34 @@ export const ProductCard = ({ product, href }: ProductCardProps) => {
         </div>
       </div>
     </Link>
+  );
+
+  if (!CardAction || !destacada) return card;
+
+  /* El boton va encima de la imagen y fuera del enlace: un boton dentro de un
+     enlace no es HTML valido, y su clic navegaria a la ficha. */
+  return (
+    <div className='catalog-card-wrap'>
+      {card}
+      <div className='catalog-card-action'>
+        <CardAction
+          productName={product.name}
+          formats={[
+            {
+              presentationId: destacada.id,
+              name: destacada.name,
+              packaging: destacada.packaging,
+              price: destacada.price,
+              currency: destacada.currency,
+              minOrderQuantity: destacada.minOrderQuantity,
+              orderMultiple: destacada.orderMultiple,
+              stock: destacada.stock,
+              priceTiers: destacada.priceTiers ?? [],
+            },
+          ]}
+        />
+      </div>
+    </div>
   );
 };
 

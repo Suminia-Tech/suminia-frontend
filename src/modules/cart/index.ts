@@ -5,6 +5,7 @@ export { CartScreen } from './ui/CartScreen';
 export { CartSummary } from './ui/CartSummary';
 export { CartWidget } from './ui/CartWidget';
 export { BuyBox } from './ui/BuyBox';
+export { QuickAddToCart } from './ui/QuickAddToCart';
 export type { BuyableFormat } from './ui/BuyBox';
 
 export { useGetCartQuery } from './api/cartApi';
