@@ -85,9 +85,7 @@ export const RegistrationProgress = ({
                 <Icono size={18} className='registration-step-icon' />
                 <span className='registration-step-text'>
                   <strong>{TITULO[paso.id] ?? paso.title}</strong>
-                  <small className='font-light'>
-                    {paso.completo ? paso.description : paso.faltan.map((f) => f.texto).join(' ')}
-                  </small>
+                  <small className='font-light'>{paso.progressText}</small>
                 </span>
                 <span className='registration-step-state'>
                   {paso.completo ? <CheckCircle size={16} /> : <Circle size={16} />}

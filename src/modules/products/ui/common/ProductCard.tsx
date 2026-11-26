@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import { Image as ImageIcon } from 'react-feather';
 
-import { formatPriceRange, getPrimaryImage } from '../../lib/productLabels';
+import {
+  featuredPresentation,
+  formatPrice,
+  getPrimaryImage,
+  saleUnitText,
+  unitPriceText,
+} from '../../lib/productLabels';
 import type { Product } from '../../model/product.types';
 import { Price } from './Price';
 
@@ -46,6 +52,10 @@ export const ProductCard = ({ product, href }: ProductCardProps) => {
   const image = getPrimaryImage(product);
   const principios = principiosResumen(product);
   const formatos = product.presentations.length;
+  /* El precio de una presentacion concreta, y debajo su equivalente por
+     unidad: el rango "$9.600 – $28.000" no decia cuanto cuesta cada cosa. */
+  const destacada = featuredPresentation(product);
+  const precio = destacada?.price ?? null;
 
   return (
     <Link href={href} className='catalog-card'>
@@ -79,7 +89,27 @@ export const ProductCard = ({ product, href }: ProductCardProps) => {
         </p>
 
         <div className='catalog-card-foot'>
-          <strong>{formatPriceRange(product) ?? <Price value={null} />}</strong>
+          <strong>
+            {precio !== null && destacada ? (
+              formatPrice(precio, destacada.currency)
+            ) : (
+              <Price value={null} />
+            )}
+          </strong>
+          {destacada &&
+            unitPriceText(precio, destacada.contentQuantity, destacada.contentUnit) && (
+              <span className='catalog-card-unit font-light'>
+                {unitPriceText(
+                  precio,
+                  destacada.contentQuantity,
+                  destacada.contentUnit,
+                  destacada.currency,
+                )}
+              </span>
+            )}
+          {destacada && saleUnitText(destacada) && (
+            <span className='catalog-card-sale-unit'>{saleUnitText(destacada)}</span>
+          )}
 
           <span className='catalog-card-meta font-light'>
             {formatos === 1 ? '1 presentación' : `${formatos} presentaciones`}

@@ -102,6 +102,8 @@ export interface SaveSupplierDeclarationRequest {
   listsAuthorization: true;
   truthfulInformation: true;
   dataPolicy: true;
+  /* Solo el proveedor: los compromisos comerciales de Suminia. */
+  commercialCommitments?: true;
   fundsOrigin: string;
   isPep: boolean;
   internationalOperations: boolean;

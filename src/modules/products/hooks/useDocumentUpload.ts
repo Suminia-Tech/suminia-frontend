@@ -27,7 +27,12 @@ export const useDocumentUpload = (productId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const upload = useCallback(
-    async (type: ProductDocumentType, file: File): Promise<boolean> => {
+    async (
+      type: ProductDocumentType,
+      file: File,
+      /* Un estudio lleva su nombre y su tipo. */
+      study?: { title: string; studyType: string },
+    ): Promise<boolean> => {
       setError(null);
 
       if (!ALLOWED_TYPES.includes(file.type)) {
@@ -51,7 +56,7 @@ export const useDocumentUpload = (productId: string) => {
 
         await confirmDocument({
           productId,
-          data: { type, storageKey: ticket.storageKey, filename: file.name },
+          data: { type, storageKey: ticket.storageKey, filename: file.name, ...study },
         }).unwrap();
 
         return true;

@@ -22,7 +22,9 @@ import { useAppSelector } from '@/store/hooks';
 import { useGetMedicineOffersQuery } from '../../api/productsApi';
 import { useCatalogProduct } from '../../hooks/useCatalogProducts';
 import { humanizeAttributeKey, toDisplayPairs } from '../../lib/attributes';
-import { formatPrice } from '../../lib/productLabels';
+import { formatPrice, unitPriceText } from '../../lib/productLabels';
+import { normalizeUnit } from '../../lib/units';
+import { cantidadConUnidad } from '../../lib/presentationName';
 import { priceTaxSuffix, taxConditionLabel } from '../../lib/tax';
 import { Price } from '../common/Price';
 import { ImageLightbox } from '../common/ImageLightbox';
@@ -123,7 +125,15 @@ export const PublicProductScreen = ({
   const { data: offersData } = useGetMedicineOffersQuery(productId, {
     skip: !isAuthenticated,
   });
-  const offers = offersData?.data ?? [];
+  /* Las ofertas del mismo medicamento se comparan por precio o por precio por
+     unidad: una caja x 100 sale mas cara que una x 30, pero mas barata por
+     tableta. */
+  const [ordenOfertas, setOrdenOfertas] = useState<'precio' | 'unidad'>('unidad');
+  const offers = [...(offersData?.data ?? [])].sort((a, b) =>
+    ordenOfertas === 'unidad'
+      ? (a.fromUnitPrice ?? Infinity) - (b.fromUnitPrice ?? Infinity)
+      : (a.fromPrice ?? Infinity) - (b.fromPrice ?? Infinity),
+  );
 
   if (isLoading) {
     return (
@@ -538,6 +548,7 @@ export const PublicProductScreen = ({
                   <th>Contenido</th>
                   <th>Existencias</th>
                   <th className='text-end'>Precio</th>
+                  <th className='text-end'>Precio por unidad</th>
                 </tr>
               </thead>
               <tbody>
@@ -552,7 +563,10 @@ export const PublicProductScreen = ({
                     <td className='font-light'>{presentation.packaging}</td>
                     <td className='font-light'>
                       {presentation.contentQuantity
-                        ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
+                        ? cantidadConUnidad(
+                            String(presentation.contentQuantity),
+                            presentation.contentUnit ?? '',
+                          )
                         : '—'}
                     </td>
                     <td className='font-light'>
@@ -570,6 +584,15 @@ export const PublicProductScreen = ({
                         currency={presentation.currency}
                       />
                     </td>
+                    {/* Lo que compara de verdad una caja x 30 con una x 100. */}
+                    <td className='text-end font-light'>
+                      {unitPriceText(
+                        presentation.price,
+                        presentation.contentQuantity,
+                        presentation.contentUnit,
+                        presentation.currency,
+                      ) ?? '—'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -585,11 +608,24 @@ export const PublicProductScreen = ({
               proveedores, un solo sitio para compararlos. */}
           {offers.length > 0 && (
             <section className='product-detail-block'>
-              <div className='box-head'>
+              <div className='box-head offers-head'>
                 <h3>
                   Otras ofertas de este medicamento
                   <span className='font-light'> · {offers.length}</span>
                 </h3>
+                <label className='offers-sort'>
+                  <span className='font-light'>Ordenar por</span>
+                  <select
+                    className='form-control'
+                    value={ordenOfertas}
+                    onChange={(event) =>
+                      setOrdenOfertas(event.target.value as 'precio' | 'unidad')
+                    }
+                  >
+                    <option value='unidad'>Precio por unidad</option>
+                    <option value='precio'>Precio</option>
+                  </select>
+                </label>
               </div>
               <ul className='medicine-offers'>
                 {offers.map((offer) => (
@@ -613,6 +649,12 @@ export const PublicProductScreen = ({
                             currency={offer.currency}
                           />
                         </strong>
+                        {offer.fromUnitPrice !== null && offer.unit && (
+                          <small className='font-light d-block'>
+                            {formatPrice(offer.fromUnitPrice, offer.currency)} por{' '}
+                            {normalizeUnit(offer.unit)}
+                          </small>
+                        )}
                       </span>
                     </Link>
                   </li>

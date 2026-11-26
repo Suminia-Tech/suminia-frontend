@@ -14,7 +14,12 @@ import {
   useRemovePresentationMutation,
   useUpdatePresentationMutation,
 } from '../../api/productsApi';
-import { composeDisplayName, composePresentationName } from '../../lib/presentationName';
+import {
+  composeDisplayName,
+  composePresentationName,
+  precioPor,
+  precioUnitario,
+} from '../../lib/presentationName';
 import {
   MAX_PRICE_TIERS,
   validateOrderQuantities,
@@ -176,6 +181,8 @@ const ProductPresentationsModal = ({
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  /* El precio por unidad de medida, cuando la unidad de venta trae varias. */
+  const unitarioDraft = precioUnitario(draft.price, draft.contentQuantity, draft.contentUnit);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isCreating, setCreating] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<ProductPresentation | null>(null);
@@ -352,11 +359,9 @@ const ProductPresentationsModal = ({
             producto. */}
         <p className='font-light'>
           {product.name}
-          {product.reference && ` · Ref. ${product.reference}`}. Las presentaciones son
-          las formas de vender esta misma referencia, según su unidad de venta y su
-          contenido: caja x 10, caja x 100, frasco x 500 mL. La talla, el calibre o el
-          color se indican como variante. Otra referencia o modelo se crea como un
-          producto aparte.
+          {product.reference && ` · Ref. ${product.reference}`}. Cada presentación se
+          define por su unidad de venta y su contenido (por ejemplo, caja x 10 o frasco x
+          500 mL). La talla, el calibre o el color se registran como variante.
         </p>
 
         <div className='catalog-panel'>
@@ -501,7 +506,6 @@ const ProductPresentationsModal = ({
             <Row>
               <Col md='4' className='mb-3'>
                 {field('Contenido', 'contentQuantity', { type: 'number', placeholder: '50' })}
-                <small className='font-light'>Cuánto trae cada unidad de venta.</small>
               </Col>
               <Col md='4' className='mb-3'>
                 <label className='form-label font-light'>Unidad de medida</label>
@@ -564,13 +568,17 @@ const ProductPresentationsModal = ({
 
             <Row>
               <Col md='4' className='mb-3'>
-                {field('Tu precio a Suminia (COP, sin IVA)', 'price', { type: 'number' })}
+                {field(`Tu precio a Suminia ${precioPor(draft.packaging)} (COP, sin IVA)`, 'price', {
+                  type: 'number',
+                })}
+                {unitarioDraft && (
+                  <small className='font-light'>
+                    Equivale a {formatPrice(unitarioDraft.valor, 'COP')} por {unitarioDraft.unidad}.
+                  </small>
+                )}
               </Col>
               <Col md='4' className='mb-3'>
                 {field('Inventario disponible para Suminia', 'stock', { type: 'number' })}
-                <small className='font-light'>
-                  Solo lo que reservas para vender por Suminia.
-                </small>
               </Col>
               <Col md='4' className='mb-3'>
                 {field('SKU del proveedor', 'sku')}

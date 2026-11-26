@@ -15,3 +15,7 @@ export const DATA_POLICY_EFFECTIVE_DATE = '10 de octubre de 2026';
 
 /* La ruta publica de la politica. */
 export const DATA_POLICY_PATH = '/data-policy';
+
+/* La ruta publica de los compromisos comerciales que acepta el proveedor en
+   su declaracion. */
+export const COMMERCIAL_COMMITMENTS_PATH = '/commercial-commitments';

@@ -19,13 +19,18 @@ const ID_LABEL: Record<IdentificationType, string> = {
 const DeclarationSummaryPanel = ({
   declaration,
   title,
+  showCommercialCommitments = false,
 }: {
   declaration: SupplierDeclaration;
   title: string;
+  /* Solo del proveedor: el comprador no firma compromisos comerciales. */
+  showCommercialCommitments?: boolean;
 }) => (
   <Panel
     title={title}
-    description={`Enviada el ${formatDate(declaration.updatedAt)}.`}
+    /* La fecha en que se firmo, no la ultima modificacion: aceptar despues
+       los compromisos comerciales no reenvia la declaracion. */
+    description={`Enviada el ${formatDate(declaration.declarationsAcceptedAt)}.`}
   >
     <ul className='data-list'>
       <li>
@@ -65,6 +70,16 @@ const DeclarationSummaryPanel = ({
             <span>{declaration.currencies.join(', ')}</span>
           </li>
         </>
+      )}
+      {showCommercialCommitments && (
+        <li>
+          <span className='font-light'>Compromisos comerciales</span>
+          <span>
+            {declaration.commercialCommitmentsAcceptedAt
+              ? `Aceptados el ${formatDate(declaration.commercialCommitmentsAcceptedAt)}`
+              : 'Sin aceptar'}
+          </span>
+        </li>
       )}
       <li>
         <span className='font-light'>Tratamiento de datos</span>

@@ -21,6 +21,8 @@ import {
 import {
   cantidadConUnidad,
   composePresentationName,
+  precioPor,
+  precioUnitario,
 } from '../../lib/presentationName';
 import { PRODUCT_TYPE_HELP } from '../../lib/productTypes';
 import { TAX_OPTIONS, defaultTaxCategory, taxLabel } from '../../lib/tax';
@@ -353,6 +355,8 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
         contentUnit: form.contentUnit,
         variant: form.variant,
       });
+  const unitario = precioUnitario(form.price, form.contentQuantity, form.contentUnit);
+
   const vistaPrevia: ProductPreviewData = {
     name: form.name.trim(),
     categoryName: categories.find((category) => category.id === form.categoryId)?.name ?? '',
@@ -391,9 +395,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
           </option>
         ))}
       </select>
-      <small className='font-light'>
-        {TAX_OPTIONS.find((option) => option.value === form.taxCategory)?.help}
-      </small>
     </>
   );
 
@@ -542,12 +543,8 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     value={form.reference}
                     onChange={handleChange('reference')}
                   />
-                  {errors.reference ? (
+                  {errors.reference && (
                     <small className='text-danger'>{errors.reference}</small>
-                  ) : (
-                    <small className='font-light'>
-                      Otra referencia se crea como otro producto.
-                    </small>
                   )}
                 </Col>
               </Row>
@@ -666,9 +663,9 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
               <Col lg='6' className='product-form-aside'>
                 <h5 className='mb-1'>Primera presentación</h5>
                 <p className='font-light'>
-                  Cada presentación es una forma de vender esta referencia, según su
-                  unidad de venta y su contenido: caja x 10, caja x 100, frasco x 500 mL.
-                  Empieza con una y agrega las demás después.
+                  Registra la unidad de venta y su contenido (por ejemplo, caja x 10 o
+                  frasco x 500 mL). Podrás agregar otras presentaciones una vez creado el
+                  producto.
                 </p>
 
                 {/* Que presentacion comercial se vende. De aqui sale el CUM,
@@ -746,12 +743,8 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       value={form.contentQuantity}
                       onChange={handleChange('contentQuantity')}
                     />
-                    {errors.contentQuantity ? (
+                    {errors.contentQuantity && (
                       <small className='text-danger'>{errors.contentQuantity}</small>
-                    ) : (
-                      <small className='font-light'>
-                        Cuánto trae cada unidad de venta. Ej.: caja x 50, frasco x 500 mL.
-                      </small>
                     )}
                   </Col>
                   <Col sm='6' className='mb-3'>
@@ -773,7 +766,9 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
 
                 <Row>
                   <Col sm='6' className='mb-3'>
-                    <label className='form-label font-light'>Tu precio a Suminia (COP, sin IVA)</label>
+                    <label className='form-label font-light'>
+                      Tu precio a Suminia {precioPor(form.packaging)} (COP, sin IVA)
+                    </label>
                     <input
                       type='number'
                       min='0'
@@ -784,9 +779,11 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                     {errors.price ? (
                       <small className='text-danger'>{errors.price}</small>
                     ) : (
-                      <small className='font-light'>
-                        Lo que Suminia te paga por cada unidad de venta (por ejemplo, por caja) y lo que le facturas.
-                      </small>
+                      unitario && (
+                        <small className='font-light'>
+                          Equivale a {formatPrice(unitario.valor)} por {unitario.unidad}.
+                        </small>
+                      )
                     )}
                   </Col>
                   <Col sm='6' className='mb-3'>
@@ -809,10 +806,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       value={form.stock}
                       onChange={handleChange('stock')}
                     />
-                    <small className='font-light'>
-                      Solo las unidades que reservas para vender por Suminia, no todo tu
-                      inventario.
-                    </small>
                   </Col>
                   <Col sm='6' className='mb-3'>
                     {/* "del proveedor": el codigo de Suminia es otro (CRS), y un
@@ -824,7 +817,6 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
                       value={form.sku}
                       onChange={handleChange('sku')}
                     />
-                    <small className='font-light'>Tu código interno. Opcional.</small>
                   </Col>
                 </Row>
 

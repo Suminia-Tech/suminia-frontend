@@ -98,13 +98,13 @@ const SupplierWarehousesFields = ({
     <Panel
       id={SECTION.warehouses}
       title='Bodegas y puntos de inventario'
-      description='Dónde guardas y desde dónde despachas la mercancía. Con esto Suminia coordina la logística de tus pedidos y programa las visitas de calidad.'
+      description='Registra los establecimientos desde los cuales almacenas y despachas tus productos. Esta información permite a Suminia coordinar las operaciones logísticas y realizar el seguimiento a las condiciones de almacenamiento y calidad.'
     >
       <div className='form-grid'>
         {warehouses.length === 0 && (
           <p className='font-light form-grid-full mb-0'>
-            Aún no has registrado bodegas. Si despachas desde tu oficina principal, regístrala
-            también aquí.
+            Aún no has registrado establecimientos. Añade las ubicaciones desde las cuales
+            atenderás los pedidos de Suminia.
           </p>
         )}
 

@@ -1,11 +1,15 @@
-import type { Product, ProductStatus } from '../model/product.types';
+import type { Product, ProductPresentation, ProductStatus } from '../model/product.types';
+import { normalizeUnit } from './units';
 
 export const PRODUCT_STATUS_LABEL: Record<ProductStatus, string> = {
   DRAFT: 'Borrador',
   PENDING_REVIEW: 'En revisión',
   ACTIVE: 'Publicado',
-  REJECTED: 'Devuelto',
-  INACTIVE: 'Retirado',
+  /* "Requiere correcciones" y no "Devuelto": dice que hay que hacer. */
+  REJECTED: 'Requiere correcciones',
+  /* El proveedor dejo de venderlo: sale de la tienda y conserva su historial.
+     Antes se llamaba "Retirado" y se confundia con suspender. */
+  INACTIVE: 'Suspendido',
 };
 
 /* Tono de cada estado. Se guarda el nombre del tono y no la clase completa para
@@ -67,7 +71,52 @@ export const formatPriceRange = (product: Product): string | null => {
     : `${formatPrice(min, currency)} – ${formatPrice(max, currency)}`;
 };
 
+/* La unidad de venta a la que corresponde el precio, en minuscula: "kit",
+   "caja". Nula si las presentaciones se venden en empaques distintos, porque
+   entonces no hay una sola que decir. */
+export const saleUnitOf = (product: Product): string | null => {
+  const empaques = [
+    ...new Set(
+      product.presentations
+        .map((presentation) => presentation.packaging.trim().toLocaleLowerCase('es'))
+        .filter(Boolean),
+    ),
+  ];
+  return empaques.length === 1 ? empaques[0] : null;
+};
+
 /* Suma del inventario de todos los formatos. Es lo que responde "¿tengo algo
    que vender?", que en una lista importa mas que el detalle por formato. */
 export const getTotalStock = (product: Product): number =>
   product.presentations.reduce((total, presentation) => total + presentation.stock, 0);
+
+/* La presentacion que representa al producto en una tarjeta: la marcada como
+   principal, o si no la mas barata. Su precio es el que ve el comprador
+   primero, y no un rango que mezcla una caja de 10 con una de 100. */
+export const featuredPresentation = (product: Product): ProductPresentation | null =>
+  product.presentations.find((p) => p.isDefault && p.price !== null) ??
+  [...product.presentations]
+    .filter((p) => p.price !== null)
+    .sort((a, b) => (a.price as number) - (b.price as number))[0] ??
+  product.presentations[0] ??
+  null;
+
+/* El precio por unidad de medida, para leerlo bajo el precio de venta:
+   "$320 por tableta". Nulo si la presentacion trae una sola unidad o no hay
+   precio. Es como se comparan los medicamentos. */
+export const unitPriceText = (
+  price: number | null,
+  contentQuantity: number | null,
+  contentUnit: string | null,
+  currency = 'COP',
+): string | null => {
+  const unidad = contentUnit ? normalizeUnit(contentUnit) : '';
+  if (price === null || !contentQuantity || contentQuantity <= 1 || !unidad) return null;
+  return `${formatPrice(price / contentQuantity, currency)} por ${unidad}`;
+};
+
+/* "Venta por caja": a que corresponde el precio principal. */
+export const saleUnitText = (presentation: ProductPresentation): string | null => {
+  const empaque = presentation.packaging.trim().toLocaleLowerCase('es');
+  return empaque ? `Venta por ${empaque}` : null;
+};

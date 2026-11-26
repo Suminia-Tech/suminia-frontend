@@ -27,7 +27,12 @@ export type ProductStatus = 'DRAFT' | 'PENDING_REVIEW' | 'ACTIVE' | 'REJECTED' |
 
 /* Los soportes de un dispositivo medico. El CCAA solo se exige a quien lo
    fabrica o lo importa. */
-export type ProductDocumentType = 'SANITARY_REGISTRATION' | 'TECHNICAL_SHEET' | 'CCAA';
+export type ProductDocumentType =
+  | 'SANITARY_REGISTRATION'
+  | 'TECHNICAL_SHEET'
+  | 'CCAA'
+  | 'SAFETY_DATA_SHEET'
+  | 'STUDY';
 
 /* Sin URL: viven en la parte privada del bucket y el enlace se firma al
    abrirlos, con su propia llamada. */
@@ -36,6 +41,9 @@ export interface ProductDocument {
   type: ProductDocumentType;
   filename: string | null;
   createdAt: string;
+  /** Solo en un estudio: su nombre y su tipo. */
+  title?: string | null;
+  studyType?: string | null;
 }
 
 /* "A partir de esta cantidad, este precio". Por debajo del primer escalon rige
@@ -136,6 +144,9 @@ export interface MedicineOffer {
   referenceCode: string;
   brand: string | null;
   fromPrice: number | null;
+  /** El menor precio por unidad de medida, con su unidad: "$320 por tableta". */
+  fromUnitPrice: number | null;
+  unit: string | null;
   currency: string;
   presentationCount: number;
   inStock: boolean;
@@ -332,6 +343,9 @@ export interface ConfirmDocumentRequest {
   type: ProductDocumentType;
   storageKey: string;
   filename?: string;
+  /* Solo en un estudio. */
+  title?: string;
+  studyType?: string;
 }
 
 export interface DocumentUrl {

@@ -3,13 +3,16 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { toast } from 'react-toastify';
 
-import { DATA_POLICY_PATH } from '@/shared/config/legal';
+import { COMMERCIAL_COMMITMENTS_PATH, DATA_POLICY_PATH } from '@/shared/config/legal';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 import { PageHeader, PageSkeleton, Panel } from '@/shared/ui';
 import { useAppSelector } from '@/store/hooks';
 
 import { useSaveBuyerDeclarationMutation } from '../../api/buyersApi';
-import { useSaveSupplierDeclarationMutation } from '../../api/suppliersApi';
+import {
+  useAcceptCommercialCommitmentsMutation,
+  useSaveSupplierDeclarationMutation,
+} from '../../api/suppliersApi';
 import { useOrganizationDetail, type OrganizationKind } from '../../hooks/useOrganizationAdmin';
 import {
   DATA_POLICY_TEXT,
@@ -63,6 +66,8 @@ interface DeclarationValues {
   currencies: string[];
   otherCurrency: string;
   dataPolicy: boolean;
+  /* Solo el proveedor. */
+  commercialCommitments: boolean;
   marketingConsent: boolean;
   beneficialOwners: OwnerValues[];
 }
@@ -99,6 +104,7 @@ const toValues = (
     currencies: listed,
     otherCurrency: other.join(', '),
     dataPolicy: Boolean(declaration),
+    commercialCommitments: Boolean(declaration?.commercialCommitmentsAcceptedAt),
     marketingConsent: declaration?.marketingConsent ?? false,
     /* Una fila de entrada, con la propia empresa como sociedad: es el caso
        comun, el accionista directo. */
@@ -113,7 +119,7 @@ const toValues = (
 
 const MUST_ACCEPT = 'Debes aceptar esta declaración para continuar.';
 
-const validate = (values: DeclarationValues): Errors => {
+const validate = (values: DeclarationValues, kind: OrganizationKind): Errors => {
   const errors: Errors = {};
 
   if (!values.lawfulOrigin) errors.lawfulOrigin = MUST_ACCEPT;
@@ -149,6 +155,11 @@ const validate = (values: DeclarationValues): Errors => {
 
   if (!values.dataPolicy) {
     errors.dataPolicy = 'Debes aceptar la política de tratamiento de datos para continuar.';
+  }
+
+  if (kind === 'supplier' && !values.commercialCommitments) {
+    errors.commercialCommitments =
+      'Debes aceptar los compromisos comerciales de Suminia para continuar.';
   }
 
   return errors;
@@ -286,7 +297,7 @@ const DeclarationForm = ({
     event.preventDefault();
     setServerError(null);
 
-    const nextErrors = validate(values);
+    const nextErrors = validate(values, kind);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
       toast.error('Revisa los campos marcados antes de enviar.');
@@ -306,6 +317,7 @@ const DeclarationForm = ({
           listsAuthorization: true,
           truthfulInformation: true,
           dataPolicy: true,
+          ...(kind === 'supplier' && { commercialCommitments: true as const }),
           fundsOrigin: values.fundsOrigin.trim(),
           isPep: values.isPep === 'yes',
           internationalOperations: international,
@@ -527,6 +539,21 @@ const DeclarationForm = ({
         </div>
       </Panel>
 
+      {/* Solo el proveedor: lo que acepta para operar con Suminia. El texto
+          completo, en su propia pagina, como la politica de datos. */}
+      {kind === 'supplier' && (
+        <Panel title='Compromisos comerciales'>
+          <DeclarationCheck
+            id='declaracion-compromisos'
+            title='Compromisos comerciales para proveedores'
+            text={COMMITMENTS_TEXT}
+            checked={values.commercialCommitments}
+            onChange={(checked) => set('commercialCommitments', checked)}
+            error={errors.commercialCommitments}
+          />
+        </Panel>
+      )}
+
       <Panel title='Autorización para el tratamiento de datos personales'>
         <DeclarationCheck
           id='declaracion-datos'
@@ -566,6 +593,66 @@ const DeclarationForm = ({
         </button>
       </div>
     </form>
+  );
+};
+
+/* El texto de la casilla, el mismo en el formulario y en la aceptacion
+   aparte. */
+const COMMITMENTS_TEXT = (
+  <>
+    He leído y acepto los{' '}
+    <a href={COMMERCIAL_COMMITMENTS_PATH} target='_blank' rel='noreferrer'>
+      compromisos comerciales de Suminia para proveedores
+    </a>
+    . Cuento con autorización para aceptarlos en nombre de mi empresa.
+  </>
+);
+
+/* El proveedor ya revisado no reescribe su declaracion, pero si acepta los
+   compromisos comerciales, que se publicaron despues de que firmara. */
+const CommercialCommitmentsAcceptance = ({ supplierId }: { supplierId: string }) => {
+  const [checked, setChecked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [accept, { isLoading }] = useAcceptCommercialCommitmentsMutation();
+
+  const submit = async () => {
+    if (!checked) {
+      setError('Debes aceptar los compromisos comerciales de Suminia para continuar.');
+      return;
+    }
+    setError(null);
+    try {
+      await accept({ supplierId }).unwrap();
+      toast.success('Compromisos comerciales aceptados');
+    } catch (err) {
+      setError(extractErrorMessage(err, 'No se pudieron aceptar los compromisos.'));
+    }
+  };
+
+  return (
+    <Panel
+      title='Compromisos comerciales'
+      description='Suminia publicó los compromisos que aceptan sus proveedores para operar en la plataforma. Revísalos y acéptalos.'
+    >
+      <div className='declaration-form'>
+        <DeclarationCheck
+          id='aceptar-compromisos'
+          title='Compromisos comerciales para proveedores'
+          text={COMMITMENTS_TEXT}
+          checked={checked}
+          onChange={setChecked}
+          error={error ?? undefined}
+        />
+      </div>
+      <button
+        type='button'
+        className='btn btn-primary btn-sm mt-3'
+        disabled={isLoading}
+        onClick={() => void submit()}
+      >
+        {isLoading ? 'Guardando...' : 'Aceptar compromisos'}
+      </button>
+    </Panel>
   );
 };
 
@@ -627,10 +714,16 @@ export const DeclarationScreen = ({ kind }: { kind: OrganizationKind }) => {
         <SupportLink /> contándonos qué hay que modificar.
       </div>
       {supplier.declaration ? (
-        <DeclarationSummaryPanel
-          declaration={supplier.declaration}
-          title='Lo que declaraste'
-        />
+        <>
+          {kind === 'supplier' && !supplier.declaration.commercialCommitmentsAcceptedAt && (
+            <CommercialCommitmentsAcceptance supplierId={supplier.id} />
+          )}
+          <DeclarationSummaryPanel
+            declaration={supplier.declaration}
+            title='Lo que declaraste'
+            showCommercialCommitments={kind === 'supplier'}
+          />
+        </>
       ) : (
         <Panel title='Sin declaración registrada'>
           <p className='font-light mb-0'>

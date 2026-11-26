@@ -112,6 +112,18 @@ export const suppliersApi = baseApi.injectEndpoints({
       ],
     }),
 
+    /* El proveedor ya revisado acepta los compromisos comerciales sin
+       reescribir su declaracion. */
+    acceptCommercialCommitments: builder.mutation<ApiResponse<Supplier>, { supplierId: string }>({
+      query: ({ supplierId }) => ({
+        url: `/suppliers/${supplierId}/declaration/commercial-commitments`,
+        method: 'POST',
+      }),
+      invalidatesTags: (_result, _error, { supplierId }) => [
+        { type: 'Supplier', id: supplierId },
+      ],
+    }),
+
     saveSupplierDeclaration: builder.mutation<
       ApiResponse<Supplier>,
       { supplierId: string; data: SaveSupplierDeclarationRequest }
@@ -200,4 +212,5 @@ export const {
   useGetSupplierDocumentUrlMutation,
   useReviewSupplierDocumentMutation,
   useSaveSupplierDeclarationMutation,
+  useAcceptCommercialCommitmentsMutation,
 } = suppliersApi;

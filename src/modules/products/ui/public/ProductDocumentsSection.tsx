@@ -7,12 +7,12 @@ import { useState } from 'react';
 import { extractErrorMessage } from '@/shared/lib/apiError';
 
 import { useGetPublicDocumentUrlMutation } from '../../api/productsApi';
-import { DOCUMENT_LABEL } from '../../lib/productTypes';
+import { DOCUMENT_LABEL, studyTypeLabel } from '../../lib/productTypes';
 import type { ProductDocument, ProductDocumentType } from '../../model/product.types';
 
-/* Los que cualquiera puede abrir desde la ficha. El CCAA no: es de la
-   operacion del proveedor. La misma lista que PUBLIC_DOCUMENT_TYPES del
-   backend. */
+/* Los que se muestran siempre, cargados o no. La ficha de datos de seguridad
+   solo si esta, porque no aplica a todo producto, y los estudios en su
+   propia lista. Todos estan en PUBLIC_DOCUMENT_TYPES del backend. */
 const PUBLIC_DOCUMENTS: ProductDocumentType[] = ['SANITARY_REGISTRATION', 'TECHNICAL_SHEET'];
 
 interface ProductDocumentsSectionProps {
@@ -37,10 +37,26 @@ export const ProductDocumentsSection = ({ productId, documents }: ProductDocumen
   /* Los dos que se publican, cargados o no. Un producto sin ellos no se le
      muestra al comprador; el hueco vacio queda para el proveedor y el personal
      de Suminia, que si ven la ficha. */
-  const huecos = PUBLIC_DOCUMENTS.map((type) => ({
-    type,
-    document: documents.find((item) => item.type === type) ?? null,
-  }));
+  const fds = documents.find((item) => item.type === 'SAFETY_DATA_SHEET') ?? null;
+  const huecos = [
+    ...PUBLIC_DOCUMENTS.map((type) => ({
+      key: type,
+      title: DOCUMENT_LABEL[type],
+      detail: null as string | null,
+      document: documents.find((item) => item.type === type) ?? null,
+    })),
+    ...(fds
+      ? [{ key: fds.id, title: DOCUMENT_LABEL.SAFETY_DATA_SHEET, detail: null, document: fds }]
+      : []),
+    ...documents
+      .filter((item) => item.type === 'STUDY')
+      .map((study) => ({
+        key: study.id,
+        title: study.title ?? 'Estudio',
+        detail: studyTypeLabel(study.studyType),
+        document: study,
+      })),
+  ];
 
   const abrir = async (documentId: string) => {
     const tab = window.open('', '_blank');
@@ -65,15 +81,17 @@ export const ProductDocumentsSection = ({ productId, documents }: ProductDocumen
         </h3>
       </div>
       <div className='document-slots'>
-        {huecos.map(({ type, document }) => (
-          <div className={`document-slot${document ? ' is-filled' : ''}`} key={type}>
+        {huecos.map(({ key, title, detail, document }) => (
+          <div className={`document-slot${document ? ' is-filled' : ''}`} key={key}>
             <span className='document-slot-icon'>
               {document ? <CheckCircle size={20} /> : <FileText size={20} />}
             </span>
             <div className='document-slot-text'>
-              <strong>{DOCUMENT_LABEL[type]}</strong>
+              <strong>{title}</strong>
               <small className='font-light'>
-                {document ? (document.filename ?? 'Documento cargado') : 'Sin cargar.'}
+                {[detail, document ? (document.filename ?? 'Documento cargado') : 'Sin cargar.']
+                  .filter(Boolean)
+                  .join(' · ')}
               </small>
             </div>
             {document && (

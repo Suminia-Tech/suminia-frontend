@@ -20,7 +20,7 @@ import {
   PRODUCT_STATUS_TONE,
   formatPrice,
 } from '../../lib/productLabels';
-import { DOCUMENT_LABEL, requiredDocuments } from '../../lib/productTypes';
+import { DOCUMENT_LABEL, requiredDocuments, studyTypeLabel } from '../../lib/productTypes';
 import { taxLabel } from '../../lib/tax';
 import type { ReviewDecision } from '../../model/product.types';
 
@@ -81,7 +81,7 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
         id: product.id,
         data: decision === 'REJECT' ? { decision, note: note.trim() } : { decision },
       }).unwrap();
-      toast.success(decision === 'APPROVE' ? 'Producto publicado' : 'Producto devuelto');
+      toast.success(decision === 'APPROVE' ? 'Producto publicado' : 'Producto devuelto para correcciones');
       setRejecting(false);
       setNote('');
     } catch (err) {
@@ -328,7 +328,10 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
                     ...product.documents.map((d) => d.type),
                     ...(product.documentHistory ?? []).map((d) => d.type),
                   ]),
-                ].map(
+                ]
+                  /* Los estudios van uno por uno, abajo: no hay uno por tipo. */
+                  .filter((type) => type !== 'STUDY')
+                  .map(
                   (type) => {
                     const document = product.documents.find((item) => item.type === type);
                     const exigido = required.includes(type);
@@ -381,6 +384,35 @@ export const ProductReviewScreen = ({ productId }: { productId: string }) => {
                     );
                   },
                 )}
+                {product.documents
+                  .filter((document) => document.type === 'STUDY')
+                  .map((study) => (
+                    <div className='document-slot is-versioned is-filled' key={study.id}>
+                      <div className='document-slot-row'>
+                        <div className='document-slot-text'>
+                          <div className='document-slot-title'>
+                            <strong>{study.title ?? 'Estudio'}</strong>
+                          </div>
+                          <small className='font-light'>
+                            {studyTypeLabel(study.studyType)} ·{' '}
+                            {study.filename ?? 'Documento cargado'} · subido el{' '}
+                            {formatDateTime(study.createdAt)}
+                          </small>
+                        </div>
+                        <div className='row-actions'>
+                          <button
+                            type='button'
+                            title='Abrir documento'
+                            aria-label='Abrir documento'
+                            disabled={opening === study.id}
+                            onClick={() => open(study.id)}
+                          >
+                            <ExternalLink size={15} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
               </div>
             )}
           </Panel>

@@ -740,6 +740,23 @@ textarea.form-control {
   .catalog-card-meta {
     font-size: 12px;
   }
+
+  /* Bajo el precio de la presentacion: su equivalente por unidad y a que
+     corresponde, "Venta por caja". */
+  .catalog-card-unit {
+    font-size: 12px;
+  }
+
+  .catalog-card-sale-unit {
+    align-self: flex-start;
+    margin: 2px 0 4px;
+    padding: 1px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba($theme-font-color, 0.7);
+    background-color: #f1f3f6;
+    border-radius: var(--suminia-radio-control);
+  }
 }
 
 /* El modal de producto pide bastantes campos: los 500px por defecto de Bootstrap
@@ -2111,6 +2128,12 @@ $estado-error: #dc3545;
 
   &:hover {
     text-decoration: underline;
+  }
+
+  /* Suspender la venta: una accion secundaria, en gris, para que no compita
+     con la que lleva el producto a la tienda. */
+  &.is-muted {
+    color: rgba($theme-font-color, 0.55);
   }
 }
 
@@ -8655,5 +8678,103 @@ ul.status-history {
 
   .modal-footer {
     padding: 12px 32px 24px;
+  }
+}
+
+/* Los documentos del producto: ancho, con margen arriba y abajo, y si no
+   cabe se desplaza por dentro. Angosto y a todo el alto quedaba cortado
+   arriba y habia que recorrerlo entero. */
+.product-documents-modal {
+  &.modal-dialog {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 80px);
+    border-radius: var(--suminia-radio-modal);
+  }
+
+  .modal-body {
+    padding: 0 32px 8px;
+  }
+
+  .document-slots {
+    gap: 8px;
+  }
+
+  .document-slot {
+    padding: 12px 16px;
+  }
+
+  .modal-footer {
+    padding: 12px 32px 24px;
+  }
+}
+
+/* Los estudios del producto, debajo de los documentos con hueco fijo: con su
+   propio aire, porque son otra cosa —varios, cada uno con nombre y tipo—. */
+.product-studies {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid $border-color;
+
+  .product-studies-title {
+    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.product-studies-form {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
+  align-items: end;
+  gap: 12px;
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Una pregunta de opciones cuya leyenda hace de etiqueta. Bootstrap pinta el
+   `legend` al tamaño de un titulo, y cada formulario lo corregia por su
+   cuenta: la de facturacion electronica, fuera de esos formularios, salia
+   enorme. Se corrige una vez para toda la app. */
+legend.form-label {
+  float: none;
+  width: auto;
+  padding: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Las ofertas del mismo medicamento: el titulo y, a la derecha, como
+   ordenarlas. */
+.offers-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.offers-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+
+  .form-control {
+    width: auto;
+    min-width: 180px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 13px;
   }
 }

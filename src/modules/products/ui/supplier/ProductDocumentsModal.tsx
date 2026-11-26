@@ -17,6 +17,8 @@ import {
   DOCUMENT_LABEL,
   OFFERED_DOCUMENTS,
   requiredDocuments,
+  STUDY_TYPE_OPTIONS,
+  studyTypeLabel,
 } from '../../lib/productTypes';
 import type { Product, ProductDocumentType } from '../../model/product.types';
 import { DocumentHistory } from '../common/DocumentHistory';
@@ -48,13 +50,19 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
     product.type,
     product.sanitaryRegistration,
   );
+  /* Los estudios van aparte: no tienen un hueco por tipo, se agregan
+     tantos como haya. */
   const slots = [
     ...new Set<ProductDocumentType>([
       ...OFFERED_DOCUMENTS,
       ...required,
       ...product.documents.map((document) => document.type),
     ]),
-  ];
+  ].filter((type) => type !== 'STUDY');
+  const studies = product.documents.filter((document) => document.type === 'STUDY');
+  const [studyType, setStudyType] = useState('');
+  const [studyTitle, setStudyTitle] = useState('');
+  const [studyError, setStudyError] = useState<string | null>(null);
 
   /* A un producto publicado o en revision no se le quita un soporte exigido:
      el backend lo rechaza. Se reemplaza subiendo otro. */
@@ -73,9 +81,33 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
     event.target.value = '';
     if (!file || !target) return;
 
+    if (target === 'STUDY') {
+      if (await upload('STUDY', file, { title: studyTitle.trim(), studyType })) {
+        toast.success('Estudio agregado');
+        setStudyTitle('');
+        setStudyType('');
+      }
+      return;
+    }
+
     if (await upload(target, file)) {
       toast.success(`${DOCUMENT_LABEL[target]} cargado`);
     }
+  };
+
+  /* El nombre y el tipo antes del archivo: un estudio sin ellos seria un
+     archivo suelto en la ficha. */
+  const addStudy = () => {
+    if (!studyType) {
+      setStudyError('Selecciona el tipo de estudio.');
+      return;
+    }
+    if (!studyTitle.trim()) {
+      setStudyError('Indica el nombre del documento.');
+      return;
+    }
+    setStudyError(null);
+    pick('STUDY');
   };
 
   const confirmRemove = async () => {
@@ -91,7 +123,14 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
   };
 
   return (
-    <Modal className='add-address-modal' centered isOpen={isOpen} toggle={onClose}>
+    <Modal
+      className='add-address-modal product-documents-modal'
+      size='lg'
+      centered
+      scrollable
+      isOpen={isOpen}
+      toggle={onClose}
+    >
       <ModalHeader toggle={onClose}></ModalHeader>
 
       <ModalBody>
@@ -194,6 +233,107 @@ const ProductDocumentsModal = ({ isOpen, onClose, product }: ProductDocumentsMod
             })}
           </div>
         )}
+
+        {/* Los estudios que respaldan el producto: varios, cada uno con su
+            tipo y su nombre. Pasan por la revision de Suminia como los demas
+            documentos, y aprobados los ve el comprador en la ficha. */}
+        <div className='product-studies'>
+          <h5 className='product-studies-title'>Estudios del producto</h5>
+          <p className='font-light'>
+            Estudios que respaldan las características técnicas, la seguridad o el desempeño
+            del producto. Suminia los revisa antes de publicarlos.
+          </p>
+
+          {studies.length > 0 && (
+            <div className='document-slots mb-3'>
+              {studies.map((study) => (
+                <div className='document-slot is-versioned is-filled' key={study.id}>
+                  <div className='document-slot-row'>
+                    <span className='document-slot-icon'>
+                      <CheckCircle size={18} />
+                    </span>
+                    <div className='document-slot-text'>
+                      <div className='document-slot-title'>
+                        <strong>{study.title ?? 'Estudio'}</strong>
+                      </div>
+                      <small className='font-light'>
+                        {studyTypeLabel(study.studyType)} · {study.filename ?? 'Documento cargado'}
+                        {' · '}subido el {formatDateTime(study.createdAt)}
+                      </small>
+                    </div>
+                    <div className='row-actions'>
+                      <button
+                        type='button'
+                        title='Ver documento'
+                        aria-label='Ver documento'
+                        disabled={opening === study.id}
+                        onClick={() => open(study.id)}
+                      >
+                        <ExternalLink size={15} />
+                      </button>
+                      <button
+                        type='button'
+                        className='is-danger'
+                        title='Retirar estudio'
+                        aria-label='Retirar estudio'
+                        onClick={() => setPendingDelete(study.id)}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Tipo, nombre y boton en una fila: es un solo paso, agregar un
+              estudio, y apilado ocupaba media pantalla. */}
+          <div className='product-studies-form'>
+            <div>
+              <label className='form-label' htmlFor='estudio-tipo'>
+                Tipo de estudio
+              </label>
+              <select
+                id='estudio-tipo'
+                className='form-control'
+                value={studyType}
+                onChange={(event) => setStudyType(event.target.value)}
+              >
+                <option value=''>Selecciona el tipo de estudio</option>
+                {STUDY_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className='form-label' htmlFor='estudio-nombre'>
+                Nombre del documento
+              </label>
+              <input
+                id='estudio-nombre'
+                type='text'
+                className='form-control'
+                maxLength={160}
+                placeholder='Ej. Estudio de estabilidad acelerada'
+                value={studyTitle}
+                onChange={(event) => setStudyTitle(event.target.value)}
+              />
+            </div>
+            <button
+              type='button'
+              className='btn btn-outline-secondary btn-with-icon'
+              disabled={uploading !== null}
+              onClick={addStudy}
+            >
+              <Upload size={15} />
+              {uploading === 'STUDY' ? 'Subiendo...' : 'Agregar estudio'}
+            </button>
+          </div>
+          {studyError && <small className='text-danger d-block mt-2'>{studyError}</small>}
+        </div>
 
         {error && (
           <div className='alert alert-danger mt-3' onClick={clearError} role='presentation'>

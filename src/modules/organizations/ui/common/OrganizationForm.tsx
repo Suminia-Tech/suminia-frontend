@@ -608,7 +608,7 @@ const OrganizationForm = ({
           id={SECTION.electronicInvoicing}
           warning={avisoDe(pendientes, 'electronicInvoicing')}
           title='Facturación electrónica'
-          description='Suminia solo trabaja con proveedores que facturan electrónicamente.'
+          description='Para garantizar la trazabilidad y facilitar la gestión de las operaciones comerciales, Suminia requiere que sus proveedores emitan facturas electrónicas.'
         >
           <fieldset>
             <legend className='form-label'>

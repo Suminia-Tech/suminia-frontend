@@ -81,3 +81,25 @@ export const cantidadConUnidad = (cantidad: string, unidad: string): string => {
     medida === 'unidad' ? (varias ? 'unidades' : 'unidad') : varias ? (PLURALES[medida] ?? medida) : medida;
   return `${numero} ${palabra}`;
 };
+
+/* A que corresponde el precio: "por caja", "por kit". Sin unidad de venta
+   elegida, la expresion generica. */
+export const precioPor = (packaging: string): string => {
+  const empaque = packaging.trim().toLocaleLowerCase('es');
+  return empaque ? `por ${empaque}` : 'por unidad de venta';
+};
+
+/* El precio por unidad de medida, cuando la unidad de venta trae varias: una
+   caja x 30 a $8.100 sale a $270 la tableta, que es como se compara en
+   medicamentos. Nulo si no hay nada que dividir. */
+export const precioUnitario = (
+  price: string,
+  contentQuantity: string,
+  contentUnit: string,
+): { valor: number; unidad: string } | null => {
+  const precio = Number(price);
+  const cantidad = Number(contentQuantity);
+  const unidad = normalizeUnit(contentUnit);
+  if (!(precio > 0) || !(cantidad > 1) || !unidad) return null;
+  return { valor: precio / cantidad, unidad };
+};

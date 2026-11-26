@@ -8,6 +8,7 @@ import {
   Image as ImageIcon,
   Layers,
   Package,
+  PauseCircle,
   Plus,
   ChevronDown,
   ChevronUp,
@@ -30,12 +31,14 @@ import {
   useGetCategoriesQuery,
   useGetProductsQuery,
   useSubmitProductForReviewMutation,
+  useUpdateProductMutation,
 } from '../../api/productsApi';
 import {
   PRODUCT_STATUS_LABEL,
   PRODUCT_STATUS_TONE,
   canSubmitForReview,
   formatPriceRange,
+  saleUnitOf,
   getPrimaryImage,
   getTotalStock,
 } from '../../lib/productLabels';
@@ -150,6 +153,20 @@ export const MyProductsScreen = () => {
   );
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [submitForReview, { isLoading: isSubmitting }] = useSubmitProductForReviewMutation();
+  /* Suspender la venta: el producto sale de la tienda y conserva su
+     historial. Para volver a venderlo se envia otra vez a revision. */
+  const [updateProduct, { isLoading: isSuspending }] = useUpdateProductMutation();
+  const [pendingSuspend, setPendingSuspend] = useState<Product | null>(null);
+  const confirmSuspend = async () => {
+    if (!pendingSuspend) return;
+    try {
+      await updateProduct({ id: pendingSuspend.id, data: { status: 'INACTIVE' } }).unwrap();
+      toast.success('Venta del producto suspendida');
+      setPendingSuspend(null);
+    } catch (err) {
+      toast.error(extractErrorMessage(err, 'No se pudo suspender el producto.'));
+    }
+  };
 
   /* El backend bloquea las altas si la empresa no esta aprobada
      (ActiveOrganizationGuard), de modo que ofrecerlas seria ofrecer un 403. */
@@ -466,6 +483,10 @@ export const MyProductsScreen = () => {
                         </td>
                         <td className='num'>
                           <strong>{formatPriceRange(product)}</strong>
+                          {/* A que corresponde el precio: "/ kit". */}
+                          {formatPriceRange(product) && saleUnitOf(product) && (
+                            <span className='font-light'> / {saleUnitOf(product)}</span>
+                          )}
                         </td>
                         <td className={`num${stock === 0 ? ' text-danger' : ' font-light'}`}>
                           {stock === 0 ? 'Agotado' : stock}
@@ -494,7 +515,19 @@ export const MyProductsScreen = () => {
                               onClick={() => openSubmit(product)}
                             >
                               <Send size={12} />
-                              Enviar a revisión
+                              {product.status === 'INACTIVE'
+                                ? 'Solicitar reactivación'
+                                : 'Enviar a revisión'}
+                            </button>
+                          )}
+                          {canUpdate && product.status === 'ACTIVE' && (
+                            <button
+                              type='button'
+                              className='status-action is-muted'
+                              onClick={() => setPendingSuspend(product)}
+                            >
+                              <PauseCircle size={12} />
+                              Suspender venta
                             </button>
                           )}
                         </td>
@@ -645,6 +678,27 @@ export const MyProductsScreen = () => {
                 pendingDelete.images.length === 1 ? 'imagen' : 'imágenes'
               }`}
             . Los pedidos que ya lo incluyan lo conservan.
+          </p>
+        </ConfirmModal>
+      )}
+
+      {pendingSuspend && (
+        <ConfirmModal
+          isOpen={Boolean(pendingSuspend)}
+          onClose={() => setPendingSuspend(null)}
+          onConfirm={confirmSuspend}
+          isLoading={isSuspending}
+          title='¿Suspender la venta de este producto?'
+          confirmLabel='Sí, suspender'
+          loadingLabel='Suspendiendo...'
+        >
+          <p className='mb-1'>
+            <strong>{pendingSuspend.name}</strong>
+          </p>
+          <p className='mb-0'>
+            Deja de mostrarse a los compradores y no recibe nuevos pedidos. Conserva su
+            información y su historial. Para volver a venderlo, solicita su reactivación y
+            Suminia lo revisará de nuevo.
           </p>
         </ConfirmModal>
       )}

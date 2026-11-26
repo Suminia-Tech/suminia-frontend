@@ -34,6 +34,11 @@ export interface CompanySectionMeta {
   segment: string;
   title: string;
   description: string;
+  /* Lo que se pide en ese paso, en el progreso del registro. Fijo, este
+     completo o no: antes cambiaba por el detalle de lo que faltaba, y cada
+     tarjeta sonaba distinta. Lo pendiente lo dice la etiqueta de estado, y
+     el detalle, el panel correspondiente. */
+  progressText: string;
 }
 
 export const COMPANY_SECTIONS: Record<OrganizationKind, CompanySectionMeta[]> = {
@@ -43,24 +48,32 @@ export const COMPANY_SECTIONS: Record<OrganizationKind, CompanySectionMeta[]> = 
       segment: '',
       title: 'Mi empresa',
       description: 'Información empresarial y estado de tu solicitud.',
+      progressText:
+        'Completa la información general de tu empresa, su actividad comercial, facturación electrónica y las categorías de productos que comercializa.',
     },
     {
       id: 'documentos',
       segment: 'documents',
       title: 'Documentos',
       description: 'Los soportes legales que Suminia revisa y la declaración de autocontrol.',
+      progressText:
+        'Adjunta y mantén actualizados los documentos requeridos para la validación legal y sanitaria de tu empresa.',
     },
     {
       id: 'contacto',
       segment: 'contacts',
       title: 'Contactos',
       description: 'Las personas de cada área y los correos donde recibes las órdenes de compra.',
+      progressText:
+        'Completa la información de contacto de las áreas Comercial, Logística, Facturación, Cartera y Gerencia para continuar con la validación de tu empresa.',
     },
     {
       id: 'condiciones',
       segment: 'terms',
       title: 'Condiciones y pagos',
       description: 'Lo que exiges para despachar un pedido y la cuenta donde recibes tus pagos.',
+      progressText:
+        'Define las condiciones comerciales y logísticas de tu empresa y registra la información bancaria para recibir tus pagos.',
     },
   ],
   buyer: [
@@ -69,24 +82,31 @@ export const COMPANY_SECTIONS: Record<OrganizationKind, CompanySectionMeta[]> = 
       segment: '',
       title: 'Mi empresa',
       description: 'Información empresarial y estado de tu solicitud.',
+      progressText: 'Completa la información general de tu organización y su actividad.',
     },
     {
       id: 'documentos',
       segment: 'documents',
       title: 'Documentos',
       description: 'Los soportes legales que Suminia revisa para aprobar tu empresa.',
+      progressText:
+        'Adjunta y mantén actualizados los documentos requeridos para la validación legal de tu organización.',
     },
     {
       id: 'contacto',
       segment: 'contacts',
       title: 'Contactos',
       description: 'Las personas de tu organización con las que Suminia coordina compras, pagos y entregas.',
+      progressText:
+        'Completa la información de contacto de las personas con las que Suminia coordina compras, pagos y entregas.',
     },
     {
       id: 'perfil',
       segment: 'profile',
       title: 'Perfil y medio de pago',
       description: 'Quién es tu organización y con qué cuenta pagas tus pedidos.',
+      progressText:
+        'Define la naturaleza de tu organización y el medio de pago con el que realizarás tus compras.',
     },
   ],
 };

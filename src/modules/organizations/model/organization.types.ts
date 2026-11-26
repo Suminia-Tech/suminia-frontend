@@ -203,6 +203,8 @@ export interface SupplierDeclaration {
   beneficialOwners: BeneficialOwner[];
   declarationsAcceptedAt: string;
   dataPolicyAcceptedAt: string;
+  /** Solo el proveedor; nulo si nunca los acepto. */
+  commercialCommitmentsAcceptedAt?: string | null;
   submittedAt: string;
   updatedAt: string;
 }

@@ -341,6 +341,7 @@ export const OrganizationDetailScreen = ({ kind, organizationId }: Props) => {
               <DeclarationSummaryPanel
                 declaration={organization.declaration}
                 title='Declaración de autocontrol (SAGRILAFT)'
+                showCommercialCommitments={esProveedor}
               />
             ) : (
               <Panel title='Declaración de autocontrol (SAGRILAFT)'>

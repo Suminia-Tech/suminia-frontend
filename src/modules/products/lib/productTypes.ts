@@ -45,13 +45,32 @@ export const DOCUMENT_LABEL: Record<ProductDocumentType, string> = {
   SANITARY_REGISTRATION: 'Registro sanitario',
   TECHNICAL_SHEET: 'Ficha técnica',
   CCAA: 'CCAA',
+  SAFETY_DATA_SHEET: 'Ficha de datos de seguridad',
+  STUDY: 'Estudio',
 };
 
 export const DOCUMENT_HELP: Record<ProductDocumentType, string> = {
   SANITARY_REGISTRATION: 'El certificado del INVIMA que respalda este dispositivo.',
   TECHNICAL_SHEET: 'La ficha del fabricante para esta referencia.',
   CCAA: 'Certificado de capacidad de almacenamiento y acondicionamiento.',
+  SAFETY_DATA_SHEET:
+    'La ficha de datos de seguridad (FDS) del fabricante. Aplica a medicamentos, reactivos y desinfectantes.',
+  STUDY: 'Un estudio que respalda el producto.',
 };
+
+/* Los tipos de estudio. La misma lista que STUDY_TYPES del backend. */
+export const STUDY_TYPE_OPTIONS = [
+  { value: 'STABILITY', label: 'Estudio de estabilidad' },
+  { value: 'CLINICAL', label: 'Estudio clínico' },
+  { value: 'BIOEQUIVALENCE', label: 'Estudio de bioequivalencia' },
+  { value: 'BIOCOMPATIBILITY', label: 'Estudio de biocompatibilidad' },
+  { value: 'STERILIZATION', label: 'Validación de esterilización' },
+  { value: 'PERFORMANCE', label: 'Estudio de desempeño' },
+  { value: 'OTHER', label: 'Otro' },
+] as const;
+
+export const studyTypeLabel = (value: string | null | undefined): string =>
+  STUDY_TYPE_OPTIONS.find((option) => option.value === value)?.label ?? 'Estudio';
 
 /* Los soportes que se exigen. Debe coincidir con requiredDocuments del
    backend, que es quien lo hace cumplir al enviar a revision: aqui solo sirve
@@ -68,4 +87,8 @@ export const requiredDocuments = (
 
 /* Los que se ofrecen siempre en el modal, se exijan o no: el registro
    sanitario y la ficha tecnica se adjuntan si existen. */
-export const OFFERED_DOCUMENTS: ProductDocumentType[] = ['SANITARY_REGISTRATION', 'TECHNICAL_SHEET'];
+export const OFFERED_DOCUMENTS: ProductDocumentType[] = [
+  'SANITARY_REGISTRATION',
+  'TECHNICAL_SHEET',
+  'SAFETY_DATA_SHEET',
+];
