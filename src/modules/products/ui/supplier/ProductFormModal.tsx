@@ -400,8 +400,9 @@ const ProductFormModal = ({ isOpen, onClose, product }: ProductFormModalProps) =
 
   return (
     <Modal
-      className='add-address-modal product-form-modal'
+      className='add-address-modal product-form-modal modal-sticky-footer'
       centered
+      scrollable
       isOpen={isOpen}
       toggle={onClose}
     >

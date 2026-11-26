@@ -2746,6 +2746,18 @@ $area-bg: #f1f4f9;
   /* Sin margen propio: el ultimo panel ya deja su hueco por debajo. */
 }
 
+/* Fijo abajo mientras se recorre un formulario largo: el boton de guardar
+   quedaba al final de la pagina y no se veia. Una franja con el fondo de la
+   pagina para que no se monte sobre los campos. */
+.form-actions.is-sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin: 0 -4px;
+  padding: 12px 4px;
+  background: linear-gradient(to bottom, rgba(#f3f5f8, 0), #f3f5f8 30%);
+}
+
 /* En una columna estrecha —la lateral de una ficha— la lista de dato y valor no
    tiene sitio para dos columnas: cada pareja se queda en 160px y el valor se
    parte. Se pide a una. */
@@ -8865,5 +8877,24 @@ legend.form-label {
   .catalog-card-add.is-added,
   .cart-bump {
     animation: none;
+  }
+}
+
+/* Modales con formularios largos —nuevo producto, presentaciones—: el cuerpo
+   se desplaza por dentro y el pie, con los botones de guardar, queda siempre
+   a la vista. Antes habia que bajar por toda la pagina para encontrarlos. */
+.modal-sticky-footer {
+  &.modal-dialog {
+    margin-top: 32px;
+    margin-bottom: 32px;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 64px);
+  }
+
+  .modal-footer {
+    padding-top: 14px;
+    border-top: 1px solid $border-color;
   }
 }

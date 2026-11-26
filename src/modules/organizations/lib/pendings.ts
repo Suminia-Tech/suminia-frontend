@@ -6,7 +6,7 @@ import {
   LEGAL_DOCUMENT_OPTIONS,
   MULTI_CONTACT_AREAS,
 } from './commercialProfile';
-import { sectionHref, SECTION } from './companySections';
+import { companyPath, sectionHref, SECTION } from './companySections';
 import { documentSlot, needsAction } from './documentStatus';
 
 /* Lo que le falta a una empresa por llenar, cada cosa con el panel donde se
@@ -24,6 +24,7 @@ export type PendingKey =
   | 'electronicInvoicing'
   | 'profile'
   | 'bank'
+  | 'paymentTerms'
   | 'city'
   | 'orderEmails'
   | 'contacts'
@@ -143,6 +144,15 @@ export const supplierPendings = (supplier: Organization): Pending[] => {
       enlace: 'Añadir la cuenta',
       href: sectionHref('supplier', SECTION.bank),
       aviso: 'Falta llenar la cuenta: sin ella Suminia no puede pagarte tus ventas.',
+    },
+    /* Requisito para aprobar, pero no para guardar: se avisa aqui y no se
+       bloquea el formulario, que guarda todas las pestañas a la vez. */
+    supplier.paymentTermDays == null && {
+      key: 'paymentTerms',
+      texto: 'Falta indicar si vendes de contado o a crédito.',
+      enlace: 'Indicar la condición de pago',
+      href: companyPath('supplier', 'condiciones'),
+      aviso: 'Falta indicar si vendes de contado o a crédito.',
     },
     !supplier.city && {
       key: 'city',

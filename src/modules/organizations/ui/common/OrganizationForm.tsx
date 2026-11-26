@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
+import { toast } from 'react-toastify';
 
 import { resolvePlace } from '@/shared/lib/colombia';
 import { isColombianMobile, isEmail } from '@/shared/lib/validators';
@@ -14,6 +15,15 @@ import {
   PRODUCT_LINE_OPTIONS,
 } from '../../lib/commercialProfile';
 import type { CompanySection as CompanyTab } from '../../lib/companySections';
+
+/* El nombre de cada pestaña, para decir donde quedo un error. */
+const TAB_TITLE: Record<CompanyTab, string> = {
+  empresa: 'Datos generales',
+  documentos: 'Documentos',
+  contacto: 'Contactos',
+  condiciones: 'Condiciones y pagos',
+  perfil: 'Perfil y medio de pago',
+};
 import { avisoDe, SECTION, type Pending } from '../../lib/pendings';
 import { deliveryError as deliveryErrorOf, toDeliveryValues, type DeliveryValues } from '../../lib/deliveryTime';
 import { formatTaxId } from '../../lib/taxId';
@@ -447,9 +457,11 @@ const OrganizationForm = ({
 
     const plazo = values.paymentCondition === 'credit' ? values.paymentTermDays.trim() : '';
     let nextPaymentTermError: string | null = null;
-    if (values.paymentCondition === '') {
-      nextPaymentTermError = 'Indica si vendes de contado o a crédito.';
-    } else if (
+    /* Sin elegir no es un error al guardar: el formulario guarda todas las
+       pestañas a la vez, y exigirla aqui impedia guardar los contactos de un
+       proveedor que aun no la ha definido. Es requisito para aprobarlo, y lo
+       dice el progreso del registro. */
+    if (
       values.paymentCondition === 'credit' &&
       !(plazo !== '' && Number.isInteger(Number(plazo)) && Number(plazo) >= 1 && Number(plazo) <= 365)
     ) {
@@ -512,6 +524,11 @@ const OrganizationForm = ({
     if (showSupplierFields) {
       const conError = validateSupplierFields();
       if (conError) {
+        /* Se dice donde esta el error: saltar de pestaña sin explicacion
+           parecia que el boton llevaba al siguiente paso sin guardar. */
+        if (conError !== tab) {
+          toast.error(`Revisa los campos marcados en ${TAB_TITLE[conError]} antes de guardar.`);
+        }
         onTabChange(conError);
         return;
       }
@@ -955,6 +972,7 @@ const OrganizationForm = ({
           {/* "Politicas" y no "condiciones": es como se dice en el sector. Y
               "monto" porque es un valor en pesos, no un numero de unidades. */}
           <Panel
+            warning={avisoDe(pendientes, 'paymentTerms')}
             title='Políticas comerciales'
             description='Lo que exiges para despachar un pedido.'
           >
@@ -1330,7 +1348,7 @@ const OrganizationForm = ({
           uno de ellos sugeriria que solo guarda ese. En Documentos no va:
           cada documento se sube al momento. */}
       {tab !== 'documentos' && (
-        <div className='form-actions'>
+        <div className='form-actions is-sticky'>
           <button type='submit' className='btn btn-primary' disabled={isSaving}>
             {isSaving ? 'Guardando...' : 'Guardar cambios'}
           </button>

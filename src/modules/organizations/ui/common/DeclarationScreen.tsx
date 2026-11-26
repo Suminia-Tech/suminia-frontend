@@ -583,7 +583,7 @@ const DeclarationForm = ({
 
       {serverError && <div className='alert alert-danger'>{serverError}</div>}
 
-      <div className='form-actions'>
+      <div className='form-actions is-sticky'>
         <button type='submit' className='btn btn-primary' disabled={isLoading}>
           {isLoading
             ? 'Enviando...'

@@ -15,6 +15,7 @@ import {
   useUpdatePresentationMutation,
 } from '../../api/productsApi';
 import {
+  cantidadConUnidad,
   composeDisplayName,
   composePresentationName,
   precioPor,
@@ -169,6 +170,9 @@ const validate = (draft: Draft, isMedicine: boolean): Record<string, string> => 
 
   return errors;
 };
+
+/* El formulario de la presentacion se envia desde el pie del modal. */
+const PRESENTATION_FORM_ID = 'presentation-form';
 
 const ProductPresentationsModal = ({
   isOpen,
@@ -343,8 +347,9 @@ const ProductPresentationsModal = ({
 
   return (
     <Modal
-      className='add-address-modal presentations-modal'
+      className='add-address-modal presentations-modal modal-sticky-footer'
       centered
+      scrollable
       isOpen={isOpen}
       toggle={onClose}
     >
@@ -398,7 +403,10 @@ const ProductPresentationsModal = ({
                   </td>
                   <td className='num font-light'>
                     {presentation.contentQuantity
-                      ? `${presentation.contentQuantity} ${presentation.contentUnit ?? ''}`.trim()
+                      ? cantidadConUnidad(
+                          String(presentation.contentQuantity),
+                          presentation.contentUnit ?? '',
+                        )
                       : '—'}
                   </td>
                   <td className='num'>
@@ -480,7 +488,12 @@ const ProductPresentationsModal = ({
         </div>
 
         {(isCreating || editingId) && (
-          <form onSubmit={submit} noValidate className='presentation-form'>
+          <form
+            id={PRESENTATION_FORM_ID}
+            onSubmit={submit}
+            noValidate
+            className='presentation-form'
+          >
             <h5 className='mb-3'>{editingId ? 'Editar presentación' : 'Nueva presentación'}</h5>
 
             <Row>
@@ -669,25 +682,6 @@ const ProductPresentationsModal = ({
                 ) || '—'}
               </strong>
             </div>
-
-            <div className='text-end'>
-              <button
-                type='button'
-                className='btn btn-outline-secondary me-2 d-inline-flex align-items-center gap-1'
-                onClick={cancel}
-              >
-                <X size={14} />
-                Cancelar
-              </button>
-              <button
-                type='submit'
-                className='btn btn-primary d-inline-flex align-items-center gap-1'
-                disabled={isAdding || isSaving}
-              >
-                <Check size={14} />
-                {isAdding || isSaving ? 'Guardando...' : 'Guardar presentación'}
-              </button>
-            </div>
           </form>
         )}
 
@@ -711,23 +705,56 @@ const ProductPresentationsModal = ({
         )}
       </ModalBody>
 
-      <ModalFooter className='pt-0 text-end d-block'>
-        <button
-          type='button'
-          className='btn btn-outline-secondary me-2'
-          onClick={onClose}
-        >
-          Cerrar
-        </button>
-        <button
-          type='button'
-          className='btn btn-primary d-inline-flex align-items-center gap-1'
-          disabled={isCreating}
-          onClick={startCreate}
-        >
-          <Plus size={16} />
-          Agregar presentación
-        </button>
+      {/* El pie queda siempre a la vista: mientras se edita una presentacion
+          lleva sus botones —antes estaban al final del formulario y habia que
+          bajar hasta encontrarlos—; si no, cerrar y agregar otra. */}
+      <ModalFooter className='text-end d-block'>
+        {isCreating || editingId ? (
+          <>
+            {/* Con key propia: si React reutilizara el boton de "Agregar
+                presentacion", el mismo clic que abre el formulario lo
+                enviaria, porque el boton ya seria de tipo submit. */}
+            <button
+              key='cancelar'
+              type='button'
+              className='btn btn-outline-secondary me-2 d-inline-flex align-items-center gap-1'
+              onClick={cancel}
+            >
+              <X size={14} />
+              Cancelar
+            </button>
+            <button
+              key='guardar'
+              type='submit'
+              form={PRESENTATION_FORM_ID}
+              className='btn btn-primary d-inline-flex align-items-center gap-1'
+              disabled={isAdding || isSaving}
+            >
+              <Check size={14} />
+              {isAdding || isSaving ? 'Guardando...' : 'Guardar presentación'}
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              key='cerrar'
+              type='button'
+              className='btn btn-outline-secondary me-2'
+              onClick={onClose}
+            >
+              Cerrar
+            </button>
+            <button
+              key='agregar'
+              type='button'
+              className='btn btn-primary d-inline-flex align-items-center gap-1'
+              onClick={startCreate}
+            >
+              <Plus size={16} />
+              Agregar presentación
+            </button>
+          </>
+        )}
       </ModalFooter>
     </Modal>
   );

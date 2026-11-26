@@ -30,6 +30,7 @@ const PASO_DE: Record<PendingKey, CompanySection> = {
   contacts: 'contacto',
   orderEmails: 'contacto',
   bank: 'condiciones',
+  paymentTerms: 'condiciones',
   buyerNature: 'perfil',
   buyerPayment: 'perfil',
 };
